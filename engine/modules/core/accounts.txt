@@ -1,13 +1,13 @@
 LWAI MODULE — ACCOUNT REGISTRY & MULTI-ACCOUNT
 module_id: core.accounts
-module_version: 2026-08-29.9.1
+module_version: 2026-08-29.10.1
 load_class: mandatory_core
 state_scope: shared_engine+account_registry_rules
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
 PURPOSE
-Make existing-account discovery, safe resumption, alt-account management, context switching and account isolation first-class behavior without weakening privacy or corrupting local state.
+Make existing-account discovery, safe resumption, alt-account management, context switching, archive recovery, legacy-state migration and account isolation first-class behavior without weakening privacy or corrupting local state.
 
 PRIMARY KEY
 Every managed game account receives an immutable LWAI-generated account_id. It is the database primary key and does not change when mutable identity fields such as screenname, alliance, server, HQ, squad or nickname change.
@@ -19,53 +19,65 @@ UID POLICY
 UID is optional and must never block onboarding or account creation. Explain briefly that it is used only to distinguish/recover the user's own local LWAI account record. Store it only in the user's private chosen runtime workspace. Never publish it to shared GitHub Production, Gold Assets, public manifests, telemetry or another user's deployment. Do not request passwords, session tokens/cookies, captured authentication files or game login credentials for normal operation. Prefer displaying only a masked UID suffix during account selection.
 
 PRIVACY / USER REASSURANCE
-At the point where identity data or persistence is requested, briefly state that account-identifying information is for the user's own internal/local account management and is not sent to the shared LWAI Production repository. Do not overstate guarantees beyond the actual connector: distinguish the user's chosen private workspace from public/shared Production. Keep reassurance short and clear rather than repeatedly alarming the user.
+At identity collection, prior-state import and persistence moments, briefly state that account-identifying information is for the user's own internal/local account management and is not sent to the shared LWAI Production repository. Distinguish the user's chosen private workspace from public/shared Production and avoid repetitive boilerplate.
 
 WORKSPACE REGISTRY
-A persistent deployment maintains a workspace-level account registry separate from account-specific state. Minimum account entry fields: account_id, nickname, game_uid, uid_suffix, screenname, alliance, server, active, status, last_identity_confirmed, last_updated, database_provider, database_artifact_id_or_path, database_artifact_title and notes. Workspace metadata tracks active_account_id, workspace_schema_version, account_discovery_policy, provider adapter and privacy policy.
+A persistent deployment maintains a workspace-level account registry separate from account-specific state. Minimum account entry fields: account_id, nickname, game_uid, uid_suffix, screenname, alliance, server, active, status, last_identity_confirmed, last_updated, database_provider, database_artifact_id_or_path, database_artifact_title and notes. Optional account/workspace metadata may include guidance_level and active audit-session references. Workspace metadata tracks active_account_id, workspace_schema_version, account_discovery_policy, provider adapter and privacy policy.
 
 ACCOUNT DATABASE ISOLATION
-Each account has its own canonical database/logical namespace. Account-local state includes Heroes, Gear Pool, Presets, Tech, Research Queue, Resources, Drone, Decorations, Profession, Overlord/Season Systems, Battle Log, Change Log, Corrections, local mechanics observations/overrides, Hot Cache, State Health, staleness state, screenshots/assets, preferences and local snapshots. Shared generic engine modules and public mechanics knowledge may be reused. Mutable account facts may never cross accounts implicitly.
+Each account has its own canonical database/logical namespace. Account-local state includes Heroes, Gear Pool, Presets, Tech, Research Queue, Resources, Drone, Decorations, Profession, Overlord/Season Systems, Battle Log, Change Log, Corrections, local mechanics observations/overrides, Hot Cache, State Health, staleness state, screenshots/assets, preferences, local snapshots and resumable Audit Sessions. Shared generic engine modules and public mechanics knowledge may be reused. Mutable account facts or session state may never cross accounts implicitly.
+
+MIGRATION-FIRST DISCOVERY
+Before asking onboarding questions, assume a newer installer may be upgrading an older LWAI deployment. When readable state is available:
+1. Look for Workspace Registry and resolve active_account_id when safe.
+2. Enumerate active/non-archived accounts.
+3. Inspect accessible legacy LWAI account databases, snapshots/exports, current-conversation state and user-provided legacy files.
+4. Reconcile supported facts into the current schema with source/confidence/freshness preserved.
+5. Present compact recognizable account choices using nickname, screenname, server, alliance, optional masked UID suffix and last-updated date.
+6. Ask only for missing, ambiguous, contradictory or materially stale information after reuse/import.
+7. Persist migrated/validated state immediately when writable storage exists.
+Never pretend to retrieve an unrelated inaccessible prior conversation.
 
 EXISTING-ACCOUNT DISCOVERY
-Before Phase 1 new-account onboarding, when readable persistent LWAI storage exists:
-1. Look for the Workspace Registry.
-2. Enumerate active/non-archived accounts.
-3. Present compact recognizable labels using nickname, screenname, server, alliance, optional masked UID suffix and last-updated date.
-4. Ask whether to resume an existing account, create another account, or start a new clean account.
-5. Never silently choose when multiple plausible accounts exist.
-6. After fresh install/migration, briefly confirm even a single strongly matching account before resuming.
-If no registry exists but legacy LWAI account state exists, run the single-account migration rather than forcing re-onboarding.
+Before Phase 1 new-account onboarding, when readable persistent LWAI storage exists, present existing active accounts and ask whether to resume one, create another account, or start a new clean account. Never silently choose when multiple plausible accounts exist. After fresh install/migration, briefly confirm even a single strongly matching account before resuming. If no registry exists but legacy LWAI state exists, run the single-account migration rather than forcing re-onboarding.
+
+ARCHIVE / RESTORE
+Archive is nondestructive. Archived accounts retain immutable account_id, account database and history. Support `list archived accounts`, `restore account`, `unarchive <nickname>` and natural equivalents. Restore changes registry status back to usable/active without deleting or recreating the account. Permanent deletion is a separate explicit informed action.
 
 START-OVER SAFETY
 `start over` creates a new clean account/database by default and archives the prior registry entry. It must not destructively delete prior state unless the user explicitly requests deletion after being told what will be removed.
 
 CONTEXT SWITCHING
-Support natural commands including `list accounts`, `current account`, `switch account`, `use <nickname>`, `create account`, `rename account`, `archive account`, and `compare <A> and <B>`.
-Switch transaction: flush/log pending current-account changes; clear account-scoped working cache; set active_account_id; load target identity, Hot Cache, Corrections, State Health and relevant canonical state; confirm with a compact recognizable label; route all subsequent terse updates only to that active account.
-Never infer active account from whichever account was mentioned most recently in conversation.
+Support natural commands including `list accounts`, `current account`, `switch account`, `use <nickname>`, `create account`, `rename account`, `archive account`, `list archived accounts`, `restore account`, and `compare <A> and <B>`.
+Switch transaction: flush/log pending current-account changes and Audit Session progress; clear account-scoped working cache; set active_account_id; load target identity, Hot Cache, Corrections, State Health, relevant canonical state and only the target account's Audit Sessions; confirm with a compact recognizable label; route all subsequent terse updates only to that active account. Never infer active account from whichever account was mentioned most recently in conversation.
 
 CROSS-ACCOUNT OPERATIONS
-Comparisons may mount multiple account databases read-only. Derived comparisons must not merge or overwrite source records. Preserve the prior active account after comparison unless the user explicitly switches.
+Comparisons may mount multiple account databases read-only. Derived comparisons must not merge or overwrite source records or session state. Preserve the prior active account after comparison unless the user explicitly switches.
 
 IDENTITY SANITY CHECK
 Identity fields can drift. Periodically, and whenever evidence conflicts, ask the user to confirm screenname, alliance, server and optionally UID. Record the confirmation date/source. Update changed mutable fields in the same account and preserve history when continuity is supported. Do not create a new account merely because a mutable identity field changed. account_id remains stable.
 
 ONBOARDING FLOW
-After the HIGH-reasoning recommendation and optional persistence setup, run account discovery before Phase 1. For a new account, request a compact identity block early: optional UID, screenname, server, alliance and optional nickname. In one sentence explain that these values keep the user's own account records identifiable and separate, especially when alts exist. Continue even if UID is declined.
+After the HIGH-reasoning recommendation and optional persistence setup, run migration-first discovery before Phase 1. For a truly new account, request a compact identity block early: optional UID, screenname, server, alliance and optional nickname. In one sentence explain that these values keep the user's own account records identifiable and separate, especially when alts exist. Continue even if UID is declined. Existing users are validated with short strategic question groups rather than full re-onboarding.
 
 PROVIDER IMPLEMENTATION
 Structured providers should maintain one Workspace Registry plus one isolated account database/logical namespace per account when practical. File-storage providers should use a registry file plus separate account directories/files keyed by immutable account_id. Provider limitations must not collapse multiple accounts into one ambiguous mutable ledger. If safe independent writes cannot be guaranteed, do not claim full multi-account persistence support.
 
 MIGRATION FROM SINGLE-ACCOUNT LWAI
-For an existing single-account deployment: generate an immutable account_id; create/register a Workspace Registry; register the existing canonical database as the first account without rewriting historical domain data; add an Account Identity record if supported; set active_account_id; preserve all existing state unchanged; run reload/account-isolation checks. No user should have to re-onboard merely because multi-account support was introduced.
+For an existing single-account deployment: generate an immutable account_id; create/register a Workspace Registry; register the existing canonical database as the first account without rewriting historical domain data; add an Account Identity record if supported; set active_account_id; preserve all existing state unchanged; import supported legacy facts with their source/confidence/freshness; run reload/account-isolation checks. No user should have to re-onboard merely because runtime features were added.
+
+AUDIT SESSION ISOLATION
+Optional resumable Audit Sessions are account-scoped. Each session must carry account_id and may include session_id, audit_type/domain, requested/completed/pending/ambiguous items, current_step, timestamps, ingestion_mode, guidance_level, status and notes. Reload resolves active_account_id before resuming a session. A session from one account must never be resumed or mutated under another account.
 
 REGRESSION INVARIANTS
 - A terse update after switching to Alt cannot modify Main.
 - Reload resolves active_account_id, not chat recency.
 - UID/identity values never appear in sanitized shared Production artifacts.
 - Account discovery never requires UID.
+- Existing supported current facts are reused before requesting re-entry.
 - `start over` archives rather than deletes by default.
+- Archive/restore preserves immutable account_id and history.
 - Cross-account compare is read-only.
+- Audit Session state cannot cross active_account_id.
 - Engine refresh preserves Workspace Registry, active_account_id and every account-local database.
 - Supported identity changes update the same immutable account_id rather than silently creating duplicates.
