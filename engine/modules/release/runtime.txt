@@ -1,0 +1,28 @@
+LWAI MODULE — MODULAR RUNTIME
+module_id: release.runtime
+module_version: 2026-08-29.8.1
+load_class: mandatory_core
+state_scope: shared_engine
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+ARCHITECTURE
+engine/BOOTSTRAP.txt is a small stable loader. engine/MANIFEST.json is the Production module graph. engine/BOOTSTRAP_FULL.txt is the complete sanitized standalone/offline/recovery runtime. engine/modules/core contains mandatory behavior; domains load on demand; adapters load by capability; release modules handle update/health/migration behavior.
+
+LOAD RULES
+Load mandatory core at install/resume before consequential work. Load onboarding behavior only for new/incomplete local state. Load the smallest relevant domain module for the current task. Do not reload an unchanged module repeatedly in one active session. Maintenance/release modules load during engine audit/update.
+
+EFFICIENCY
+Bound active context to current account/cache/state slices plus relevant modules. Historical material remains in Change Log/Snapshots and is fetched only when reconciliation requires it. Module updates should touch only the affected module, manifest metadata, affected tests/contracts, release notes and BOOTSTRAP_FULL unless loader behavior changes.
+
+INTEGRITY / SELF-HEALING
+If a required module is missing, incompatible, corrupted or unexpectedly changed: retry canonical GitHub, use last-known-good local engine state when available, then fall back to BOOTSTRAP_FULL. Never repair engine failures by overwriting user state.
+
+FULL FALLBACK
+BOOTSTRAP_FULL.txt is mandatory and self-contained. `export yourself` emits or points to that complete sanitized runtime. `share LWAI` returns the one-line remote installer.
+
+RELEASE RULE
+Prod-Dev -> frozen RC branch -> PR -> exact-head CI/private gates -> exact-head merge -> Production verification. Failed gates preserve last-known-good main. Schema-breaking changes require migrations and local-state survival tests.
+
+DOCUMENTATION-AS-CODE
+Modular changes are incomplete until MANIFEST, loader/fallback, relevant contracts/tests, deployment docs and release metadata agree.
