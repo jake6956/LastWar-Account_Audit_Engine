@@ -1,0 +1,12 @@
+{
+  "engine_version": "2026-08-29.5",
+  "schema_version": "1.0",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "stable_bootstrap_endpoint": "https://docs.google.com/document/d/1Mhg8YXX9jaZJVry5ZZ6_5d-xbE7A4A0tnfQVgFI2WC8/edit",
+  "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
+  "status": "known-good imported baseline",
+  "notes": "First known-good Production imported into the GitHub engineering hub before hub-and-spoke promotion."
+}
