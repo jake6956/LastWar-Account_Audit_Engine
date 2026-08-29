@@ -1,37 +1,61 @@
 LWAI MODULE — STORAGE ADAPTERS
 module_id: adapters.storage
-module_version: 2026-08-29.9.1
+module_version: 2026-08-29.12.1
 load_class: capability_on_demand
 state_scope: shared_engine+provider_rules
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
-CORE RULES
-Cloud storage is optional but recommended. Use an isolated LWAI workspace. Choose storage by verified capability, not brand assumptions. The logical LWAI schema is invariant across providers even when physical file types differ. Local account state must survive upstream engine upgrades and provider migration.
+PURPOSE
+Map one provider-neutral persistence contract onto verified host capabilities without letting provider branding leak into engine logic. Local account state must survive engine upgrades, provider changes, context loss and capability degradation.
+
+CAPABILITY API
+Every adapter exposes a capability descriptor before it is trusted for persistence. Capability version: storage-api/1.
+Required capability flags:
+- read: read a known object/record.
+- list: enumerate objects/records in the isolated LWAI workspace.
+- write: replace/update an existing object safely.
+- create: create a uniquely identified object/record.
+- query: bounded structured lookup by key/filter/range.
+- atomic_append: provider-native atomic append to an ordered journal/collection.
+- compare_and_swap: conditional write against revision/version/hash.
+- snapshot: create a durable point-in-time recovery artifact.
+- restore: restore/import a supported snapshot without changing immutable account_id.
+Optional implementation metadata may describe batch_write, delete, structured_tables and provider-specific limits, but engine behavior may depend only on capabilities actually verified.
+
+PERSISTENCE PROFILES
+NONE: no reliable read persistence.
+READ_ONLY: reference data only; never canonical writable state.
+FILE_RW: isolated read/write/create but no structured query/CAS/atomic append guarantee.
+CAS_RW: writable store with revision/version compare-and-swap semantics.
+STRUCTURED_RW: bounded structured query/read/write semantics; journal safety still requires atomic_append, CAS, or immutable uniquely-created events.
+TRANSACTIONAL_RW: structured read/write plus atomic append and/or transaction/CAS suitable for authoritative recovery metadata.
+Never upgrade a profile from provider reputation or file type alone.
+
+AUTHORITATIVE JOURNAL RULE
+Runtime Journal must use the strongest verified primitive in this order: provider-native atomic append/transaction; compare-and-swap/revision-controlled append; immutable uniquely identified event creation. Guessed-next-row writes are never authoritative under concurrency. A Sheet/table may be a summary/index/cache when its append primitive is not concurrency safe.
+
+CORE OPERATIONS
+The engine expresses persistence as provider-neutral operations: read_object, list_objects, create_object, update_object, query_records, append_event, compare_and_swap, create_snapshot and restore_snapshot. Unsupported operations must fail explicitly or route to a defined weaker fallback; never silently emulate a stronger guarantee than the provider offers.
 
 MULTI-ACCOUNT PHYSICAL MODEL
-A persistent multi-account deployment uses one workspace-level Account Registry plus one isolated account database/logical namespace per immutable account_id when practical. Never collapse multiple accounts into one ambiguous mutable table set merely because a provider has weak structure semantics. Human display names are aliases, not storage identity. Shared engine/Gold Assets are read-only with respect to account facts.
+Persistent multi-account deployments use one workspace-level Account Registry plus one isolated account database/logical namespace per immutable account_id when practical. Human display names are aliases, not storage identity. Mutable state, Audit Sessions and account-scoped checkpoints may not cross namespaces.
 
-LOGICAL MODEL
-Workspace Registry fields include account_id, nickname, optional/private game_uid and uid_suffix, screenname, alliance, server, status/active flags, identity-confirmed/updated dates and provider-local database reference. Workspace metadata includes active_account_id, schema version, discovery policy, adapter and privacy policy. Each account namespace contains Account Identity plus Dashboard; Heroes; Gear Pool; Presets; Tech; Research Queue; Resources; Drone; Decorations; Profession; Overlord/Season Systems; Battle Log; Change Log; Corrections; Mechanics observations; Hot Cache; State Health; Staleness state; Snapshots; preferences and assets.
+PROVIDER FALLBACKS
+Full structured/transactional provider: canonical registry/account stores plus checkpoints/journal.
+Writable file store: versioned registry + isolated account directories/files; journal uses immutable event files or CAS-controlled append when available.
+Read-only provider: reference only; private state stays in another writable store or session exports.
+No durable provider: conversation cache plus portable snapshots/exports; do not claim durable recovery.
+If safe independent per-account writes cannot be guaranteed, do not claim full multi-account persistence.
 
-GOOGLE DRIVE
-When native Sheets read/write exists, use a workspace registry Sheet plus one isolated canonical account database Sheet per account when practical. Existing legacy single-account Sheets may be registered in place without rewriting their historical domain data. Use Docs for contracts/readmes/manifests and account-specific folders/namespaces for private assets.
-
-GENERIC WRITABLE FILE STORAGE
-Without true structured-table semantics, use a versioned workspace registry file plus separate account directories/files keyed by immutable account_id, using JSON/CSV plus Markdown/TXT. Preserve unique IDs, timestamps, source/confidence, Change Log, Corrections and engine version.
-
-READ-ONLY / WEAKLY WRITABLE CLOUD
-Reference-only providers cannot be canonical writable state. If safe independent per-account writes cannot be guaranteed, do not advertise full multi-account persistence; use chat/private snapshots or recommend a stronger writable provider.
-
-PROVIDER / SINGLE-ACCOUNT MIGRATION
-Snapshot canonical state and engine metadata first. For a legacy single-account deployment, generate account_id, create/register the Workspace Registry, register the existing database in place, add Account Identity if supported, set active_account_id and preserve all existing domain records. For provider migration, export provider-neutral state and validate account registry count, account IDs, latest values, Corrections and Change Log continuity. Do not destroy the old store until reconciliation passes.
+MIGRATION
+Snapshot canonical state and engine metadata first. Export provider-neutral state, import into the candidate adapter, validate registry/account counts, immutable IDs, latest canonical values, Corrections, Change Log and checkpoint/account isolation, then switch canonical provider. Do not destroy the old store until reconciliation passes.
 
 PROVIDER HEALTH
-Verify expected write scope, structured operations where claimed, all writes stay inside LWAI workspace, account namespaces remain isolated, timestamps/source/confidence survive, reload resolves active_account_id, a switch cannot write to the prior account, and provider disconnect degrades gracefully rather than corrupting state.
+Verify scope isolation; capability claims; account namespace separation; source/confidence/timestamps; active_account_id routing; journal append semantics; revision/CAS behavior when claimed; snapshot/restore when claimed; and graceful degradation on disconnect. Provider failure must not corrupt canonical facts or cause engine repair to overwrite local state.
 
 PRIVACY
-Identity fields including optional game UID are provider-local private data. Do not copy them into shared GitHub Production, public Gold Assets or another deployment. Prefer masked UID suffixes in account-selection displays.
+Identity, optional game UID, provider-local references, screenshots, balances, Corrections, battles, checkpoints and journal rows are local private state. Do not copy them into shared GitHub Production or public Gold Assets.
 
 UPSTREAM RELATIONSHIP
-Provider adapters are ENGINE. Workspace Registry, active_account_id, identities, credentials, provider-local paths, user files and mutable account state are LOCAL STATE and must never be overwritten by engine refresh.
+Adapters are ENGINE. Workspace Registry, active_account_id, identities, credentials, provider-local paths/IDs and mutable account state are LOCAL STATE and must never be overwritten by engine refresh.
