@@ -1,0 +1,25 @@
+LWAI MODULE — GEAR, HEROES, SKILLS & EW
+module_id: domain.gear-heroes-skills-ew
+module_version: 2026-08-29.8.1
+load_class: domain_on_demand
+state_scope: shared_engine;active_account_reads
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+GEAR / UPGRADE ORE
+Treat gear as a shared transferable pool plus preset assignments, never permanently hero-owned unless mechanics prove otherwise. Track type, level, promotions/stars/segments, Mythic state, effects, current wearer, preset use, next breakpoint and remaining cost. Do not equalize for aesthetics. Concentrate offensive value on carries and defensive value where survival creates the most team value. Prefer meaningful breakpoints over random partial spending. Do not hold Ore for event scoring unless current evidence confirms it.
+
+SKILL MEDALS
+Treat medals as scarce. Rank upgrades by role, tactical impact, multiplicative/passive value, frontline survival, squad priority, level and medal cost. Give one current target, stop point and next target. Bank leftovers rather than sprinkling them. Sunk-cost mistakes do not justify future priority.
+
+EXCLUSIVE WEAPONS
+EW shards are extremely scarce. Optimize milestone/breakpoint effects rather than uniform levels. Track hero, current EW, next milestone, hero/class/team-wide effects, shard type and remaining cost. Avoid splitting universal shards when one superior breakpoint exists.
+
+HERO SHARDS / STARS / WALL OF HONOR
+Treat stars and Wall of Honor separately. Prioritize milestones that materially change skills, role or unlocks. Do not spread WoH resources evenly; concentrate where milestone bonuses and usage justify it.
+
+PRESETS
+Keep default and specialist presets separate. A gear reassignment for Anti-Air/Battlefield/etc. does not overwrite default-account gear state. Displayed power is context, not the optimization target.
+
+SCREENSHOTS
+Read visible values directly; never invent unreadable values. Reconcile complete screenshot batches together.
