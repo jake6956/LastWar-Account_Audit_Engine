@@ -97,6 +97,38 @@ class RuntimeModel:
         account.facts = dict(legacy_facts)
         return account
 
+    def startup_from_storage(
+        self,
+        *,
+        registry_accounts: dict[str, dict[str, Any]] | None = None,
+        active_account_id: str | None = None,
+        legacy_facts: dict[str, Any] | None = None,
+    ) -> list[str]:
+        """Return the durable startup sequence while enforcing legacy-first bootstrap.
+
+        A current registry permits active-account resolution before recovery. A legacy
+        pre-registry account must first be discovered and registered so an immutable
+        account_id/active_account_id actually exists; only then may recovery run.
+        """
+        if registry_accounts is not None:
+            steps = ["load_registry"]
+            for account_id, facts in registry_accounts.items():
+                account = self.create_account(account_id, activate=False)
+                account.facts = dict(facts)
+            if active_account_id is None or active_account_id not in self.accounts:
+                raise RuntimeError("current registry requires a valid active_account_id")
+            self.active_account_id = active_account_id
+            steps.extend(["resolve_active_account", "recovery_first", "migration_reconcile"])
+            return steps
+
+        if legacy_facts is not None:
+            steps = ["legacy_discovery"]
+            self.migrate_legacy("legacy", legacy_facts)
+            steps.extend(["register_legacy", "resolve_active_account", "recovery_first", "migration_reconcile"])
+            return steps
+
+        return ["new_account_guidance"]
+
     def switch_account(self, account_id: str) -> None:
         account = self.accounts.get(account_id)
         if account is None or account.status == "ARCHIVED":
