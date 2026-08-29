@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.5",
+  "engine_version": "2026-08-29.6",
   "schema_version": "1.0",
   "channel": "Production",
   "sanitized": true,
@@ -22,11 +22,13 @@
     "reload-staleness",
     "local-state-preservation",
     "engine-refresh",
+    "github-production-hub",
+    "distribution-fallback",
     "gold-assets",
     "documentation-as-code",
     "release-contract",
     "health-regression-tests"
   ],
   "migration": null,
-  "notes": "Imported current known-good Production into the GitHub engineering hub. Stable Google Doc remains the simplest consumer distribution endpoint."
+  "notes": "Activates the hub-and-spoke production architecture: GitHub is authoritative sanitized Production engineering source; each deployment keeps private runtime state locally; stable Google Doc remains the low-friction distribution mirror."
 }
