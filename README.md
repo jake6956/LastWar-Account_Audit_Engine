@@ -2,18 +2,24 @@
 
 LWAI is a portable, self-healing account optimization framework for **Last War: Survival**. It turns screenshots, terse account updates, current mechanics, resource constraints, and battle evidence into a continuously reconciled account model and decisive upgrade recommendations.
 
-## Install / distribution
+## One-line install
 
-The easiest consumer install is the stable public bootstrap document:
+The preferred consumer install is now:
 
-**LWAI — PUBLIC BOOTSTRAP — LATEST**  
-https://docs.google.com/document/d/1Mhg8YXX9jaZJVry5ZZ6_5d-xbE7A4A0tnfQVgFI2WC8/edit
+> Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
 
-Copy the entire bootstrap into a fresh ChatGPT conversation. For best results, switch reasoning/thinking to **HIGH** if the product exposes that control. Cloud persistence is strongly recommended but optional.
+Paste that single line into a fresh ChatGPT conversation. The assistant should retrieve the Production bootstrap itself, validate it, and begin phased onboarding. No multi-page mobile copy/paste is required when web access works.
 
-For machine-readable/update-aware deployments:
+The short URL is a convenience/distribution alias, not the trust root. It resolves to the canonical raw Production bootstrap on GitHub. Direct sources remain:
 - Latest manifest: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json
 - Raw bootstrap: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
+- Legacy/secondary Google mirror: https://docs.google.com/document/d/1Mhg8YXX9jaZJVry5ZZ6_5d-xbE7A4A0tnfQVgFI2WC8/edit
+
+For best results, switch reasoning/thinking to **HIGH** if the product exposes that control. Cloud persistence is strongly recommended but optional.
+
+## Distribution privacy
+
+Normal sharing uses the neutral short URL so the repository owner/maintainer handle is not exposed in the visible end-user install instruction. This is intentionally **semi-anonymous convenience, not true anonymity**: anyone who resolves the short link can discover the public GitHub repository and provenance.
 
 ## Hub-and-spoke architecture
 
@@ -40,14 +46,14 @@ Each player keeps private state in their own environment:
 
 **Private player state must never be committed to this repository.**
 
-### Distribution mirror
-The stable Google Doc above is intentionally the low-friction consumer mirror. Production engine updates originate here in GitHub and are synchronized to that stable document so Discord/community users never need to learn GitHub.
+### Distribution endpoints
+The TinyURL alias is the preferred human-facing bootstrap entrypoint. GitHub raw Production is authoritative. The stable Google Doc remains a secondary/legacy distribution fallback for environments where it is readable.
 
 ## Release model
 
-`Prod-Dev (private) -> Release Candidate -> Production (GitHub) -> stable public bootstrap mirror`
+`Prod-Dev (private) -> Release Candidate -> Production (GitHub) -> remote install endpoints / mirrors`
 
-Production promotion fails closed if sanitization, bootstrap completeness, local-state preservation, capability fallbacks, regression checks, documentation-as-code, CI, or endpoint integrity fail.
+Production promotion fails closed if sanitization, bootstrap completeness, local-state preservation, capability fallbacks, regression checks, documentation-as-code, CI, short-link integrity, or endpoint parity fail.
 
 ## Repository layout
 
@@ -76,10 +82,11 @@ docs/            architecture/deployment/operator documentation
 - Every material engine change updates its relevant contract/schema/test in the same release.
 - A consumer deployment must work even with no cloud connector, no automation support, or limited tools.
 - GitHub holds shared engine state; private runtime workspaces hold player state.
+- URL shortening is transport convenience only; canonical GitHub sources remain authoritative.
 
 ## Current production
 
-**Engine version:** `2026-08-29.6`  
-**Stable consumer endpoint:** https://docs.google.com/document/d/1Mhg8YXX9jaZJVry5ZZ6_5d-xbE7A4A0tnfQVgFI2WC8/edit
+**Engine version:** `2026-08-29.7`  
+**Preferred install URL:** https://tinyurl.com/2yxf7f5x
 
-Google Drive remains the reference private Prod-Dev/runtime implementation. GitHub is the authoritative sanitized Production engineering hub. The Google Doc is the simplest consumer-facing distribution path.
+Google Drive remains the reference private Prod-Dev/runtime implementation. GitHub is the authoritative sanitized Production engineering hub. End users normally need only the one-line install instruction above.
