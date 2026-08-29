@@ -1,0 +1,41 @@
+name: Create LWAI shortlink
+
+on:
+  push:
+    branches:
+      - ops/shortlink-create
+
+jobs:
+  create-shortlink:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or verify stable short URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET='https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt'
+          aliases=(lwai LWAI LWAISetup LWAIStart LastWarAI LastWarOpt)
+          for alias in "${aliases[@]}"; do
+            response="$(curl -sS --get \
+              --data-urlencode 'format=simple' \
+              --data-urlencode "url=${TARGET}" \
+              --data-urlencode "shorturl=${alias}" \
+              'https://is.gd/create.php' || true)"
+            if [[ "$response" == https://is.gd/* ]]; then
+              echo "SHORT_URL=$response"
+              effective="$(curl -LsS -o /dev/null -w '%{url_effective}' "$response")"
+              echo "EFFECTIVE_URL=$effective"
+              [[ "$effective" == "$TARGET" ]]
+              exit 0
+            fi
+
+            candidate="https://is.gd/${alias}"
+            effective="$(curl -LsS -o /dev/null -w '%{url_effective}' "$candidate" || true)"
+            if [[ "$effective" == "$TARGET" ]]; then
+              echo "SHORT_URL=$candidate"
+              echo "EFFECTIVE_URL=$effective"
+              exit 0
+            fi
+          done
+          echo 'No requested alias could be created or verified.' >&2
+          exit 1
