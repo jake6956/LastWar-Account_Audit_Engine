@@ -1,0 +1,27 @@
+name: Verify LWAI Installer Temporary
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-installer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify TinyURL exact target and Production identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED='https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt'
+          FINAL=$(curl -LsS -o /tmp/lwai-bootstrap.txt -w '%{url_effective}' 'https://tinyurl.com/2yxf7f5x')
+          test "$FINAL" = "$EXPECTED"
+          grep -F 'engine_version: 2026-08-29.11' /tmp/lwai-bootstrap.txt
+          grep -F 'SANITIZED: YES' /tmp/lwai-bootstrap.txt
+          grep -F 'ACCOUNT STATE INCLUDED: NO' /tmp/lwai-bootstrap.txt
+          grep -F 'RECOVERY-FIRST STARTUP' /tmp/lwai-bootstrap.txt
+          curl -fsSL "$EXPECTED" -o /tmp/canonical-bootstrap.txt
+          cmp -s /tmp/lwai-bootstrap.txt /tmp/canonical-bootstrap.txt
+          echo 'PASS: TinyURL resolves exactly to canonical .11 Production loader and content matches byte-for-byte.'
