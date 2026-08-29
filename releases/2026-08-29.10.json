@@ -1,0 +1,34 @@
+{
+  "engine_version": "2026-08-29.10",
+  "schema_version": "2.2",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-guided-multi-account",
+  "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
+  "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
+  "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
+  "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
+  "migration": {
+    "from": "2026-08-29.9",
+    "type": "additive local-state schema / non-destructive",
+    "local_state_action": "preserve all existing account state; optionally add guidance metadata and account-scoped Audit Sessions",
+    "notes": "Migration-first startup reuses accessible prior LWAI state before asking for new data. Archive/restore preserves immutable account_id and history."
+  },
+  "features": [
+    "mandatory core.guidance module",
+    "migration-first enhancement-not-reset startup",
+    "missing-ambiguous-contradictory-stale-only collection",
+    "adaptive guidance proficiency",
+    "explicit multi-upload done boundaries",
+    "direct screenshot batch ingestion",
+    "supported DOCX/PDF screenshot bundle ingestion",
+    "phone-friendly guided capture",
+    "account-scoped resumable Audit Sessions",
+    "automatic continuation after validated mini-batches",
+    "reversible archive/restore preserving account_id/history",
+    "terse expert update compatibility",
+    "session isolation by active_account_id"
+  ]
+}
