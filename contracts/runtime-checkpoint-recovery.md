@@ -24,7 +24,7 @@ Recommended events include `BEGIN`, `INTENT`, `WRITE_ATTEMPT`, `WRITE_SUCCESS`, 
 
 ## Recovery-first startup
 
-After mandatory core and Workspace Registry are available, resolve `active_account_id`, inspect unresolved checkpoints and related recent journal entries, then inspect their actual durable artifacts. Verified durable state outranks stale checkpoint claims. Do not replay verified successful writes. Resume at the first unverified or pending action. Mark `COMMITTED` only after the intended durable end state is verified.
+Recovery uses a strict **verify-before-replay** invariant. After mandatory core and Workspace Registry are available, resolve `active_account_id`, inspect unresolved checkpoints and related recent journal entries, then inspect their actual durable artifacts. Verified durable state outranks stale checkpoint claims. Do not replay verified successful writes. Resume at the first unverified or pending action. Mark `COMMITTED` only after the intended durable end state is verified.
 
 Creation retries must first verify an equivalent object does not already exist. Updates compare the current durable value/version before replacement. A lost checkpoint store may reduce recovery convenience but must never destroy canonical account facts.
 
