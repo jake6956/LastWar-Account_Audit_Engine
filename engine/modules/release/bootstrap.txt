@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP, EXPORT & UPDATE
 module_id: release.bootstrap
-module_version: 2026-08-29.10.1
+module_version: 2026-08-29.12.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -10,33 +10,38 @@ REMOTE INSTALL
 Preferred public install instruction: Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
 The alias is transport convenience only. Canonical authority is GitHub Production main, releases/LATEST.json, engine/BOOTSTRAP.txt and engine/MANIFEST.json. If a supplied install URL resolves unexpectedly or content is not sanitized LWAI Production, do not silently trust it.
 
+STARTUP TRUST / INTEGRITY
+Fetch LATEST.json and MANIFEST.json from canonical Production. Confirm Production channel, sanitized=true, account_state_included=false, matching engine_version/schema_version and compatible engine_api_version. Resolve mandatory module dependencies before use. When the host can inspect/reproduce Git blob identity, compare each module against MANIFEST integrity.git_blob_sha1 before loading it. Otherwise verify canonical origin plus module_id/module_version and state clearly only if an integrity check materially fails; never pretend an unavailable hash primitive was executed.
+
 FALLBACK ORDER
-1. Preferred TinyURL alias.
+1. Preferred TinyURL alias to canonical thin loader.
 2. Canonical raw GitHub thin loader.
-3. Canonical GitHub BOOTSTRAP_FULL.txt.
-4. Stable Google distribution mirror when readable.
-5. Manual full-bootstrap transfer only when remote retrieval is unavailable.
+3. Last-known-good locally cached compatible engine/module state when available.
+4. Canonical GitHub BOOTSTRAP_FULL.txt.
+5. Stable Google distribution mirror when readable.
+6. Manual full-bootstrap transfer only when remote retrieval is unavailable.
+Never repair retrieval/integrity failure by modifying user-local account state.
 
 STARTUP / MIGRATION-FIRST DISCOVERY
-After mandatory core modules including core.guidance load, recommend HIGH reasoning if available and capability-detect persistence/ingestion. Before broad onboarding, inspect readable Workspace Registry plus accessible legacy LWAI databases, snapshots/exports, current-conversation state and user-provided legacy files. Reuse supported current facts with source/confidence/freshness preserved and ask only for missing, ambiguous, contradictory or materially stale data. Never pretend inaccessible prior conversations are retrievable. If legacy single-account state exists without a registry, migrate it non-destructively. For a genuinely new account, request optional UID plus screenname/server/alliance/optional nickname early and give one short privacy reassurance. UID is never required.
+After mandatory core modules load, recommend HIGH reasoning if available and capability-detect persistence/ingestion. Resolve Workspace Registry and active_account_id, run recovery-first checkpoint inspection, then inspect readable legacy LWAI databases/snapshots/exports/current-conversation state/user-provided legacy files before broad onboarding. Reuse supported current facts with source/confidence/freshness preserved and ask only for missing, ambiguous, contradictory or materially stale data. Never pretend inaccessible prior conversations are retrievable.
 
 GUIDED INGESTION
-core.guidance owns adaptive user instruction, declared `done` batch boundaries, direct screenshot batches, supported DOCX/PDF screenshot bundles, phone-friendly guided capture, account-scoped resumable Audit Sessions and safe auto-continuation. A batch declared incomplete must not be finalized early. Audit Sessions resolve through active_account_id and may never cross account boundaries.
+core.guidance owns adaptive instruction, declared `done` boundaries, direct screenshot batches, supported DOCX/PDF screenshot bundles, guided capture, account-scoped resumable Audit Sessions and safe auto-continuation. A declared incomplete batch must not be finalized early. Audit Sessions resolve through active_account_id and may never cross accounts.
 
 ENGINE UPDATE
-Before update, preserve LOCAL STATE including Workspace Registry, active_account_id, every account-local database/namespace, Audit Sessions and guidance metadata. Fetch releases/LATEST.json, compare engine_version, inspect migrations, fetch current Production loader/manifest/modules and update only ENGINE. Never pull RC/Prod-Dev into ordinary consumer deployments. If upstream is unavailable, keep last-known-good engine.
+Preserve LOCAL STATE first. Fetch Production release metadata and migration graph, compare engine/API/schema compatibility, apply only required validated migration edges, then refresh ENGINE. Never pull RC/Prod-Dev into ordinary consumer deployments. If upstream content is incompatible, integrity-mismatched or unavailable, remain on last-known-good engine/fallback and preserve local state.
 
 EXPORTS
-`export yourself` / `export LWAI` = one complete sanitized self-contained BOOTSTRAP_FULL runtime with no account-specific state.
-`export my account snapshot` = private active-account state only unless the user explicitly requests another scope.
+`export yourself` / `export LWAI` = complete sanitized self-contained BOOTSTRAP_FULL runtime with no account-specific state.
+`export my account snapshot` = private active-account state only unless another scope is explicitly requested.
 `export full recovery package` = sanitized engine + separate private registry/account snapshots + small manifest.
-Never mix private account identity/state, Audit Session content or provider-local paths into a shareable engine package.
+Never mix private identity/state, Audit Session content, checkpoint/journal rows or provider-local references into shareable engine output.
 
 SANITIZATION
-Remove player/alliance/server identifiers, game UIDs, exact account powers/inventories/current targets, personal spending history, diplomacy, private screenshots, private corrections, private provider IDs/URLs, credentials, authentication details and account-scoped Audit Session content. Intentional public Production endpoints are allowed.
+Remove player/alliance/server identifiers, game UIDs, exact account powers/inventories/current targets, personal spending history, diplomacy, private screenshots, private corrections, private provider IDs/URLs, credentials/authentication details and account-scoped workflow state. Intentional public Production endpoints are allowed.
 
 MIGRATION
-Single-account -> current multi-account migration generates immutable account_id, creates/registers a Workspace Registry, registers the existing database in place, adds Account Identity if supported, sets active_account_id, preserves existing domain data, imports supported legacy facts with their evidence metadata, and runs account-isolation/reload/session-isolation checks. Do not force re-onboarding.
+Follow releases/MIGRATIONS.json plus contracts/migration.md. Single-account migration generates immutable account_id, creates/registers Workspace Registry, registers existing database in place, sets active_account_id, preserves existing domain data and evidence metadata, then runs isolation/reload tests. Engine-only releases must not rewrite local account schema/state.
 
 ARCHIVE / RESTORE
 Starting over creates a new clean account and archives the previous registry entry by default. Archive is reversible; restore/unarchive preserves immutable account_id and history. Destructive deletion requires an explicit informed request.
