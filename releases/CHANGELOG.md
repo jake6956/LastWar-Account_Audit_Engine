@@ -1,5 +1,20 @@
 # Production Changelog
 
+## 2026-08-29.10
+
+- Added mandatory `core.guidance` with dependencies on `core.operating`, `core.persistence`, and `core.accounts`.
+- Added migration-first startup: inspect accessible prior LWAI state before broad onboarding, preserve source/confidence/freshness, and ask only for missing, ambiguous, contradictory, or materially stale information.
+- Added adaptive guidance states (NEW, LEARNING, COMFORTABLE, EXPERT) while keeping privacy, evidence hierarchy, account isolation, and batch-boundary rules invariant.
+- Added explicit multi-upload completion boundaries: users are told what to send and to reply `done`; declared batches are not finalized early.
+- Added three evidence-equivalent ingestion modes: direct screenshot batches, supported DOCX/PDF screenshot bundles, and phone-friendly guided capture.
+- Added account-scoped resumable Audit Sessions with current step, requested/completed/pending/ambiguous items, ingestion mode, guidance level, timestamps, and status.
+- Added safe auto-continuation after each validated mini-batch so users do not have to repeatedly request the next step.
+- Added missing/stale-only capture rules so current high-confidence fields are not redundantly re-requested.
+- Added reversible archive recovery through list/restore/unarchive behavior while preserving immutable `account_id` and history.
+- Added session-isolation gates preventing Audit Session state from crossing `active_account_id` boundaries.
+- Updated provider-neutral workspace/account-registry schema with optional guidance metadata and Audit Sessions.
+- Rebuilt `BOOTSTRAP_FULL.txt` for guided-lifecycle parity and expanded release CI/static gates for guidance, migration-first behavior, archive restore, batch boundaries, ingestion modes, and session isolation.
+
 ## 2026-08-29.9
 
 - Added `core.accounts` as mandatory Production behavior for account identity, discovery, isolation, switching and migration.
