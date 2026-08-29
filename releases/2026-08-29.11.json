@@ -1,0 +1,31 @@
+{
+  "engine_version": "2026-08-29.11",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-recovery",
+  "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
+  "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
+  "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
+  "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
+  "migration": {
+    "from": "2026-08-29.10",
+    "type": "additive workspace recovery schema / non-destructive",
+    "local_state_action": "preserve Workspace Registry, active_account_id, all account-local canonical state, Audit Sessions and provider metadata; add optional Runtime Checkpoints and append-only Runtime Journal when supported",
+    "notes": "No consumer checkpoint rows or provider-local references are part of Production."
+  },
+  "features": [
+    "event-driven Runtime Checkpoints",
+    "append-only Runtime Journal",
+    "verify-before-replay recovery-first startup",
+    "idempotent recovery of interrupted writes",
+    "WAITING_USER and done-boundary persistence across reload",
+    "account-scoped checkpoint isolation by active_account_id",
+    "checkpoint-loss tolerance without canonical state loss",
+    "no hidden chain-of-thought or full-transcript persistence",
+    "resumable engine release transactions",
+    "last-known-good Production preservation on interrupted pre-merge release"
+  ]
+}
