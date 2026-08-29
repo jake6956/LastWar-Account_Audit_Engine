@@ -1,5 +1,17 @@
 # Production Changelog
 
+## 2026-08-29.7
+
+- Added one-line remote bootstrap installation: `Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x`.
+- Verified the short URL resolves exactly to the canonical raw GitHub Production bootstrap.
+- Removed the practical need for users to copy/paste the full multi-page bootstrap when web access is available; the assistant retrieves the Production instructions itself.
+- Added remote-install fallback order: short alias -> direct raw GitHub bootstrap -> Google distribution mirror -> manual standalone bootstrap only as a last resort.
+- Added `share LWAI` / `give me the install prompt` behavior to return the short one-line installer instead of dumping the full engine.
+- Preserved `export yourself` as the complete offline/recovery/self-contained bootstrap path.
+- Added supply-chain rule: the URL shortener is transport convenience only; GitHub `main`, `releases/LATEST.json`, and `engine/BOOTSTRAP.txt` remain authoritative.
+- Added semi-anonymous distribution behavior: normal public sharing uses the neutral short URL so the maintainer handle is not visible in the install line, while explicitly avoiding claims of true anonymity.
+- Added remote-bootstrap health/regression tests and quick-install documentation.
+
 ## 2026-08-29.6
 
 - Activated GitHub as the authoritative sanitized Production engineering/source-control hub.
