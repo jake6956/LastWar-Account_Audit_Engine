@@ -3,21 +3,25 @@
 Every public promotion is fail-closed.
 
 ## Automated public-repo checks
-- required loader, module graph, full fallback, core account/guidance/persistence modules, release runtime module, schemas, current contracts and recovery documentation exist;
-- release manifest, module manifest, loader and full fallback versions match;
+- required loader, module graph, migration graph, full fallback, core/account/guidance/persistence modules, storage adapter, release modules, schemas, contracts and recovery documentation exist;
+- `LATEST.json`, module manifest, loader and full fallback versions/API/schema agree;
 - manifests assert `sanitized=true` and `account_state_included=false`;
-- module graph dependencies resolve and required modules self-identify with sanitization headers;
-- `core.persistence`, `core.accounts`, `core.guidance`, `release.runtime` and `release.bootstrap` remain required;
+- module graph dependencies resolve, contain no cycles and required modules are marked required;
+- every module self-identifies with exact `module_id` / `module_version` and sanitization headers;
+- every module declares engine API/workspace schema compatibility that includes current Production;
+- every module `integrity.git_blob_sha1` exactly matches `git hash-object` for the checked-out bytes;
+- `schemas/engine-manifest.schema.json` describes the actual modular MANIFEST shape rather than a legacy release manifest;
 - `core.guidance` depends on operating/persistence/accounts;
 - account-registry schema retains optional guidance and Audit Sessions;
-- provider-neutral workspace schema defines Runtime Checkpoints and Runtime Journal;
-- thin loader and complete fallback include recovery-first startup, verify-before-replay, `WAITING_USER`, account checkpoint isolation and no hidden-reasoning/full-transcript persistence;
-- core.persistence defines checkpoint statuses, append-only journal semantics, idempotency and provider fallbacks;
-- release.runtime defines resumable release transactions and last-known-good behavior;
-- README current Production version matches runtime/manifests;
-- preferred install URL appears in runtime, README and quick-install documentation;
-- versioned release metadata exists;
-- generic credential/private-key leakage patterns are absent.
+- provider-neutral workspace schema retains Runtime Checkpoints and Runtime Journal;
+- storage adapter exposes `storage-api/1`, explicit capabilities, persistence profiles and concurrency-safe authoritative journal rules;
+- thin loader is bounded to <= 9KB, contains orchestration/recovery/integrity behavior and does not embed known game-domain playbooks;
+- BOOTSTRAP_FULL contains complete current account/guidance/recovery/storage/integrity and domain behavior;
+- release validation derives expected version/API/schema from release metadata rather than hard-coded candidate numbers;
+- migration graph contains the required edge from previous promoted Production to candidate and preserves local state where declared;
+- deterministic runtime behavioral tests execute in CI for account isolation, nondestructive start-over/archive, legacy migration, Audit Session isolation, `WAITING_USER`, verify-before-replay, checkpoint-loss tolerance, append-only journal surface and provider degradation;
+- README current Production identity matches release metadata and includes the one-line installer;
+- generic credential/private-key leakage patterns and known private release markers are absent.
 
 ## Required private pre-promotion checks
 - private-identifier/account/provider-reference denylist scan across exact candidate patch/tree;
@@ -28,51 +32,48 @@ Every public promotion is fail-closed.
 - legacy state reuse and multi-account isolation tests;
 - guidance/direct-document-guided ingestion and explicit `done` boundary tests;
 - account-scoped Audit Session isolation;
-- recovery after context loss following several successful writes does not replay verified writes;
-- a persisted `WAITING_USER` upload boundary survives reload and does not finalize early;
-- an account-scoped checkpoint cannot resume or mutate while another `active_account_id` is active;
+- recovery after context loss following successful writes does not replay verified writes;
+- persisted `WAITING_USER` boundary survives reload and does not finalize early;
+- account-scoped checkpoint cannot resume/mutate under another `active_account_id`;
 - deleting/losing checkpoint storage cannot delete canonical account facts;
-- Runtime Journal remains append-only in normal operation;
-- recovery is possible without hidden chain-of-thought/full chat transcript;
+- Runtime Journal remains append-only using atomic append, CAS/revision control or immutable unique-event strategy;
+- recovery is possible without hidden chain-of-thought/full transcript;
 - interrupted release before merge leaves last-known-good main unchanged;
 - release retry verifies branch/PR/commit/CI/archive state before replay;
-- exact-head PR CI succeeds on the final candidate SHA;
+- exact-head PR CI succeeds on final candidate SHA;
 - after merge, main CI succeeds and loader/manifest/fallback/modules/release metadata agree;
 - public endpoints are readable and one-line installer resolves to canonical Production loader.
 
-## Regression scenarios
-1. Shared gear remains transferable within an account rather than hero-owned.
-2. Default and specialist presets remain separate.
-3. Squad-slot tech stays tied to actual deployment slot.
-4. Formation left/right is explicit before lateral advice.
-5. Stale volatile values do not drive consequential recommendations.
-6. Research includes prerequisite/opportunity cost.
-7. User corrections supersede stale engine assumptions.
-8. Engine refresh preserves Workspace Registry, `active_account_id`, every account-local namespace, Audit Sessions, Runtime Checkpoints and Runtime Journal.
-9. No-cloud deployment still functions and does not claim durable checkpointing.
-10. Unsupported provider capabilities are never invented.
-11. One-line install reaches canonical loader.
-12. TinyURL remains transport convenience rather than authority.
-13. UID remains optional/private and declining it never blocks account creation.
-14. Existing state is discovered before redundant onboarding.
-15. Reload resolves `active_account_id`, not chat recency.
-16. Terse updates cannot cross account boundaries.
-17. `start over` archives by default rather than deleting history.
-18. Cross-account compare is read-only.
-19. Archive/restore preserves immutable `account_id` and history.
-20. Every multi-upload request defines and respects a `done` boundary.
-21. Direct screenshot, supported document bundle and guided capture preserve the same evidence/confidence rules.
-22. Audit Session state cannot cross `active_account_id`.
-23. Context loss after several verified successful writes does not replay those writes.
-24. A `WAITING_USER` `done` boundary survives reload.
-25. Account A checkpoint cannot silently resume while Account B is active.
-26. Runtime Checkpoints are operational metadata, not canonical account truth.
-27. Checkpoint-store loss degrades recovery convenience but does not destroy canonical facts.
-28. Runtime Journal is append-only in normal operation.
-29. Checkpoint content excludes hidden chain-of-thought, raw internal reasoning, full transcripts and duplicate evidence blobs.
-30. Structured providers use workspace-level checkpoint/journal stores; file-only providers have an append-only equivalent; read-only providers do not claim durable recovery.
-31. Engine release retry verifies actual branch/PR/commit/CI state before repeating writes.
-32. Failed/interrupted pre-merge release preserves last-known-good main.
-33. Post-merge secondary mirror/archive failure does not silently rewrite a validated healthy main.
-34. BOOTSTRAP_FULL carries the same recovery-first semantics as modular Production.
-35. Actual consumer checkpoint/journal rows, account identities, provider-local IDs/paths and user-specific pending actions never appear in public Production.
+## Executable regression scenarios
+The deterministic reference runtime must prove at minimum:
+1. terse writes route only to `active_account_id`;
+2. `start over` archives prior account rather than deleting it;
+3. legacy migration preserves canonical facts;
+4. Audit Session ownership remains account-scoped;
+5. `WAITING_USER` prevents automatic continuation until boundary closes;
+6. account-scoped checkpoints cannot cross `active_account_id`;
+7. verify-before-replay skips an already-durable write;
+8. recovery applies only missing actions once;
+9. checkpoint loss cannot destroy canonical facts;
+10. journal exposure is append-only;
+11. provider profiles degrade according to verified capabilities and never overclaim authoritative journal semantics.
+
+## Non-executable contract regressions
+- shared gear remains transferable within an account rather than hero-owned;
+- default and specialist presets remain separate;
+- squad-slot tech stays tied to actual deployment slot;
+- formation left/right is explicit before lateral advice;
+- stale volatile values do not drive consequential recommendations;
+- research includes prerequisite/opportunity cost;
+- user corrections supersede stale engine assumptions;
+- engine refresh preserves Workspace Registry, `active_account_id`, every account-local namespace, Audit Sessions, Runtime Checkpoints and Runtime Journal;
+- no-cloud deployment still functions and does not claim durable checkpointing;
+- unsupported provider capabilities are never invented;
+- UID remains optional/private and declining it never blocks account creation;
+- existing state is discovered before redundant onboarding;
+- cross-account compare is read-only;
+- archive/restore preserves immutable `account_id` and history;
+- direct screenshots, supported bundles and guided capture preserve evidence/confidence rules;
+- actual consumer identities/checkpoint rows/provider-local IDs/paths and user-specific pending actions never appear in public Production;
+- failed/interrupted pre-merge releases preserve last-known-good main;
+- post-merge secondary mirror/archive failure does not rewrite validated main.
