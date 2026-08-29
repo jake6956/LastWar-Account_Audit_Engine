@@ -1,0 +1,14 @@
+{
+  "engine_version": "2026-08-29.6",
+  "schema_version": "1.0",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "stable_bootstrap_endpoint": "https://docs.google.com/document/d/1Mhg8YXX9jaZJVry5ZZ6_5d-xbE7A4A0tnfQVgFI2WC8/edit",
+  "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
+  "status": "Production",
+  "migration": null,
+  "release_theme": "GitHub production hub and hub-and-spoke distribution",
+  "notes": "GitHub becomes authoritative sanitized Production engineering source; player deployments retain local/private runtime state; stable Google Doc remains consumer distribution mirror and fallback."
+}
