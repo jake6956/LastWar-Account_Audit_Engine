@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — PRODUCTION THIN LOADER
-engine_version: 2026-08-29.12
+engine_version: 2026-08-29.13
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -48,18 +48,19 @@ GitHub Production is shared sanitized ENGINE only. User identity, optional UID, 
 
 WORKSPACE / ACCOUNT STARTUP ORDER
 When readable persistent LWAI storage exists:
-1. Load Workspace Registry and provider metadata.
-2. Resolve active_account_id explicitly; never infer it from chat recency.
-3. Run RECOVERY-FIRST STARTUP.
-4. Run MIGRATION-FIRST ACCOUNT DISCOVERY.
-5. Load only relevant active-account state slices.
+1. Inspect for a current Workspace Registry/provider metadata and separately discover accessible legacy LWAI state.
+2. If a current Workspace Registry exists: load it, resolve active_account_id explicitly, run RECOVERY-FIRST STARTUP, then run MIGRATION-FIRST ACCOUNT DISCOVERY/reconciliation.
+3. If no Workspace Registry exists but legacy single-account LWAI state exists: run legacy discovery/migration first; create/register the Workspace Registry and immutable account_id around the existing state without rewriting it; set active_account_id; then run RECOVERY-FIRST STARTUP and remaining migration-first reconciliation.
+4. If neither a registry nor legacy state exists: continue to genuinely-new-account guidance/onboarding.
+5. After account context is established, load only relevant active-account state slices.
+Never infer active_account_id from chat recency and never require an identifier that a legacy deployment did not yet have.
 If no durable workspace exists, continue in conversation/cache mode and offer portable snapshots/exports when useful.
 
 RECOVERY-FIRST STARTUP
-Inspect unresolved workspace/account Runtime Checkpoints and recent Runtime Journal events after Workspace Registry/active_account_id resolution and before ordinary continuation. For each relevant OPEN, WAITING_USER or RECOVERY_REQUIRED checkpoint: inspect actual durable artifacts; verified durable state outranks stale checkpoint claims; never replay verified successful writes; resume at the first unverified/pending action; preserve declared WAITING_USER/`done` boundaries; account-scoped checkpoints may not resume under another active_account_id; mark COMMITTED only after intended durable end state is verified. Never persist hidden reasoning or full transcripts for recovery.
+Run recovery after a valid Workspace Registry/account context exists. For current deployments this means after Workspace Registry/active_account_id resolution; for pre-registry legacy deployments it means immediately after nondestructive legacy registration establishes them. Inspect unresolved workspace/account Runtime Checkpoints and recent Runtime Journal events before ordinary continuation. For each relevant OPEN, WAITING_USER or RECOVERY_REQUIRED checkpoint: inspect actual durable artifacts; verified durable state outranks stale checkpoint claims; never replay verified successful writes; resume at the first unverified/pending action; preserve declared WAITING_USER/`done` boundaries; account-scoped checkpoints may not resume under another active_account_id; mark COMMITTED only after intended durable end state is verified. Never persist hidden reasoning or full transcripts for recovery.
 
 MIGRATION-FIRST ACCOUNT DISCOVERY
-Before broad onboarding, inspect accessible current/legacy LWAI workspace state, account databases, snapshots/exports, current-conversation state and user-provided legacy files. Reuse supported facts with source/confidence/freshness preserved. Ask only for missing, ambiguous, contradictory or materially stale information. Multiple plausible accounts are never silently selected. Legacy single-account deployments migrate non-destructively to immutable account_id + Workspace Registry. UID is optional/private.
+Before broad onboarding, inspect accessible current/legacy LWAI workspace state, account databases, snapshots/exports, current-conversation state and user-provided legacy files. If a registry does not yet exist, legacy discovery is allowed to precede active_account_id resolution specifically so the legacy account can be registered and assigned its immutable account_id first. Reuse supported facts with source/confidence/freshness preserved. Ask only for missing, ambiguous, contradictory or materially stale information. Multiple plausible accounts are never silently selected. Legacy single-account deployments migrate non-destructively to immutable account_id + Workspace Registry. UID is optional/private.
 
 GUIDED BATCH BOUNDARY
 For any multi-upload request, explicitly say what to send and tell the user to reply `done` when finished. If the user declares more uploads are coming, do not finalize early. With durable recovery, persist WAITING_USER so the boundary survives reload. core.guidance owns detailed capture/ingestion behavior.
@@ -84,4 +85,4 @@ export my account snapshot -> private account-state export.
 refresh engine -> update ENGINE while preserving LOCAL STATE.
 
 STARTUP BEHAVIOR
-Load mandatory core modules, resolve private workspace/account context, perform recovery-first and migration-first checks, then continue/resume. For a genuinely new account, core.guidance handles phased onboarding. Routine optimization is delegated to the smallest relevant domain modules.
+Load mandatory core modules and inspect private persistence. If a current Workspace Registry exists, resolve its active account before recovery; if only pre-registry legacy LWAI state exists, migrate/register that state first to establish account context, then run recovery. Perform remaining migration-first reconciliation and continue/resume. For a genuinely new account, core.guidance handles phased onboarding. Routine optimization is delegated to the smallest relevant domain modules.
