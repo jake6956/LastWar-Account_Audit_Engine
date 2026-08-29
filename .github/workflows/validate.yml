@@ -21,3 +21,14 @@ jobs:
           python-version: '3.12'
       - name: Validate release tree
         run: python scripts/validate_release.py
+      - name: Verify live one-line installer
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt'
+          effective="$(curl -LsS -o /tmp/lwai-bootstrap.txt -w '%{url_effective}' 'https://tinyurl.com/2yxf7f5x')"
+          test "$effective" = "$expected"
+          grep -Fq 'engine_version: 2026-08-29.10' /tmp/lwai-bootstrap.txt
+          grep -Fq 'SANITIZED: YES' /tmp/lwai-bootstrap.txt
+          grep -Fq 'ACCOUNT STATE INCLUDED: NO' /tmp/lwai-bootstrap.txt
+          grep -Fq 'core.guidance' /tmp/lwai-bootstrap.txt
