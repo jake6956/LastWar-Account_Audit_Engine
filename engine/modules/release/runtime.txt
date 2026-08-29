@@ -1,40 +1,46 @@
 LWAI MODULE — MODULAR RUNTIME
 module_id: release.runtime
-module_version: 2026-08-29.11.1
+module_version: 2026-08-29.12.1
 load_class: mandatory_core
 state_scope: shared_engine+release_transaction_recovery
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
 ARCHITECTURE
-engine/BOOTSTRAP.txt is a small stable loader. engine/MANIFEST.json is the Production module graph. engine/BOOTSTRAP_FULL.txt is the complete sanitized standalone/offline/recovery runtime. Mandatory core loads first; domains load on demand; adapters load by capability; release modules handle update/health/migration/recovery behavior.
+engine/BOOTSTRAP.txt is a bounded orchestration loader. engine/MANIFEST.json is the Production module graph and integrity/compatibility contract. engine/BOOTSTRAP_FULL.txt is the complete sanitized standalone/offline/recovery runtime. Mandatory core loads first; domains load on demand; adapters load by capability; release modules handle update, health, migration and recovery.
+
+ENGINE API / COMPATIBILITY
+Production declares engine_api_version. Every module declares an engine API compatibility range and workspace schema compatibility range in MANIFEST. Reject a module whose declared compatibility excludes the current runtime/workspace. Schema-breaking changes require an explicit migration edge and local-state survival tests; ordinary engine-only updates preserve local schema and state.
+
+MODULE INTEGRITY
+Each manifest module entry carries a byte-identity marker. Production currently uses Git blob SHA-1 because GitHub exposes it directly for repository content and CI can reproduce it with `git hash-object`. When the host can verify that marker, compare fetched module bytes before use. If integrity cannot be verified by the host, require canonical GitHub origin + expected module_id/module_version and retain last-known-good fallback semantics; never claim cryptographic verification occurred when it did not.
 
 LOAD RULES
-Load mandatory core at install/resume before consequential work. After Workspace Registry becomes readable, invoke core.persistence recovery-first checkpoint inspection before ordinary workflow continuation. Load the smallest relevant domain module for the task. Do not repeatedly reload unchanged modules in one active session.
+Load mandatory core at install/resume before consequential work. Resolve dependencies as an acyclic graph. After Workspace Registry becomes readable, invoke core.persistence recovery-first checkpoint inspection before ordinary continuation. Load the smallest relevant domain module for the task. Do not repeatedly reload unchanged modules in one active session.
 
-EFFICIENCY
-Bound active context to current account/cache/state slices plus relevant modules. Historical material stays in Change Log/Snapshots. Runtime Checkpoints persist only concise operational resume state, never hidden reasoning/full transcripts or duplicate evidence.
+EFFICIENCY / LOADER BUDGET
+The thin loader contains trust roots, capability discovery, compatibility/integrity checks, account/recovery ordering, module resolution and fallback only. Domain-specific optimization playbooks belong in domain modules and BOOTSTRAP_FULL, not the loader. CI enforces a bounded loader size and rejects known domain-playbook leakage into the loader.
 
 INTEGRITY / SELF-HEALING
-If a required module is missing, incompatible, corrupted or unexpectedly changed: retry canonical GitHub, use last-known-good local engine state when available, then fall back to BOOTSTRAP_FULL. Never repair engine failures by overwriting user state.
+If a required module is missing, incompatible, integrity-mismatched or unexpectedly changed: retry canonical GitHub once, use last-known-good local engine state when available, then fall back to BOOTSTRAP_FULL. Optional-module failure degrades only the affected capability. Never repair engine failures by overwriting user state.
+
+BEHAVIORAL VALIDATION
+Release CI must run both static release-tree checks and executable deterministic state-machine regressions for account isolation, nondestructive start-over/archive, legacy migration, Audit Session isolation, WAITING_USER persistence, verify-before-replay/idempotency, checkpoint-loss tolerance, append-only journal surface and provider capability degradation. Static presence of prose is not sufficient evidence for these invariants.
 
 FULL FALLBACK
-BOOTSTRAP_FULL.txt is mandatory and self-contained. `export yourself` emits or points to that complete sanitized runtime. `share LWAI` returns the one-line remote installer. The full fallback must include Runtime Checkpoint/Runtime Journal schema semantics and verify-before-replay recovery-first startup.
+BOOTSTRAP_FULL.txt is mandatory and self-contained. `export yourself` emits or points to that complete sanitized runtime. `share LWAI` returns the one-line remote installer. Full fallback must include current account, guidance, provider, compatibility, recovery and domain behavior even when modular retrieval is unavailable.
 
 RELEASE TRANSACTION CHECKPOINT
-Before a multi-artifact Production release, create or update a workspace/global ENGINE_RELEASE Runtime Checkpoint with target version, current last-known-good Production, affected modules/contracts/schema, intended RC branch, gates and resume instruction. Journal material private staging writes when relevant, RC creation, exact-head candidate identity, CI result, merge, post-merge verification, installer verification and archive/record sync.
+Before a multi-artifact Production release, create/update a workspace/global ENGINE_RELEASE Runtime Checkpoint with target version, current last-known-good Production, affected modules/contracts/schema, intended RC branch, gates and resume instruction. Journal private staging writes where relevant, RC creation, exact-head candidate identity, CI result, merge, post-merge verification, installer verification and archive/record sync.
 
 VERIFY-BEFORE-REPLAY
-A recovered release transaction MUST verify GitHub main, RC branch/PR state, commit SHA, CI state and private release artifacts before repeating any write. Never recreate a branch/PR/archive merely because the prior conversation disappeared. Advance last_safe_point only after a material result is durable enough to make replay safe.
-
-SAFE POINTS
-Recommended release safe points include PRIVATE_RC_STAGED, GITHUB_RC_CREATED, CANDIDATE_SYNCED, CI_PASSED, MERGED, POST_MERGE_VERIFIED, RECORDS_SYNCED and COMMITTED. Names are conventions rather than mandatory provider identifiers. A failed/interrupted pre-merge candidate preserves last-known-good main. A post-merge mirror/archive failure does not rewrite validated main; record recovery work as pending.
+Recovered release transactions verify GitHub main, RC branch/PR state, candidate SHA, CI state and private release artifacts before repeating writes. Never recreate a branch/PR/archive merely because conversation context disappeared. Advance safe points only after durable verification.
 
 RELEASE RULE
-Prod-Dev -> frozen private RC -> GitHub rc/<version> -> PR -> exact-head CI/private gates -> exact validated-head merge -> main CI/manifest/module/full-fallback/installer verification -> private archive/release-record sync -> checkpoint COMMITTED. If candidate changes after CI, revalidate. Schema-breaking changes require migrations and local-state survival tests.
+Prod-Dev -> frozen private RC -> GitHub rc/<version> -> PR -> exact-head CI/private gates -> exact validated-head merge -> main CI/manifest/module/full-fallback/installer verification -> private archive/release-record sync -> checkpoint COMMITTED. Candidate changes after CI require revalidation. A failed pre-merge candidate preserves last-known-good main.
 
 PRIVACY
-Local release checkpoint/journal rows, account identifiers, private provider IDs/paths and user-specific pending work never enter public Production. Public contracts/tests may define generic checkpoint fields and behavior only.
+Local release checkpoint/journal rows, account identifiers, private provider IDs/paths and user-specific pending work never enter public Production. Public contracts/tests define generic behavior only.
 
 DOCUMENTATION-AS-CODE
-Modular changes are incomplete until MANIFEST, loader/fallback, relevant contracts/tests, deployment docs and release metadata agree. Release checkpoint recovery must not be marked COMMITTED until intended post-merge records are verified.
+Modular changes are incomplete until MANIFEST, schema, loader/fallback, relevant contracts/tests, deployment docs and release metadata agree. CI must fail closed on divergence.
