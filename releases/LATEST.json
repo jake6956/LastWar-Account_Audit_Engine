@@ -1,0 +1,32 @@
+{
+  "engine_version": "2026-08-29.5",
+  "schema_version": "1.0",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "stable_bootstrap_endpoint": "https://docs.google.com/document/d/1Mhg8YXX9jaZJVry5ZZ6_5d-xbE7A4A0tnfQVgFI2WC8/edit",
+  "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
+  "required_sections": [
+    "reasoning-mode-onboarding",
+    "core-operating-model",
+    "evidence-hierarchy",
+    "state-ledger",
+    "self-healing",
+    "resource-lanes",
+    "domain-playbooks",
+    "phased-onboarding",
+    "optional-cloud-persistence",
+    "capability-fallbacks",
+    "provider-neutral-schema",
+    "reload-staleness",
+    "local-state-preservation",
+    "engine-refresh",
+    "gold-assets",
+    "documentation-as-code",
+    "release-contract",
+    "health-regression-tests"
+  ],
+  "migration": null,
+  "notes": "Imported current known-good Production into the GitHub engineering hub. Stable Google Doc remains the simplest consumer distribution endpoint."
+}
