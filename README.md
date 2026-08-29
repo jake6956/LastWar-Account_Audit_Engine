@@ -1,123 +1,108 @@
 # LastWar Account Audit Engine (LWAI)
 
-LWAI is a portable, self-healing account optimization framework for **Last War: Survival**. It turns screenshots, terse account updates, current mechanics, resource constraints and battle evidence into a continuously reconciled account model and decisive upgrade recommendations.
+LWAI is a modular account-intelligence and optimization runtime for **Last War: Survival**. ChatGPT provides the conversational interface; the shared engine is centrally maintained in this repository; optional user persistence remains in the user's own supported storage.
 
-## One-line install
+## Install
+
+Paste this single instruction into a fresh ChatGPT conversation:
 
 > Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
 
-The short URL is a convenience alias, not a trust root. Canonical Production sources:
-- Latest release: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json
-- Thin loader: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
-- Module graph: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json
-- Complete fallback: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt
+The installer retrieves the current sanitized Production loader from GitHub. The short URL is a convenience alias; GitHub `main` is the authoritative public Production source.
 
-For best results, use HIGH reasoning/thinking when the product exposes that control. Durable persistence is strongly recommended but optional.
+For best results, use a higher reasoning/thinking setting when the ChatGPT interface offers one.
 
-## Runtime recovery
+## What LWAI does
 
-2026-08-29.11 adds compact durable workflow recovery without treating chat history as a database. Conversation context remains volatile cache; canonical account databases and Workspace Registry remain durable truth. Optional workspace-level **Runtime Checkpoints** record the current safe workflow position, while an append-only **Runtime Journal** records material write-ahead/events.
+LWAI builds and continuously reconciles a model of a player's account from screenshots, terse updates, current mechanics, resource constraints, battle evidence and user corrections. It uses that model to produce practical upgrade priorities, research plans, formation advice and account-wide optimization recommendations.
 
-Recovery is **verify-before-replay**. After Workspace Registry and `active_account_id` are resolved, LWAI inspects unresolved checkpoints plus their actual affected durable artifacts. Verified durable state outranks stale checkpoint claims; successful writes are not repeated merely because conversation context disappeared. `COMMITTED` is used only after the intended durable end state is verified.
+The runtime is designed for low-friction use. A player can provide compact updates such as a skill level, gear level or resource balance without completing a formal intake process. LWAI updates only the affected state and recomputes only what materially changed.
 
-A declared multi-upload boundary can persist as `WAITING_USER`, so a restart never turns context loss into implicit `done`. Account-scoped checkpoints carry `account_id` and cannot silently resume under another `active_account_id`. Checkpoint loss may reduce recovery convenience, but it cannot destroy canonical account facts.
+## Architecture
 
-Runtime recovery is deliberately compact. Actual checkpoint/journal rows, account identity, screenshots and provider-local references stay in the user's private workspace. LWAI never needs hidden chain-of-thought, raw internal reasoning or full transcripts for recovery.
-
-See `contracts/runtime-checkpoint-recovery.md` and `docs/runtime-recovery.md`.
-
-## Guided lifecycle
-
-`core.guidance` is mandatory runtime behavior. LWAI discovers/reconciles accessible prior state before broad onboarding, preserves supported current facts, and asks only for information that is missing, ambiguous, contradictory or materially stale. Guidance adapts from explicit novice capture steps to terse expert updates without weakening evidence, privacy, account isolation or declared batch boundaries.
-
-Large audits support direct screenshot batches, supported DOCX/PDF screenshot bundles, and phone-friendly guided capture. Multi-upload requests define a `done` boundary. Persistent deployments may maintain account-scoped Audit Sessions for detailed audit progress; Runtime Checkpoints persist only the surrounding generic workflow safe point when interruption matters.
-
-Archive is nondestructive. Restore/unarchive preserves immutable `account_id` and history.
-
-## Hub-and-spoke architecture
-
-### Production engineering hub
-This repository is the authoritative sanitized Production source: thin loader, module manifest, independently versioned modules, complete fallback, contracts, schemas, adapters, release tests/manifests and documentation.
-
-### Private runtime spoke
-Each deployment may manage one or more game accounts. Workspace-level private state includes Account Registry, `active_account_id`, optional guidance metadata, optional Runtime Checkpoints and Runtime Journal. Each account has an immutable LWAI-generated `account_id` and isolated canonical namespace for identity, heroes, gear, tech, resources, presets, battle history, local Corrections, cache/health state, screenshots/assets, preferences, snapshots and optional Audit Sessions.
-
-Optional private game UID, screenname, alliance, server and nickname are human-recognition metadata; UID is never required. **Private player state and actual runtime checkpoint/journal rows must never be committed to this repository.**
-
-## Existing accounts and alts
-
-Before new-account onboarding, readable existing LWAI state is discovered and reconciled. Multiple plausible accounts are never silently selected. `active_account_id` controls mutable state routing; chat recency does not. Account switching flushes pending changes/session progress, safely pauses account-scoped pending workflows when necessary, clears account-scoped cache, then loads only the target account state. Cross-account comparison is read-only. `start over` creates a clean account and archives prior state by default rather than deleting it.
-
-Legacy single-account deployments migrate non-destructively: generate immutable `account_id`, create/register Workspace Registry, register the existing database in place, set `active_account_id`, preserve history, and import supported legacy facts without forcing re-onboarding.
-
-## Modular runtime
+LWAI uses a thin-loader, modular-runtime design:
 
 ```text
 engine/BOOTSTRAP.txt
   -> engine/MANIFEST.json
-     -> engine/modules/core/*            mandatory
-     -> engine/modules/domains/*         task-driven
-     -> engine/modules/adapters/*        capability-driven
-     -> engine/modules/release/*         update/health/recovery
+     -> mandatory core modules
+     -> task-specific domain modules
+     -> capability-specific adapters
+     -> release/update/recovery modules
 
-engine/BOOTSTRAP_FULL.txt                 complete standalone fallback
+engine/BOOTSTRAP_FULL.txt
+  -> complete standalone fallback
 ```
 
-Routine work loads mandatory core plus the smallest relevant domain module. A missing/bad module falls back safely and must never be repaired by overwriting local account state.
+The loader stays intentionally small. Mandatory core behavior is loaded at startup, while domain modules are retrieved only when the current task requires them. This keeps active context bounded and allows individual engine components to evolve independently.
 
-## Persistence and recovery model
+## Persistence model
 
-- Conversation context = temporary cache.
-- Workspace Registry/account databases = canonical durable state.
-- Audit Sessions = detailed account-audit progress.
-- Runtime Checkpoints = compact generic workflow position.
-- Runtime Journal = append-only material event history.
-- GitHub Production = sanitized engine/schema behavior only.
+LWAI separates shared engine behavior from private user state.
 
-Structured writable providers should use checkpoint/journal tables or collections. Writable file-only providers may use a checkpoint index plus append-only JSONL/NDJSON or timestamped records. Read-only/no durable storage cannot claim persistent checkpoint recovery.
+**GitHub Production contains:**
+- sanitized runtime instructions and modules
+- provider-neutral schemas and adapters
+- release metadata and migrations
+- validation tests and documentation
+- reusable non-user-specific reference assets
 
-## Release model
+**User-local storage may contain:**
+- account identity and game state
+- screenshots and evidence
+- resource balances and battle history
+- local corrections and preferences
+- account-specific audit sessions and recovery state
 
-`Prod-Dev (private) -> frozen private RC -> GitHub rc/<version> -> PR -> exact-head CI/private gates -> exact validated-head merge -> main verification -> installer verification -> private archive/release records`
+Private account data is not required for the public repository and must not be committed here.
 
-Engine release transactions themselves use workspace/global recovery checkpoints when durable storage exists. Before retrying a branch, PR, merge, archive or mirror write, inspect the actual target. Interrupted pre-merge work preserves last-known-good main. A secondary mirror/archive failure after a validated merge is recorded for retry rather than silently rolling back healthy Production.
+Durable storage is optional. Without a writable supported storage provider, LWAI can still operate within the active conversation and use portable snapshots/exports, but persistence and recovery are naturally limited by the host session.
+
+## Multi-account and recovery
+
+Persistent deployments can manage multiple isolated accounts under a workspace registry. Each account receives an immutable LWAI-generated `account_id`; human-recognition metadata such as screenname, server, alliance, nickname and optional game UID remains private to the user's environment.
+
+The runtime supports migration-first startup, nondestructive archive/restore, account switching, resumable audit sessions and recovery checkpoints. Recovery follows a verify-before-replay model so already committed writes are not duplicated after context loss.
+
+LWAI does not require game passwords, session tokens, cookies or authentication captures for normal operation.
+
+## Updates and self-healing
+
+Production updates are centrally published through GitHub. A deployment can compare its current engine version with `releases/LATEST.json`, apply compatible engine updates and migrations, and preserve all user-local state.
+
+If a module cannot be retrieved or validated, the runtime falls back to the last-known-good engine state or the complete `BOOTSTRAP_FULL.txt` artifact. Engine recovery must never overwrite private account state as a repair mechanism.
+
+## Production endpoints
+
+- Release metadata: `releases/LATEST.json`
+- Thin loader: `engine/BOOTSTRAP.txt`
+- Module graph: `engine/MANIFEST.json`
+- Complete fallback: `engine/BOOTSTRAP_FULL.txt`
+- Install alias: https://tinyurl.com/2yxf7f5x
 
 ## Repository layout
 
 ```text
-engine/          loader, module graph, modules and complete fallback
-contracts/       operating/export/storage/account/release/guidance/recovery contracts
+engine/          loader, module graph, runtime modules and full fallback
+contracts/       behavioral and release contracts
 schemas/         provider-neutral workspace/account schemas
-adapters/        persistence mappings
-docs/            architecture/deployment/recovery documentation
-scripts/         release validation tooling
-tests/           regression and sanitization policies
-releases/        manifests/changelog/version metadata
-gold-assets/     reusable sanitized asset governance
-.github/         CI validation
+adapters/        persistence/provider mappings
+docs/            deployment and architecture documentation
+scripts/         release-validation tooling
+tests/           regression and release-gate specifications
+releases/        version manifests and changelog
+gold-assets/     reusable sanitized shared assets
+.github/         CI configuration
 ```
 
-## Core invariants
+## Release discipline
 
-- Optimize real combat effectiveness, not displayed power alone.
-- Reuse accessible prior state before redundant onboarding.
-- Newer high-confidence direct evidence supersedes stale inference.
-- Shared gear is a transferable pool plus preset assignment within an account.
-- Mutable state, Audit Sessions and account-scoped checkpoints never cross accounts implicitly.
-- Reload resolves Workspace Registry and `active_account_id`, not chat recency.
-- Recovery inspects durable artifacts before replay and never blindly duplicates verified writes.
-- A declared `done` boundary survives reload when durable checkpointing exists.
-- Runtime Journal is append-only in normal operation.
-- Checkpoint loss cannot destroy canonical account facts.
-- Hidden reasoning/full transcripts are never required for recovery.
-- Engine refresh preserves all LOCAL STATE: registry, accounts, sessions, checkpoints, journal and provider metadata.
-- UID is optional/private; passwords/session credentials are never normal onboarding data.
-- GitHub holds only sanitized shared engine state; private workspaces hold player and operational state.
-- URL shortening is transport convenience only; canonical GitHub sources remain authoritative.
+Production changes follow a staged release path with sanitization checks, candidate validation, pull-request CI, exact-head verification and post-merge Production checks. User-specific state is excluded from release artifacts.
 
-## Current production
+## Current Production
 
-**Engine version:** `2026-08-29.11`  
-**Preferred install URL:** https://tinyurl.com/2yxf7f5x
+**Engine version:** `2026-08-29.11`
 
-Google Drive remains the reference private Prod-Dev/runtime implementation. GitHub is the authoritative sanitized Production engineering hub.
+**Channel:** Production  
+**Sanitized public engine:** yes  
+**Account state included:** no
