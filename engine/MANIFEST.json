@@ -1,0 +1,21 @@
+{
+  "engine_version": "2026-08-29.8",
+  "schema_version": "2.0",
+  "channel": "Production",
+  "runtime_mode": "modular",
+  "sanitized": true,
+  "account_state_included": false,
+  "raw_base": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/",
+  "fallback_path": "engine/BOOTSTRAP_FULL.txt",
+  "modules": [
+    {"module_id":"core.operating","module_version":"2026-08-29.8.1","path":"engine/modules/core/operating.txt","load_class":"mandatory_core","dependencies":[],"state_scope":"shared_engine","required":true,"release_min":"2026-08-29.8"},
+    {"module_id":"core.persistence","module_version":"2026-08-29.8.1","path":"engine/modules/core/persistence.txt","load_class":"mandatory_core","dependencies":["core.operating"],"state_scope":"shared_engine+local_workspace_rules","required":true,"release_min":"2026-08-29.8"},
+    {"module_id":"domain.gear-heroes-skills-ew","module_version":"2026-08-29.8.1","path":"engine/modules/domains/gear-heroes-skills-ew.txt","load_class":"domain_on_demand","dependencies":["core.operating"],"state_scope":"shared_engine;active_account_reads","required":false,"release_min":"2026-08-29.8"},
+    {"module_id":"domain.research-drone-progression","module_version":"2026-08-29.8.1","path":"engine/modules/domains/research-drone-progression.txt","load_class":"domain_on_demand","dependencies":["core.operating"],"state_scope":"shared_engine;active_account_reads","required":false,"release_min":"2026-08-29.8"},
+    {"module_id":"domain.combat-meta-battlefield","module_version":"2026-08-29.8.1","path":"engine/modules/domains/combat-meta-battlefield.txt","load_class":"domain_on_demand","dependencies":["core.operating"],"state_scope":"shared_engine;active_account_reads","required":false,"release_min":"2026-08-29.8"},
+    {"module_id":"domain.season-stores-paid","module_version":"2026-08-29.8.1","path":"engine/modules/domains/season-stores-paid.txt","load_class":"domain_on_demand","dependencies":["core.operating"],"state_scope":"shared_engine;active_account_reads","required":false,"release_min":"2026-08-29.8"},
+    {"module_id":"adapters.storage","module_version":"2026-08-29.8.1","path":"engine/modules/adapters/storage.txt","load_class":"capability_on_demand","dependencies":["core.persistence"],"state_scope":"shared_engine+provider_rules","required":false,"release_min":"2026-08-29.8"},
+    {"module_id":"release.runtime","module_version":"2026-08-29.8.1","path":"engine/modules/release/runtime.txt","load_class":"mandatory_core","dependencies":["core.operating","core.persistence"],"state_scope":"shared_engine","required":true,"release_min":"2026-08-29.8"},
+    {"module_id":"release.bootstrap","module_version":"2026-08-29.8.1","path":"engine/modules/release/bootstrap.txt","load_class":"mandatory_core","dependencies":["release.runtime"],"state_scope":"shared_engine","required":true,"release_min":"2026-08-29.8"}
+  ]
+}
