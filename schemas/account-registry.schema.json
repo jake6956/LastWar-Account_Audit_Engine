@@ -7,9 +7,10 @@
   "properties": {
     "workspace_schema_version": {"type": "string"},
     "active_account_id": {"type": ["string", "null"]},
-    "account_discovery_policy": {"type": "string", "default": "discover-before-new-onboarding"},
+    "account_discovery_policy": {"type": "string", "default": "discover-and-migrate-before-new-onboarding"},
     "provider_adapter": {"type": ["string", "null"]},
     "privacy_policy": {"type": "string", "default": "identity-private-local-not-shared-production"},
+    "guidance_level": {"enum": ["NEW", "LEARNING", "COMFORTABLE", "EXPERT", null], "default": null},
     "accounts": {
       "type": "array",
       "items": {
@@ -25,11 +26,39 @@
           "server": {"type": ["string", "null"]},
           "active": {"type": "boolean", "default": false},
           "status": {"enum": ["active", "archived", "pending"]},
+          "guidance_level": {"enum": ["NEW", "LEARNING", "COMFORTABLE", "EXPERT", null], "default": null},
+          "active_audit_session_id": {"type": ["string", "null"]},
           "last_identity_confirmed": {"type": ["string", "null"], "format": "date-time"},
           "last_updated": {"type": ["string", "null"], "format": "date-time"},
           "database_provider": {"type": ["string", "null"]},
           "database_artifact_id_or_path": {"type": ["string", "null"]},
           "database_artifact_title": {"type": ["string", "null"]},
+          "notes": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "audit_sessions": {
+      "type": "array",
+      "description": "Optional provider-neutral resumable account-scoped audit sessions.",
+      "items": {
+        "type": "object",
+        "required": ["session_id", "account_id", "status"],
+        "properties": {
+          "session_id": {"type": "string", "minLength": 1},
+          "account_id": {"type": "string", "minLength": 8},
+          "audit_type": {"type": ["string", "null"]},
+          "domain": {"type": ["string", "null"]},
+          "requested_items": {"type": "array", "items": {}},
+          "completed_items": {"type": "array", "items": {}},
+          "pending_items": {"type": "array", "items": {}},
+          "ambiguous_items": {"type": "array", "items": {}},
+          "current_step": {},
+          "started_at": {"type": ["string", "null"], "format": "date-time"},
+          "updated_at": {"type": ["string", "null"], "format": "date-time"},
+          "ingestion_mode": {"enum": ["direct_batch", "document_bundle", "guided_capture", null]},
+          "guidance_level": {"enum": ["NEW", "LEARNING", "COMFORTABLE", "EXPERT", null]},
+          "status": {"enum": ["ACTIVE", "PAUSED", "COMPLETE", "ABANDONED"]},
           "notes": {"type": ["string", "null"]}
         },
         "additionalProperties": true
