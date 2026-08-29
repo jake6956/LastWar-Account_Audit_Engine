@@ -13,6 +13,7 @@ README = ROOT / "README.md"
 QUICK_INSTALL = ROOT / "docs" / "quick-install.md"
 ACCOUNT_SCHEMA = ROOT / "schemas" / "account-registry.schema.json"
 ACCOUNT_MODULE = ROOT / "engine" / "modules" / "core" / "accounts.txt"
+GUIDANCE_MODULE = ROOT / "engine" / "modules" / "core" / "guidance.txt"
 
 EXPECTED_REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
 EXPECTED_RAW_BOOT = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt"
@@ -23,10 +24,10 @@ EXPECTED_INSTALL_URL = "https://tinyurl.com/2yxf7f5x"
 
 REQUIRED_LOADER_PHRASES = [
     "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "runtime_mode: modular",
-    "LOADER PROCEDURE", "ACCOUNT DISCOVERY", "ACCOUNT IDENTITY / PRIVACY",
-    "CONTEXT SWITCHING", "START-OVER SAFETY", "IDENTITY SANITY CHECK",
-    "active_account_id", "UID is useful but optional", "CORE OPERATING MODEL",
-    "EVIDENCE HIERARCHY", "SELF-HEALING RULE",
+    "LOADER PROCEDURE", "ACCOUNT DISCOVERY / MIGRATION-FIRST STARTUP", "ACCOUNT IDENTITY / PRIVACY",
+    "CONTEXT SWITCHING", "START-OVER SAFETY", "IDENTITY SANITY CHECK", "GUIDED INTERACTION",
+    "BATCH / DONE RULE", "active_account_id", "UID is useful but optional", "core.guidance",
+    "CORE OPERATING MODEL", "EVIDENCE HIERARCHY", "SELF-HEALING RULE",
     "UPSTREAM ENGINE / LOCAL STATE SEPARATION", "REMOTE BOOTSTRAP / ONE-LINE INSTALL",
     "PRIVACY / SEMI-ANONYMIZED DISTRIBUTION", "DOCUMENTATION-AS-CODE",
     "HEALTH / REGRESSION TESTS", "STARTUP BEHAVIOR",
@@ -37,30 +38,38 @@ REQUIRED_FULL_PHRASES = [
     "STEP 0 — REASONING MODE", "CORE OPERATING MODEL", "EVIDENCE HIERARCHY", "STATE LEDGER",
     "SELF-HEALING RULE", "ACCOUNT REGISTRY / PRIMARY KEY", "HUMAN-RECOGNITION IDENTITY",
     "UID POLICY / PRIVACY REASSURANCE", "WORKSPACE REGISTRY", "ACCOUNT DATABASE ISOLATION",
-    "EXISTING-ACCOUNT DISCOVERY", "CONTEXT SWITCHING", "CROSS-ACCOUNT OPERATIONS",
-    "START-OVER SAFETY", "IDENTITY SANITY CHECK", "MIGRATION FROM SINGLE-ACCOUNT LWAI",
-    "active_account_id", "SHARED GEAR / PRESET MODEL", "MARGINAL ROI", "SCREENSHOT HANDLING",
-    "GEAR / UPGRADE ORE", "SKILL MEDALS", "EXCLUSIVE WEAPONS", "SQUAD-SLOT TECH", "RESEARCH",
-    "DRONE / COMPONENTS / CHIPS", "DECORATIONS", "OPTIONAL CLOUD PERSISTENCE",
-    "CAPABILITY DISCOVERY / GRACEFUL DEGRADATION", "CLOUD-NEUTRAL WORKSPACE SCHEMA",
-    "ROLLING CONTEXT / RELOAD", "UPSTREAM ENGINE / LOCAL STATE SEPARATION",
-    "GITHUB PRODUCTION HUB / DISTRIBUTION CONTRACT", "CENTRAL UPDATE CHANNEL", "HUB-AND-SPOKE INVARIANT",
-    "REMOTE BOOTSTRAP / ONE-LINE INSTALL", "PRIVACY / SEMI-ANONYMIZED DISTRIBUTION",
-    "DOCUMENTATION-AS-CODE", "COMMAND VOCABULARY", "HEALTH / REGRESSION TESTS", "STARTUP BEHAVIOR",
+    "EXISTING-ACCOUNT DISCOVERY", "MIGRATION FROM SINGLE-ACCOUNT LWAI", "ARCHIVED ACCOUNT RECOVERY",
+    "CONTEXT SWITCHING", "CROSS-ACCOUNT OPERATIONS", "START-OVER SAFETY", "IDENTITY SANITY CHECK",
+    "GUIDED INTERACTION PRINCIPLE", "ADAPTIVE GUIDANCE", "UNOBTRUSIVE INTERVIEW", "AUDIT SESSION STATE",
+    "INGESTION MODES", "BATCH / DONE RULE", "active_account_id", "SHARED GEAR / PRESET MODEL",
+    "MARGINAL ROI", "SCREENSHOT HANDLING", "GEAR / UPGRADE ORE", "SKILL MEDALS", "EXCLUSIVE WEAPONS",
+    "SQUAD-SLOT TECH", "RESEARCH", "DRONE / COMPONENTS / CHIPS", "DECORATIONS",
+    "OPTIONAL CLOUD PERSISTENCE", "CAPABILITY DISCOVERY / GRACEFUL DEGRADATION",
+    "CLOUD-NEUTRAL WORKSPACE SCHEMA", "ROLLING CONTEXT / RELOAD",
+    "UPSTREAM ENGINE / LOCAL STATE SEPARATION", "GITHUB PRODUCTION HUB / DISTRIBUTION CONTRACT",
+    "CENTRAL UPDATE CHANNEL", "HUB-AND-SPOKE INVARIANT", "REMOTE BOOTSTRAP / ONE-LINE INSTALL",
+    "PRIVACY / SEMI-ANONYMIZED DISTRIBUTION", "DOCUMENTATION-AS-CODE", "COMMAND VOCABULARY",
+    "HEALTH / REGRESSION TESTS", "STARTUP BEHAVIOR",
 ]
 
 REQUIRED_ACCOUNT_MODULE_PHRASES = [
-    "UID is optional", "PRIVACY / USER REASSURANCE", "WORKSPACE REGISTRY",
-    "ACCOUNT DATABASE ISOLATION", "EXISTING-ACCOUNT DISCOVERY", "START-OVER SAFETY",
+    "UID is optional", "PRIVACY / USER REASSURANCE", "WORKSPACE REGISTRY", "ACCOUNT DATABASE ISOLATION",
+    "MIGRATION-FIRST DISCOVERY", "EXISTING-ACCOUNT DISCOVERY", "ARCHIVE / RESTORE", "START-OVER SAFETY",
     "CONTEXT SWITCHING", "CROSS-ACCOUNT OPERATIONS", "IDENTITY SANITY CHECK",
-    "MIGRATION FROM SINGLE-ACCOUNT LWAI", "REGRESSION INVARIANTS", "active_account_id",
+    "MIGRATION FROM SINGLE-ACCOUNT LWAI", "AUDIT SESSION ISOLATION", "REGRESSION INVARIANTS", "active_account_id",
+]
+
+REQUIRED_GUIDANCE_MODULE_PHRASES = [
+    "MIGRATION-FIRST / ENHANCEMENT-NOT-RESET", "UNOBTRUSIVE INTERVIEW", "AUDIT SESSION STATE",
+    "DIRECT CHAT BATCH", "DOCUMENT BUNDLE", "GUIDED CAPTURE", "AUTO-CONTINUE RULE", "BATCH BOUNDARY RULE",
+    "MISSING/STALE-ONLY COLLECTION", "ARCHIVED ACCOUNT RECOVERY", "reply `done`", "active_account_id",
 ]
 
 REQUIRED_REPO_FILES = [
     "README.md", "SECURITY.md", "CONTRIBUTING.md", "engine/BOOTSTRAP.txt", "engine/BOOTSTRAP_FULL.txt",
-    "engine/MANIFEST.json", "engine/modules/core/accounts.txt",
+    "engine/MANIFEST.json", "engine/modules/core/accounts.txt", "engine/modules/core/guidance.txt",
     "contracts/operating-canon.md", "contracts/export-bootstrap.md", "contracts/storage-adapter.md",
-    "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md",
+    "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md", "contracts/guided-lifecycle-ingestion.md",
     "schemas/workspace-schema.md", "schemas/account-registry.schema.json", "schemas/engine-manifest.schema.json",
     "adapters/provider-matrix.md", "gold-assets/README.md", "gold-assets/manifest.json",
     "releases/LATEST.json", "releases/CHANGELOG.md", "docs/architecture.md", "docs/deployment.md",
@@ -101,6 +110,7 @@ def main() -> None:
     loader = BOOT.read_text(encoding="utf-8")
     full = FULL.read_text(encoding="utf-8")
     accounts = ACCOUNT_MODULE.read_text(encoding="utf-8")
+    guidance = GUIDANCE_MODULE.read_text(encoding="utf-8")
     for phrase in REQUIRED_LOADER_PHRASES:
         if phrase not in loader:
             fail(f"thin loader missing required phrase: {phrase}")
@@ -110,6 +120,9 @@ def main() -> None:
     for phrase in REQUIRED_ACCOUNT_MODULE_PHRASES:
         if phrase not in accounts:
             fail(f"account module missing required phrase: {phrase}")
+    for phrase in REQUIRED_GUIDANCE_MODULE_PHRASES:
+        if phrase not in guidance:
+            fail(f"guidance module missing required phrase: {phrase}")
 
     version = version_from(loader)
     if version_from(full) != version:
@@ -123,6 +136,11 @@ def main() -> None:
     required_schema_fields = set(account_schema.get("required", []))
     if not {"workspace_schema_version", "accounts"}.issubset(required_schema_fields):
         fail("account registry schema missing required workspace fields")
+    if "audit_sessions" not in account_schema.get("properties", {}):
+        fail("account registry schema missing optional audit_sessions")
+    account_item_props = (((account_schema.get("properties") or {}).get("accounts") or {}).get("items") or {}).get("properties") or {}
+    if "guidance_level" not in account_item_props:
+        fail("account registry account item missing guidance_level")
 
     if latest.get("engine_version") != version or manifest.get("engine_version") != version:
         fail("release/module manifest version does not match loader")
@@ -158,13 +176,18 @@ def main() -> None:
         for dep in entry.get("dependencies", []):
             if dep not in module_ids:
                 fail(f"unresolved dependency {dep} for {entry.get('module_id')}")
-    for required in ("core.operating", "core.persistence", "core.accounts", "release.runtime", "release.bootstrap"):
+    for required in ("core.operating", "core.persistence", "core.accounts", "core.guidance", "release.runtime", "release.bootstrap"):
         match = next((e for e in entries if e.get("module_id") == required), None)
         if not match or match.get("required") is not True:
             fail(f"required core module not marked required: {required}")
     account_entry = next(e for e in entries if e.get("module_id") == "core.accounts")
     if account_entry.get("path") != "engine/modules/core/accounts.txt":
         fail("core.accounts path unexpected")
+    guidance_entry = next(e for e in entries if e.get("module_id") == "core.guidance")
+    if guidance_entry.get("path") != "engine/modules/core/guidance.txt":
+        fail("core.guidance path unexpected")
+    if guidance_entry.get("dependencies") != ["core.operating", "core.persistence", "core.accounts"]:
+        fail("core.guidance dependencies unexpected")
 
     for endpoint in (EXPECTED_REPO, EXPECTED_RAW_BOOT, EXPECTED_RAW_MANIFEST, EXPECTED_MODULE_MANIFEST, EXPECTED_FULL, EXPECTED_INSTALL_URL):
         if endpoint not in loader and endpoint not in full:
@@ -189,7 +212,7 @@ def main() -> None:
     if not archive.exists():
         fail(f"versioned release manifest missing: {archive.relative_to(ROOT)}")
 
-    print(f"PASS: modular multi-account LWAI Production {version} passed repository-wide static release checks")
+    print(f"PASS: modular guided multi-account LWAI Production {version} passed repository-wide static release checks")
 
 if __name__ == "__main__":
     main()
