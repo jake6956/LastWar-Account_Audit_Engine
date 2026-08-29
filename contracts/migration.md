@@ -1,6 +1,6 @@
 # Migration Contract
 
-Version: 2026-08-29.12
+Version: 2026-08-29.13
 
 ## Principle
 Engine/schema/provider changes must preserve deployment-local state. A breaking migration cannot be promoted until preservation is validated. Multi-account migrations preserve the Workspace Registry, active-account pointer, immutable account IDs and every account-local namespace independently.
@@ -26,16 +26,26 @@ Ordinary engine refresh must follow an explicit graph edge when crossing promote
 
 For an `engine_only` edge with unchanged workspace schema, preserve LOCAL STATE in place and refresh only ENGINE artifacts; no account rewrite or user re-onboarding is permitted.
 
+## Startup ordering across generations
+A current registry-backed deployment and a pre-registry legacy deployment have different valid prerequisites:
+
+- If a current Workspace Registry exists, load it and resolve `active_account_id` before account-scoped recovery. Then inspect unresolved Runtime Checkpoints/Journal and continue migration/reconciliation.
+- If no Workspace Registry exists but accessible legacy LWAI single-account state exists, do **not** require `active_account_id` first. Discover the legacy state, register it nondestructively, generate its immutable LWAI `account_id`, create the Workspace Registry, set `active_account_id`, and only then run recovery-first continuation.
+- If neither a registry nor legacy state exists, proceed to genuinely-new-account guidance/onboarding.
+
+This ordering prevents a circular dependency where an older deployment is asked to supply account-routing metadata that did not exist in that generation. Legacy discovery before registry creation is not permission to bypass account isolation after the account context has been established.
+
 ## Single-account -> multi-account migration
 For an existing deployment that predates Workspace Registry:
-1. Generate one immutable LWAI `account_id` for the existing game account.
-2. Create workspace-level Account Registry and record workspace schema/version/privacy metadata.
-3. Register the existing canonical account database in place; do not rewrite historical domain data merely to satisfy new registry structure.
-4. Add Account Identity when supported. UID remains optional/private and is not required for migration.
-5. Set `active_account_id` to the migrated account.
-6. Preserve all existing domain state, Change Log, Corrections, preferences, screenshots/assets, snapshots and provider metadata.
-7. Verify reload resolves through `active_account_id` and a terse update cannot target another account namespace.
-8. Do not force new-account onboarding solely because multi-account support was added.
+1. Discover and validate the accessible legacy LWAI account database/state before requiring `active_account_id`.
+2. Generate one immutable LWAI `account_id` for the existing game account.
+3. Create workspace-level Account Registry and record workspace schema/version/privacy metadata.
+4. Register the existing canonical account database in place; do not rewrite historical domain data merely to satisfy new registry structure.
+5. Add Account Identity when supported. UID remains optional/private and is not required for migration.
+6. Set `active_account_id` to the migrated account.
+7. Preserve all existing domain state, Change Log, Corrections, preferences, screenshots/assets, snapshots and provider metadata.
+8. After account context exists, run recovery-first checks for any supported recovery metadata, then verify reload/account isolation.
+9. Do not force new-account onboarding solely because multi-account support was added.
 
 ## Multi-account invariants
 - `account_id` is immutable and authoritative; mutable identity fields do not create a new account automatically.

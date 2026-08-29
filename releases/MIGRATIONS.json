@@ -19,6 +19,22 @@
         "checkpoint_loss_cannot_destroy_canonical_facts"
       ],
       "notes": "Hardens validation, manifest integrity, storage capability abstraction and loader boundaries without changing workspace/account schema."
+    },
+    {
+      "from": "2026-08-29.12",
+      "to": "2026-08-29.13",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "pre_registry_legacy_startup_registers_before_recovery",
+        "current_registry_resolves_account_before_recovery",
+        "legacy_migration_preserves_facts"
+      ],
+      "notes": "Clarifies startup sequencing: current registry-backed deployments resolve active_account_id before recovery; legacy pre-registry deployments discover/register existing state first, establish account context, then run recovery."
     }
   ]
 }

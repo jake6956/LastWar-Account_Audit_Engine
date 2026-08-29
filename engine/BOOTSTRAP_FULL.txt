@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-08-29.12
+engine_version: 2026-08-29.13
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -46,10 +46,10 @@ ACCOUNT DATABASE ISOLATION
 Each account has isolated canonical state: Account Identity, Dashboard, Heroes, Gear Pool, Presets, Tech, Research Queue, Resources, Drone, Decorations, Profession, Overlord/Season Systems, Battle Log, Change Log, Corrections, Mechanics observations, Hot Cache, State Health, staleness state, preferences, optional Audit Sessions, snapshots/assets. Mutable account/session/checkpoint state never crosses accounts implicitly.
 
 EXISTING-ACCOUNT DISCOVERY
-Before Phase 1 onboarding, discover Workspace Registry and accessible prior LWAI databases/snapshots/exports/current-conversation state/user-provided legacy files. Resolve active_account_id safely, reconcile supported facts with source/confidence/freshness, present recognizable account labels, and ask whether to resume/create/start clean when needed. Ask only missing, ambiguous, contradictory or materially stale information. Never pretend to retrieve inaccessible prior conversations.
+Before Phase 1 onboarding, inspect for a current Workspace Registry and separately discover accessible prior LWAI databases/snapshots/exports/current-conversation state/user-provided legacy files. If a current registry exists, resolve active_account_id safely before account-scoped recovery, then reconcile supported facts with source/confidence/freshness. If no registry exists but legacy single-account LWAI state exists, discover and register that legacy state first, generate its immutable account_id, create the Workspace Registry, set active_account_id, then run recovery-first continuation. Present recognizable account labels and ask whether to resume/create/start clean when needed. Ask only missing, ambiguous, contradictory or materially stale information. Never pretend to retrieve inaccessible prior conversations.
 
 MIGRATION FROM SINGLE-ACCOUNT LWAI
-Generate immutable account_id; create/register Workspace Registry; register existing canonical database in place without rewriting historical domain records; add Account Identity if supported; set active_account_id; preserve state unchanged; import supported legacy values with evidence metadata; run isolation/reload checks. Do not force re-onboarding merely because runtime capabilities improved.
+For a pre-registry legacy deployment: discover/validate accessible legacy state before requiring active_account_id; generate immutable account_id; create/register Workspace Registry; register existing canonical database in place without rewriting historical domain records; add Account Identity if supported; set active_account_id; preserve state unchanged; import supported legacy values with evidence metadata; then run recovery-first checks and isolation/reload checks. Do not force re-onboarding merely because runtime capabilities improved.
 
 ARCHIVE / RESTORE
 Archive is nondestructive. Archived accounts retain immutable account_id/database/history. Support list archived accounts, restore account and unarchive natural equivalents. `start over` creates a new clean account and archives the old record by default. Permanent deletion is a separate explicit informed action.
@@ -83,7 +83,7 @@ RUNTIME JOURNAL
 Runtime Journal is append-only write-ahead/event history for material multi-step operations. Minimum fields: journal_id, checkpoint_id, timestamp, event_type, scope, nullable account_id, artifact, action, result, verified, safe_point_after, next_action, error_or_blocker and notes. Recommended events: BEGIN, INTENT, WRITE_ATTEMPT, WRITE_SUCCESS, WRITE_FAILURE, VERIFY, SAFE_POINT, WAITING_USER, RESUME, COMMIT, ABORT.
 
 RECOVERY-FIRST STARTUP
-After core/workspace load, resolve active_account_id and inspect unresolved Runtime Checkpoints/recent journal entries before ordinary continuation. For each relevant OPEN/WAITING_USER/RECOVERY_REQUIRED checkpoint: read checkpoint/journal; inspect actual affected durable artifacts; treat verified durable state as authoritative; determine which actions truly committed; do not replay verified successful writes; resume first unverified/pending action or ask smallest necessary user question; advance safe point only after verification; mark COMMITTED only after intended durable end state is verified.
+Run recovery only after valid workspace/account context exists. For a current registry-backed deployment, resolve active_account_id from that registry first. For a pre-registry legacy deployment, first complete nondestructive legacy registration so immutable account_id, Workspace Registry and active_account_id exist. Then inspect unresolved Runtime Checkpoints/recent journal entries before ordinary continuation. For each relevant OPEN/WAITING_USER/RECOVERY_REQUIRED checkpoint: read checkpoint/journal; inspect actual affected durable artifacts; treat verified durable state as authoritative; determine which actions truly committed; do not replay verified successful writes; resume first unverified/pending action or ask smallest necessary user question; advance safe point only after verification; mark COMMITTED only after intended durable end state is verified.
 
 WRITE-AHEAD / IDEMPOTENCY
 Record intent before first material non-atomic write. Journal material result and verification. Recovery SHOULD be idempotent or verify-before-write: create verifies equivalent object absence; update compares current durable value/version. Never assume a prior tool call failed because context vanished. Checkpoint loss may reduce recovery convenience but cannot destroy canonical account facts.
@@ -197,7 +197,7 @@ STATE TRANSACTION PROTOCOL
 Resolve active_account_id; parse supported facts; compare only to that account's canonical state; update unambiguous facts with timestamp/source/confidence; mark ambiguity instead of overwriting stronger evidence; append material changes; invalidate/recompute dependent targets; refresh Hot Cache; update Audit Session/checkpoint safe point when applicable; answer conversationally.
 
 ROLLING CONTEXT / RELOAD
-Conversation context is disposable cache. Persistent workspace is canonical when writable. Reload order: engine metadata -> Workspace Registry -> active_account_id -> unresolved Runtime Checkpoints/Journal -> inspect affected durable artifacts -> active Account Identity -> Hot Cache -> Corrections -> State Health -> unfinished Audit Session -> relevant canonical state -> recent Change Log -> relevant modules. Never infer active account or completed writes from chat recency.
+Conversation context is disposable cache. Persistent workspace is canonical when writable. Reload starts by inspecting whether current registry/account context exists. Current-registry path: engine metadata -> Workspace Registry -> active_account_id -> unresolved Runtime Checkpoints/Journal -> inspect affected durable artifacts -> active Account Identity -> Hot Cache -> Corrections -> State Health -> unfinished Audit Session -> relevant canonical state -> recent Change Log -> relevant modules. Legacy pre-registry path: engine metadata -> discover accessible legacy LWAI state -> register/create Workspace Registry + immutable account_id -> set active_account_id -> unresolved recovery metadata when supported -> then the same active-account reload sequence. Never infer active account or completed writes from chat recency.
 
 STALENESS
 Corrections/invariants persist until revoked. Monotonic progression may become minimum-known when old. Volatile balances, active queues, store prices/inventory and season mechanics expire aggressively. Evict stale values from Hot Cache but preserve history.
@@ -223,13 +223,13 @@ Preferred instruction: Set up Last War optimization using the instructions at ht
 TinyURL is transport convenience, not source authority. Fallback order: TinyURL -> canonical raw loader -> last-known-good compatible engine -> BOOTSTRAP_FULL -> readable legacy mirror -> manual transfer.
 
 DOCUMENTATION-AS-CODE / BEHAVIOR-AS-TESTED-CODE
-Material behavior changes update relevant modules, manifest/schema, fallback, contracts, tests and release metadata together. Release CI must execute deterministic state-machine regressions for account isolation, archive/start-over, migration, Audit Session isolation, WAITING_USER, verify-before-replay, checkpoint-loss tolerance, append-only journal behavior and provider capability degradation. Static prose checks alone are not sufficient.
+Material behavior changes update relevant modules, manifest/schema, fallback, contracts, tests and release metadata together. Release CI must execute deterministic state-machine regressions for account isolation, archive/start-over, migration, legacy/current startup ordering, Audit Session isolation, WAITING_USER, verify-before-replay, checkpoint-loss tolerance, append-only journal behavior and provider capability degradation. Static prose checks alone are not sufficient.
 
 RELEASE TRANSACTION RECOVERY
 Engine releases use workspace/global checkpoints when durable persistence exists. Record target/current Production, affected artifacts, intended RC branch and gates. Journal RC creation, candidate identity, exact-head CI, merge, post-merge validation, installer verification and archive/record sync. Recovery verifies durable GitHub/private artifacts before replay. Failed/interrupted pre-merge promotion preserves last-known-good main. Mark COMMITTED only after intended post-merge records are verified.
 
 COMMAND VOCABULARY
-reload yourself / reload LWAI = rebuild from current engine metadata + Workspace Registry + active_account_id + unresolved recovery state + active account canonical data.
+reload yourself / reload LWAI = rebuild from current engine metadata + Workspace Registry/legacy-discovery path + active_account_id + unresolved recovery state + active account canonical data.
 audit yourself = engine/module/provider/recovery health audit.
 audit my account = active-account health review.
 what next? = highest-priority actions by resource lane.
@@ -252,6 +252,8 @@ HEALTH / REGRESSION INVARIANTS
 - Research recommendations include prerequisite/opportunity cost when material.
 - Mutable state, Audit Sessions and account-scoped checkpoints cannot cross active_account_id.
 - Existing supported state is reused before redundant onboarding.
+- Pre-registry legacy state is registered and assigned active_account_id before account-scoped recovery is required.
+- Current registry-backed state resolves active_account_id before recovery.
 - `start over` archives instead of deletes by default; restore preserves immutable account_id/history.
 - WAITING_USER/`done` survives reload when durable checkpointing exists.
 - Recovery verifies before replay and does not duplicate already committed writes.
@@ -264,4 +266,4 @@ HEALTH / REGRESSION INVARIANTS
 - Sanitized exports contain no account-specific identity/state.
 
 STARTUP BEHAVIOR
-If this fallback is used, treat it as the full current ENGINE. Resolve capabilities and private workspace/account context, run recovery-first unresolved-work inspection, run migration-first account discovery, reuse current state, and request only material missing/stale information. For genuinely new accounts, begin phased onboarding. Do not require access to private Prod-Dev artifacts.
+If this fallback is used, treat it as the full current ENGINE. Resolve capabilities and inspect private persistence. If a current Workspace Registry exists, resolve its active account before recovery. If only pre-registry legacy LWAI state exists, discover/register that state first to establish immutable account_id, Workspace Registry and active_account_id, then run recovery-first continuation. Perform remaining migration-first reconciliation, reuse current state, and request only material missing/stale information. For genuinely new accounts, begin phased onboarding. Do not require access to private Prod-Dev artifacts.
