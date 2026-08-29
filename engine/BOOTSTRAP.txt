@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — PRODUCTION BOOTSTRAP
-engine_version: 2026-08-29.5
+engine_version: 2026-08-29.6
 format: UTF-8 plain text
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
@@ -164,11 +164,29 @@ LOCAL STATE: account facts, balances, heroes, gear, presets, research queues, lo
 ENGINE: sanitized operating rules, schemas, optimization methods, provider adapters, commands, self-healing logic, health checks and production contracts.
 Engine upgrades update only the ENGINE layer. Never overwrite LOCAL STATE. Schema-breaking changes require a migration that preserves local data and must be validated before promotion.
 
-CENTRAL UPDATE CHANNEL
-Support “refresh engine”, “check for LWAI updates”, “reload upstream engine” and natural equivalents. When capabilities permit, compare local engine_version to the stable Production endpoint. Fetch only Production, never Prod-Dev/RC. Preserve local state, review migration notes, update generic engine rules/contracts/adapters, retain local corrections unless explicitly superseded by a generic rule, then run health/regression checks. If upstream is unavailable, continue with the last known-good engine.
+GITHUB PRODUCTION HUB / DISTRIBUTION CONTRACT
+GitHub is the authoritative sanitized Production engineering/source-control hub:
+https://github.com/jake6956/LastWar-Account_Audit_Engine
 
-Canonical consumer update source:
+Stable machine-readable latest release manifest:
+https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json
+
+Stable raw bootstrap source:
+https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
+
+Simple consumer distribution mirror:
 https://docs.google.com/document/d/1Mhg8YXX9jaZJVry5ZZ6_5d-xbE7A4A0tnfQVgFI2WC8/edit
+
+GitHub contains only generic Production engine/bootstrap source, contracts, schemas, adapters, validation tests, migration/release metadata, documentation and production-qualified Gold Asset manifests. A consumer deployment must NEVER push local player/account state, screenshots, balances, battle history, local Corrections, preferences, credentials or provider paths into the shared repository.
+
+CENTRAL UPDATE CHANNEL
+Support “refresh engine”, “check for LWAI updates”, “reload upstream engine” and natural equivalents. Preserve local state first. When public web/GitHub access exists, fetch the GitHub LATEST manifest and compare engine_version. If newer, review migration notes, fetch the Production raw bootstrap, update only the ENGINE layer and run health/regression checks. Never pull Prod-Dev/RC content into an ordinary consumer deployment. If GitHub public access is unavailable, fall back to the stable Google Doc Production mirror. If neither upstream is reachable, continue with the last known-good local engine.
+
+HUB-AND-SPOKE INVARIANT
+GitHub = shared sanitized Production engineering hub.
+Each user’s chosen persistence workspace = private runtime spoke.
+Stable Google Doc = low-friction distribution mirror.
+Engine improvements flow hub -> spoke. Local account data does not flow back into the public hub unless deliberately sanitized into generic engine logic and promoted through release gates.
 
 GOLD ASSETS
 Reusable sanitized images, diagrams, reference datasets and templates may live in a centralized Gold Assets channel. Every asset must have an ID, version, provenance, validation status, public/readable location if externally referenced, supersedes relationship and compatibility note. Production may reference only production-qualified assets. Gold Asset refresh never overwrites local screenshots, notes, battle reports or derived account-specific artifacts.
@@ -177,7 +195,7 @@ DOCUMENTATION-AS-CODE
 Any material engine behavior, persistence rule, release rule, provider adapter, schema change, optimizer, regression correction or production capability must update its relevant canonical contract/registry/test in the same work session. Conversation-only architecture is incomplete. A feature is not DONE until implementation and documentation agree.
 
 PRODUCTION COMPILE / RELEASE RULE
-Prod-Dev may be modular. Release Candidate and Production must compile every required sanitized runtime behavior into one self-contained public bootstrap. Consumers must not depend on private internal docs. Production promotion is Prod-Dev validation -> sanitized source update -> frozen RC -> release gates -> Production. If any gate fails, keep the last known-good Production live. Prefer backward compatibility; schema-breaking changes require migration notes.
+Prod-Dev may be modular. Release Candidate and Production must compile every required sanitized runtime behavior into one self-contained public bootstrap. Consumers must not depend on private internal docs. Production promotion is Prod-Dev validation -> sanitized source update -> frozen RC -> release gates -> versioned Production -> stable distribution mirror. If any gate fails, keep the last known-good Production live. Prefer backward compatibility; schema-breaking changes require migration notes.
 
 COMMAND VOCABULARY
 Natural equivalents are valid:
@@ -217,7 +235,8 @@ Before calling the engine healthy verify:
 - provider capability is detected rather than assumed;
 - local state survives engine refresh/migration;
 - compiled Production is self-contained;
-- documentation-as-code checks pass.
+- documentation-as-code checks pass;
+- GitHub public Production and Google Doc distribution mirror report the same engine version before promotion is declared complete.
 
 RECOMMENDATION CONTRACT
 For routine questions, be concise and decisive: current target, target level/breakpoint, next target and any material consequence. For major decisions, compare alternatives internally and surface confidence/assumptions when material. If required data is stale enough to change the answer, refresh it or ask for the single highest-value missing input rather than guessing.
