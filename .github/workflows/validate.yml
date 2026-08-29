@@ -26,3 +26,19 @@ jobs:
       - name: Run runtime behavioral regressions
         working-directory: tests
         run: python -m unittest -v test_runtime_behavior.py
+      - name: Verify live one-line installer
+        shell: bash
+        run: |
+          set -euo pipefail
+          alias_url='https://tinyurl.com/2yxf7f5x'
+          canonical='https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt'
+          resolved="$(curl -fsSL -o /tmp/alias-bootstrap -w '%{url_effective}' "$alias_url")"
+          test "$resolved" = "$canonical"
+          curl -fsSL "$canonical" -o /tmp/canonical-bootstrap
+          cmp -s /tmp/alias-bootstrap /tmp/canonical-bootstrap
+          grep -q '^engine_version: 2026-08-29.12$' /tmp/alias-bootstrap
+          grep -q '^engine_api_version: 1.0$' /tmp/alias-bootstrap
+          grep -q '^SANITIZED: YES$' /tmp/alias-bootstrap
+          grep -q '^ACCOUNT STATE INCLUDED: NO$' /tmp/alias-bootstrap
+          grep -q 'https://tinyurl.com/2yxf7f5x' /tmp/alias-bootstrap
+          echo "PASS: installer resolves exactly to canonical .12 loader and bytes match"
