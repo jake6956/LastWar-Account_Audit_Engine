@@ -1,5 +1,14 @@
 # Production Changelog
 
+## 2026-08-29.13
+
+- Clarified first-run startup for pre-registry legacy LWAI deployments: discover existing legacy state before requiring an `active_account_id` that older generations did not yet have.
+- Legacy single-account state is registered nondestructively, assigned an immutable LWAI `account_id`, added to a Workspace Registry, and made active before recovery-first checkpoint handling begins.
+- Current registry-backed deployments retain the existing order: resolve `active_account_id` first, then run account-scoped recovery.
+- Added executable regressions for both startup paths so the distinction is behavior-tested rather than prose-only.
+- Added explicit `.12 -> .13` engine-only migration metadata. Workspace schema remains `2.3`; no user re-onboarding, account rewrite, module version change, or private-state migration is required.
+- Updated thin-loader, standalone fallback and migration contract wording for startup-order parity.
+
 ## 2026-08-29.12
 
 - Added executable deterministic runtime regression tests for account routing/isolation, nondestructive start-over/archive, legacy migration, Audit Session isolation, `WAITING_USER`, verify-before-replay/idempotency, checkpoint-loss tolerance, append-only journal exposure and provider capability degradation.
