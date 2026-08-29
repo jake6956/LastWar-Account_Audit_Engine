@@ -6,7 +6,6 @@
   "account_state_included": false,
   "runtime_mode": "modular",
   "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
-  "remote_install_mode": "user-authorized URL thin-loader bootstrap",
   "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
   "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
   "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
@@ -14,8 +13,15 @@
   "migration": {
     "from": "2026-08-29.7",
     "type": "engine-only non-destructive",
-    "local_state_action": "preserve unchanged",
-    "notes": "Monolithic Production bootstrap becomes a thin loader plus versioned modules. Existing account state and provider workspaces are not migrated or rewritten."
+    "local_state_action": "preserve unchanged"
   },
-  "notes": "Introduces modular Production runtime. BOOTSTRAP.txt is now the small stable loader, MANIFEST.json is the module graph, domain modules load on demand, and BOOTSTRAP_FULL.txt remains the complete standalone recovery artifact."
+  "features": [
+    "thin stable loader",
+    "versioned module graph",
+    "mandatory core modules",
+    "domain-on-demand modules",
+    "capability-on-demand storage adapter",
+    "complete standalone fallback",
+    "modular CI graph validation"
+  ]
 }

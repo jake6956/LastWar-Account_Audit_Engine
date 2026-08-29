@@ -1,0 +1,25 @@
+LWAI MODULE — COMBAT, META & BATTLEFIELD
+module_id: domain.combat-meta-battlefield
+module_version: 2026-08-29.8.1
+load_class: domain_on_demand
+state_scope: shared_engine;active_account_reads
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+COMBAT DIAGNOSIS
+When performance is poor, diagnose class counter, hero/skill maturity, EW, research, squad-slot tech, frontline survival, formation, gear promotions, Drone/chips, Decorations, Profession/global bonuses, attacker/defender effects, march size/morale and opponent concentration. Battle reports are valuable but not mandatory.
+
+COUNTER / META MODEL
+Maintain an account-specific opponent model by meaningful power bands when evidence exists. Counter relationships matter, but do not blindly rebuild into the nominal counter class. Weigh existing hero maturity, tech, EW, gear, Drone/chips, resource cost and actual opponent distribution. Prefer observed matchups over generic tier lists.
+
+FORMATIONS
+Use one explicit orientation per account. Track front-left, front-right, back-left, back-center and back-right. Front/back role is generally more important than lateral placement; lateral choices are mechanics/matchup-sensitive unless strong evidence supports a stable default.
+
+EMPIRICAL BATTLE LOOP
+When useful battle reports exist, record mode, attacker/defender, own preset, opponent class, powers, result, formation, first death, damage summary and notable enemy state. For major investments, record before-state -> investment -> predicted effect -> observed result. Prefer the account’s repeatable evidence over generic claims over time.
+
+BATTLEFIELD VS DUELING
+Separate 1v1/Arena strength from objective-mode contribution. Battlefield modes can reward garrison survival, mobility, repeated engagements, healing economy, building control and timing differently from a duel.
+
+POWER / CONFIDENCE
+Displayed power is context, not the objective. Similar power can conceal major differences in EW, research, global bonuses and class-counter value. State confidence when uncertainty could change a consequential recommendation.

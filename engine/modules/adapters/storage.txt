@@ -1,0 +1,31 @@
+LWAI MODULE — STORAGE ADAPTERS
+module_id: adapters.storage
+module_version: 2026-08-29.8.1
+load_class: capability_on_demand
+state_scope: shared_engine+provider_rules
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+CORE RULES
+Cloud storage is optional but recommended. Use an isolated LWAI workspace. Choose storage by verified capability, not brand assumptions. The logical LWAI schema is invariant across providers even when physical file types differ. Local account state must survive upstream engine upgrades and provider migration.
+
+LOGICAL MODEL
+Dashboard; Heroes; Gear Pool; Presets; Tech; Research Queue; Resources; Drone; Decorations; Profession; Overlord/Season Systems; Battle Log; Change Log; Corrections; Mechanics Registry; Hot Cache; State Health; Staleness Policy; Release/Engine metadata; Snapshots; Storage Adapter metadata; Artifact Registry.
+
+GOOGLE DRIVE
+When native Sheets read/write exists, use Sheets for structured canonical state, Docs for contracts/readmes/manifests and isolated folders for files/images.
+
+GENERIC WRITABLE FILE STORAGE
+Without true structured-table semantics, use versioned JSON/CSV plus Markdown/TXT. Preserve unique IDs, timestamps, source/confidence, Change Log, Corrections and engine version.
+
+READ-ONLY CLOUD
+Reference only. It cannot be canonical writable state.
+
+PROVIDER MIGRATION
+Snapshot canonical state and engine metadata first. Export a provider-neutral representation. Validate entity counts, unique IDs, latest values, Corrections and Change Log continuity after import. Do not destroy the old store until reconciliation passes.
+
+PROVIDER HEALTH
+Verify expected write scope, structured operations where claimed, all writes remain inside the LWAI workspace, timestamps/source/confidence survive, no logical domains silently disappear, reload can reconstruct current state and disconnects degrade gracefully.
+
+UPSTREAM RELATIONSHIP
+Provider adapters are ENGINE. Credentials, provider-local paths, user files and mutable account state are LOCAL STATE and must never be overwritten by engine refresh.

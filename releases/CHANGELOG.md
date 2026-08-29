@@ -1,5 +1,16 @@
 # Production Changelog
 
+## 2026-08-29.8
+
+- Replaced the monolithic default Production bootstrap with a small `engine/BOOTSTRAP.txt` thin loader.
+- Added `engine/MANIFEST.json` as the versioned Production module graph with required/optional modules, dependencies, state scope and load classes.
+- Added independently versioned mandatory core, domain-on-demand, capability-on-demand storage, and release/runtime modules under `engine/modules/`.
+- Added `engine/BOOTSTRAP_FULL.txt` as the complete sanitized standalone disaster-recovery/offline/manual-transfer runtime.
+- Changed default context behavior so routine work loads only mandatory core plus the smallest relevant domain module instead of the entire engine.
+- Added fail-closed module retrieval behavior: retry canonical GitHub, retain last-known-good engine where possible, then fall back to `BOOTSTRAP_FULL.txt`; never repair engine failure by overwriting local account state.
+- Reworked CI validation to check thin-loader integrity, module-graph dependency resolution, module self-identification/sanitization, required-core coverage, full-fallback completeness and release/version parity.
+- Preserved the same one-line TinyURL installer and engine/local-state separation; this release changes engine packaging, not account-state schema.
+
 ## 2026-08-29.7
 
 - Added one-line remote bootstrap installation: `Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x`.

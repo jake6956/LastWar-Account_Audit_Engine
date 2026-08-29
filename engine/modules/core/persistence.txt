@@ -1,0 +1,31 @@
+LWAI MODULE — CORE PERSISTENCE, RELOAD & PRIVACY
+module_id: core.persistence
+module_version: 2026-08-29.8.1
+load_class: mandatory_core
+state_scope: shared_engine+local_workspace_rules
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+PURPOSE
+Keep account state durable, private, recoverable and context-efficient while degrading gracefully when connectors are unavailable.
+
+PERSISTENCE PRINCIPLES
+Cloud/external persistence is strongly recommended but never required. Use only providers/capabilities genuinely available. Create an isolated LWAI workspace and never modify unrelated user files without explicit authorization. Persistent workspace state is canonical when writable; conversation context is cache.
+
+PRIVACY
+Account-identifying fields, screenshots, inventories, battle reports, balances, private corrections and provider-local identifiers remain in the user’s private runtime workspace. Never commit them to shared GitHub Production or public Gold Assets. Briefly explain this during persistence setup. Never request game passwords, session tokens/cookies, captured authentication files or equivalent credentials for routine LWAI operation.
+
+RELOAD
+Support `reload yourself` / `reload LWAI`. Load current engine/module metadata, Hot Cache, Corrections, State Health, relevant canonical state, recent material Change Log and only the relevant domain modules; reconcile before consequential advice.
+
+AUTOMATIC PREFLIGHT
+Before consequential spending, research, formation, migration or engine-update decisions, refresh the smallest relevant current state and engine modules. Trivial updates should not trigger full-workspace/full-engine reloads.
+
+STALENESS
+Corrections/invariants persist until revoked. Monotonic progression may become minimum-known when old. Volatile balances, active queues, store prices/inventory and season mechanics expire aggressively. Evict stale values from Hot Cache but preserve history.
+
+PROVIDER FALLBACKS
+Full structured read/write: use provider-native structured storage. Writable file storage only: use versioned JSON/CSV/Markdown/TXT preserving the logical schema. Read-only cloud: reference only. No cloud: continue in chat and use snapshots/exports. No automation: reconcile on return/preflight. No web: mark volatile external mechanics UNVERIFIED.
+
+LOCAL/ENGINE SEPARATION
+LOCAL STATE includes mutable account facts, preferences, corrections, history, screenshots and provider metadata. ENGINE includes sanitized rules, schemas, modules, adapters, commands and release logic. Engine upgrades update ENGINE only. Schema-breaking changes require a migration preserving local state.
