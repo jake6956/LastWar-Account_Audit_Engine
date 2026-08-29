@@ -1,10 +1,10 @@
 {
-  "engine_version": "2026-08-29.8",
-  "schema_version": "2.0",
+  "engine_version": "2026-08-29.9",
+  "schema_version": "2.1",
   "channel": "Production",
   "sanitized": true,
   "account_state_included": false,
-  "runtime_mode": "modular",
+  "runtime_mode": "modular-multi-account",
   "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
   "remote_install_mode": "user-authorized URL thin-loader bootstrap",
   "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
@@ -12,10 +12,10 @@
   "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "migration": {
-    "from": "2026-08-29.7",
-    "type": "engine-only non-destructive",
-    "local_state_action": "preserve unchanged",
-    "notes": "Monolithic Production bootstrap becomes a thin loader plus versioned modules. Existing account state and provider workspaces are not migrated or rewritten."
+    "from": "2026-08-29.8",
+    "type": "additive local-state schema / non-destructive",
+    "local_state_action": "preserve all existing account state; register legacy single-account database in place",
+    "notes": "Adds a private Workspace Registry, immutable LWAI account_id, optional identity metadata, active_account_id routing, isolated account namespaces and context switching. Existing single-account deployments migrate without re-onboarding or rewriting historical domain data."
   },
-  "notes": "Introduces modular Production runtime. BOOTSTRAP.txt is now the small stable loader, MANIFEST.json is the module graph, domain modules load on demand, and BOOTSTRAP_FULL.txt remains the complete standalone recovery artifact."
+  "notes": "Adds first-class multi-account management: existing-account discovery before onboarding, optional/private UID recognition, concise privacy reassurance, isolated account databases, active-account context switching, nondestructive start-over, identity sanity checks and read-only cross-account comparison."
 }
