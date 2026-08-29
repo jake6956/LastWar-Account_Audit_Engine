@@ -1,0 +1,27 @@
+{
+  "engine_version": "2026-08-29.8",
+  "schema_version": "2.0",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular",
+  "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
+  "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
+  "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
+  "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
+  "migration": {
+    "from": "2026-08-29.7",
+    "type": "engine-only non-destructive",
+    "local_state_action": "preserve unchanged"
+  },
+  "features": [
+    "thin stable loader",
+    "versioned module graph",
+    "mandatory core modules",
+    "domain-on-demand modules",
+    "capability-on-demand storage adapter",
+    "complete standalone fallback",
+    "modular CI graph validation"
+  ]
+}
