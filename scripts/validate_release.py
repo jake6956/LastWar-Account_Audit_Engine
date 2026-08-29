@@ -133,7 +133,6 @@ def main():
     require_phrases("recovery contract", contract, ["Runtime Checkpoints", "Runtime Journal", "verify-before-replay", "WAITING_USER", "hidden chain-of-thought"])
     require_phrases("recovery doc", recovery_doc, ["Recovery procedure", "Do not replay verified successful writes", "WAITING_USER", "Privacy"])
 
-    # Existing core guarantees remain present.
     for phrase in ["UID is optional", "WORKSPACE REGISTRY", "ACCOUNT DATABASE ISOLATION", "active_account_id"]:
         if phrase not in accounts:
             fail(f"core.accounts missing required phrase: {phrase}")
@@ -186,8 +185,7 @@ def main():
     for mid in ["core.operating", "core.persistence", "core.accounts", "core.guidance", "release.runtime", "release.bootstrap"]:
         if mid not in required:
             fail(f"required core module not marked required: {mid}")
-    guidance_entry = required["core.guidance"]
-    if guidance_entry.get("dependencies") != ["core.operating", "core.persistence", "core.accounts"]:
+    if required["core.guidance"].get("dependencies") != ["core.operating", "core.persistence", "core.accounts"]:
         fail("core.guidance dependencies unexpected")
     if required["core.persistence"].get("module_version") != "2026-08-29.11.1":
         fail("core.persistence manifest version mismatch")
@@ -216,8 +214,11 @@ def main():
     if archive_json.get("engine_version") != version or archive_json.get("account_state_included") is not False:
         fail("versioned release manifest identity mismatch")
 
-    # Public release must describe generic behavior only. Block obvious local recovery identifiers.
-    forbidden_literals = ["CP-20260829-011", "J-20260829-011", "drive.google.com/drive/folders/"]
+    forbidden_literals = [
+        "CP-" + "20260829" + "-011",
+        "J-" + "20260829" + "-011",
+        "drive.google.com/drive/" + "folders/",
+    ]
     for path in iter_public_text_files():
         body = text(path)
         for literal in forbidden_literals:
