@@ -11,10 +11,14 @@ https://docs.google.com/document/d/1Mhg8YXX9jaZJVry5ZZ6_5d-xbE7A4A0tnfQVgFI2WC8/
 
 Copy the entire bootstrap into a fresh ChatGPT conversation. For best results, switch reasoning/thinking to **HIGH** if the product exposes that control. Cloud persistence is strongly recommended but optional.
 
+For machine-readable/update-aware deployments:
+- Latest manifest: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json
+- Raw bootstrap: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
+
 ## Hub-and-spoke architecture
 
 ### Production engineering hub — this repository
-This repository contains only sanitized, production-safe engine material:
+This repository is the authoritative sanitized Production engineering source and contains only production-safe engine material:
 - compiled bootstrap source
 - runtime/behavior contracts
 - provider-neutral schemas
@@ -36,11 +40,14 @@ Each player keeps private state in their own environment:
 
 **Private player state must never be committed to this repository.**
 
+### Distribution mirror
+The stable Google Doc above is intentionally the low-friction consumer mirror. Production engine updates originate here in GitHub and are synchronized to that stable document so Discord/community users never need to learn GitHub.
+
 ## Release model
 
 `Prod-Dev (private) -> Release Candidate -> Production (GitHub) -> stable public bootstrap mirror`
 
-Production promotion fails closed if sanitization, bootstrap completeness, local-state preservation, capability fallbacks, regression checks, documentation-as-code, or endpoint integrity fail.
+Production promotion fails closed if sanitization, bootstrap completeness, local-state preservation, capability fallbacks, regression checks, documentation-as-code, CI, or endpoint integrity fail.
 
 ## Repository layout
 
@@ -68,10 +75,11 @@ docs/            architecture/deployment/operator documentation
 - Volatile game/store/season facts are refreshed before consequential use.
 - Every material engine change updates its relevant contract/schema/test in the same release.
 - A consumer deployment must work even with no cloud connector, no automation support, or limited tools.
+- GitHub holds shared engine state; private runtime workspaces hold player state.
 
 ## Current production
 
-**Engine version:** `2026-08-29.5`  
+**Engine version:** `2026-08-29.6`  
 **Stable consumer endpoint:** https://docs.google.com/document/d/1Mhg8YXX9jaZJVry5ZZ6_5d-xbE7A4A0tnfQVgFI2WC8/edit
 
-Google Drive remains the reference Prod-Dev/runtime implementation. GitHub is the sanitized production engineering hub. The Google Doc above is intentionally the simplest consumer-facing distribution path so users do not need GitHub knowledge to install LWAI.
+Google Drive remains the reference private Prod-Dev/runtime implementation. GitHub is the authoritative sanitized Production engineering hub. The Google Doc is the simplest consumer-facing distribution path.
