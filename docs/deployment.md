@@ -5,35 +5,62 @@ Paste exactly this into a fresh ChatGPT conversation:
 
 `Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x`
 
-That is the preferred install path. The assistant should retrieve the full Production bootstrap itself, validate it, then begin phased onboarding. The player should not need to copy/paste the multi-page engine from a phone.
+That is the preferred install path. A web-capable assistant should retrieve the sanitized Production thin loader, validate Production identity, resolve required modules, then begin or resume operation. The player should not need to copy/paste the complete engine from a phone.
 
-For best results, switch reasoning/thinking to **HIGH** if the product exposes that control. Cloud persistence is strongly recommended but optional.
+For best results, use a higher reasoning/thinking setting when the product exposes that control. Cloud persistence is strongly recommended but optional.
 
 ## What the short link does
-The neutral TinyURL currently resolves to the canonical raw GitHub Production bootstrap. It is used for convenience and reduced casual maintainer exposure in the visible install line. It is not a security authority or true anonymity layer.
+The TinyURL is convenience only; it is not a trust root or anonymity boundary. Canonical Production lives on GitHub `main`.
 
-Canonical direct bootstrap:
+Canonical loader:
 https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
 
-If the alias cannot be reached but direct GitHub can, use the direct source. If GitHub cannot be reached, try the stable Google distribution mirror when readable. Only require a manual full-bootstrap paste when the deployment has no usable remote retrieval path.
+Current release metadata:
+https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json
 
-## Remote bootstrap acceptance behavior
-A fresh assistant receiving the one-line instruction should treat the user's request as explicit authorization to retrieve and use the linked bootstrap. It should not ask the user to manually paste the linked content if web access can read it. If retrieval is truncated, fetch the remaining content until required runtime sections are available, then execute `STARTUP BEHAVIOR`.
+Module graph:
+https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json
 
-## If cloud persistence is accepted
-The deployment capability-detects the provider, creates an isolated LWAI workspace, maps the provider-neutral schema onto the strongest supported structured storage and never touches unrelated files.
+Migration graph:
+https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json
+
+Complete fallback:
+https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt
+
+If the alias cannot be reached but direct GitHub can, use the canonical loader. If modular retrieval fails, use last-known-good compatible engine state or the complete fallback. A readable legacy Google mirror may be used after canonical GitHub options. Manual full-bootstrap transfer is the last fallback.
+
+## Startup sequence
+A fresh deployment should:
+1. verify the loader is sanitized and contains no account state;
+2. retrieve `LATEST.json` and `MANIFEST.json` when web access exists;
+3. confirm engine/API/schema compatibility;
+4. resolve mandatory module dependencies;
+5. verify module byte identity when the host supports the Git blob verification primitive, otherwise verify canonical origin + exact module identity/version without pretending a hash check occurred;
+6. capability-detect persistence and ingestion features;
+7. resolve Workspace Registry and `active_account_id` when durable LWAI state exists;
+8. run recovery-first and migration-first startup before redundant onboarding;
+9. load task-specific domain modules only when needed.
+
+## Persistence capability profiles
+Persistence is selected from verified capabilities rather than provider branding. Adapters report read/list/write/create/query/atomic-append/CAS/snapshot/restore capabilities and derive the strongest safe persistence profile.
+
+Recovery journals require atomic append/transaction, revision/CAS-controlled append, or immutable uniquely identified event creation. A writable spreadsheet alone does not prove transaction-safe journaling.
+
+Without durable writable persistence, LWAI continues in conversation/cache mode and may use portable snapshots/exports. It must not claim durable recovery that the host cannot provide.
 
 ## Engine updates
-A player may say `refresh engine` / `check for LWAI updates`. The deployment preserves all local account state, checks direct GitHub Production (`releases/LATEST.json` + `engine/BOOTSTRAP.txt`), applies only generic Production engine changes, follows migrations if required and runs health checks afterward. Routine updates should not depend on the URL shortener.
+A player may say `refresh engine` / `check for LWAI updates`. The deployment preserves LOCAL STATE first, checks `LATEST.json`, `MANIFEST.json` and `MIGRATIONS.json`, validates compatibility/integrity where supported, applies only required promoted migration edges and refreshes ENGINE only. Engine-only migrations never force re-onboarding or rewrite account state.
 
 ## Sharing LWAI
-If a deployed instance is asked `share LWAI`, `give me the install prompt`, or equivalent, return the one-line TinyURL instruction by default. Do not dump the full engine unless the user asks for the standalone/offline export.
+If a deployed instance is asked `share LWAI`, `give me the install prompt`, or equivalent, return the one-line TinyURL instruction by default. Do not dump the complete engine unless the user asks for the standalone/offline export.
 
 ## Recovery
-- `reload LWAI`: reconstruct working context from durable local state.
+- `reload LWAI`: reconstruct working context from durable local state and unresolved recovery metadata.
 - `export my account snapshot`: private current-state recovery export.
-- `export yourself`: complete sanitized generic engine for offline/manual recovery.
-- `export full recovery package`: separate engine + private snapshot + manifest.
+- `export yourself`: complete sanitized generic `BOOTSTRAP_FULL` runtime.
+- `export full recovery package`: separate sanitized engine + private snapshot/registry/recovery artifacts + manifest.
 
-## Operator / maintainer path
-Develop against a private Prod-Dev deployment, update all relevant canonical documentation, sanitize, freeze a Release Candidate, run private gates, commit the candidate to an RC branch, open a PR, require CI + remote-install integrity, merge only the validated head into GitHub Production, then synchronize secondary mirrors/archives.
+## Maintainer path
+Develop against private Prod-Dev, update relevant contracts/registries, sanitize, freeze an RC, create `rc/<version>` from current known-good `main`, run exact-head PR CI plus private gates, merge only the validated head SHA, require post-merge main CI, verify public Production/installer, then synchronize private Production archives and release records.
+
+Production CI validates both release-tree structure and executable runtime invariants. Failed pre-merge candidates leave `main` untouched.
