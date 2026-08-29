@@ -1,0 +1,11 @@
+{
+  "engine_version": "2026-08-29.7",
+  "schema_version": "1.0",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
+  "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
+  "migration": null,
+  "release_summary": "One-line remote bootstrap installation. Users can initialize LWAI by giving ChatGPT one short instruction and URL; the assistant retrieves the full Production engine. Adds remote-install fallbacks, short-link integrity rules, and semi-anonymous visible distribution while retaining direct GitHub as authority and full standalone export for recovery/offline use."
+}
