@@ -1,6 +1,6 @@
 {
-  "engine_version": "2026-08-29.9",
-  "schema_version": "2.1",
+  "engine_version": "2026-08-29.10",
+  "schema_version": "2.2",
   "channel": "Production",
   "runtime_mode": "modular",
   "sanitized": true,
@@ -10,13 +10,14 @@
   "modules": [
     {"module_id":"core.operating","module_version":"2026-08-29.8.1","path":"engine/modules/core/operating.txt","load_class":"mandatory_core","dependencies":[],"state_scope":"shared_engine","required":true,"release_min":"2026-08-29.8"},
     {"module_id":"core.persistence","module_version":"2026-08-29.9.1","path":"engine/modules/core/persistence.txt","load_class":"mandatory_core","dependencies":["core.operating"],"state_scope":"shared_engine+local_workspace_rules","required":true,"release_min":"2026-08-29.8"},
-    {"module_id":"core.accounts","module_version":"2026-08-29.9.1","path":"engine/modules/core/accounts.txt","load_class":"mandatory_core","dependencies":["core.operating","core.persistence"],"state_scope":"shared_engine+account_registry_rules","required":true,"release_min":"2026-08-29.9"},
+    {"module_id":"core.accounts","module_version":"2026-08-29.10.1","path":"engine/modules/core/accounts.txt","load_class":"mandatory_core","dependencies":["core.operating","core.persistence"],"state_scope":"shared_engine+account_registry_rules","required":true,"release_min":"2026-08-29.9"},
+    {"module_id":"core.guidance","module_version":"2026-08-29.10.1","path":"engine/modules/core/guidance.txt","load_class":"mandatory_core","dependencies":["core.operating","core.persistence","core.accounts"],"state_scope":"shared_engine+account_guidance+audit_session_rules","required":true,"release_min":"2026-08-29.10"},
     {"module_id":"domain.gear-heroes-skills-ew","module_version":"2026-08-29.8.1","path":"engine/modules/domains/gear-heroes-skills-ew.txt","load_class":"domain_on_demand","dependencies":["core.operating","core.accounts"],"state_scope":"shared_engine;active_account_reads","required":false,"release_min":"2026-08-29.8"},
     {"module_id":"domain.research-drone-progression","module_version":"2026-08-29.8.1","path":"engine/modules/domains/research-drone-progression.txt","load_class":"domain_on_demand","dependencies":["core.operating","core.accounts"],"state_scope":"shared_engine;active_account_reads","required":false,"release_min":"2026-08-29.8"},
     {"module_id":"domain.combat-meta-battlefield","module_version":"2026-08-29.8.1","path":"engine/modules/domains/combat-meta-battlefield.txt","load_class":"domain_on_demand","dependencies":["core.operating","core.accounts"],"state_scope":"shared_engine;active_account_reads","required":false,"release_min":"2026-08-29.8"},
     {"module_id":"domain.season-stores-paid","module_version":"2026-08-29.8.1","path":"engine/modules/domains/season-stores-paid.txt","load_class":"domain_on_demand","dependencies":["core.operating","core.accounts"],"state_scope":"shared_engine;active_account_reads","required":false,"release_min":"2026-08-29.8"},
     {"module_id":"adapters.storage","module_version":"2026-08-29.9.1","path":"engine/modules/adapters/storage.txt","load_class":"capability_on_demand","dependencies":["core.persistence","core.accounts"],"state_scope":"shared_engine+provider_rules","required":false,"release_min":"2026-08-29.8"},
     {"module_id":"release.runtime","module_version":"2026-08-29.8.1","path":"engine/modules/release/runtime.txt","load_class":"mandatory_core","dependencies":["core.operating","core.persistence"],"state_scope":"shared_engine","required":true,"release_min":"2026-08-29.8"},
-    {"module_id":"release.bootstrap","module_version":"2026-08-29.9.1","path":"engine/modules/release/bootstrap.txt","load_class":"mandatory_core","dependencies":["release.runtime","core.accounts"],"state_scope":"shared_engine","required":true,"release_min":"2026-08-29.8"}
+    {"module_id":"release.bootstrap","module_version":"2026-08-29.10.1","path":"engine/modules/release/bootstrap.txt","load_class":"mandatory_core","dependencies":["release.runtime","core.accounts","core.guidance"],"state_scope":"shared_engine","required":true,"release_min":"2026-08-29.8"}
   ]
 }
