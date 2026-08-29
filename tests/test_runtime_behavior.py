@@ -49,6 +49,37 @@ class RuntimeBehaviorTests(unittest.TestCase):
         self.assertEqual(acct.facts, source)
         self.assertEqual(rt.active_account_id, "A")
 
+    def test_pre_registry_legacy_startup_registers_before_recovery(self):
+        rt = RuntimeModel()
+        source = {"gear": {"g1": 40}, "correction": "never regress"}
+        steps = rt.startup_from_storage(legacy_facts=source)
+        self.assertEqual(
+            steps,
+            [
+                "legacy_discovery",
+                "register_legacy",
+                "resolve_active_account",
+                "recovery_first",
+                "migration_reconcile",
+            ],
+        )
+        self.assertEqual(rt.active_account_id, "legacy")
+        self.assertEqual(rt.accounts["legacy"].facts, source)
+        self.assertLess(steps.index("register_legacy"), steps.index("recovery_first"))
+
+    def test_current_registry_resolves_account_before_recovery(self):
+        rt = RuntimeModel()
+        steps = rt.startup_from_storage(
+            registry_accounts={"A": {"ore": 100}, "B": {"ore": 25}},
+            active_account_id="A",
+        )
+        self.assertEqual(
+            steps,
+            ["load_registry", "resolve_active_account", "recovery_first", "migration_reconcile"],
+        )
+        self.assertEqual(rt.active_account_id, "A")
+        self.assertEqual(rt.accounts["A"].facts["ore"], 100)
+
     def test_audit_session_is_account_scoped(self):
         rt = RuntimeModel()
         rt.create_account("A")
