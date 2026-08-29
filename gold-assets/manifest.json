@@ -1,0 +1,6 @@
+{
+  "manifest_version": "1.0",
+  "engine_compatibility": ">=2026-08-29.5",
+  "assets": [],
+  "notes": "No shared Gold Assets are production-qualified in GitHub yet. Add only sanitized, versioned, validated assets with stable public locations when required."
+}
