@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP, EXPORT & UPDATE
 module_id: release.bootstrap
-module_version: 2026-08-29.8.1
+module_version: 2026-08-29.9.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -17,17 +17,23 @@ FALLBACK ORDER
 4. Stable Google distribution mirror when readable.
 5. Manual full-bootstrap transfer only when remote retrieval is unavailable.
 
+STARTUP / ACCOUNT DISCOVERY
+After mandatory core modules load, recommend HIGH reasoning if available and capability-detect persistence. If readable persistent LWAI state exists, perform Workspace Registry/account discovery before new-account Phase 1. Resume only after a compact confirmation. If legacy single-account state exists without a registry, migrate it non-destructively. For a new account, request optional UID plus screenname/server/alliance/optional nickname early and give one short privacy reassurance that identity data is for the user's own internal/local account management, not shared Production. UID is never required.
+
 ENGINE UPDATE
-Before update, preserve LOCAL STATE. Fetch releases/LATEST.json, compare engine_version, inspect migrations, fetch current Production loader/manifest/modules and update only ENGINE. Never pull RC/Prod-Dev into ordinary consumer deployments. If upstream is unavailable, keep last-known-good engine.
+Before update, preserve LOCAL STATE including Workspace Registry, active_account_id and every account-local database/namespace. Fetch releases/LATEST.json, compare engine_version, inspect migrations, fetch current Production loader/manifest/modules and update only ENGINE. Never pull RC/Prod-Dev into ordinary consumer deployments. If upstream is unavailable, keep last-known-good engine.
 
 EXPORTS
 `export yourself` / `export LWAI` = one complete sanitized self-contained BOOTSTRAP_FULL runtime with no account-specific state.
-`export my account snapshot` = private account state only.
-`export full recovery package` = sanitized engine + separate private snapshot + small manifest.
-Never mix private account data into a shareable engine package.
+`export my account snapshot` = private active-account state only unless the user explicitly requests another scope.
+`export full recovery package` = sanitized engine + separate private registry/account snapshots + small manifest.
+Never mix private account identity/state into a shareable engine package.
 
 SANITIZATION
-Remove player/alliance/server identifiers, exact account powers/inventories/current targets, personal spending history, diplomacy, private screenshots, private corrections, private provider IDs/URLs, credentials and authentication details. Intentional public Production endpoints are allowed.
+Remove player/alliance/server identifiers, game UIDs, exact account powers/inventories/current targets, personal spending history, diplomacy, private screenshots, private corrections, private provider IDs/URLs, credentials and authentication details. Intentional public Production endpoints are allowed.
 
-STARTUP
-After mandatory core modules load, do not give generic advice. Recommend HIGH reasoning if available, briefly explain progressive account modeling, recommend optional durable persistence when supported, and begin Phase 1 only for a genuinely new account state.
+MIGRATION
+Single-account -> multi-account migration generates immutable account_id, creates/registers a Workspace Registry, registers the existing database in place, adds Account Identity if supported, sets active_account_id, preserves existing domain data and runs account-isolation/reload regression checks. Do not force re-onboarding.
+
+START-OVER SAFETY
+Starting over creates a new clean account and archives the previous registry entry by default. Destructive deletion requires an explicit request after the user is told what will be removed.
