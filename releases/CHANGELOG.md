@@ -1,5 +1,21 @@
 # Production Changelog
 
+## 2026-08-29.12
+
+- Added executable deterministic runtime regression tests for account routing/isolation, nondestructive start-over/archive, legacy migration, Audit Session isolation, `WAITING_USER`, verify-before-replay/idempotency, checkpoint-loss tolerance, append-only journal exposure and provider capability degradation.
+- Changed Production CI from static release-tree validation only to static validation plus behavioral state-machine tests.
+- Replaced candidate-specific hard-coded validation with metadata-derived engine/version/schema/API checks.
+- Added `engine_api_version` and explicit per-module engine API/workspace schema compatibility ranges.
+- Added Git blob byte-identity integrity markers for every module and CI verification against `git hash-object`.
+- Replaced the stale legacy engine-manifest schema with a schema describing the actual modular `engine/MANIFEST.json` contract.
+- Added `releases/MIGRATIONS.json` as an explicit machine-readable migration graph; `.11 -> .12` is engine-only, schema-preserving and does not require re-onboarding/account rewrite.
+- Formalized `storage-api/1` with provider-neutral read/list/write/create/query/atomic-append/CAS/snapshot/restore capabilities and explicit persistence profiles.
+- Prohibited guessed-next-row writes as authoritative recovery journal append under concurrency; require atomic append/transaction, revision/CAS, or immutable unique-event strategy.
+- Reduced `engine/BOOTSTRAP.txt` to bounded orchestration only; game-domain progression playbooks now live solely in modules and the complete fallback.
+- Added a 9KB thin-loader budget and CI guard against domain-playbook leakage into the loader.
+- Rebuilt `BOOTSTRAP_FULL.txt` with current storage-capability, compatibility, integrity and behavior-as-tested-code semantics while retaining complete standalone domain behavior.
+- Preserved workspace schema `2.3` and all private user/account/runtime state unchanged.
+
 ## 2026-08-29.11
 
 - Added workspace-level event-driven Runtime Checkpoints for bounded multi-step work whose interruption would otherwise be ambiguous.
