@@ -1,0 +1,23 @@
+name: Verify LWAI Installer Alias
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-alias:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve TinyURL and verify Production loader
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt'
+          effective=$(curl --fail --silent --show-error --location --output /tmp/lwai-bootstrap.txt --write-out '%{url_effective}' 'https://tinyurl.com/2yxf7f5x')
+          test "$effective" = "$expected"
+          grep -q '^engine_version: 2026-08-29.9$' /tmp/lwai-bootstrap.txt
+          grep -q '^SANITIZED: YES$' /tmp/lwai-bootstrap.txt
+          grep -q '^ACCOUNT STATE INCLUDED: NO$' /tmp/lwai-bootstrap.txt
