@@ -1,5 +1,20 @@
 # Production Changelog
 
+## 2026-08-29.11
+
+- Added workspace-level event-driven Runtime Checkpoints for bounded multi-step work whose interruption would otherwise be ambiguous.
+- Added append-only Runtime Journal write-ahead/event history with verified safe points and explicit next actions.
+- Added recovery-first startup after Workspace Registry/`active_account_id` resolution: inspect checkpoint/journal plus actual durable artifacts before ordinary continuation.
+- Added verify-before-replay/idempotency rules so context loss never causes verified successful writes to be duplicated blindly.
+- Added durable `WAITING_USER` handling so declared multi-upload `done` boundaries survive reload; context loss is never implicit batch completion.
+- Added account-scoped checkpoint isolation: checkpoint work from one account cannot silently resume while another `active_account_id` is selected.
+- Added checkpoint-loss tolerance: operational recovery metadata may disappear without destroying canonical account facts.
+- Explicitly prohibited persistence of hidden chain-of-thought, raw internal reasoning, full chat transcripts, or duplicated evidence blobs.
+- Added provider-neutral structured/file-only/no-durable-storage checkpoint fallbacks.
+- Added resumable engine-release transactions with safe points for private RC staging, GitHub RC creation, CI, merge, post-merge verification, record synchronization, and final commit.
+- Preserved last-known-good Production on interrupted/failed pre-merge releases and preserved validated main if a secondary mirror/archive update fails post-merge.
+- Updated `core.persistence`, `core.guidance`, `release.runtime`, workspace schema, thin loader, complete fallback, release metadata and recovery regression gates.
+
 ## 2026-08-29.10
 
 - Added mandatory `core.guidance` with dependencies on `core.operating`, `core.persistence`, and `core.accounts`.
