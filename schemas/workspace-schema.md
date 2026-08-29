@@ -1,8 +1,8 @@
 # Provider-Neutral LWAI Workspace Schema
 
-Version: 2026-08-29.10
+Version: 2026-08-29.11
 
-A writable deployment should preserve workspace-level account routing plus isolated logical equivalents of every account-local domain below, even if a provider maps them onto different physical file types. The 2026-08-29.10 schema change is additive and backward-compatible: it adds optional guidance metadata and resumable Audit Sessions without destructively transforming existing account state.
+A writable deployment should preserve workspace-level account routing, compact workflow-recovery state, and isolated logical equivalents of every account-local domain below, even if a provider maps them onto different physical file types. The 2026-08-29.11 schema change is additive and backward-compatible: Runtime Checkpoints and Runtime Journal are optional durable operational stores; they do not replace or duplicate canonical account databases.
 
 ## Workspace-level state
 
@@ -12,12 +12,38 @@ A writable deployment should preserve workspace-level account routing plus isola
 | Workspace Metadata | workspace_schema_version, active_account_id, account_discovery_policy, provider_adapter, privacy_policy, guidance_level_optional, engine_version, last_engine_refresh |
 | Shared Engine Metadata | module_manifest_version, installed_module_versions, upstream_endpoints, fallback_version, health_status |
 | Shared Artifact Registry | artifact_id, class, environment, canonical, public, format, update_trigger, source, retention, notes |
+| Runtime Checkpoints (optional) | checkpoint_id, scope, account_id_nullable, objective, current_phase, status, last_safe_point, completed_actions, pending_actions, pending_user_input, active_modules, affected_artifacts, important_assumptions, resume_instruction, started_at, updated_at, owner_context, notes |
+| Runtime Journal (optional, append-only) | journal_id, checkpoint_id, timestamp, event_type, scope, account_id_nullable, artifact, action, result, verified, safe_point_after, next_action, error_or_blocker, notes |
 
-`account_id` is an immutable LWAI-generated primary key. UID is optional/private recognition metadata and must never be required for account creation or copied into shared Production. Guidance proficiency may be stored as NEW, LEARNING, COMFORTABLE or EXPERT and is an interaction preference/state only; it never relaxes privacy, evidence, batch-boundary or account-isolation rules.
+`account_id` is an immutable LWAI-generated primary key. UID is optional/private recognition metadata and must never be required for account creation or copied into shared Production. Guidance proficiency may be NEW, LEARNING, COMFORTABLE or EXPERT and never relaxes privacy/evidence/batch/isolation rules.
+
+Runtime Checkpoints/Journal are private deployment state and may contain local account IDs, provider references or pending-user status. Shared GitHub Production contains this schema only, never actual consumer rows.
+
+## Runtime Checkpoint rules
+- Supported scopes include ACCOUNT, AUDIT, ENGINE_RELEASE, MIGRATION, MAINTENANCE, IMPORT and PROVIDER_SETUP; implementations may add bounded provider-specific scopes.
+- `account_id` is mandatory for account-scoped checkpoints and nullable only for true workspace/global work.
+- Valid statuses: OPEN, WAITING_USER, COMMITTED, ABORTED, RECOVERY_REQUIRED.
+- `last_safe_point` advances only after material durable state is verified enough to make replay safe.
+- Before replay, inspect affected durable artifacts; verified durable state outranks stale checkpoint claims.
+- Do not replay verified successful writes. Create operations verify equivalent objects do not already exist; updates compare current durable value/version before replacement.
+- COMMITTED means intended durable end state was verified, not merely that a tool call returned success.
+- Checkpoint deletion/loss may reduce recovery convenience but must never destroy canonical account facts.
+- Do not store hidden chain-of-thought, raw reasoning, full transcripts or duplicated evidence blobs.
+
+## Runtime Journal rules
+- Append-only during normal operation. Never rewrite prior events to make history look cleaner.
+- Recommended event types: BEGIN, INTENT, WRITE_ATTEMPT, WRITE_SUCCESS, WRITE_FAILURE, VERIFY, SAFE_POINT, WAITING_USER, RESUME, COMMIT, ABORT.
+- Each event records the result/verification state and the next safe action.
+- For providers with atomic transactions, use them; the journal still records application-level workflow boundaries when interruption matters.
+
+## Provider mappings
+- Structured writable storage: workspace-level Runtime Checkpoints and Runtime Journal tables/sheets/collections.
+- Writable file-only storage: checkpoint index plus append-only JSONL/NDJSON or timestamped JSON/Markdown journal records.
+- Read-only/no durable storage: best-effort compact session checkpoint only; never claim disk durability.
 
 ## Account-local state
 
-Every managed account has an isolated canonical database/logical namespace containing these domains. Mutable rows or audit-session state from one account must never be written into another account's namespace implicitly.
+Every managed account has an isolated canonical database/logical namespace. Mutable rows, Audit Sessions and account-scoped checkpoint work from one account must never be applied to another implicitly.
 
 | Domain | Minimum fields |
 |---|---|
@@ -47,35 +73,41 @@ Every managed account has an isolated canonical database/logical namespace conta
 
 ## Audit Session rules
 - Audit Sessions are optional, resumable and always account-scoped.
-- `account_id` is mandatory on every persisted session. Resolve `active_account_id` before resuming or mutating one.
+- Resolve `active_account_id` before resuming/mutating one.
 - Valid status values are ACTIVE, PAUSED, COMPLETE and ABANDONED.
-- Recommended ingestion modes are direct_batch, document_bundle and guided_capture.
-- Batch completion state must record declared boundaries such as `done`; a session must not finalize a declared multi-upload batch early.
-- Interrupted audits resume at the persisted current_step only after the intended account is resolved.
-- Guidance level may adapt over time but cannot weaken evidence, privacy, account isolation or explicit batch-boundary rules.
+- Recommended ingestion modes: direct_batch, document_bundle, guided_capture.
+- Batch completion records declared boundaries such as `done`; declared multi-upload batches do not finalize early.
+- Audit Sessions track detailed requested/completed evidence; Runtime Checkpoints should only reference surrounding safe-point state when recovery matters.
+
+## Recovery-first startup
+- Load mandatory core and Workspace Registry.
+- Resolve `active_account_id`.
+- Inspect unresolved Runtime Checkpoints and recent related Runtime Journal events before ordinary continuation.
+- For each relevant OPEN/WAITING_USER/RECOVERY_REQUIRED checkpoint, inspect actual affected durable artifacts and verify what committed.
+- Preserve WAITING_USER/`done` boundaries across reload.
+- Never resume an account-scoped checkpoint under another active_account_id.
+- Resume at the first unverified/pending action; mark COMMITTED only after intended durable end state is verified.
 
 ## Migration-first startup rules
-- Discover Workspace Registry and accessible prior LWAI state before asking broad onboarding questions.
-- Reuse/import supported confirmed current facts with source, confidence and freshness preserved.
+- Discover Workspace Registry and accessible prior LWAI state before broad onboarding.
+- Reuse/import supported confirmed current facts with source/confidence/freshness preserved.
 - Ask only for missing, ambiguous, contradictory or materially stale information.
 - Persist migrated/validated state immediately when writable storage exists.
 - Never claim access to unrelated prior conversations that are not actually available.
 
 ## Account routing and archive rules
-- Resolve `active_account_id` before any mutable account transaction.
-- Reload order begins with Workspace Metadata/Account Registry, then the active account identity/cache/state and that account's unfinished Audit Session when applicable.
-- A context switch flushes current pending changes/session progress, clears account-scoped working cache, sets `active_account_id`, then loads the target namespace and only its Audit Sessions.
-- Cross-account comparisons are read-only and preserve the prior `active_account_id` unless the user explicitly switches.
-- `start over` creates a new account_id/namespace and archives the old registry entry by default; it does not delete historical state implicitly.
-- Archive is reversible. Restoring an archived account preserves its original immutable account_id and history.
+- Resolve `active_account_id` before mutable account transactions and account-scoped checkpoint recovery.
+- A context switch flushes pending canonical changes/Audit Session progress, records or safely pauses relevant checkpoint work, clears account-scoped cache, sets active_account_id, then loads target state.
+- Cross-account comparisons are read-only and preserve prior active_account_id unless explicitly switched.
+- `start over` creates a new account_id/namespace and archives old registry entry by default; it does not delete history implicitly.
+- Archive is reversible and preserves immutable account_id/history.
 
 ## Data rules
 - Canonical/observed state and derived recommendations are separate.
-- All consequential canonical facts should carry source and confidence.
-- Monotonic stale values become `minimum_known`, not assumed exact.
-- Volatile values become stale aggressively and cannot drive major decisions without refresh.
+- Consequential canonical facts carry source/confidence.
+- Monotonic stale values become `minimum_known`; volatile values become stale aggressively.
 - Corrections persist until explicitly revoked within their account.
-- Change Log is append-oriented; cache eviction never destroys historical audit data.
-- IDs and timestamps survive provider migrations.
-- Engine updates preserve Account Registry, `active_account_id`, all Account Identity records, all account-local namespaces, Audit Sessions and provider-local references.
-- Identity fields, screenshots and account-local session contents are private deployment-local data. Shared GitHub Production and public Gold Assets contain schemas/rules only, never a consumer's actual identity values or account evidence.
+- Change Log is append-oriented; cache eviction never destroys history.
+- IDs/timestamps survive provider migration.
+- Engine updates preserve Account Registry, active_account_id, Account Identity records, all account-local namespaces, Audit Sessions, Runtime Checkpoints, Runtime Journal and provider-local references.
+- Shared GitHub Production/public Gold Assets contain schemas/rules only, never consumer identity/evidence/checkpoint rows.
