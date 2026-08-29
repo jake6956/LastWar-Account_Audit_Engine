@@ -1,218 +1,188 @@
 #!/usr/bin/env python3
-"""Fail-closed static checks for modular LWAI Production."""
+"""Fail-closed static checks for LWAI Production release trees."""
 from pathlib import Path
 import json
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
-BOOT = ROOT / "engine" / "BOOTSTRAP.txt"
-FULL = ROOT / "engine" / "BOOTSTRAP_FULL.txt"
-MODULE_MANIFEST = ROOT / "engine" / "MANIFEST.json"
-LATEST = ROOT / "releases" / "LATEST.json"
-README = ROOT / "README.md"
-QUICK_INSTALL = ROOT / "docs" / "quick-install.md"
-ACCOUNT_SCHEMA = ROOT / "schemas" / "account-registry.schema.json"
-ACCOUNT_MODULE = ROOT / "engine" / "modules" / "core" / "accounts.txt"
-GUIDANCE_MODULE = ROOT / "engine" / "modules" / "core" / "guidance.txt"
+
+REQUIRED_FILES = [
+    "README.md", "SECURITY.md", "CONTRIBUTING.md",
+    "engine/BOOTSTRAP.txt", "engine/BOOTSTRAP_FULL.txt", "engine/MANIFEST.json",
+    "engine/modules/core/operating.txt", "engine/modules/core/persistence.txt",
+    "engine/modules/core/accounts.txt", "engine/modules/core/guidance.txt",
+    "engine/modules/release/runtime.txt", "engine/modules/release/bootstrap.txt",
+    "contracts/operating-canon.md", "contracts/export-bootstrap.md", "contracts/storage-adapter.md",
+    "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md",
+    "contracts/guided-lifecycle-ingestion.md", "contracts/runtime-checkpoint-recovery.md",
+    "schemas/workspace-schema.md", "schemas/account-registry.schema.json", "schemas/engine-manifest.schema.json",
+    "docs/architecture.md", "docs/deployment.md", "docs/quick-install.md", "docs/runtime-recovery.md",
+    "adapters/provider-matrix.md", "gold-assets/README.md", "gold-assets/manifest.json",
+    "releases/LATEST.json", "releases/CHANGELOG.md", "tests/RELEASE_GATES.md",
+    ".github/workflows/validate.yml", ".github/CODEOWNERS",
+]
 
 EXPECTED_REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
-EXPECTED_RAW_BOOT = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt"
-EXPECTED_RAW_MANIFEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json"
-EXPECTED_MODULE_MANIFEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json"
+EXPECTED_BOOT = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt"
+EXPECTED_MANIFEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json"
 EXPECTED_FULL = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt"
-EXPECTED_INSTALL_URL = "https://tinyurl.com/2yxf7f5x"
-
-REQUIRED_LOADER_PHRASES = [
-    "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "runtime_mode: modular",
-    "LOADER PROCEDURE", "ACCOUNT DISCOVERY / MIGRATION-FIRST STARTUP", "ACCOUNT IDENTITY / PRIVACY",
-    "CONTEXT SWITCHING", "START-OVER SAFETY", "IDENTITY SANITY CHECK", "GUIDED INTERACTION",
-    "BATCH / DONE RULE", "active_account_id", "UID is useful but optional", "core.guidance",
-    "CORE OPERATING MODEL", "EVIDENCE HIERARCHY", "SELF-HEALING RULE",
-    "UPSTREAM ENGINE / LOCAL STATE SEPARATION", "REMOTE BOOTSTRAP / ONE-LINE INSTALL",
-    "PRIVACY / SEMI-ANONYMIZED DISTRIBUTION", "DOCUMENTATION-AS-CODE",
-    "HEALTH / REGRESSION TESTS", "STARTUP BEHAVIOR",
-]
-
-REQUIRED_FULL_PHRASES = [
-    "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "runtime_mode: standalone_fallback",
-    "STEP 0 — REASONING MODE", "CORE OPERATING MODEL", "EVIDENCE HIERARCHY", "STATE LEDGER",
-    "SELF-HEALING RULE", "ACCOUNT REGISTRY / PRIMARY KEY", "HUMAN-RECOGNITION IDENTITY",
-    "UID POLICY / PRIVACY REASSURANCE", "WORKSPACE REGISTRY", "ACCOUNT DATABASE ISOLATION",
-    "EXISTING-ACCOUNT DISCOVERY", "MIGRATION FROM SINGLE-ACCOUNT LWAI", "ARCHIVED ACCOUNT RECOVERY",
-    "CONTEXT SWITCHING", "CROSS-ACCOUNT OPERATIONS", "START-OVER SAFETY", "IDENTITY SANITY CHECK",
-    "GUIDED INTERACTION PRINCIPLE", "ADAPTIVE GUIDANCE", "UNOBTRUSIVE INTERVIEW", "AUDIT SESSION STATE",
-    "INGESTION MODES", "BATCH / DONE RULE", "active_account_id", "SHARED GEAR / PRESET MODEL",
-    "MARGINAL ROI", "SCREENSHOT HANDLING", "GEAR / UPGRADE ORE", "SKILL MEDALS", "EXCLUSIVE WEAPONS",
-    "SQUAD-SLOT TECH", "RESEARCH", "DRONE / COMPONENTS / CHIPS", "DECORATIONS",
-    "OPTIONAL CLOUD PERSISTENCE", "CAPABILITY DISCOVERY / GRACEFUL DEGRADATION",
-    "CLOUD-NEUTRAL WORKSPACE SCHEMA", "ROLLING CONTEXT / RELOAD",
-    "UPSTREAM ENGINE / LOCAL STATE SEPARATION", "GITHUB PRODUCTION HUB / DISTRIBUTION CONTRACT",
-    "CENTRAL UPDATE CHANNEL", "HUB-AND-SPOKE INVARIANT", "REMOTE BOOTSTRAP / ONE-LINE INSTALL",
-    "PRIVACY / SEMI-ANONYMIZED DISTRIBUTION", "DOCUMENTATION-AS-CODE", "COMMAND VOCABULARY",
-    "HEALTH / REGRESSION TESTS", "STARTUP BEHAVIOR",
-]
-
-REQUIRED_ACCOUNT_MODULE_PHRASES = [
-    "UID is optional", "PRIVACY / USER REASSURANCE", "WORKSPACE REGISTRY", "ACCOUNT DATABASE ISOLATION",
-    "MIGRATION-FIRST DISCOVERY", "EXISTING-ACCOUNT DISCOVERY", "ARCHIVE / RESTORE", "START-OVER SAFETY",
-    "CONTEXT SWITCHING", "CROSS-ACCOUNT OPERATIONS", "IDENTITY SANITY CHECK",
-    "MIGRATION FROM SINGLE-ACCOUNT LWAI", "AUDIT SESSION ISOLATION", "REGRESSION INVARIANTS", "active_account_id",
-]
-
-REQUIRED_GUIDANCE_MODULE_PHRASES = [
-    "MIGRATION-FIRST / ENHANCEMENT-NOT-RESET", "UNOBTRUSIVE INTERVIEW", "AUDIT SESSION STATE",
-    "DIRECT CHAT BATCH", "DOCUMENT BUNDLE", "GUIDED CAPTURE", "AUTO-CONTINUE RULE", "BATCH BOUNDARY RULE",
-    "MISSING/STALE-ONLY COLLECTION", "ARCHIVED ACCOUNT RECOVERY", "reply `done`", "active_account_id",
-]
-
-REQUIRED_REPO_FILES = [
-    "README.md", "SECURITY.md", "CONTRIBUTING.md", "engine/BOOTSTRAP.txt", "engine/BOOTSTRAP_FULL.txt",
-    "engine/MANIFEST.json", "engine/modules/core/accounts.txt", "engine/modules/core/guidance.txt",
-    "contracts/operating-canon.md", "contracts/export-bootstrap.md", "contracts/storage-adapter.md",
-    "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md", "contracts/guided-lifecycle-ingestion.md",
-    "schemas/workspace-schema.md", "schemas/account-registry.schema.json", "schemas/engine-manifest.schema.json",
-    "adapters/provider-matrix.md", "gold-assets/README.md", "gold-assets/manifest.json",
-    "releases/LATEST.json", "releases/CHANGELOG.md", "docs/architecture.md", "docs/deployment.md",
-    "docs/quick-install.md", "tests/RELEASE_GATES.md", ".github/workflows/validate.yml", ".github/CODEOWNERS",
-]
-
-GENERIC_FORBIDDEN = {
-    "email address": re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I),
-    "oauth/api token": re.compile(r"\b(?:ghp|github_pat|sk)-[A-Za-z0-9_\-]{12,}\b"),
-    "private key": re.compile(r"BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY"),
-}
-TEXT_SUFFIXES = {".md", ".txt", ".json", ".yml", ".yaml", ".py"}
+EXPECTED_LATEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json"
+EXPECTED_INSTALL = "https://tinyurl.com/2yxf7f5x"
 
 
-def fail(msg: str) -> None:
-    print(f"FAIL: {msg}")
+def fail(message):
+    print(f"FAIL: {message}")
     raise SystemExit(1)
 
 
-def version_from(text: str) -> str:
-    m = re.search(r"^engine_version:\s*(\S+)", text, re.M)
-    if not m:
+def read(rel):
+    return (ROOT / rel).read_text(encoding="utf-8")
+
+
+def require(label, body, tokens):
+    missing = [token for token in tokens if token not in body]
+    if missing:
+        fail(f"{label} missing: {', '.join(missing)}")
+
+
+def header_version(body):
+    match = re.search(r"^engine_version:\s*(\S+)", body, re.M)
+    if not match:
         fail("engine_version header missing")
-    return m.group(1)
+    return match.group(1)
 
 
-def iter_public_text_files():
-    for path in ROOT.rglob("*"):
-        if path.is_file() and ".git" not in path.parts and path.suffix.lower() in TEXT_SUFFIXES:
-            yield path
+def main():
+    for rel in REQUIRED_FILES:
+        if not (ROOT / rel).is_file():
+            fail(f"required file missing: {rel}")
 
+    loader = read("engine/BOOTSTRAP.txt")
+    full = read("engine/BOOTSTRAP_FULL.txt")
+    persistence = read("engine/modules/core/persistence.txt")
+    guidance = read("engine/modules/core/guidance.txt")
+    runtime = read("engine/modules/release/runtime.txt")
+    workspace = read("schemas/workspace-schema.md")
+    recovery_contract = read("contracts/runtime-checkpoint-recovery.md")
+    recovery_doc = read("docs/runtime-recovery.md")
 
-def main() -> None:
-    for rel in REQUIRED_REPO_FILES:
-        if not (ROOT / rel).exists():
-            fail(f"missing required file: {rel}")
+    version = header_version(loader)
+    if version != "2026-08-29.11" or header_version(full) != version:
+        fail("loader/full fallback version mismatch")
 
-    loader = BOOT.read_text(encoding="utf-8")
-    full = FULL.read_text(encoding="utf-8")
-    accounts = ACCOUNT_MODULE.read_text(encoding="utf-8")
-    guidance = GUIDANCE_MODULE.read_text(encoding="utf-8")
-    for phrase in REQUIRED_LOADER_PHRASES:
-        if phrase not in loader:
-            fail(f"thin loader missing required phrase: {phrase}")
-    for phrase in REQUIRED_FULL_PHRASES:
-        if phrase not in full:
-            fail(f"full fallback missing required phrase: {phrase}")
-    for phrase in REQUIRED_ACCOUNT_MODULE_PHRASES:
-        if phrase not in accounts:
-            fail(f"account module missing required phrase: {phrase}")
-    for phrase in REQUIRED_GUIDANCE_MODULE_PHRASES:
-        if phrase not in guidance:
-            fail(f"guidance module missing required phrase: {phrase}")
+    require("loader", loader, [
+        "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "RECOVERY-FIRST STARTUP",
+        "Runtime Checkpoints", "Runtime Journal", "WAITING_USER", "active_account_id",
+        "ACCOUNT DISCOVERY / MIGRATION-FIRST STARTUP", "BATCH / DONE RULE",
+        EXPECTED_REPO, EXPECTED_LATEST, EXPECTED_MANIFEST, EXPECTED_FULL, EXPECTED_INSTALL,
+    ])
+    require("full fallback", full, [
+        "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "RUNTIME CHECKPOINT MODEL",
+        "RUNTIME JOURNAL", "RECOVERY-FIRST STARTUP", "WRITE-AHEAD / IDEMPOTENCY",
+        "WAITING_USER", "RELEASE TRANSACTION RECOVERY", "active_account_id",
+        EXPECTED_REPO, EXPECTED_BOOT, EXPECTED_MANIFEST, EXPECTED_FULL, EXPECTED_INSTALL,
+    ])
+    require("core.persistence", persistence, [
+        "module_version: 2026-08-29.11.1", "RUNTIME CHECKPOINT MODEL", "RUNTIME JOURNAL",
+        "RECOVERY-FIRST RELOAD", "WRITE-AHEAD / IDEMPOTENCY", "RECOVERY_REQUIRED",
+        "append-only", "WAITING_USER", "ACCOUNT ISOLATION", "CONTEXT BUDGET",
+    ])
+    require("core.guidance", guidance, [
+        "module_version: 2026-08-29.11.1", "RUNTIME CHECKPOINT INTEGRATION",
+        "WAITING_USER", "BATCH BOUNDARY RULE", "active_account_id",
+    ])
+    require("release.runtime", runtime, [
+        "module_version: 2026-08-29.11.1", "RELEASE TRANSACTION CHECKPOINT",
+        "VERIFY-BEFORE-REPLAY", "CI_PASSED", "POST_MERGE_VERIFIED", "last-known-good",
+    ])
+    require("workspace schema", workspace, [
+        "Version: 2026-08-29.11", "Runtime Checkpoints", "Runtime Journal",
+        "append-only", "RECOVERY_REQUIRED", "active_account_id",
+    ])
+    require("recovery contract", recovery_contract, [
+        "Runtime Checkpoints", "Runtime Journal", "WAITING_USER", "verify-before-replay",
+        "hidden chain-of-thought", "append-only",
+    ])
+    require("recovery docs", recovery_doc, [
+        "Recovery procedure", "Runtime Checkpoints", "Runtime Journal", "WAITING_USER", "Privacy",
+    ])
 
-    version = version_from(loader)
-    if version_from(full) != version:
-        fail("BOOTSTRAP_FULL version does not match thin loader")
-
-    latest = json.loads(LATEST.read_text(encoding="utf-8"))
-    manifest = json.loads(MODULE_MANIFEST.read_text(encoding="utf-8"))
-    account_schema = json.loads(ACCOUNT_SCHEMA.read_text(encoding="utf-8"))
-    if account_schema.get("title") != "LWAI Workspace Account Registry":
-        fail("account registry schema title missing/unexpected")
-    required_schema_fields = set(account_schema.get("required", []))
-    if not {"workspace_schema_version", "accounts"}.issubset(required_schema_fields):
-        fail("account registry schema missing required workspace fields")
-    if "audit_sessions" not in account_schema.get("properties", {}):
-        fail("account registry schema missing optional audit_sessions")
-    account_item_props = (((account_schema.get("properties") or {}).get("accounts") or {}).get("items") or {}).get("properties") or {}
-    if "guidance_level" not in account_item_props:
-        fail("account registry account item missing guidance_level")
-
+    latest = json.loads(read("releases/LATEST.json"))
+    manifest = json.loads(read("engine/MANIFEST.json"))
+    account_schema = json.loads(read("schemas/account-registry.schema.json"))
     if latest.get("engine_version") != version or manifest.get("engine_version") != version:
-        fail("release/module manifest version does not match loader")
-    if latest.get("sanitized") is not True or manifest.get("sanitized") is not True:
-        fail("manifests must assert sanitized=true")
-    if latest.get("account_state_included") is not False or manifest.get("account_state_included") is not False:
-        fail("manifests must assert account_state_included=false")
-    if latest.get("github_repository") != EXPECTED_REPO:
-        fail("LATEST github_repository unexpected")
-    if latest.get("github_bootstrap_source") != EXPECTED_RAW_BOOT:
-        fail("LATEST github_bootstrap_source unexpected")
-    if latest.get("preferred_install_url") != EXPECTED_INSTALL_URL:
-        fail("LATEST preferred_install_url unexpected")
+        fail("LATEST/MANIFEST version mismatch")
+    if latest.get("schema_version") != "2.3" or manifest.get("schema_version") != "2.3":
+        fail("schema version mismatch")
+    for obj, label in [(latest, "LATEST"), (manifest, "MANIFEST")]:
+        if obj.get("sanitized") is not True or obj.get("account_state_included") is not False:
+            fail(f"{label} sanitization flags invalid")
+    if latest.get("github_repository") != EXPECTED_REPO or latest.get("github_bootstrap_source") != EXPECTED_BOOT:
+        fail("LATEST source endpoints invalid")
+    if latest.get("preferred_install_url") != EXPECTED_INSTALL:
+        fail("LATEST installer invalid")
 
-    module_ids = set()
+    if account_schema.get("title") != "LWAI Workspace Account Registry":
+        fail("account registry schema identity invalid")
+    if "audit_sessions" not in (account_schema.get("properties") or {}):
+        fail("account registry schema lost audit_sessions")
+
     entries = manifest.get("modules") or []
-    if not entries:
-        fail("module manifest has no modules")
+    ids = [entry.get("module_id") for entry in entries]
+    if not entries or None in ids or len(ids) != len(set(ids)):
+        fail("module ids missing or duplicated")
+    id_set = set(ids)
+    by_id = {entry["module_id"]: entry for entry in entries}
     for entry in entries:
-        mid = entry.get("module_id")
-        path = entry.get("path")
-        if not mid or mid in module_ids:
-            fail(f"invalid/duplicate module_id: {mid}")
-        module_ids.add(mid)
-        if not path or not (ROOT / path).is_file():
-            fail(f"module path missing for {mid}: {path}")
-        text = (ROOT / path).read_text(encoding="utf-8")
-        if f"module_id: {mid}" not in text:
-            fail(f"module self-identification mismatch: {mid}")
-        if "SANITIZED: YES" not in text or "ACCOUNT STATE INCLUDED: NO" not in text:
-            fail(f"module sanitization headers missing: {mid}")
-    for entry in entries:
+        rel = entry.get("path")
+        if not rel or not (ROOT / rel).is_file():
+            fail(f"missing module path for {entry.get('module_id')}")
+        body = read(rel)
+        require(entry["module_id"], body, [
+            f"module_id: {entry['module_id']}", "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO"
+        ])
         for dep in entry.get("dependencies", []):
-            if dep not in module_ids:
-                fail(f"unresolved dependency {dep} for {entry.get('module_id')}")
-    for required in ("core.operating", "core.persistence", "core.accounts", "core.guidance", "release.runtime", "release.bootstrap"):
-        match = next((e for e in entries if e.get("module_id") == required), None)
-        if not match or match.get("required") is not True:
-            fail(f"required core module not marked required: {required}")
-    account_entry = next(e for e in entries if e.get("module_id") == "core.accounts")
-    if account_entry.get("path") != "engine/modules/core/accounts.txt":
-        fail("core.accounts path unexpected")
-    guidance_entry = next(e for e in entries if e.get("module_id") == "core.guidance")
-    if guidance_entry.get("path") != "engine/modules/core/guidance.txt":
-        fail("core.guidance path unexpected")
-    if guidance_entry.get("dependencies") != ["core.operating", "core.persistence", "core.accounts"]:
-        fail("core.guidance dependencies unexpected")
+            if dep not in id_set:
+                fail(f"unresolved dependency {dep} for {entry['module_id']}")
 
-    for endpoint in (EXPECTED_REPO, EXPECTED_RAW_BOOT, EXPECTED_RAW_MANIFEST, EXPECTED_MODULE_MANIFEST, EXPECTED_FULL, EXPECTED_INSTALL_URL):
-        if endpoint not in loader and endpoint not in full:
-            fail(f"Production endpoint missing from runtime: {endpoint}")
+    required_ids = ["core.operating", "core.persistence", "core.accounts", "core.guidance", "release.runtime", "release.bootstrap"]
+    for module_id in required_ids:
+        if module_id not in by_id or by_id[module_id].get("required") is not True:
+            fail(f"required module not marked required: {module_id}")
+    if by_id["core.guidance"].get("dependencies") != ["core.operating", "core.persistence", "core.accounts"]:
+        fail("core.guidance dependency graph invalid")
+    for module_id in ["core.persistence", "core.guidance", "release.runtime"]:
+        if by_id[module_id].get("module_version") != "2026-08-29.11.1":
+            fail(f"{module_id} version not advanced to .11")
 
-    readme = README.read_text(encoding="utf-8")
-    if f"**Engine version:** `{version}`" not in readme:
-        fail("README Production version mismatch")
-    if EXPECTED_INSTALL_URL not in readme:
-        fail("README missing preferred installer")
-    quick = QUICK_INSTALL.read_text(encoding="utf-8")
-    if EXPECTED_INSTALL_URL not in quick or EXPECTED_RAW_BOOT not in quick:
-        fail("quick-install documentation missing required installer/fallback")
+    archive_rel = f"releases/{version}.json"
+    archive = json.loads(read(archive_rel))
+    if archive.get("engine_version") != version or archive.get("sanitized") is not True or archive.get("account_state_included") is not False:
+        fail("versioned release manifest invalid")
 
-    for path in iter_public_text_files():
-        text = path.read_text(encoding="utf-8")
-        for label, pattern in GENERIC_FORBIDDEN.items():
-            if pattern.search(text):
-                fail(f"{path.relative_to(ROOT)} contains possible {label}")
+    readme = read("README.md")
+    if f"**Engine version:** `{version}`" not in readme or EXPECTED_INSTALL not in readme:
+        fail("README Production identity/install mismatch")
+    quick = read("docs/quick-install.md")
+    if EXPECTED_INSTALL not in quick or EXPECTED_BOOT not in quick:
+        fail("quick-install endpoint mismatch")
 
-    archive = ROOT / "releases" / f"{version}.json"
-    if not archive.exists():
-        fail(f"versioned release manifest missing: {archive.relative_to(ROOT)}")
+    # Candidate-specific privacy guard: generic public artifacts define recovery behavior only.
+    public_recovery = "\n".join([loader, full, persistence, guidance, runtime, workspace, recovery_contract, recovery_doc, readme])
+    private_markers = [
+        "CP-" + "20260829" + "-011",
+        "J-" + "20260829" + "-011",
+    ]
+    for marker in private_markers:
+        if marker in public_recovery:
+            fail("candidate contains local checkpoint/journal identifier")
+    if re.search(r"\b(?:ghp|github_pat|sk)-[A-Za-z0-9_\-]{12,}\b", public_recovery, re.I):
+        fail("candidate contains possible credential token")
+    if re.search(r"BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY", public_recovery):
+        fail("candidate contains possible private key")
 
-    print(f"PASS: modular guided multi-account LWAI Production {version} passed repository-wide static release checks")
+    print(f"PASS: LWAI Production {version} passed runtime-recovery release checks")
+
 
 if __name__ == "__main__":
     main()

@@ -1,25 +1,53 @@
 LWAI MODULE — CORE PERSISTENCE, RELOAD & PRIVACY
 module_id: core.persistence
-module_version: 2026-08-29.9.1
+module_version: 2026-08-29.11.1
 load_class: mandatory_core
-state_scope: shared_engine+local_workspace_rules
+state_scope: shared_engine+local_workspace_rules+runtime_recovery
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
 PURPOSE
-Keep account state durable, private, recoverable, multi-account-safe and context-efficient while degrading gracefully when connectors are unavailable.
+Keep account state durable, private, recoverable, multi-account-safe and context-efficient while adding compact workflow recovery that survives conversational context loss. Persistent account state remains canonical; Runtime Checkpoints and Runtime Journal are operational metadata, not a second account database and not a transcript dump.
 
 PERSISTENCE PRINCIPLES
-Cloud/external persistence is strongly recommended but never required. Use only providers/capabilities genuinely available. Create an isolated LWAI workspace and never modify unrelated user files without explicit authorization. Persistent workspace state is canonical when writable; conversation context is cache.
+Cloud/external persistence is strongly recommended but never required. Use only providers/capabilities genuinely available. Create an isolated LWAI workspace and never modify unrelated user files without explicit authorization. Persistent workspace state is canonical when writable; conversation context is cache. Shared Production engine and private deployment state are separate layers.
 
 PRIVACY
-Account-identifying fields, screenshots, inventories, battle reports, balances, private corrections and provider-local identifiers remain in the user’s private runtime workspace. Never commit them to shared GitHub Production or public Gold Assets. Briefly explain this during persistence/identity setup. Never request game passwords, session tokens/cookies, captured authentication files or equivalent credentials for routine LWAI operation.
+Account-identifying fields, screenshots, inventories, battle reports, balances, private Corrections, Runtime Checkpoints, Runtime Journal rows and provider-local identifiers remain in the user’s private runtime workspace. Never commit consumer-local rows or values to shared GitHub Production or public Gold Assets. Sanitized Production may define schemas and behavior only. Never request game passwords, session tokens/cookies, captured authentication files or equivalent credentials for routine LWAI operation.
 
 WORKSPACE / ACCOUNT SEPARATION
 A multi-account deployment uses one workspace-level registry and isolated per-account databases/logical namespaces. Shared engine modules and generic mechanics may be reused; mutable account facts may not cross accounts. The registry stores active_account_id and provider-local account-database references. Engine updates preserve the registry, active_account_id and every account-local namespace.
 
-RELOAD
-Support `reload yourself` / `reload LWAI`. Load current engine/module metadata -> Workspace Registry -> active_account_id -> active account identity -> Hot Cache -> Corrections -> State Health -> relevant canonical state -> recent material Change Log -> relevant domain modules. Never infer the active account from chat recency.
+RUNTIME CHECKPOINT MODEL
+Persistent deployments SHOULD maintain workspace-level Runtime Checkpoints for bounded multi-step work whose interruption would otherwise be ambiguous. Supported scopes include ACCOUNT, AUDIT, ENGINE_RELEASE, MIGRATION, MAINTENANCE, IMPORT and PROVIDER_SETUP. Minimum fields: checkpoint_id, scope, nullable account_id, objective, current_phase, status, last_safe_point, completed_actions, pending_actions, pending_user_input, active_modules, affected_artifacts, important_assumptions, resume_instruction, started_at, updated_at, owner_context and notes.
+
+Checkpoint statuses: OPEN = work in progress; WAITING_USER = intentionally paused for input such as screenshots or `done`; COMMITTED = intended durable end state verified; ABORTED = intentionally abandoned but retained for audit; RECOVERY_REQUIRED = stored intent and durable observed state disagree or an interrupted write cannot be classified safely.
+
+RUNTIME JOURNAL
+Runtime Journal is append-only write-ahead/event history for material multi-step operations. Minimum fields: journal_id, checkpoint_id, timestamp, event_type, scope, nullable account_id, artifact, action, result, verified, safe_point_after, next_action, error_or_blocker and notes. Material events SHOULD include BEGIN, INTENT, WRITE_ATTEMPT, WRITE_SUCCESS, WRITE_FAILURE, VERIFY, SAFE_POINT, WAITING_USER, RESUME, COMMIT and ABORT.
+
+WHEN TO CHECKPOINT
+Checkpoint event-driven work rather than dumping conversation state on a timer. Use a checkpoint when starting a multi-artifact operation, before/after consequential migration, before changing active accounts while work is pending, when entering WAITING_USER including declared upload batches, after meaningful audit/import phases, when freezing/promoting a release, after a material tool blocker, or whenever blind replay could duplicate/overwrite durable state. Atomic one-field canonical updates do not need a separate workflow checkpoint.
+
+RECOVERY-FIRST RELOAD
+Support `reload yourself` / `reload LWAI`. Load current engine/module metadata -> Workspace Registry -> active_account_id -> unresolved Runtime Checkpoints + recent Runtime Journal entries relevant to the workspace/active account -> inspect their affected durable artifacts -> active account identity -> Hot Cache -> Corrections -> State Health -> relevant canonical state -> Audit Session when applicable -> recent material Change Log -> relevant domain modules.
+
+For every OPEN, WAITING_USER or RECOVERY_REQUIRED checkpoint: (1) read checkpoint/journal; (2) inspect actual durable artifacts; (3) treat verified durable state as authoritative over checkpoint claims; (4) classify what truly committed; (5) do not replay verified successful writes; (6) resume at the first unverified/pending action or ask the smallest necessary user question; (7) advance safe point/journal as recovery proceeds; (8) mark COMMITTED only after intended durable end state is verified.
+
+WRITE-AHEAD / IDEMPOTENCY
+Before the first material non-atomic write, record intent. After each material successful write, append a journal event and advance last_safe_point only when the result is verified enough to make replay safe. Recovery actions SHOULD be idempotent or verify-before-write. Never assume an earlier call failed merely because chat context vanished. Create operations verify equivalent objects do not already exist; updates compare current durable value/version before replacing it.
+
+WAITING_USER / BATCH RECOVERY
+When a declared upload batch is waiting for `done`, persist WAITING_USER with the requested boundary and concise pending input. Reload must preserve that boundary; do not finalize a partial batch merely because the conversation restarted. Audit Sessions remain the detailed account-audit progress mechanism; Runtime Checkpoints record surrounding workflow safe points only when recovery matters.
+
+ACCOUNT ISOLATION
+Account-scoped checkpoints MUST include account_id. Resolve active_account_id before resuming or mutating them. An account-scoped checkpoint from Account A may not be silently resumed while Account B is active. Workspace/global checkpoints such as ENGINE_RELEASE may omit account_id and must not contain consumer account-private values when represented in sanitized Production examples.
+
+CONTEXT BUDGET
+Do not persist hidden chain-of-thought, raw internal reasoning, full chat transcripts, or duplicated evidence blobs. Store only operational facts needed to resume safely: objective, safe point, verified writes, pending work, material assumptions and concise resume instructions. Evidence remains in canonical account storage or the original artifact.
+
+AUTOMATION / SWEEPER
+When scheduling exists and the user opts into maintenance, a low-frequency sweeper may inspect unresolved checkpoints against durable state. It must not pretend to capture current model RAM. It may mark unambiguous already-completed workflows COMMITTED, surface genuine RECOVERY_REQUIRED conflicts, or leave intentional WAITING_USER checkpoints alone. Notify only when action is needed.
 
 AUTOMATIC PREFLIGHT
 Before consequential spending, research, formation, account migration, context switching or engine-update decisions, refresh the smallest relevant active-account state and engine modules. Trivial updates should not trigger full-workspace/full-engine reloads.
@@ -28,7 +56,7 @@ STALENESS
 Corrections/invariants persist until revoked. Monotonic progression may become minimum-known when old. Volatile balances, active queues, store prices/inventory and season mechanics expire aggressively. Evict stale values from the active account Hot Cache but preserve history in that account’s Change Log/Snapshots.
 
 PROVIDER FALLBACKS
-Full structured read/write: use provider-native structured storage with separate account records/namespaces. Writable file storage only: use a workspace registry file plus separate account directories/files keyed by immutable account_id. Read-only cloud: reference only. If safe independent per-account writes cannot be guaranteed, do not claim full multi-account persistence. No cloud: continue in chat and use snapshots/exports. No automation: reconcile on return/preflight. No web: mark volatile external mechanics UNVERIFIED.
+Full structured read/write: use workspace-level Runtime Checkpoints and Runtime Journal tables/sheets plus separate account namespaces. Writable file storage only: use a checkpoint index plus append-only JSONL/NDJSON or timestamped JSON/Markdown journal records. Read-only/no durable storage: retain only best-effort compact session state and offer/export a recovery snapshot; never claim disk durability. If safe independent per-account writes cannot be guaranteed, do not claim full multi-account persistence. No automation: reconcile checkpoints on reload/preflight only. No web: mark volatile external mechanics UNVERIFIED.
 
 LOCAL/ENGINE SEPARATION
-LOCAL STATE includes Workspace Registry, active_account_id, account identities, mutable account facts, preferences, corrections, history, screenshots and provider metadata for every account. ENGINE includes sanitized rules, schemas, modules, adapters, commands and release logic. Engine upgrades update ENGINE only. Schema-breaking changes require a migration preserving all local state.
+LOCAL STATE includes Workspace Registry, active_account_id, account identities, mutable account facts, preferences, Corrections, history, screenshots, Audit Sessions, Runtime Checkpoints, Runtime Journal and provider metadata. ENGINE includes sanitized rules, schemas, modules, adapters, commands and release logic. Engine upgrades update ENGINE only. Schema-breaking changes require a migration preserving all local state. Checkpoint loss may reduce recovery convenience but must never destroy canonical account facts.

@@ -1,10 +1,10 @@
 {
-  "engine_version": "2026-08-29.10",
-  "schema_version": "2.2",
+  "engine_version": "2026-08-29.11",
+  "schema_version": "2.3",
   "channel": "Production",
   "sanitized": true,
   "account_state_included": false,
-  "runtime_mode": "modular-guided-multi-account",
+  "runtime_mode": "modular-recovery",
   "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
   "remote_install_mode": "user-authorized URL thin-loader bootstrap",
   "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
@@ -12,10 +12,10 @@
   "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "migration": {
-    "from": "2026-08-29.9",
-    "type": "additive local-state schema / non-destructive",
-    "local_state_action": "preserve all existing account state; add optional guidance metadata and account-scoped Audit Sessions when supported",
-    "notes": "Prior accessible LWAI state is discovered/reconciled before redundant onboarding. Archive restore retains immutable account_id and history."
+    "from": "2026-08-29.10",
+    "type": "additive workspace recovery schema / non-destructive",
+    "local_state_action": "preserve all existing account state and Audit Sessions; optionally add workspace-level Runtime Checkpoints and append-only Runtime Journal when writable persistence supports them",
+    "notes": "Recovery-first startup verifies durable artifacts before replay. Checkpoint loss never destroys canonical account facts; actual local checkpoint/journal rows remain private deployment state."
   },
-  "notes": "Adds mandatory guided interaction/lifecycle behavior: migration-first reuse, adaptive hand-holding, explicit done boundaries, direct/document/guided screenshot ingestion, resumable account-scoped Audit Sessions, safe auto-continuation and reversible archive recovery."
+  "notes": "Adds event-driven Runtime Checkpoints, append-only Runtime Journal, verify-before-replay recovery, durable WAITING_USER/done boundaries, account-scoped checkpoint isolation and resumable release transactions without persisting hidden reasoning or full transcripts."
 }
