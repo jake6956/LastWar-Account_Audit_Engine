@@ -1,14 +1,19 @@
 # Release Engineering Contract
 
-Version: 2026-08-29.5
+Contract revision: 2026-08-29.6
 
 ## Channels
 - **Prod-Dev:** private live development/proving ground using real account data.
 - **Release Candidate:** sanitized frozen candidate for validation.
-- **Production:** sanitized public engine for mass consumption.
+- **Production:** sanitized public engine for mass consumption on GitHub `main`.
+
+## Production branch invariant
+`main` is last-known-good Production. Future candidates must not be written directly to `main` before validation.
 
 ## Promotion path
-`Prod-Dev validation -> sanitized source update -> frozen RC -> release gates -> Production archive -> stable public LATEST mirror`
+`Private Prod-Dev validation -> sanitized source compile -> GitHub RC branch -> Pull Request -> CI + private release gates -> merge/squash to main -> versioned Production archive -> stable Google distribution mirror`
+
+Recommended RC branch name: `rc/<engine-version>`.
 
 ## Required gates
 1. Sanitization: no private/account-specific identity or state.
@@ -20,15 +25,28 @@ Version: 2026-08-29.5
 7. Regression checks: shared gear, preset separation, squad-slot tech, orientation discipline, volatile refresh, prerequisite-aware research and consequential-spend logic remain intact.
 8. Local-state preservation: upstream engine refresh cannot erase deployment-local state.
 9. Documentation-as-code: relevant source/docs/tests/version records updated.
-10. Stable endpoint: consumer LATEST remains the stable distribution URL.
+10. GitHub RC CI: validation must pass on the RC/PR head.
+11. Main protection by process: merge only the exact validated RC head SHA; if the head changes, revalidate before merge.
+12. Distribution parity: after merge, GitHub `LATEST.json`, raw Production bootstrap and stable Google distribution mirror must agree on engine version/material runtime behavior.
 
-If any gate fails, Production remains at the previous known-good build.
+If any pre-merge gate fails, leave `main` untouched and keep the current public Production live. If a post-merge mirror/parity step fails, GitHub `main` remains authoritative and the Google mirror is marked synchronization-degraded until repaired; consumers using the mirror should retain their last-known-good local engine when version parity cannot be established.
+
+## Pull request discipline
+- Create the RC branch from current `main`.
+- Put all generic Production changes for that release on the RC branch.
+- Open a PR to `main` with intended version, migration status and gate checklist.
+- Require CI success plus private sanitization/noob/local-state checks.
+- Merge using the validated expected head SHA; squash is preferred for a compact Production history unless preserving multiple commits materially helps auditability.
+- Never use Production PRs to carry private account data.
 
 ## Versioning
-Use `YYYY-MM-DD.N`. Increment N for each production-ready revision that day. RC uses intended Production version. Experimental Prod-Dev changes need no public version until promotion.
+Use `YYYY-MM-DD.N`. Increment N for each production-ready engine revision on the same date. RC branch/PR uses the intended Production version. Experimental Prod-Dev changes need no public version until promotion.
 
 ## Rollback
-Restore a known-good versioned Production artifact to the same stable consumer endpoint. Never require consumers to adopt a new link for routine releases.
+Restore a known-good versioned Production source/artifact through a new validated rollback RC/PR. Keep the stable consumer distribution URL; do not silently rewrite private/local account state during rollback.
 
 ## Schema changes
 Prefer backward compatibility. Breaking schema changes require migration instructions plus local-state preservation tests before promotion.
+
+## Current bootstrap exception
+The initial repository/bootstrap import was written directly to `main` while GitHub connectivity and CI were being established. From this contract revision forward, ordinary Production changes use the RC branch/PR gate above.
