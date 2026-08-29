@@ -6,7 +6,6 @@
   "account_state_included": false,
   "runtime_mode": "modular-multi-account",
   "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
-  "remote_install_mode": "user-authorized URL thin-loader bootstrap",
   "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
   "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
   "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
@@ -14,8 +13,21 @@
   "migration": {
     "from": "2026-08-29.8",
     "type": "additive local-state schema / non-destructive",
-    "local_state_action": "preserve all existing account state; register legacy single-account database in place",
-    "notes": "Adds a private Workspace Registry, immutable LWAI account_id, optional identity metadata, active_account_id routing, isolated account namespaces and context switching. Existing single-account deployments migrate without re-onboarding or rewriting historical domain data."
+    "local_state_action": "register existing database in place and preserve all historical account data"
   },
-  "notes": "Adds first-class multi-account management: existing-account discovery before onboarding, optional/private UID recognition, concise privacy reassurance, isolated account databases, active-account context switching, nondestructive start-over, identity sanity checks and read-only cross-account comparison."
+  "features": [
+    "workspace-level account registry",
+    "immutable LWAI account_id",
+    "optional private game UID recognition",
+    "identity privacy reassurance",
+    "existing-account discovery before onboarding",
+    "isolated per-account databases or namespaces",
+    "active_account_id context routing",
+    "safe context switching",
+    "nondestructive start-over",
+    "identity sanity checks",
+    "read-only cross-account comparison",
+    "legacy single-account migration",
+    "account-isolation release gates"
+  ]
 }

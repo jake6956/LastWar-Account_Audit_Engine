@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jake6956/LastWar-Account_Audit_Engine/schemas/account-registry.schema.json",
+  "title": "LWAI Workspace Account Registry",
+  "type": "object",
+  "required": ["workspace_schema_version", "accounts"],
+  "properties": {
+    "workspace_schema_version": {"type": "string"},
+    "active_account_id": {"type": ["string", "null"]},
+    "account_discovery_policy": {"type": "string", "default": "discover-before-new-onboarding"},
+    "provider_adapter": {"type": ["string", "null"]},
+    "privacy_policy": {"type": "string", "default": "identity-private-local-not-shared-production"},
+    "accounts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["account_id", "status"],
+        "properties": {
+          "account_id": {"type": "string", "minLength": 8},
+          "nickname": {"type": ["string", "null"]},
+          "game_uid": {"type": ["string", "null"], "description": "Optional private game UID; never required for account creation."},
+          "uid_suffix": {"type": ["string", "null"]},
+          "screenname": {"type": ["string", "null"]},
+          "alliance": {"type": ["string", "null"]},
+          "server": {"type": ["string", "null"]},
+          "active": {"type": "boolean", "default": false},
+          "status": {"enum": ["active", "archived", "pending"]},
+          "last_identity_confirmed": {"type": ["string", "null"], "format": "date-time"},
+          "last_updated": {"type": ["string", "null"], "format": "date-time"},
+          "database_provider": {"type": ["string", "null"]},
+          "database_artifact_id_or_path": {"type": ["string", "null"]},
+          "database_artifact_title": {"type": ["string", "null"]},
+          "notes": {"type": ["string", "null"]}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

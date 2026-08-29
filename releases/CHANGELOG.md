@@ -1,5 +1,23 @@
 # Production Changelog
 
+## 2026-08-29.9
+
+- Added `core.accounts` as mandatory Production behavior for account identity, discovery, isolation, switching and migration.
+- Added a workspace-level Account Registry with immutable LWAI-generated `account_id` and `active_account_id` routing.
+- Added optional/private game UID plus screenname, alliance, server and nickname as human-recognition metadata; UID is never required for onboarding or account creation.
+- Added concise identity/privacy reassurance: identifying values are for the user's own internal/local account management and are not copied into shared LWAI Production.
+- Explicitly prohibited routine collection of game passwords, session tokens/cookies, captured authentication files or login credentials.
+- Added existing-account discovery before new-account Phase 1, including recognizable account choices and confirmation rather than silently selecting among plausible accounts.
+- Added isolated per-account canonical databases/logical namespaces and provider rules that refuse to claim full multi-account persistence when independent safe writes cannot be guaranteed.
+- Added first-class context switching through `active_account_id`; reload and terse updates no longer infer account routing from conversational recency.
+- Added nondestructive `start over`: create a new clean account and archive the prior registry entry by default.
+- Added read-only cross-account comparison that preserves the prior active account unless the user explicitly switches.
+- Added identity sanity checks for mutable screenname/alliance/server/optional UID while preserving immutable `account_id` when account continuity is supported.
+- Added non-destructive migration from legacy single-account LWAI: register the existing canonical database in place without re-onboarding or rewriting historical domain data.
+- Added provider-neutral Account Registry schema, multi-account workspace schema, account-registry contract and expanded migration contract.
+- Expanded CI/release gates for account-module completeness, account-registry schema validation, isolation, active-account routing, optional UID behavior, privacy, nondestructive start-over, read-only comparison and migration preservation.
+- Rebuilt `BOOTSTRAP_FULL.txt` so the standalone recovery path carries the same multi-account/privacy semantics as the modular loader.
+
 ## 2026-08-29.8
 
 - Replaced the monolithic default Production bootstrap with a small `engine/BOOTSTRAP.txt` thin loader.
