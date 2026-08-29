@@ -11,6 +11,8 @@ MODULE_MANIFEST = ROOT / "engine" / "MANIFEST.json"
 LATEST = ROOT / "releases" / "LATEST.json"
 README = ROOT / "README.md"
 QUICK_INSTALL = ROOT / "docs" / "quick-install.md"
+ACCOUNT_SCHEMA = ROOT / "schemas" / "account-registry.schema.json"
+ACCOUNT_MODULE = ROOT / "engine" / "modules" / "core" / "accounts.txt"
 
 EXPECTED_REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
 EXPECTED_RAW_BOOT = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt"
@@ -21,16 +23,23 @@ EXPECTED_INSTALL_URL = "https://tinyurl.com/2yxf7f5x"
 
 REQUIRED_LOADER_PHRASES = [
     "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "runtime_mode: modular",
-    "LOADER PROCEDURE", "CORE OPERATING MODEL", "EVIDENCE HIERARCHY",
-    "SELF-HEALING RULE", "UPSTREAM ENGINE / LOCAL STATE SEPARATION",
-    "REMOTE BOOTSTRAP / ONE-LINE INSTALL", "PRIVACY / SEMI-ANONYMIZED DISTRIBUTION",
-    "DOCUMENTATION-AS-CODE", "HEALTH / REGRESSION TESTS", "STARTUP BEHAVIOR",
+    "LOADER PROCEDURE", "ACCOUNT DISCOVERY", "ACCOUNT IDENTITY / PRIVACY",
+    "CONTEXT SWITCHING", "START-OVER SAFETY", "IDENTITY SANITY CHECK",
+    "active_account_id", "UID is useful but optional", "CORE OPERATING MODEL",
+    "EVIDENCE HIERARCHY", "SELF-HEALING RULE",
+    "UPSTREAM ENGINE / LOCAL STATE SEPARATION", "REMOTE BOOTSTRAP / ONE-LINE INSTALL",
+    "PRIVACY / SEMI-ANONYMIZED DISTRIBUTION", "DOCUMENTATION-AS-CODE",
+    "HEALTH / REGRESSION TESTS", "STARTUP BEHAVIOR",
 ]
 
 REQUIRED_FULL_PHRASES = [
     "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "runtime_mode: standalone_fallback",
     "STEP 0 — REASONING MODE", "CORE OPERATING MODEL", "EVIDENCE HIERARCHY", "STATE LEDGER",
-    "SELF-HEALING RULE", "SHARED GEAR / PRESET MODEL", "MARGINAL ROI", "SCREENSHOT HANDLING",
+    "SELF-HEALING RULE", "ACCOUNT REGISTRY / PRIMARY KEY", "HUMAN-RECOGNITION IDENTITY",
+    "UID POLICY / PRIVACY REASSURANCE", "WORKSPACE REGISTRY", "ACCOUNT DATABASE ISOLATION",
+    "EXISTING-ACCOUNT DISCOVERY", "CONTEXT SWITCHING", "CROSS-ACCOUNT OPERATIONS",
+    "START-OVER SAFETY", "IDENTITY SANITY CHECK", "MIGRATION FROM SINGLE-ACCOUNT LWAI",
+    "active_account_id", "SHARED GEAR / PRESET MODEL", "MARGINAL ROI", "SCREENSHOT HANDLING",
     "GEAR / UPGRADE ORE", "SKILL MEDALS", "EXCLUSIVE WEAPONS", "SQUAD-SLOT TECH", "RESEARCH",
     "DRONE / COMPONENTS / CHIPS", "DECORATIONS", "OPTIONAL CLOUD PERSISTENCE",
     "CAPABILITY DISCOVERY / GRACEFUL DEGRADATION", "CLOUD-NEUTRAL WORKSPACE SCHEMA",
@@ -40,14 +49,22 @@ REQUIRED_FULL_PHRASES = [
     "DOCUMENTATION-AS-CODE", "COMMAND VOCABULARY", "HEALTH / REGRESSION TESTS", "STARTUP BEHAVIOR",
 ]
 
+REQUIRED_ACCOUNT_MODULE_PHRASES = [
+    "UID is optional", "PRIVACY / USER REASSURANCE", "WORKSPACE REGISTRY",
+    "ACCOUNT DATABASE ISOLATION", "EXISTING-ACCOUNT DISCOVERY", "START-OVER SAFETY",
+    "CONTEXT SWITCHING", "CROSS-ACCOUNT OPERATIONS", "IDENTITY SANITY CHECK",
+    "MIGRATION FROM SINGLE-ACCOUNT LWAI", "REGRESSION INVARIANTS", "active_account_id",
+]
+
 REQUIRED_REPO_FILES = [
     "README.md", "SECURITY.md", "CONTRIBUTING.md", "engine/BOOTSTRAP.txt", "engine/BOOTSTRAP_FULL.txt",
-    "engine/MANIFEST.json", "contracts/operating-canon.md", "contracts/export-bootstrap.md",
-    "contracts/storage-adapter.md", "contracts/release.md", "contracts/migration.md",
-    "schemas/workspace-schema.md", "schemas/engine-manifest.schema.json", "adapters/provider-matrix.md",
-    "gold-assets/README.md", "gold-assets/manifest.json", "releases/LATEST.json", "releases/CHANGELOG.md",
-    "docs/architecture.md", "docs/deployment.md", "docs/quick-install.md", "tests/RELEASE_GATES.md",
-    ".github/workflows/validate.yml", ".github/CODEOWNERS",
+    "engine/MANIFEST.json", "engine/modules/core/accounts.txt",
+    "contracts/operating-canon.md", "contracts/export-bootstrap.md", "contracts/storage-adapter.md",
+    "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md",
+    "schemas/workspace-schema.md", "schemas/account-registry.schema.json", "schemas/engine-manifest.schema.json",
+    "adapters/provider-matrix.md", "gold-assets/README.md", "gold-assets/manifest.json",
+    "releases/LATEST.json", "releases/CHANGELOG.md", "docs/architecture.md", "docs/deployment.md",
+    "docs/quick-install.md", "tests/RELEASE_GATES.md", ".github/workflows/validate.yml", ".github/CODEOWNERS",
 ]
 
 GENERIC_FORBIDDEN = {
@@ -83,12 +100,16 @@ def main() -> None:
 
     loader = BOOT.read_text(encoding="utf-8")
     full = FULL.read_text(encoding="utf-8")
+    accounts = ACCOUNT_MODULE.read_text(encoding="utf-8")
     for phrase in REQUIRED_LOADER_PHRASES:
         if phrase not in loader:
             fail(f"thin loader missing required phrase: {phrase}")
     for phrase in REQUIRED_FULL_PHRASES:
         if phrase not in full:
             fail(f"full fallback missing required phrase: {phrase}")
+    for phrase in REQUIRED_ACCOUNT_MODULE_PHRASES:
+        if phrase not in accounts:
+            fail(f"account module missing required phrase: {phrase}")
 
     version = version_from(loader)
     if version_from(full) != version:
@@ -96,6 +117,13 @@ def main() -> None:
 
     latest = json.loads(LATEST.read_text(encoding="utf-8"))
     manifest = json.loads(MODULE_MANIFEST.read_text(encoding="utf-8"))
+    account_schema = json.loads(ACCOUNT_SCHEMA.read_text(encoding="utf-8"))
+    if account_schema.get("title") != "LWAI Workspace Account Registry":
+        fail("account registry schema title missing/unexpected")
+    required_schema_fields = set(account_schema.get("required", []))
+    if not {"workspace_schema_version", "accounts"}.issubset(required_schema_fields):
+        fail("account registry schema missing required workspace fields")
+
     if latest.get("engine_version") != version or manifest.get("engine_version") != version:
         fail("release/module manifest version does not match loader")
     if latest.get("sanitized") is not True or manifest.get("sanitized") is not True:
@@ -130,10 +158,13 @@ def main() -> None:
         for dep in entry.get("dependencies", []):
             if dep not in module_ids:
                 fail(f"unresolved dependency {dep} for {entry.get('module_id')}")
-    for required in ("core.operating", "core.persistence", "release.runtime", "release.bootstrap"):
+    for required in ("core.operating", "core.persistence", "core.accounts", "release.runtime", "release.bootstrap"):
         match = next((e for e in entries if e.get("module_id") == required), None)
         if not match or match.get("required") is not True:
             fail(f"required core module not marked required: {required}")
+    account_entry = next(e for e in entries if e.get("module_id") == "core.accounts")
+    if account_entry.get("path") != "engine/modules/core/accounts.txt":
+        fail("core.accounts path unexpected")
 
     for endpoint in (EXPECTED_REPO, EXPECTED_RAW_BOOT, EXPECTED_RAW_MANIFEST, EXPECTED_MODULE_MANIFEST, EXPECTED_FULL, EXPECTED_INSTALL_URL):
         if endpoint not in loader and endpoint not in full:
@@ -158,7 +189,7 @@ def main() -> None:
     if not archive.exists():
         fail(f"versioned release manifest missing: {archive.relative_to(ROOT)}")
 
-    print(f"PASS: modular LWAI Production {version} passed repository-wide static release checks")
+    print(f"PASS: modular multi-account LWAI Production {version} passed repository-wide static release checks")
 
 if __name__ == "__main__":
     main()
