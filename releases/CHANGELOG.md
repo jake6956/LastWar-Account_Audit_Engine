@@ -1,5 +1,16 @@
 # Production Changelog
 
+## 2026-08-29.6
+
+- Activated GitHub as the authoritative sanitized Production engineering/source-control hub.
+- Preserved each player's cloud/chat workspace as the private runtime spoke; no local account state flows into the public repository.
+- Added stable machine-readable `releases/LATEST.json` and raw `engine/BOOTSTRAP.txt` update sources.
+- Kept the stable Google Doc as the lowest-friction consumer distribution mirror and fallback update source.
+- Formalized consumer engine refresh order: preserve local state -> check GitHub Production manifest -> apply migrations if required -> refresh generic engine layer -> run health checks; fall back to Google Doc or local last-known-good engine.
+- Added repository schemas, storage adapter matrix, migration contract, release gates, security boundary, contribution rules and architecture/deployment documentation.
+- Added GitHub Actions static Production validation.
+- Added explicit hub-and-spoke synchronization/version parity as a release health check.
+
 ## 2026-08-29.5
 
 - Compiled Production bootstrap made self-contained.
