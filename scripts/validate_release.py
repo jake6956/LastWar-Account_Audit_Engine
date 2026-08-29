@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 BOOT = ROOT / "engine" / "BOOTSTRAP.txt"
 MANIFEST = ROOT / "releases" / "LATEST.json"
 README = ROOT / "README.md"
+QUICK_INSTALL = ROOT / "docs" / "quick-install.md"
 
 REQUIRED_BOOTSTRAP_PHRASES = [
     "SANITIZED: YES",
@@ -33,6 +34,8 @@ REQUIRED_BOOTSTRAP_PHRASES = [
     "GITHUB PRODUCTION HUB / DISTRIBUTION CONTRACT",
     "CENTRAL UPDATE CHANNEL",
     "HUB-AND-SPOKE INVARIANT",
+    "REMOTE BOOTSTRAP / ONE-LINE INSTALL",
+    "PRIVACY / SEMI-ANONYMIZED DISTRIBUTION",
     "DOCUMENTATION-AS-CODE",
     "COMMAND VOCABULARY",
     "HEALTH / REGRESSION TESTS",
@@ -58,6 +61,7 @@ REQUIRED_REPO_FILES = [
     "releases/CHANGELOG.md",
     "docs/architecture.md",
     "docs/deployment.md",
+    "docs/quick-install.md",
     "tests/RELEASE_GATES.md",
     ".github/workflows/validate.yml",
     ".github/CODEOWNERS",
@@ -66,6 +70,7 @@ REQUIRED_REPO_FILES = [
 EXPECTED_REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
 EXPECTED_RAW_BOOT = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt"
 EXPECTED_RAW_MANIFEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json"
+EXPECTED_INSTALL_URL = "https://tinyurl.com/2yxf7f5x"
 
 # Generic safety checks. The private Prod-Dev release gate also uses an
 # account-specific denylist that must never be committed to the public repo.
@@ -117,14 +122,24 @@ def main() -> None:
         fail("manifest github_repository is missing or unexpected")
     if manifest.get("github_bootstrap_source") != EXPECTED_RAW_BOOT:
         fail("manifest github_bootstrap_source is missing or unexpected")
+    if manifest.get("preferred_install_url") != EXPECTED_INSTALL_URL:
+        fail("manifest preferred_install_url is missing or unexpected")
 
-    for endpoint in (EXPECTED_REPO, EXPECTED_RAW_BOOT, EXPECTED_RAW_MANIFEST):
+    for endpoint in (EXPECTED_REPO, EXPECTED_RAW_BOOT, EXPECTED_RAW_MANIFEST, EXPECTED_INSTALL_URL):
         if endpoint not in bootstrap:
             fail(f"bootstrap missing production endpoint: {endpoint}")
 
     readme = README.read_text(encoding="utf-8")
     if f"**Engine version:** `{version}`" not in readme:
         fail("README current Production version does not match manifest/bootstrap")
+    if EXPECTED_INSTALL_URL not in readme:
+        fail("README missing preferred one-line install URL")
+
+    quick_install = QUICK_INSTALL.read_text(encoding="utf-8")
+    if EXPECTED_INSTALL_URL not in quick_install:
+        fail("quick-install documentation missing preferred install URL")
+    if EXPECTED_RAW_BOOT not in quick_install:
+        fail("quick-install documentation missing canonical raw bootstrap fallback")
 
     # Scan the whole committed public text tree rather than only the bootstrap.
     # An account-specific/private denylist remains a separate pre-promotion gate.
