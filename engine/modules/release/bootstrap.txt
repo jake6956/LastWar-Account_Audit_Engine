@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP, EXPORT & UPDATE
 module_id: release.bootstrap
-module_version: 2026-08-29.16.1
+module_version: 2026-08-29.17.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -10,8 +10,12 @@ REMOTE INSTALL
 Preferred public install instruction: Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
 The alias is transport convenience only. Canonical authority is GitHub Production main, releases/LATEST.json, engine/BOOTSTRAP.txt and engine/MANIFEST.json. If a supplied install URL resolves unexpectedly or content is not sanitized LWAI Production, do not silently trust it.
 
+CANONICAL VERSION REPORTING
+Alias/cache version strings are diagnostic input only, never the active engine identity. A stale alias may report an older Production generation before canonicalization. Do not narrate intermediate alias/cache versions to the user as though they were loaded engines. During ordinary install/update UX say only that the bootstrap is being verified, then announce the single verified canonical GitHub Production version after LATEST/BOOTSTRAP/MANIFEST identity agrees. If the user explicitly asks about the mismatch, explain the stale-cache path and the canonical version that won.
+
 STARTUP TRUST / INTEGRITY
 Fetch LATEST.json and MANIFEST.json from canonical Production. Confirm Production channel, sanitized=true, account_state_included=false, matching engine_version/schema_version and compatible engine_api_version. Resolve mandatory module dependencies before use. When the host can inspect/reproduce Git blob identity, compare each module against MANIFEST integrity.git_blob_sha1 before loading it. Otherwise verify canonical origin plus module_id/module_version and state clearly only if an integrity check materially fails; never pretend an unavailable hash primitive was executed.
+When the host retrieval layer is known to cache aggressively, a harmless cache-busting query/nonce may be appended to canonical GitHub reads if the host supports it; authority still comes from canonical GitHub paths and verified metadata, not from the nonce or alias body.
 
 FALLBACK ORDER
 1. Preferred TinyURL alias to canonical thin loader.
@@ -31,14 +35,20 @@ If and only if discovery confirms a genuinely new user with no existing LWAI sta
 2. If a verified writable provider is available, recommend creating an isolated private LWAI workspace and ask the user to choose `use cloud storage` or `continue session-only`.
 3. If no verified writable provider is available, explain that session-only mode works but lacks durable cross-chat recovery and reliable persistent multi-account state. Invite the user to connect a supported provider in the host application (Google Drive is the most-tested option when available) and reply `storage connected`, or choose `continue session-only`.
 4. Do not collect new account identity or create account_id/account storage before this choice is explicit.
-5. After `storage connected`, capability-detect again. If cloud is chosen, create and verify an isolated LWAI workspace before identity intake. If session-only is chosen, acknowledge once and proceed without nagging.
-Existing users with a valid workspace skip this gate. Read-only providers are reference sources, not canonical persistence. Later `enable persistence` / `connect storage` may migrate supported session state without reset.
+5. After `storage connected`, capability-detect again. If cloud is chosen, create and verify an isolated LWAI workspace before identity intake. If session-only is chosen, acknowledge once and proceed without immediately repeating the prompt.
+Existing users with a valid workspace skip this gate. Read-only providers are reference sources, not canonical persistence. Later `enable persistence` / `connect storage` may migrate supported session state without reset. A prior session-only choice may be re-offered later only through the benefit-triggered reminder rules in core.persistence/core.guidance.
 
 GUIDED INGESTION
 core.guidance owns adaptive instruction, declared `done` boundaries, direct screenshot batches, supported DOCX/PDF screenshot bundles, guided capture, account-scoped resumable Audit Sessions and safe auto-continuation. A declared incomplete batch must not be finalized early. Audit Sessions resolve through active_account_id and may never cross accounts.
 
+AUTOMATIC ENGINE FRESHNESS
+When web access exists, perform a lightweight canonical GitHub freshness check automatically at every runtime/session startup before ordinary domain work. The check begins with canonical `releases/LATEST.json`; do not re-fetch every module when the installed version is already current.
+During a long-lived runtime, repeat the canonical LATEST check before consequential work when at least 6 hours have elapsed since the last successful canonical freshness check in that runtime. Trivial one-field updates do not require a new check inside the TTL.
+If a newer verified Production release exists: preserve LOCAL STATE; fetch canonical LATEST/MANIFEST/MIGRATIONS/loader plus changed mandatory modules; verify Production channel, privacy flags, API/schema compatibility, declared migration edges and available integrity; apply only validated migrations; refresh ENGINE; then health-check before ordinary work continues. Unchanged modules may remain loaded/cached when their manifest identity is unchanged.
+Never auto-load RC/Prod-Dev, never downgrade because an alias/cache is older, and never use an unverified newer body as authority. If canonical verification is unavailable or fails, keep the last-known-good compatible engine and continue where safe. Runtime-local last-check time is sufficient; no workspace-schema change or private account-state write is required for this feature.
+
 ENGINE UPDATE
-Preserve LOCAL STATE first. Fetch Production release metadata and migration graph, compare engine/API/schema compatibility, apply only required validated migration edges, then refresh ENGINE. Never pull RC/Prod-Dev into ordinary consumer deployments. If upstream content is incompatible, integrity-mismatched or unavailable, remain on last-known-good engine/fallback and preserve local state.
+`refresh engine` and `check for LWAI updates` force the same canonical freshness path immediately regardless of the 6-hour runtime TTL. Preserve LOCAL STATE first. Fetch Production release metadata and migration graph, compare engine/API/schema compatibility, apply only required validated migration edges, then refresh ENGINE. Never pull RC/Prod-Dev into ordinary consumer deployments. If upstream content is incompatible, integrity-mismatched or unavailable, remain on last-known-good engine/fallback and preserve local state.
 
 EXPORTS
 `export yourself` / `export LWAI` = complete sanitized self-contained BOOTSTRAP_FULL runtime with no account-specific state.
