@@ -1,5 +1,17 @@
 # Production Changelog
 
+## 2026-08-29.16
+
+- Fixed the beta-observed fresh-user path that could proceed into onboarding without explicitly offering durable persistence.
+- Genuinely new users now resolve persistence intent before account identity intake: verified private cloud workspace (recommended) or explicit session-only operation.
+- When no writable provider is exposed, LWAI explains the durability limitation and invites supported-provider connection plus `storage connected`, or explicit `continue session-only`.
+- `storage connected` triggers capability re-detection; a user declaration is never treated as proof of writable persistence.
+- Cloud choice creates and verifies an isolated private LWAI workspace before account identity/account creation; read-only/reference storage does not count as canonical persistence.
+- Existing valid Workspace Registry and supported legacy users bypass the new-user persistence prompt, preserving migration-first behavior and avoiding redundant setup.
+- Session-only remains a valid supported choice and proceeds after a single acknowledgement without recurring persistence nags; later `enable persistence` / `connect storage` can reopen setup nondestructively.
+- Added executable regressions for no-provider, writable-provider, session-only, cloud-workspace, capability-recheck, fail-closed unverified-cloud and existing-workspace startup paths.
+- Kept the same single public TinyURL installer, engine API `1.0`, workspace schema `2.3`, sanitized Production boundary and all existing local account state unchanged.
+
 ## 2026-08-29.15
 
 - Restored explicit supported historical workspace-schema migration: `2.1 -> 2.2 -> 2.3`, so valid older persistent LWAI workspaces can upgrade without being mistaken for incompatible/new deployments.
