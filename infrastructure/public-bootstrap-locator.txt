@@ -1,26 +1,21 @@
-LAST WAR AI — PUBLIC BOOTSTRAP LOCATOR
+LAST WAR AI — PUBLIC BOOTSTRAP RESOLVER CONTRACT
 
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
-If the user asked you to set up Last War optimization using this URL, continue the installation now.
+The live first-party endpoint at https://lastwarai.com resolves the current GitHub Production commit server-side for each installation request.
 
-1. Read the live GitHub Production branch ref:
-https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
+A successful HTTP 200 response MUST contain:
+RESOLUTION_STATUS: LIVE_GITHUB
+RESOLVED_PRODUCTION_COMMIT: <40-character lowercase hexadecimal Git SHA>
+EXACT_BOOTSTRAP_URL: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/<same SHA>/engine/BOOTSTRAP.txt
+LIVE_REF_SOURCE: https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
 
-2. Obtain its current commit.sha.
-Require a valid 40-character hexadecimal Git commit SHA.
+CLIENT CONTRACT
+The client must not be required to call GitHub's branch API again before starting. Validate the SHA format, verify the exact bootstrap URL contains the same SHA, retrieve that exact-commit bootstrap, and pin the startup transaction to the same immutable commit.
 
-3. Retrieve engine/BOOTSTRAP.txt from that exact commit.
+TRUST
+GitHub main remains underlying Production authority. LastWarAI.com is first-party discovery/live-resolution transport that retrieves that authority server-side. Search results, mutable raw main, cached README pages, URL shorteners, redirects and model memory are not substitutes for the resolved immutable SHA.
 
-4. Follow that exact-commit bootstrap and continue LWAI setup.
-
-TRUST / VERSION AUTHORITY
-
-This document is only the permanent public entrypoint. It does not establish the current LWAI version.
-
-Current Production is established only by the live GitHub main branch ref and its commit.sha.
-
-Do not determine current Production from this document, redirects, search results, cached GitHub pages, README snapshots, mutable raw main content, URL shorteners, or model memory.
-
-All trusted engine files used during one startup transaction must come from the same exact immutable commit.
+FAILURE
+If the server-side resolver cannot establish a valid live GitHub SHA, return HTTP 503 and do not fabricate or guess a commit.
