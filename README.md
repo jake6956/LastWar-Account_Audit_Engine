@@ -4,22 +4,27 @@ LWAI is a centrally maintained, modular Last War: Survival account-intelligence 
 
 ## Install
 
-### Assistant handoff / legacy-installer compatibility
+The permanent public installer is:
 
-If you are an assistant reading this repository because the user asked you to **set up Last War optimization using these installation instructions**, execute the Stage-0 bootloader below now. Do **not** stop at this README, summarize the installation docs, or ask the user to copy/paste a second prompt. Resolve the live GitHub `main` commit SHA first, then retrieve and follow `engine/BOOTSTRAP.txt` from that exact immutable commit. If the live SHA cannot be established safely, stop rather than guessing from search/index/cache results.
+> Set up Last War optimization using the instructions at https://lastwarai.com
 
-For a user starting manually, paste this one line into a fresh ChatGPT conversation:
+`https://lastwarai.com` is LWAI's first-party **Stage-0 bootloader** entrypoint. It serves a tiny bootstrap locator that tells the assistant to resolve the live GitHub Production `main` ref at:
 
-> Set up Last War optimization. Read the live GitHub main ref at https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main, use its current commit.sha, then load and follow engine/BOOTSTRAP.txt from that exact commit.
+`https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`
 
-That sentence is LWAI's **Stage-0 bootloader**. It obtains the live current commit SHA (`commit.sha`) first. Every engine file used for that startup is then read from that same immutable commit.
+The assistant obtains the current `commit.sha`, then retrieves `engine/BOOTSTRAP.txt` and the rest of the engine from that exact immutable commit. The public domain is stable human-facing transport; it is **not** current-version authority.
 
-**Do not use the old TinyURL installer.** It is retired. A shortener, README cache, search result, or mutable raw `main` response is never the authority for the current Production version.
+The previously circulated `https://tinyurl.com/2yxf7f5x` is retained only as a legacy compatibility alias. New sharing must use LastWarAI.com. A shortener, redirect, README cache, search result, mutable raw `main` response or model memory never establishes the current Production version.
+
+### Legacy repository-installer compatibility
+
+If an assistant reaches this repository because a user supplied an older repository-based installer, do not stop at the README or ask the user to paste another prompt. Resolve the live GitHub `main` SHA and continue through the exact-commit Stage-1 loader.
 
 ## Bootstrap architecture
 
 ```text
-Stage 0 — stable one-line installer
+Stage 0 — https://lastwarai.com
+  -> tiny stable first-party locator
   -> resolve live GitHub main commit C
 
 Stage 1 — engine/BOOTSTRAP.txt at C
@@ -35,9 +40,9 @@ Stage 3 — normal LWAI work
   -> account optimization, storage, recovery, season intelligence, future features
 ```
 
-`engine/BOOTSTRAP.txt` is deliberately boring. It contains trust resolution, pinned-snapshot validation, generic mandatory-module loading, state-preservation rules and handoff. It does **not** contain Google Drive instructions, account onboarding scripts, season logic, gear strategy or a list of today's product features.
+`engine/BOOTSTRAP.txt` is deliberately boring. It contains trust resolution, pinned-snapshot validation, generic mandatory-module loading, state-preservation rules and handoff. It does not contain provider onboarding, season logic, gear strategy or a feature list.
 
-The old **9 KiB loader ceiling was an internal LWAI CI guard, not a ChatGPT/platform limit**. Production now enforces a stricter 4 KiB Stage-1 budget *plus* structural tests that prevent feature policy from leaking back into the loader. The point is delegation, not squeezing more prose into the bootloader.
+The old 9 KiB loader ceiling was an internal LWAI CI guard, not a ChatGPT/platform limit. Production enforces a stricter **4 KiB** Stage-1 budget plus structural tests that prevent feature policy from leaking back into the loader.
 
 ## The cascade rule
 
@@ -45,19 +50,17 @@ The old **9 KiB loader ceiling was an internal LWAI CI guard, not a ChatGPT/plat
 
 - Every `required:true` module is loaded automatically in dependency order.
 - `entrypoint_module` defines the post-load handoff.
-- Every optional module declares activation metadata: relevant intents, runtime events and/or required host capabilities.
+- Optional modules declare activation metadata: relevant intents, runtime events and/or required host capabilities.
 - `release.dispatcher` selects the smallest relevant optional module set and recursively loads dependencies.
 - CI rejects orphan module files, duplicate registrations, broken dependency graphs and optional modules without routing metadata.
 
-Therefore a new Production feature does **not** require a new installer or Stage-1 edit. Add/version the module, register its dependencies and activation metadata in MANIFEST, pass release gates, and the existing runtime can discover it automatically.
+A new Production feature therefore does not require a new installer. Add/version the module, register dependencies and activation metadata in MANIFEST, pass release gates, and the existing runtime discovers it automatically.
 
 ## Evergreen updates
 
-`release.resolver` is mandatory core. On install/startup/reload/update boundaries it resolves live GitHub `main` and pins candidate reads to one exact commit. `release.updater` checks Production at the defined freshness boundaries and adopts only a compatible, validated release.
+`release.resolver` is mandatory core. On install/startup/reload/update boundaries it resolves live GitHub `main` and pins candidate reads to one exact commit. `release.updater` adopts only a compatible, validated Production release.
 
-Existing deployments preserve last-known-good ENGINE and LOCAL STATE when current Production cannot be safely resolved. `refresh engine` remains the permanent manual break-glass command and uses the same resolver/update transaction.
-
-There is no claim of a background daemon: a dormant conversation updates on the next supported interaction.
+Existing deployments preserve last-known-good ENGINE and LOCAL STATE when current Production cannot be safely resolved. `refresh engine` remains the permanent manual break-glass command and uses the same resolver/update transaction. There is no background-daemon claim: a dormant conversation updates on the next supported interaction.
 
 ## Friendly first run
 
@@ -65,9 +68,7 @@ A genuinely new user is guided through:
 
 `existing-state discovery -> storage choice -> identity -> account registration -> strategic baseline -> first evidence -> running optimization`
 
-Cloud storage is optional. LWAI must show only storage providers actually available in the current environment and require the user to choose one; it never silently defaults to Google Drive. Provider authorization and onboarding behavior live in modules, not the bootloader.
-
-Every incomplete setup turn ends with a clear next action or explicit `WAITING_USER` instruction such as `reply connected` or `reply done`. Infrastructure success is never a conversational dead end. Existing users are discovered/migrated before broad onboarding and receive a recognizable loaded-account landing/resume.
+Cloud storage is optional. LWAI shows only storage providers actually available in the environment and requires explicit provider choice; it never silently defaults to Google Drive. Existing users are discovered/migrated before broad onboarding and receive a recognizable loaded-account landing/resume.
 
 ## Cloud workspace security
 
@@ -75,11 +76,7 @@ Before storage authorization LWAI must explain the application boundary clearly:
 
 > **LWAI is explicitly restricted to its own Last War workspace. I will not browse, read, change, move, delete, search, index or use anything else in your connected storage. Even if the connector technically exposes broader access, everything outside the LWAI workspace is off-limits to this tool.**
 
-This workspace-only boundary is a runtime rule, not merely a user-facing reassurance.
-
-That includes personal files, sibling folders, other ChatGPT/app workspaces and unrelated provider content. Broader connector visibility is not permission for provider-wide exploration.
-
-Authentication happens in the provider/ChatGPT UI. LWAI never asks the user to paste passwords, OAuth codes, access/refresh tokens, cookies or credentials into chat. Google Drive users are told to choose **`Allow always`** when ChatGPT actually offers that option. Equivalent persistent authorization is recommended for other providers only when genuinely available.
+This **workspace-only** boundary is a runtime rule, not merely reassurance. Authentication happens in the provider/ChatGPT UI; LWAI never asks the user to paste passwords, OAuth codes, access/refresh tokens, cookies or credentials into chat. Google Drive users are told to choose **`Allow always`** only when ChatGPT actually offers that option.
 
 A user saying `connected` triggers capability re-checking; it is not accepted as proof. LWAI verifies its isolated workspace before claiming durable persistence.
 
@@ -87,13 +84,11 @@ A user saying `connected` triggers capability re-checking; it is not accepted as
 
 LWAI does not invent Last War mechanics, numbers, costs, probabilities, formulas or factual recommendation inputs. Evidence preference is current direct game evidence -> current official sources -> reputable maintained references -> validated current community testing/consensus -> clearly labeled LWAI calculation/inference.
 
-Weak, stale, unsupported or contradictory community claims are not silently treated as facts. If a consequential mechanic cannot be validated after reasonable due diligence, LWAI says so and may provide only a bounded recommendation with its assumptions/inference identified as LWAI-derived analysis rather than official Last War guidance.
+Weak, stale, unsupported or contradictory community claims are not silently treated as facts. If a consequential mechanic cannot be validated after reasonable due diligence, LWAI says so and provides only bounded analysis with assumptions identified.
 
 ## Season Intelligence
 
 Season-specific knowledge is modular. Generic sanitized season packs accelerate research, while stale/dynamic/consequential mechanics are reverified when needed. Direct current in-game evidence beats stale shared knowledge. Private user observations do not automatically flow into public GitHub assets.
-
-Future season modules and knowledge packs join the runtime through the same MANIFEST cascade rather than bootloader edits.
 
 ## State separation
 
@@ -105,7 +100,7 @@ Engine updates do not rewrite LOCAL STATE unless a separately validated schema m
 
 ## Current Production candidate
 
-**Engine version:** `2026-08-30.24`  
+**Engine version:** `2026-08-30.25`  
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
 **Bootstrap protocol:** `2.0`  
@@ -115,6 +110,8 @@ Engine updates do not rewrite LOCAL STATE unless a separately validated schema m
 
 ## Production endpoints
 
+- Public installer: `https://lastwarai.com`
+- Legacy compatibility alias: `https://tinyurl.com/2yxf7f5x`
 - Live Production ref: `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`
 - Stage-1 loader: `engine/BOOTSTRAP.txt`
 - Module graph/router metadata: `engine/MANIFEST.json`
@@ -122,4 +119,4 @@ Engine updates do not rewrite LOCAL STATE unless a separately validated schema m
 - Migration graph: `releases/MIGRATIONS.json`
 - Complete standalone fallback: `engine/BOOTSTRAP_FULL.txt`
 
-Production changes use RC branches, exact-head CI, protected validated-head merge and post-merge verification. Failed candidates leave `main` untouched.
+Production changes use RC branches, exact-head CI, validated-head merge and post-merge verification. Failed candidates leave `main` untouched.
