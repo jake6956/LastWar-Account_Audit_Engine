@@ -7,34 +7,29 @@ ACCOUNT STATE INCLUDED: NO
 runtime_mode: modular
 
 PURPOSE
-Stage-1 orchestration only. Resolve one live Production commit, pin the entire engine snapshot to that immutable commit, load mandatory modules, then hand off. No account/domain/provider playbooks belong here.
+Stage-1 orchestration only. Resolve one live Production commit, pin one immutable release snapshot, validate the manifest, load it, then hand off. Account, provider, UX and game-domain policy belong in modules.
 
 LIVE REF / CACHE SAFETY
-Input from the public Stage-0 installer should include RESOLVED_PRODUCTION_COMMIT, the 40-hex SHA returned by the live GitHub `main` branch endpoint.
-If absent, resolve live `main` using a GitHub-native connector/API when available, otherwise direct GitHub API branch retrieval, otherwise `git ls-remote` when genuinely available. Never use web-search results, indexed repository pages, cached `raw .../main/...` content, URL shorteners, or README snapshots to decide current Production.
-If a fresh install cannot obtain a live 40-hex main SHA, stop rather than guessing. Existing deployments retain last-known-good ENGINE and LOCAL STATE.
+Use RESOLVED_PRODUCTION_COMMIT from Stage 0 when supplied. Otherwise resolve live GitHub `main` from:
+https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
+Prefer a GitHub-native connector/API; otherwise use direct branch-API retrieval or real `git ls-remote` when available. Require a live 40-hex commit SHA. Never decide current Production from search/index results, README snapshots, mutable raw `main`, URL shorteners, or model memory.
+Fresh install with no live SHA stops rather than guessing. Existing installs keep last-known-good ENGINE and LOCAL STATE.
 
 PINNED SNAPSHOT
-Let C = RESOLVED_PRODUCTION_COMMIT. Retrieve `releases/LATEST.json`, `engine/MANIFEST.json`, `releases/MIGRATIONS.json`, this loader, required modules, and fallback only from repository revision C. All mutable-path reads become commit-pinned reads before trust decisions.
-Require LATEST/MANIFEST agreement on engine_version, engine_api_version, schema_version, Production channel, sanitized=true, account_state_included=false. Reject RC/Prod-Dev. Never mix files from different commits.
+Let C = resolved Production commit. Read `releases/LATEST.json`, `engine/MANIFEST.json`, `releases/MIGRATIONS.json`, required modules and fallback only at C. Never mix commits. Require matching Production identity/API/schema and `sanitized=true` / `account_state_included=false`; reject RC/Prod-Dev.
 
 MODULE HANDOFF
-Validate MANIFEST DAG/API/schema ranges. When Git blob identity is reproducible, verify each loaded module digest; otherwise require exact commit C plus module_id/module_version and do not claim unavailable hash verification.
-Load mandatory core in dependency order, including `release.resolver`, `release.updater`, `release.bootstrap`, core operating/persistence/accounts/guidance. Load adapters/domains only when required. `release.bootstrap` owns startup/discovery handoff; `core.guidance` and `adapters.storage` own onboarding/provider UX.
+Validate manifest schema, DAG, compatibility and available integrity. Load EVERY module with `required:true` in dependency order; Stage 1 has no hardcoded feature list. Then transfer control to the manifest `entrypoint_module`.
+The loaded dispatcher selects non-required modules from manifest activation metadata and recursively loads dependencies. New Production modules join the runtime through MANIFEST registration, not loader edits.
 
 STATE / MIGRATION
-GitHub contains sanitized ENGINE only. Preserve LOCAL STATE. Supported older workspaces enter migration-capable core only and follow pinned `releases/MIGRATIONS.json`; domain modules wait for current schema. Unsupported paths fail closed. Never repair engine/retrieval uncertainty by rewriting private state.
+GitHub contains sanitized ENGINE only. Preserve LOCAL STATE. Supported older workspaces use migration-capable required modules plus the pinned migration graph; incompatible domain modules wait. Unsupported migration fails closed. Never rewrite private state to repair engine uncertainty.
 
-UPDATES
-`release.resolver` owns live-main resolution. `release.updater` uses that resolver at startup/reload/schema-sensitive boundaries and after the six-hour consequential-work TTL, then reads the candidate only at the resolved immutable SHA. Never compare/update from search-index or mutable cached `main` bodies.
-`refresh engine` permanently forces the same resolver/update transaction while preserving LOCAL STATE. `check for LWAI updates` is an alias.
-
-FAILURE
-Fresh install: unresolved live ref or invalid pinned snapshot -> stop with the smallest actionable explanation; do not silently load a cached older release.
-Existing install: keep last-known-good compatible ENGINE/LOCAL STATE. If C resolves but modular loading fails, use `engine/BOOTSTRAP_FULL.txt` from the same C; manual full-bootstrap transfer is final fallback.
+AUTOMATIC UPDATE / RECOVERY
+Required release modules include `release.resolver` and `release.updater`; they own freshness/update after handoff. `refresh engine` remains the permanent manual route through the same transaction while preserving LOCAL STATE. Automatic checks resolve live `main`, pin one commit, preserve last-known-good and resume the user's original action. Existing deployments fall back to last-known-good; if a live C exists but modular loading fails, use `engine/BOOTSTRAP_FULL.txt` from the same C.
 
 USER EXPERIENCE
-Run bootstrap internally. Use only brief status when useful (`Getting LWAI ready…`, `Checking for updates…`, `Looking for saved account data…`, `Ready.`). Every incomplete setup turn must end with a next action or explicit WAITING_USER boundary; detailed URLs/hashes/graphs belong to `audit yourself` or recovery diagnostics.
+Run bootstrap internally. Use brief status only when useful (`Getting LWAI ready…`, `Checking for updates…`, `Looking for saved account data…`, `Ready.`). After module handoff, setup UX and WAITING_USER boundaries are owned by guidance/bootstrap modules. Technical traces belong to `audit yourself` or actionable recovery.
 
-ONE-LINE INSTALL
-Set up Last War optimization. Open https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main directly, use its current commit SHA, then retrieve and follow engine/BOOTSTRAP.txt from that exact SHA. Never use search-index/cached main copies; if live SHA resolution fails, stop rather than guessing.
+END
+Stage 1 is complete after validated mandatory-module load and entrypoint handoff.
