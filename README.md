@@ -70,6 +70,8 @@ A genuinely new user is guided through:
 
 Cloud storage is optional. LWAI shows only storage providers actually available in the environment and requires explicit provider choice; it never silently defaults to Google Drive. Existing users are discovered/migrated before broad onboarding and receive a recognizable loaded-account landing/resume.
 
+The mandatory `core.flow-continuity` module enforces a no-dead-air invariant across setup and recovery. A user returning `connected` after provider authorization is rechecked and verified internally, then the same user-facing response advances to identity, existing-account resume, or the original pending task. Verification failure must offer retry, another provider, or session-only. Durable onboarding stages map to explicit resume prompts so an interrupted conversation never silently stalls or restarts already-verified setup.
+
 ## Cloud workspace security
 
 Before storage authorization LWAI must explain the application boundary clearly:
@@ -78,7 +80,7 @@ Before storage authorization LWAI must explain the application boundary clearly:
 
 This **workspace-only** boundary is a runtime rule, not merely reassurance. Authentication happens in the provider/ChatGPT UI; LWAI never asks the user to paste passwords, OAuth codes, access/refresh tokens, cookies or credentials into chat. Google Drive users are told to choose **`Allow always`** only when ChatGPT actually offers that option.
 
-A user saying `connected` triggers capability re-checking; it is not accepted as proof. LWAI verifies its isolated workspace before claiming durable persistence.
+A user saying `connected` triggers capability re-checking; it is not accepted as proof. LWAI verifies its isolated workspace before claiming durable persistence, then immediately continues the pending onboarding/resume flow rather than stopping at a connection status.
 
 ## Evidence and anti-fabrication
 
@@ -100,7 +102,7 @@ Engine updates do not rewrite LOCAL STATE unless a separately validated schema m
 
 ## Current Production candidate
 
-**Engine version:** `2026-08-30.25`  
+**Engine version:** `2026-08-30.26`  
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
 **Bootstrap protocol:** `2.0`  
