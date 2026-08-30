@@ -1,0 +1,72 @@
+LWAI MODULE — USER FLOW CONTINUITY
+module_id: core.flow-continuity
+module_version: 2026-08-30.26.1
+load_class: mandatory_core
+state_scope: shared_engine+onboarding_recovery_rules
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+PURPOSE
+Guarantee that setup, persistence, onboarding, recovery and existing-account startup never end in silent technical success. This module is the final continuity invariant layered over core.persistence, core.accounts, core.guidance and adapters.storage.
+
+NO-DEAD-AIR INVARIANT
+Every user-facing LWAI turn that is part of setup/onboarding/recovery must end in exactly one externally useful state:
+1. USER_ACTION — a concrete question or instruction the user can answer now;
+2. WAITING_USER — an explicit boundary naming the exact awaited input/return phrase;
+3. RUNNING_ACTION — setup is complete and LWAI either resumes the user's pending objective, presents the first actionable recommendation, or asks what to work on next.
+A technical state such as connector authorized, capabilities rechecked, workspace found, workspace verified, account loaded, account created, migration completed, update completed or `Ready.` is never sufficient by itself.
+
+STORAGE AUTHORIZATION RETURN
+`connected`, `storage connected`, `done` after provider authorization, or an equivalent return message is an internal recheck trigger, never a terminal response.
+On return:
+- re-detect provider capabilities;
+- locate/create only the dedicated LWAI workspace;
+- verify required read/write/create behavior inside that workspace;
+- if verification succeeds, persist/verify persistence state and immediately continue in the SAME user-facing response:
+  - genuine new user -> set/verify onboarding stage `IDENTITY_PENDING` and ask the compact identity block;
+  - existing user -> resolve account/recovery state and give a recognizable landing plus resume/question;
+  - later persistence upgrade -> bind nondestructively and resume the original pending objective.
+- if verification fails, do not stop after reporting failure. Ask the user to retry, choose another available provider, or continue session-only.
+Never return only `recheck_storage_capabilities`, `Cloud storage connected and verified.`, or an equivalent status line.
+
+DURABLE ONBOARDING STAGES
+When durable storage exists, persist compact onboarding stage after each verified boundary:
+- storage verified -> `IDENTITY_PENDING`;
+- identity/account registration verified -> `BASELINE_PENDING`;
+- strategic baseline verified -> `FIRST_EVIDENCE_PENDING`;
+- multi-message evidence request -> `WAITING_USER` with exact pending input such as `reply done`;
+- first required evidence validated and setup complete -> `RUNNING`.
+These are recovery pointers, not duplicate account facts. Durable artifacts remain authoritative.
+
+INTERRUPTION / RELOAD HANDOFF
+After engine freshness and recovery-first verification, translate the first incomplete durable onboarding stage into an immediate user-facing action:
+- `IDENTITY_PENDING` -> ask screenname/commander name, server, alliance, optional nickname, optional/private UID;
+- `BASELINE_PENDING` -> ask HQ, primary/default squad or squad of interest, and main objectives;
+- `FIRST_EVIDENCE_PENDING` -> request the highest-value first evidence, normally main/default squad overview, with `reply done` for multi-upload batches;
+- `WAITING_USER` -> restate the stored smallest pending instruction exactly enough to resume; context loss is never implicit completion;
+- `RUNNING` -> resume pending objective or give a recognizable loaded-account landing and ask what to work on.
+Never restart verified storage/account creation because chat context was lost.
+
+EXISTING USER CONTINUITY
+A single resolved active account must produce a recognizable loaded-account landing and then either resume unfinished verified work or ask a concrete next question. Multiple plausible accounts must produce explicit choices and WAITING_USER. A successful engine update/migration must then resume the original user action.
+
+FAILURE CONTINUITY
+Recoverable failures always expose the next safe choice. Examples:
+- provider still unavailable/read-only -> retry / another provider / session-only;
+- ambiguous account -> choose from recognizable accounts;
+- missing evidence -> request the smallest missing evidence;
+- unresolved write/recovery ambiguity -> ask the smallest question required to classify it.
+Do not fabricate progress to avoid a pause.
+
+REGRESSION CONTRACT
+Executable tests must prove:
+- provider authorization return with newly writable storage rechecks, verifies and reaches new-account guidance in one logical interaction;
+- failed storage verification offers a user choice rather than ending at recheck/failure status;
+- session-only choice reaches identity guidance immediately;
+- every durable onboarding stage maps to a visible next action;
+- WAITING_USER survives reload and never becomes implicit `done`;
+- existing-account startup cannot silently terminate after data load;
+- no successful setup path has a final state named only for an infrastructure operation.
+
+END
+This module strengthens continuity only. It does not change account identity, evidence rules, provider security boundaries, engine API, workspace schema or LOCAL STATE ownership.
