@@ -1,6 +1,6 @@
 # LastWar Account Audit Engine (LWAI)
 
-LWAI is a modular account-intelligence and optimization runtime for **Last War: Survival**. ChatGPT provides the conversational interface; the shared engine is centrally maintained in this repository; user-specific state stays in the user's own supported storage or, by explicit choice, in the current session only.
+LWAI is a modular account-intelligence and optimization runtime for **Last War: Survival**. ChatGPT is the conversational interface; the shared engine is centrally maintained here; user-specific state stays in the user's own supported storage or, by explicit choice, in the current session only.
 
 ## Install
 
@@ -8,23 +8,42 @@ Paste this single instruction into a fresh ChatGPT conversation:
 
 > Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
 
-The short URL is a convenience alias. Canonical GitHub `main` is authoritative; the loader re-checks canonical Production metadata so stale alias/cache content cannot downgrade a newer verified release. Intermediate alias/cache version strings are diagnostic only: normal install UX reports the single verified canonical GitHub Production version after verification.
+The short URL is only a convenience alias. Canonical GitHub `main` is authoritative; stale alias/cache content cannot downgrade a newer verified release. There is one **single public installer** and one Production line.
 
 For best results, use a higher reasoning/thinking setting when the ChatGPT interface offers one.
 
-## First run
+## Friendly first run
 
-LWAI first looks for an existing Workspace Registry, legacy LWAI state, supported snapshots/exports, and usable persistent-storage capabilities. Existing users resume or migrate before broad onboarding.
+LWAI first looks for an existing Workspace Registry, legacy LWAI state, supported snapshots/exports, and available persistence capabilities. Existing users resume or migrate before broad onboarding.
 
-A genuinely new user is **not silently placed into session-only mode**. Before identity/account intake, LWAI explicitly offers durable persistence:
+A genuinely new user is asked an early plain-language question before identity/account intake:
 
-- if a verified writable provider is already available, LWAI offers to create an isolated private workspace there;
-- if no writable provider is exposed, LWAI explains how to connect a supported provider in the host application and re-checks capability after connection;
-- the user may always choose to continue session-only instead.
+> Before we build your account, would you like me to use private cloud storage so I can safely pick up where we left off in future chats? It’s recommended, but optional. Reply yes or no.
 
-Google Drive is the most-tested persistent option when available. Durable storage is recommended, not mandatory. Session-only use remains fully supported, with the expected limitation that long-term recovery and cross-chat continuity depend on the host session.
+If the answer is **no**, LWAI continues session-only.
 
-If a user chooses session-only, LWAI does not repeatedly nag them. It may later re-offer persistence only when the current workflow has a concrete durability benefit—for example a large multi-batch audit, a resumable upload boundary, multi-account work, substantial newly captured state, planned continuation in another chat/device, or a recovery limitation caused by missing durable state. Reminders are capped at one per runtime session; when reliable cross-session reminder metadata exists, a minimum seven-day cooldown applies. Users can say `don't ask again` to suppress these reminders until they explicitly reopen persistence setup.
+If the answer is **yes**, LWAI detects storage providers/connectors that are actually available or installable and shows a short provider menu. The user explicitly chooses the provider. LWAI does **not** silently default to Google Drive.
+
+Typical choices, only when genuinely supported by the current host, may include Google Drive, Dropbox, OneDrive / Microsoft 365, Box when writable, or another verified writable provider. Read-only storage is reference-only and is not treated as durable persistence.
+
+After the user chooses a provider, LWAI gives concise authorization instructions. For Google Drive, the user is told to approve the requested Drive file access and choose **`Allow always`** if ChatGPT presents that option. For other providers, LWAI follows the actual host/provider wording and recommends the equivalent persistent authorization option only when it is genuinely shown. LWAI never asks the user to paste provider passwords, OAuth codes or tokens into chat.
+
+A user saying `connected` is not accepted as proof. LWAI re-checks capability and verifies the private workspace before reporting `Cloud storage connected and verified.`
+
+If a session-only user later accepts a contextual persistence reminder—or says `connect storage`—LWAI runs the same provider chooser, authorization and verification flow again. It never jumps directly to Google Drive. Existing reminder limits remain: only when cloud materially benefits the current workflow, max once per runtime session, a seven-day cooldown when reliable cross-session metadata exists, and explicit suppression with `don't ask again`.
+
+## Friendly bootstrap and update UX
+
+The bootstrap source contains technical trust, integrity, compatibility, migration and recovery logic, but normal users do not need to watch it scroll by. LWAI executes that machinery internally and uses short status only when useful, such as:
+
+- `Getting LWAI ready…`
+- `Checking for updates…`
+- `Looking for saved account data…`
+- `Cloud storage connected and verified.`
+- `LWAI updated successfully.`
+- `Ready.`
+
+Fast/no-op work may be silent. URLs, module names, hashes, schema/API numbers, migration graphs, RC terminology and detailed traces are reserved for `audit yourself`, explicit developer/debug requests, or failure details required for recovery.
 
 ## What LWAI does
 
@@ -48,7 +67,7 @@ engine/BOOTSTRAP_FULL.txt
   -> complete standalone fallback
 ```
 
-The thin loader stays intentionally bounded and contains orchestration rather than game-domain playbooks. Mandatory core behavior loads first; domain modules load only when needed. `release.updater` is mandatory core and owns automatic consumer engine-update orchestration.
+The thin loader is bounded orchestration rather than a game-domain monolith. Mandatory core behavior loads first; domain modules load only when needed. `release.updater` is mandatory core and owns automatic consumer engine-update orchestration.
 
 ## Existing users and migration
 
@@ -61,60 +80,34 @@ Production supports explicit workspace-schema migration for supported older depl
 
 These migrations are additive and idempotent. They preserve canonical account facts, immutable `account_id`, `active_account_id`, history, Corrections, evidence metadata and provider references. Domain modules that require schema `2.3` remain blocked until migration is verified. If no validated path exists, setup fails closed instead of guessing or re-onboarding the user.
 
-## Integrity and compatibility
-
-Production declares an engine API version, workspace schema version and per-module compatibility range. `engine/MANIFEST.json` pins each module to a Git blob identity so CI can verify the exact checked-in bytes.
-
-Migration-capable core/release/storage components may explicitly support older validated workspace schemas; ordinary domain components may remain current-schema-only. `releases/MIGRATIONS.json` defines both promoted engine transitions and supported workspace-schema transitions.
-
 ## Persistence model
 
-**GitHub Production contains:**
-- sanitized runtime instructions and modules;
-- provider-neutral schemas/adapters;
-- release metadata and migrations;
-- validation tests/documentation;
-- reusable non-user-specific reference assets.
+**GitHub Production contains:** sanitized runtime instructions/modules, provider-neutral schemas/adapters, release metadata/migrations, tests/documentation, and reusable non-user-specific reference assets.
 
-**User-local storage may contain:**
-- account identity and game state;
-- screenshots/evidence;
-- balances and battle history;
-- local corrections/preferences;
-- account-specific audit/recovery state;
-- optional runtime-session provenance;
-- optional compact workspace-level engine-update metadata.
+**User-local storage may contain:** account identity/game state, screenshots/evidence, balances/battle history, local corrections/preferences, audit/recovery state, optional runtime-session provenance, selected-provider metadata, and compact workspace-level engine-update metadata.
 
 Private account data and actual runtime-session/host-conversation references are never required in this public repository.
 
-Durable storage is optional but explicitly offered to new users. Without writable supported storage, LWAI still operates in the active conversation and can use portable snapshots/exports, but persistence/recovery are naturally limited by the host session.
-
-## Storage adapters
-
-Persistence is capability-driven, not provider-name-driven. An adapter reports verified read/list/create/update/query/atomic-append/CAS/snapshot/restore capability and LWAI selects the strongest safe profile available. Recovery journals require actual atomic append, revision/CAS semantics, or immutable uniquely identified events.
+Persistence is capability-driven, not provider-name-driven. An adapter reports verified read/list/create/write/query/atomic-append/CAS/snapshot/restore capability and LWAI selects the strongest safe profile available. Recovery journals require actual atomic append, revision/CAS semantics, or immutable uniquely identified events.
 
 ## Multi-account, provenance and recovery
 
 Persistent deployments can manage multiple isolated accounts under a workspace registry. Each account receives immutable LWAI-generated `account_id`; screenname, server, alliance, nickname and optional game UID remain private.
 
-The runtime supports account switching, nondestructive archive/restore, migration-first startup, resumable audits and verify-before-replay checkpoints.
+The runtime supports account switching, nondestructive archive/restore, migration-first startup, resumable audits and verify-before-replay checkpoints. Optional `runtime_session_id` provenance may be stored privately; a host conversation/session reference is optional and non-authoritative. It is never account identity, authentication, routing, recovery ordering or write deduplication.
 
-When durable persistence exists, LWAI may generate a private `runtime_session_id`. A host conversation/session reference may also be stored when safely exposed, but it is optional and non-authoritative. It is never account identity, authentication, routing, recovery ordering or write deduplication.
-
-LWAI does not require game passwords, session tokens, cookies or authentication captures for normal operation.
+LWAI does not require game passwords, provider passwords, session tokens, cookies, OAuth codes or authentication captures for normal operation.
 
 ## Automatic updates and self-healing
 
-Production updates are centrally published through GitHub and automatically pulled by web-capable deployments. `release.updater` performs a lightweight canonical `releases/LATEST.json` check:
+Production updates are centrally published through GitHub and automatically pulled by web-capable deployments. `release.updater` checks canonical `releases/LATEST.json`:
 
 - on every runtime/session startup before ordinary account/domain work;
 - before `reload LWAI` / `reload yourself`;
 - before schema-sensitive migration/recovery when compatibility matters;
 - before consequential work in a long-lived runtime once at least six hours have elapsed since the last successful canonical check.
 
-If installed Production is current, the check is silent and unchanged modules are not re-downloaded. If a newer verified Production exists, LWAI preserves LOCAL STATE, validates canonical channel/privacy/API/schema/migration/integrity metadata, fetches changed required engine components, applies only validated migrations, health-checks, adopts the newer ENGINE, then resumes the user's original pending action under the new version.
-
-Durable workspaces may persist only compact private engine metadata such as installed version, last successful check/update, last-known-good version, update policy/health and an optional compact error summary. These values are not account evidence, do not control `active_account_id`, and do not change workspace schema `2.3`. Session-only deployments keep equivalent metadata ephemerally when possible.
+If installed Production is current, the check is silent. If a newer verified Production exists, LWAI preserves LOCAL STATE, validates channel/privacy/API/schema/migration/integrity metadata, fetches changed required engine components, applies only validated migrations, health-checks, adopts the newer ENGINE, then resumes the user's original pending action.
 
 Failed update verification never partially activates a candidate. LWAI retains last-known-good compatible engine state or the complete `BOOTSTRAP_FULL.txt` fallback and leaves private account state untouched. It never auto-loads RC/Prod-Dev and never downgrades because an alias/cache is stale.
 
@@ -124,7 +117,7 @@ Automatic updating does not imply a background daemon. A dormant ChatGPT convers
 
 ## Validation
 
-Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, benefit-triggered persistence reminders, canonical-version reporting, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, legacy/current startup ordering, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration and stale-alias canonicalization.
+Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, explicit provider selection, provider permission coaching, Google Drive `Allow always` guidance, post-authorization capability verification, contextual persistence reminders, friendly bootstrap/update UX, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation and historical workspace-schema migration.
 
 ## Production endpoints
 
@@ -135,28 +128,13 @@ Production CI performs structural validation plus executable deterministic regre
 - Complete fallback: `engine/BOOTSTRAP_FULL.txt`
 - Install alias: https://tinyurl.com/2yxf7f5x
 
-## Repository layout
-
-```text
-engine/          loader, module graph, runtime modules and full fallback
-contracts/       behavioral and release contracts
-schemas/         provider-neutral workspace/account/engine schemas
-adapters/        persistence/provider mappings
-docs/            deployment, beta and architecture documentation
-scripts/         release-validation tooling
-tests/           executable regressions and release-gate specifications
-releases/        version manifests, migration graph and changelog
-gold-assets/     reusable sanitized shared assets
-.github/         CI and issue templates
-```
-
 ## Release discipline
 
-Production changes follow short-lived staged RC branches with sanitization checks, exact-head PR CI, validated-head merge and post-merge verification. There is one single public installer and one canonical Production line; RC branches are temporary engineering branches, not alternate installers.
+Production changes use short-lived RC branches with sanitization checks, exact-head PR CI, validated-head merge and post-merge verification. Failed candidates leave `main` untouched.
 
 ## Current Production
 
-**Engine version:** `2026-08-29.18`
+**Engine version:** `2026-08-29.19`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  

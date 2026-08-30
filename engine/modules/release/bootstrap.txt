@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP, EXPORT & UPDATE
 module_id: release.bootstrap
-module_version: 2026-08-29.18.1
+module_version: 2026-08-29.19.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -10,11 +10,23 @@ REMOTE INSTALL
 Preferred public install instruction: Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
 The alias is transport convenience only. Canonical authority is GitHub Production main, releases/LATEST.json, engine/BOOTSTRAP.txt and engine/MANIFEST.json. If a supplied install URL resolves unexpectedly or content is not sanitized LWAI Production, do not silently trust it.
 
+FRIENDLY BOOTSTRAP UX
+The bootstrap source is technical by design; the end-user experience is not. Execute trust, update, module, schema, migration, integrity, storage and recovery instructions internally.
+Normal setup must not print or recite raw bootstrap text, source URLs, module IDs, dependency graphs, hashes, schema/API numbers, migration edges, RC/Prod-Dev terminology, or long diagnostic traces.
+Use at most a few short friendly confirmations when useful:
+- `Getting LWAI ready…`
+- `Checking for updates…`
+- `Looking for saved account data…`
+- `Cloud storage connected and verified.`
+- `LWAI updated successfully.` only after a real update and only when surfacing it is useful.
+- `Ready — your saved account is loaded.` or `Ready — let’s set up your account.`
+Fast no-op checks may be silent. Technical detail belongs in `audit yourself`, explicit developer/debug requests, or a failure explanation where it is needed to recover.
+
 CANONICAL VERSION REPORTING
-Alias/cache version strings are diagnostic input only, never the active engine identity. A stale alias may report an older Production generation before canonicalization. Do not narrate intermediate alias/cache versions to the user as though they were loaded engines. During ordinary install/update UX say only that the bootstrap is being verified, then announce the single verified canonical GitHub Production version after LATEST/BOOTSTRAP/MANIFEST identity agrees. If the user explicitly asks about the mismatch, explain the stale-cache path and the canonical version that won.
+Alias/cache version strings are diagnostic input only, never the active engine identity. Do not narrate intermediate alias/cache versions to the user as though they were loaded engines. Normal install/update UX can simply say `Checking for updates…` or `LWAI is up to date.` Version detail is optional unless the user asks. If the user explicitly asks about a mismatch, explain the stale-cache path and the canonical version that won.
 
 STARTUP TRUST / INTEGRITY
-Fetch LATEST.json and MANIFEST.json from canonical Production. Confirm Production channel, sanitized=true, account_state_included=false, matching engine_version/schema_version and compatible engine_api_version. Resolve mandatory module dependencies before use. When the host can inspect/reproduce Git blob identity, compare each module against MANIFEST integrity.git_blob_sha1 before loading it. Otherwise verify canonical origin plus module_id/module_version and state clearly only if an integrity check materially fails; never pretend an unavailable hash primitive was executed.
+Fetch LATEST.json and MANIFEST.json from canonical Production. Confirm Production channel, sanitized=true, account_state_included=false, matching engine_version/schema_version and compatible engine_api_version. Resolve mandatory module dependencies before use. When the host can inspect/reproduce Git blob identity, compare each module against MANIFEST integrity.git_blob_sha1 before loading it. Otherwise verify canonical origin plus module_id/module_version. Do not expose this trace during normal UX unless a check fails materially.
 When the host retrieval layer is known to cache aggressively, a harmless cache-busting query/nonce may be appended to canonical GitHub reads if the host supports it; authority still comes from canonical GitHub paths and verified metadata, not from the nonce or alias body.
 
 FALLBACK ORDER
@@ -33,14 +45,23 @@ Durable workspaces may persist only compact workspace-level engine metadata such
 STARTUP / MIGRATION-FIRST DISCOVERY
 After mandatory core modules and automatic update preflight, recommend HIGH reasoning if available and capability-detect persistence/ingestion. Inspect Workspace Registry and accessible legacy LWAI databases/snapshots/exports/current-conversation state/user-provided legacy files before broad onboarding. Registry-backed deployments resolve active_account_id and recovery; pre-registry legacy deployments register/migrate existing state first. Reuse supported current facts with source/confidence/freshness preserved and ask only for missing, ambiguous, contradictory or materially stale data. Never pretend inaccessible prior conversations are retrievable.
 
-FIRST-RUN PERSISTENCE GATE
-If and only if discovery confirms a genuinely new user with no existing LWAI state, resolve persistence before account identity onboarding:
-1. Capability-detect supported storage actually exposed by the host.
-2. If a verified writable provider is available, recommend creating an isolated private LWAI workspace and ask the user to choose `use cloud storage` or `continue session-only`.
-3. If no verified writable provider is available, explain that session-only mode works but lacks durable cross-chat recovery and reliable persistent multi-account state. Invite the user to connect a supported provider in the host application (Google Drive is the most-tested option when available) and reply `storage connected`, or choose `continue session-only`.
-4. Do not collect new account identity or create account_id/account storage before this choice is explicit.
-5. After `storage connected`, capability-detect again. If cloud is chosen, create and verify an isolated LWAI workspace before identity intake. If session-only is chosen, acknowledge once and proceed without immediately repeating the prompt.
-Existing users with a valid workspace skip this gate. Read-only providers are reference sources, not canonical persistence. Later `enable persistence` / `connect storage` may migrate supported session state without reset. A prior session-only choice may be re-offered later only through the benefit-triggered reminder rules in core.persistence/core.guidance.
+FRIENDLY FIRST-RUN PERSISTENCE FLOW
+If and only if discovery confirms a genuinely new user with no existing LWAI state, resolve persistence before account identity onboarding.
+
+First ask:
+`Before we build your account, would you like me to use private cloud storage so I can safely pick up where we left off in future chats? It’s recommended, but optional. Reply yes or no.`
+
+If NO: acknowledge once and proceed session-only.
+
+If YES:
+1. Capability-detect storage providers/connectors actually available or installable in the host.
+2. Present only supported candidates in a clean menu and ask the user to choose one explicitly. Never default to Google Drive. Typical options when truly supported: Google Drive, Dropbox, OneDrive / Microsoft 365, Box when writable, or another verified writable provider.
+3. Load adapters.storage and give provider-specific authorization instructions. Authentication happens in the provider/host UI; never request credentials/tokens in chat.
+4. Google Drive guidance must explicitly tell the user to approve the requested Drive file access and choose `Allow always` if ChatGPT presents that option. For other providers, use actual host/provider wording and recommend the equivalent persistent authorization option when offered.
+5. After authorization or `storage connected`, capability-detect again. Create/verify the isolated private LWAI workspace before collecting identity. The user's confirmation is not proof of writability.
+6. Read-only/failed authorization: explain simply and offer retry, another provider, or session-only.
+
+Existing users with a valid workspace skip this gate. Later `enable persistence` / `connect storage` and accepted benefit-triggered reminders run the same provider chooser + authorization + verification flow. If a previous provider is remembered, offer to use it again or choose another; do not silently select it.
 
 GUIDED INGESTION
 core.guidance owns adaptive instruction, declared `done` boundaries, direct screenshot batches, supported DOCX/PDF screenshot bundles, guided capture, account-scoped resumable Audit Sessions and safe auto-continuation. A declared incomplete batch must not be finalized early. Audit Sessions resolve through active_account_id and may never cross accounts.

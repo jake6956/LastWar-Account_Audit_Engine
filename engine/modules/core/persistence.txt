@@ -1,73 +1,103 @@
 LWAI MODULE — CORE PERSISTENCE, RELOAD & PRIVACY
 module_id: core.persistence
-module_version: 2026-08-29.18.1
+module_version: 2026-08-29.19.1
 load_class: mandatory_core
 state_scope: shared_engine+local_workspace_rules+runtime_recovery+session_provenance
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
+
 PURPOSE
 Keep account state durable, private, recoverable, multi-account-safe and context-efficient while adding compact workflow recovery, execution provenance and engine-update metadata that survive conversational context loss. Persistent account state remains canonical; Runtime Sessions, Runtime Checkpoints, Runtime Journal and engine-update metadata are operational metadata, not a second account database and not a transcript dump.
+
 PERSISTENCE PRINCIPLES
-Cloud/external persistence is strongly recommended but never required. Use only providers/capabilities genuinely available. Create an isolated LWAI workspace and never modify unrelated user files without explicit authorization. Persistent workspace state is canonical when writable; conversation context is cache. Shared Production engine and private deployment state are separate layers.
+Cloud/external persistence is strongly recommended but never required. Use only providers/capabilities genuinely available. Create an isolated LWAI workspace and never modify unrelated user files without explicit authorization. Persistent workspace state is canonical when writable; conversation context is cache. Shared Production engine and private deployment state are separate layers. Never silently choose one provider for a new user merely because it is most-tested.
+
 FIRST-RUN PERSISTENCE CHOICE
-For a genuinely new user with no existing LWAI workspace or legacy state, persistence choice is an explicit onboarding gate before identity/account intake. Capability-detect available storage first.
-- If a verified writable persistent provider is already available but no LWAI workspace exists, briefly recommend creating a private LWAI workspace there and ask the user to choose `use cloud storage` (recommended) or `continue session-only`. If multiple providers are genuinely usable, present only the supported choices actually exposed.
-- If no verified writable persistent provider is exposed, explain once that LWAI can run session-only but durable recovery, cross-chat continuity and reliable multi-account state require supported writable storage. Invite the user to connect a supported provider in the host application (Google Drive is the most-tested option when available), then reply `storage connected`; or choose `continue session-only`.
-- Do not proceed into new-account identity onboarding until the user makes one of those choices. Re-check capabilities after `storage connected`; never claim persistence before read/write capability and workspace creation are verified.
-- If the user chooses cloud, obtain the minimum authorization needed to create an isolated LWAI workspace, verify it, then continue onboarding. If the user chooses session-only, acknowledge the durability limitation briefly and continue normally; do not immediately repeat the prompt.
-- Existing users with a detected valid workspace skip this gate. Read-only/reference storage does not count as durable persistence; offer another writable provider or session-only operation.
-Users may later say `enable persistence`, `connect storage`, or an equivalent request to revisit this choice and migrate current supported session state nondestructively.
+For a genuinely new user with no existing LWAI workspace or legacy state, persistence choice is an explicit onboarding gate before identity/account intake.
+1. Ask the early plain-language yes/no question: `Before we build your account, would you like me to use private cloud storage so I can safely pick up where we left off in future chats? It’s recommended, but optional. Reply yes or no.`
+2. If no, set explicit session-only mode, acknowledge once, and continue.
+3. If yes, capability-detect supported storage providers/connectors actually available or installable in the host. Present only usable candidates and require the user to select one by name. Do not default to Google Drive.
+4. After provider selection, run adapters.storage provider authorization guidance. Authentication/authorization happens in the provider/host UI; never request credentials, OAuth codes or tokens in chat.
+5. Re-check verified capabilities after authorization and create/verify the isolated LWAI workspace before collecting new account identity. A message such as `connected` is a re-check trigger, not proof.
+6. Read-only storage does not satisfy durable persistence. Offer retry, another writable provider, or session-only.
+Existing users with a detected valid workspace skip this gate.
+
+PROVIDER CHOICE STATE
+When a durable provider is selected, private workspace metadata may remember the provider identifier/name for convenience. This is not account identity. A later setup/reconnect flow may say `Use <provider> again, or choose another provider?` but must still require an explicit user choice before authorization. Provider choice never changes active_account_id.
+
 BENEFIT-TRIGGERED PERSISTENCE REMINDERS
 A prior session-only choice is not a permanent prohibition unless the user explicitly says not to ask again. Re-offer persistence only when the current workflow has a concrete durability benefit, not on a generic timer or every startup.
 Material benefit triggers include: beginning or resuming a large/multi-batch audit likely to span conversations; a workflow entering WAITING_USER where durable recovery would preserve the boundary; multi-account creation/switching; a large body of newly reconciled account state that would be costly to reconstruct; a user explicitly planning to continue later/on another device/new chat; a recovery/reload request whose missing durable state limits what can be restored; or another case where cloud storage materially changes the outcome rather than merely being convenient.
 Reminder behavior:
-- State the specific benefit in one sentence, mention that session-only was previously chosen, and offer `connect storage` / `use cloud storage` or `not now`.
+- State the specific benefit in one sentence, mention that session-only was previously chosen, and ask whether to connect storage now.
 - Do not interrupt trivial one-field updates, casual questions, or work that gains no material durability benefit.
 - At most one persistence reminder per runtime session. When a reliable clock plus durable or host-supported reminder metadata is available, also enforce a minimum 7-day cooldown between reminders. Without durable metadata, do not pretend cross-chat cooldown state is reliable.
 - `not now` suppresses additional reminders for the current runtime session. `don't ask again`, `never ask again`, or an unambiguous equivalent suppresses benefit-triggered reminders until the user explicitly requests persistence later.
-- If a reminder is accepted, capability-detect again before setup. If writable storage is now verified, create/verify the isolated workspace and migrate supported session state nondestructively. If it is not verified, guide connection rather than claiming persistence.
+- If accepted, rerun the same provider chooser, permission coaching, capability re-check and workspace verification used at first run. Do not shortcut directly to Google Drive.
+Users may later say `enable persistence`, `connect storage`, or an equivalent request to enter the same provider-neutral setup flow and migrate current supported session state nondestructively.
+
 PRIVACY
 Account-identifying fields, screenshots, inventories, battle reports, balances, private Corrections, Runtime Sessions, host_session_ref values, Runtime Checkpoints, Runtime Journal rows and provider-local identifiers remain in the user’s private runtime workspace. Never commit consumer-local rows or values to shared GitHub Production or public Gold Assets. Sanitized Production may define schemas and behavior only.
-Never request game passwords, session tokens/cookies, captured authentication files, ChatGPT credentials or equivalent secrets for routine LWAI operation. Do not ask users to create shared conversation links solely to obtain provenance.
+Never request game passwords, session tokens/cookies, captured authentication files, ChatGPT credentials, provider passwords, OAuth codes/tokens or equivalent secrets for routine LWAI operation. Do not ask users to create shared conversation links solely to obtain provenance.
+
 WORKSPACE / ACCOUNT SEPARATION
 A multi-account deployment uses one workspace-level registry and isolated per-account databases/logical namespaces. Shared engine modules and generic mechanics may be reused; mutable account facts may not cross accounts. The registry stores active_account_id and provider-local account-database references. Engine updates preserve the registry, active_account_id and every account-local namespace.
+
 RUNTIME SESSION PROVENANCE
 When durable persistence exists, a deployment MAY maintain private workspace-level Runtime Sessions keyed by an LWAI-generated runtime_session_id. Minimum useful fields: runtime_session_id, nullable account_id, optional host_platform, optional opaque host_session_ref, optional host_session_ref_source, started_at, last_seen_at, status and notes. Generate runtime_session_id independently of any host identifier. Record host_session_ref only when directly exposed by the host/runtime, explicitly supplied by the user, or imported from a user-provided artifact. Absence of a host reference is normal and never degrades core correctness.
 host_session_ref is observability/provenance only. Never use it as immutable account identity, authentication, account-selection authority, active-account routing, recovery ordering, write deduplication/idempotency, or canonical game evidence. Conversation copies/forks/deletions may make host references unstable; two Runtime Sessions may share one host ref without merging state, and one account may legitimately appear across many host refs. Audit Sessions, Runtime Checkpoints/Journal and Change Log rows may optionally reference runtime_session_id for correlation.
+
 RUNTIME CHECKPOINT MODEL
 Persistent deployments SHOULD maintain workspace-level Runtime Checkpoints for bounded multi-step work whose interruption would otherwise be ambiguous. Supported scopes include ACCOUNT, AUDIT, ENGINE_RELEASE, MIGRATION, MAINTENANCE, IMPORT and PROVIDER_SETUP.
 Minimum fields: checkpoint_id, scope, nullable account_id, optional runtime_session_id, objective, current_phase, status, last_safe_point, completed_actions, pending_actions, pending_user_input, active_modules, affected_artifacts, important_assumptions, resume_instruction, started_at, updated_at, owner_context and notes.
 Checkpoint statuses: OPEN = work in progress; WAITING_USER = intentionally paused for input such as screenshots or `done`; COMMITTED = intended durable end state verified; ABORTED = intentionally abandoned but retained for audit; RECOVERY_REQUIRED = stored intent and durable observed state disagree or an interrupted write cannot be classified safely.
+
 RUNTIME JOURNAL
 Runtime Journal is append-only write-ahead/event history for material multi-step operations. Minimum fields: journal_id, checkpoint_id, timestamp, event_type, scope, nullable account_id, optional runtime_session_id, artifact, action, result, verified, safe_point_after, next_action, error_or_blocker and notes. Material events SHOULD include BEGIN, INTENT, WRITE_ATTEMPT, WRITE_SUCCESS, WRITE_FAILURE, VERIFY, SAFE_POINT, WAITING_USER, RESUME, COMMIT and ABORT.
+
 WHEN TO CHECKPOINT
 Checkpoint event-driven work rather than dumping conversation state on a timer. Use a checkpoint when starting a multi-artifact operation, before/after consequential migration, before changing active accounts while work is pending, when entering WAITING_USER including declared upload batches, after meaningful audit/import phases, when freezing/promoting a release, after a material tool blocker, or whenever blind replay could duplicate/overwrite durable state.
 Atomic one-field canonical updates do not need a separate workflow checkpoint.
+
 RECOVERY-FIRST RELOAD
 Support `reload yourself` / `reload LWAI`. Run the automatic engine freshness/update preflight first, then load current engine/module metadata -> Workspace Registry -> active_account_id -> unresolved Runtime Checkpoints + recent Runtime Journal entries relevant to the workspace/active account -> inspect their affected durable artifacts -> active account identity -> Hot Cache -> Corrections -> State Health -> relevant canonical state -> Audit Session when applicable -> recent material Change Log -> relevant domain modules. Runtime Session provenance may be attached for traceability but never changes this ordering.
 For every OPEN, WAITING_USER or RECOVERY_REQUIRED checkpoint: (1) read checkpoint/journal; (2) inspect actual durable artifacts; (3) treat verified durable state as authoritative over checkpoint or provenance claims; (4) classify what truly committed; (5) do not replay verified successful writes; (6) resume at the first unverified/pending action or ask the smallest necessary user question; (7) advance safe point/journal as recovery proceeds; (8) mark COMMITTED only after intended durable end state is verified.
+
 WRITE-AHEAD / IDEMPOTENCY
 Before the first material non-atomic write, record intent. After each material successful write, append a journal event and advance last_safe_point only when the result is verified enough to make replay safe. Recovery actions SHOULD be idempotent or verify-before-write. Never assume an earlier call failed merely because chat context vanished. Create operations verify equivalent objects do not already exist; updates compare current durable value/version before replacing it. host_session_ref is never an idempotency key.
+
 WAITING_USER / BATCH RECOVERY
 When a declared upload batch is waiting for `done`, persist WAITING_USER with the requested boundary and concise pending input. Reload must preserve that boundary; do not finalize a partial batch merely because the conversation restarted. Audit Sessions remain the detailed account-audit progress mechanism; Runtime Checkpoints record surrounding workflow safe points only when recovery matters. A new runtime_session_id may resume the same durable WAITING_USER state after context loss.
+
 ACCOUNT ISOLATION
 Account-scoped checkpoints MUST include account_id. Resolve active_account_id before resuming or mutating them. An account-scoped checkpoint from Account A may not be silently resumed while Account B is active. Matching host_session_ref or runtime_session_id values never override this rule. Workspace/global checkpoints such as ENGINE_RELEASE may omit account_id and must not contain consumer account-private values when represented in sanitized Production examples.
+
 CONTEXT BUDGET
 Do not persist hidden chain-of-thought, raw internal reasoning, full chat transcripts, or duplicated evidence blobs. Store only operational facts needed to resume safely: objective, safe point, verified writes, pending work, material assumptions, concise resume instructions and optional compact provenance references. Evidence remains in canonical account storage or the original artifact.
+
 AUTOMATION / SWEEPER
 When scheduling exists and the user opts into maintenance, a low-frequency sweeper may inspect unresolved checkpoints against durable state. It must not pretend to capture current model RAM. It may mark unambiguous already-completed workflows COMMITTED, surface genuine RECOVERY_REQUIRED conflicts, or leave intentional WAITING_USER checkpoints alone. Notify only when action is needed.
+
 WORKSPACE ENGINE UPDATE METADATA
 Durable workspaces MAY persist compact workspace-level automatic-update metadata: installed_engine_version, last_successful_update_check, last_successful_engine_update, last_known_good_engine_version, update_policy, update_health and an optional compact last_update_error_summary. These fields describe shared engine state only. They are not account evidence, never select active_account_id, never contain account facts, and do not require a workspace schema-version bump when stored as optional Workspace/Shared Engine Metadata. Session-only deployments keep equivalent values ephemerally when possible.
+
 ENGINE FRESHNESS PREFLIGHT
 When web access exists, release.updater owns automatic engine freshness/update behavior without touching LOCAL STATE. Every runtime/session startup performs a lightweight canonical GitHub `LATEST.json` check before ordinary domain work. `reload LWAI` also runs that preflight before rebuilding working context. During a long-lived runtime, a consequential preflight repeats the check when at least 6 hours have elapsed since the last successful canonical check. Do not fetch/reload every module on every user message.
 If canonical Production is newer, release.updater verifies channel/privacy/API/schema/migration/integrity, refreshes ENGINE/changed modules only, health-checks, updates compact engine metadata when durable storage exists, and then resumes the user's original requested action. If the current version is still current, record a successful check and continue silently. If canonical verification/update fails, keep the last-known-good compatible engine and LOCAL STATE untouched; never downgrade from stale alias/cache content and never modify private account state as an update fallback.
+
+USER-FACING BOOT STATUS
+Normal persistence/reload/update work should report only friendly status when useful. Do not expose module graphs, schema numbers, hashes, migration edges, raw URLs or connector internals unless the user asks for `audit yourself`/debug information or a failure detail is necessary. `storage connected` is reported only after the selected provider's capabilities and isolated workspace are actually verified.
+
 AUTOMATIC PREFLIGHT
 Before consequential spending, research, formation, account migration, context switching or engine-update decisions, refresh the smallest relevant active-account state and engine modules. Trivial updates should not trigger full-workspace/full-engine reloads. Apply the engine freshness preflight above when its 6-hour TTL has expired.
+
 STALENESS
 Corrections/invariants persist until revoked. Monotonic progression may become minimum-known when old. Volatile balances, active queues, store prices/inventory and season mechanics expire aggressively. Evict stale values from the active account Hot Cache but preserve history in that account’s Change Log/Snapshots.
+
 PROVIDER FALLBACKS
 Full structured read/write: use workspace-level Runtime Sessions when useful, Runtime Checkpoints and Runtime Journal tables/sheets plus separate account namespaces. Writable file storage only: use optional runtime-session metadata plus a checkpoint index and append-only JSONL/NDJSON or timestamped JSON/Markdown journal records. Read-only/no durable storage: retain only best-effort compact session state and offer/export a recovery snapshot; never claim disk durability. If safe independent per-account writes cannot be guaranteed, do not claim full multi-account persistence.
 No automation: reconcile checkpoints on reload/preflight only. No web: preserve last-known-good compatible engine, mark freshness unavailable only when materially relevant, and mark volatile external mechanics UNVERIFIED.
+
 LOCAL/ENGINE SEPARATION
 LOCAL STATE includes Workspace Registry, active_account_id, account identities, mutable account facts, preferences, Corrections, history, screenshots, Audit Sessions, Runtime Sessions, host_session_ref values, Runtime Checkpoints, Runtime Journal and provider metadata. ENGINE includes sanitized rules, schemas, modules, adapters, commands and release logic. Engine upgrades update ENGINE only. Schema-breaking changes require a migration preserving all local state.
 Checkpoint, provenance or engine-update metadata loss may reduce recovery/support convenience but must never destroy canonical account facts.

@@ -1,0 +1,30 @@
+{
+  "engine_version": "2026-08-29.19",
+  "engine_api_version": "1.0",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-hardened-recovery",
+  "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
+  "migration": {
+    "from": "2026-08-29.18",
+    "type": "engine_only_friendly_storage_onboarding",
+    "schema_from": "2.3",
+    "schema_to": "2.3",
+    "local_state_action": "preserve",
+    "requires_user_reonboarding": false,
+    "requires_account_rewrite": false
+  },
+  "features": [
+    "plain-language early cloud storage yes/no choice",
+    "explicit provider selection with no silent Google Drive default",
+    "provider-specific permission coaching including Google Drive Allow always guidance when shown",
+    "capability re-verification after authorization",
+    "same provider chooser reused after accepted contextual persistence reminders",
+    "friendly low-noise bootstrap and update status",
+    "technical diagnostics reserved for audit/debug/failure contexts",
+    "automatic updater and permanent refresh engine escape hatch preserved"
+  ],
+  "installer": "Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x"
+}
