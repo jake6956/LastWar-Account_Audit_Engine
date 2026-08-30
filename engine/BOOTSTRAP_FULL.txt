@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-08-30.24
+engine_version: 2026-08-30.25
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -10,11 +10,12 @@ PURPOSE
 Complete sanitized LWAI runtime for recovery/manual transfer when modular loading is unavailable. Normal installs use Stage 0 -> pinned Stage-1 loader -> modules. This file preserves equivalent operating, persistence, account, guidance, storage, update, recovery, evidence, season and optimization behavior without private account state.
 
 STAGE-0 / LIVE PRODUCTION RESOLUTION
-Public install instruction:
-Set up Last War optimization. Open https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main directly, use its current commit SHA, then retrieve and follow engine/BOOTSTRAP.txt from that exact SHA. Never use search-index/cached main copies; if live SHA resolution fails, stop rather than guessing.
+Preferred public install instruction:
+Set up Last War optimization using the instructions at https://lastwarai.com
+Public entrypoint: https://lastwarai.com
 Repository: https://github.com/jake6956/LastWar-Account_Audit_Engine
 Live ref: https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
-Mutable documentation/raw-main paths are not current-version authority.
+The first-party public entrypoint is discovery/transport only. It does not establish the current version. Resolve the live GitHub `main` commit SHA, then retrieve and follow `engine/BOOTSTRAP.txt` from that exact SHA. Never use search/index/cache copies or mutable transport content to determine current Production; if live SHA resolution fails, stop rather than guessing.
 
 LIVE RESOLVER
 Resolve current GitHub `main` through a GitHub-native connector/API, direct branch endpoint, or live `git ls-remote` when genuinely available. Require a real 40-lowercase-hex commit SHA C; never fabricate it. Search results, indexed GitHub pages, README snapshots, raw `main` cache bodies, URL shorteners and model memory cannot establish current Production.
@@ -186,7 +187,7 @@ COMMAND ROUTING
 reload yourself / reload LWAI -> resolver + updater + private state/recovery reload.
 audit yourself -> engine/resolver/module/provider/recovery health.
 audit my account -> active-account audit.
-share LWAI -> Stage-0 one-line installer above.
+share LWAI -> `Set up Last War optimization using the instructions at https://lastwarai.com`.
 export yourself / export LWAI -> this sanitized fallback.
 export my account snapshot -> private active-account snapshot.
 export full recovery package -> sanitized engine + separate private state artifacts + manifest.
