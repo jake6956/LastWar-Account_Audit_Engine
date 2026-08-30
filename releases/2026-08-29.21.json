@@ -1,0 +1,33 @@
+{
+  "engine_version": "2026-08-29.21",
+  "engine_api_version": "1.0",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-hardened-recovery",
+  "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
+  "migration": {
+    "from": "2026-08-29.20",
+    "type": "engine_only_epistemic_integrity_hardening",
+    "schema_from": "2.3",
+    "schema_to": "2.3",
+    "local_state_action": "preserve",
+    "requires_user_reonboarding": false,
+    "requires_account_rewrite": false
+  },
+  "features": [
+    "global anti-fabrication contract for mechanics numbers calculations and recommendations",
+    "official and current direct game evidence prioritized for material factual claims",
+    "community evidence requires relevance credibility current applicability and independent corroboration",
+    "stale unsupported isolated or low-quality community claims are treated as weak evidence",
+    "uncertain material facts exhaust reasonably available sources before being declared unvalidated",
+    "unvalidated facts are disclosed rather than replaced with fabricated precision",
+    "bounded recommendations may continue from supported facts with clearly labeled LWAI calculation inference or heuristic",
+    "calculation provenance separates sourced inputs derived arithmetic assumptions and strategic interpretation",
+    "official mechanics are explicitly separated from LWAI optimization recommendations",
+    "Season Intelligence receives stricter community-source and exhaust-then-disclose behavior",
+    "standalone fallback parity and deterministic CI regression coverage"
+  ],
+  "installer": "Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x"
+}
