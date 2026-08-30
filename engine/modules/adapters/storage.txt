@@ -1,6 +1,6 @@
 LWAI MODULE — STORAGE ADAPTERS
 module_id: adapters.storage
-module_version: 2026-08-30.26.1
+module_version: 2026-08-30.26.2
 load_class: capability_on_demand
 state_scope: shared_engine+provider_rules+consumer_data_isolation
 SANITIZED: YES
@@ -50,7 +50,7 @@ Never upgrade a profile from provider reputation or file type alone.
 
 PROVIDER DISCOVERY / SELECTION
 When the user chooses cloud persistence, detect storage connectors/providers actually available or installable in the current host. Build a short menu from only supported candidates.
-When Google Drive is available with plausible writable capability, show it first as `Google Drive — Recommended` (preferred/most-tested). The user must still select it explicitly; recommendation is not silent consent.
+When Google Drive is available with plausible writable capability, show it first as `Google Drive — Recommended` (preferred/most-tested). The user must still select it explicitly; recommendation is not silent consent. Never silently choose Google Drive.
 Also show every other genuinely supported writable candidate. Never advertise a provider the host cannot expose.
 Common supported patterns when available:
 - Google Drive: preferred/most-tested full Google Workspace adapter when native Drive/Sheets/Docs read-write actions are exposed.
