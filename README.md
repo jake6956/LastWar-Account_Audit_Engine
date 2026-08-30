@@ -1,6 +1,6 @@
 # LastWar Account Audit Engine (LWAI)
 
-LWAI is a centrally maintained, modular Last War: Survival account-intelligence runtime designed to run through ChatGPT. Shared sanitized engine code and reusable generic knowledge live in GitHub Production. Private player/account state stays in the user's supported private workspace or, by explicit choice, the current chat session.
+LWAI is a centrally maintained, modular Last War: Survival account-intelligence runtime designed to run through ChatGPT. Shared sanitized engine code and reusable generic knowledge live in public GitHub Production. Private player/account state does not.
 
 ## Install
 
@@ -40,9 +40,9 @@ Stage 3 — normal LWAI work
   -> account optimization, storage, recovery, season intelligence, future features
 ```
 
-`engine/BOOTSTRAP.txt` is deliberately boring. It contains trust resolution, pinned-snapshot validation, generic mandatory-module loading, state-preservation rules and handoff. It does not contain provider onboarding, season logic, gear strategy or a feature list.
+`engine/BOOTSTRAP.txt` is deliberately boring. It contains trust resolution, pinned-snapshot validation, generic mandatory-module loading, state-preservation rules and handoff. Provider onboarding, account strategy and game-domain behavior belong in modules.
 
-The old 9 KiB loader ceiling was an internal LWAI CI guard, not a ChatGPT/platform limit. Production enforces a stricter **4 KiB** Stage-1 budget plus structural tests that prevent feature policy from leaking back into the loader.
+Production enforces a **4 KiB** Stage-1 budget plus structural tests that prevent feature policy from leaking back into the loader.
 
 ## The cascade rule
 
@@ -62,15 +62,29 @@ A new Production feature therefore does not require a new installer. Add/version
 
 Existing deployments preserve last-known-good ENGINE and LOCAL STATE when current Production cannot be safely resolved. `refresh engine` remains the permanent manual break-glass command and uses the same resolver/update transaction. There is no background-daemon claim: a dormant conversation updates on the next supported interaction.
 
-## Friendly first run
+## Intended user experience
+
+LWAI should feel like a **friendly expert Last War technician walking the player through the account with a clipboard**: progressively collecting the smallest useful stats and metrics, explaining what matters, and turning the account model into concrete recommendations intended to make the player as strong and effective as practical for their goals.
+
+The user may challenge a recommendation, ask why, choose a different strategy, or ask an entirely different Last War question at any time. LWAI should answer the current question to the best supported level possible rather than forcing the user to finish onboarding first. Unfinished durable upload/authorization boundaries are preserved instead of silently discarded.
+
+## Friendly first run and no dead air
 
 A genuinely new user is guided through:
 
 `existing-state discovery -> storage choice -> identity -> account registration -> strategic baseline -> first evidence -> running optimization`
 
-Cloud storage is optional. LWAI shows only storage providers actually available in the environment and requires explicit provider choice; it never silently defaults to Google Drive. Existing users are discovered/migrated before broad onboarding and receive a recognizable loaded-account landing/resume.
+The mandatory `core.flow-continuity` module enforces that every setup/recovery response ends with a concrete next action, an explicit WAITING_USER instruction, or useful running work. Technical statuses such as `connected`, `workspace verified`, `account loaded`, `updated`, or `Ready.` cannot be terminal responses by themselves.
 
-The mandatory `core.flow-continuity` module enforces a no-dead-air invariant across setup and recovery. A user returning `connected` after provider authorization is rechecked and verified internally, then the same user-facing response advances to identity, existing-account resume, or the original pending task. Verification failure must offer retry, another provider, or session-only. Durable onboarding stages map to explicit resume prompts so an interrupted conversation never silently stalls or restarts already-verified setup.
+A user returning `connected` after provider authorization is rechecked and verified internally, then the **same user-facing response** advances to identity, existing-account resume, or the original pending task. Verification failure offers retry, another provider, or session-only. Durable onboarding stages map to explicit resume prompts so an interrupted conversation never silently stalls or restarts already-verified setup.
+
+## Storage provider policy
+
+Cloud persistence is recommended but optional.
+
+**Google Drive is LWAI's preferred/recommended and most-tested consumer storage provider when it is actually available with verified writable capability.** It should be shown first and labeled Recommended. The user still explicitly chooses it; preferred does not mean silently selected.
+
+Every other provider genuinely supported by the current host and `storage-api/1` capability checks is also offered and supported, including Dropbox, OneDrive / Microsoft 365, Box when writable, or another verified writable provider. A verified alternative is a real persistence target, not a decorative fallback.
 
 ## Cloud workspace security
 
@@ -82,23 +96,33 @@ This **workspace-only** boundary is a runtime rule, not merely reassurance. Auth
 
 A user saying `connected` triggers capability re-checking; it is not accepted as proof. LWAI verifies its isolated workspace before claiming durable persistence, then immediately continues the pending onboarding/resume flow rather than stopping at a connection status.
 
-## Evidence and anti-fabrication
+## Data placement / privacy boundary
 
-LWAI does not invent Last War mechanics, numbers, costs, probabilities, formulas or factual recommendation inputs. Evidence preference is current direct game evidence -> current official sources -> reputable maintained references -> validated current community testing/consensus -> clearly labeled LWAI calculation/inference.
+**Public GitHub:** sanitized engine instructions/code, manifests, schemas, adapters, tests, release metadata/migrations and reusable non-user-specific knowledge only.
 
-Weak, stale, unsupported or contradictory community claims are not silently treated as facts. If a consequential mechanic cannot be validated after reasonable due diligence, LWAI says so and provides only bounded analysis with assumptions identified.
+**Maintainer private Google Drive:** maintainer-controlled private/Prod-Dev account state, private operational records and the private recovery/failsafe mirror. This private Drive is not a consumer backend and is not Production version authority.
+
+**Each end user's personal provider:** that user's private account identity/optional UID, screenshots/evidence, balances, history, Corrections/preferences, account databases, Audit/Runtime Sessions, checkpoints/journal, provider metadata and compact engine-update metadata—inside that user's designated Last War/LWAI workspace only.
+
+Consumer data is never routed through the maintainer's Drive, GitHub, another user's workspace or unrelated folders in the consumer's connected provider. Direct files/screenshots a user deliberately supplies in chat are task input only; they do not expand cloud-storage scope.
+
+Engine updates do not rewrite LOCAL STATE unless a separately validated schema migration requires it.
+
+## Knowledge and evidence policy
+
+LWAI should use current relevant information available through its research tools rather than relying on one site or model memory. Evidence preference is:
+
+`current direct in-game evidence -> current official Last War/publisher material -> reputable maintained tools/databases/guides -> independently corroborated community testing/consensus -> clearly labeled LWAI calculation/inference`
+
+Maintained community projects such as **LastWarTutorial.com** and **cpt-hedge.com** are useful research sources. Reddit communities such as **r/LastWarMobileGame** are useful for observations, edge cases and newly surfaced changes.
+
+Community material is not gospel. Material mechanics, numbers, costs, probabilities, event rules, expensive/irreversible choices and contested claims should be independently checked against current official/in-game evidence when available and corroborated with other credible current sources. If official material is silent, LWAI should seek multiple independent current sources and compare them with direct user evidence.
+
+If a material claim cannot be validated to high confidence after reasonable due diligence, LWAI says so when using it rather than manufacturing certainty. Unofficial advice is never labeled official merely because it is popular.
 
 ## Season Intelligence
 
 Season-specific knowledge is modular. Generic sanitized season packs accelerate research, while stale/dynamic/consequential mechanics are reverified when needed. Direct current in-game evidence beats stale shared knowledge. Private user observations do not automatically flow into public GitHub assets.
-
-## State separation
-
-**GitHub Production:** sanitized engine instructions, manifests, schemas, adapters, tests, release metadata/migrations and reusable non-user-specific knowledge.
-
-**User-local LWAI workspace:** private account identity/optional UID, screenshots/evidence, balances, history, Corrections/preferences, account databases, Audit/Runtime Sessions, checkpoints/journal, provider metadata and compact engine-update metadata.
-
-Engine updates do not rewrite LOCAL STATE unless a separately validated schema migration requires it.
 
 ## Current Production candidate
 
@@ -121,4 +145,4 @@ Engine updates do not rewrite LOCAL STATE unless a separately validated schema m
 - Migration graph: `releases/MIGRATIONS.json`
 - Complete standalone fallback: `engine/BOOTSTRAP_FULL.txt`
 
-Production changes use RC branches, exact-head CI, validated-head merge and post-merge verification. Failed candidates leave `main` untouched.
+Production changes use RC branches, exact-head CI, validated-head merge and post-merge verification. Failed candidates leave `main` untouched, and the private Google Drive failsafe must be synchronized to the exact frozen candidate before promotion.
