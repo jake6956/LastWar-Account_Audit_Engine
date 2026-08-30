@@ -39,9 +39,12 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.assertIn("Do not fabricate a SHA", self.resolver)
 
     def test_stage0_is_server_side_single_response_and_transparent(self):
-        for body in (self.worker, self.locator, self.contract, self.public_validator):
+        for body in (self.worker, self.locator, self.contract):
             self.assertIn("complete sanitized", body.lower())
             self.assertIn("X-LWAI-Commit", body)
+        self.assertIn("LAST WAR AI — PUBLIC CONFIGURATION", self.public_validator)
+        self.assertIn("X-LWAI-Commit", self.public_validator)
+        self.assertIn("transparent complete configuration", self.public_validator)
         self.assertIn("The SAME request returns the complete sanitized LWAI configuration", self.worker)
         self.assertIn("BOOTSTRAP_FULL.txt", self.worker)
         self.assertIn("serveConfiguration", self.worker)
