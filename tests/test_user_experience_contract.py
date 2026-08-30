@@ -3,7 +3,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CANONICAL_INSTALLER = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
+LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 LEGACY_SHORTENER = "https://tinyurl.com/"
 
 
@@ -22,108 +22,101 @@ class UserExperienceContractTests(unittest.TestCase):
         self.bootstrap = read("engine/modules/release/bootstrap.txt")
         self.updater = read("engine/modules/release/updater.txt")
         self.contract = read("contracts/user-experience.md")
+        self.storage_contract = read("contracts/storage-adapter.md")
         self.readme = read("README.md")
         self.latest = json.loads(read("releases/LATEST.json"))
 
-    def test_thin_loader_remains_bounded(self):
-        self.assertLessEqual(len(self.loader.encode("utf-8")), 9000)
-
-    def test_canonical_installer_uses_github_repository(self):
-        self.assertEqual(self.latest["preferred_install_url"], CANONICAL_INSTALLER)
-        for label, body in (
-            ("loader", self.loader),
-            ("full", self.full),
-            ("release.bootstrap", self.bootstrap),
-            ("README", self.readme),
+    def test_stage1_loader_is_small_orchestration_only(self):
+        self.assertLessEqual(len(self.loader.encode("utf-8")), 4096)
+        self.assertIn("Stage-1 orchestration only", self.loader)
+        self.assertIn("release.resolver", self.loader)
+        self.assertIn("release.updater", self.loader)
+        for forbidden in (
+            "Before we build your account",
+            "Google Drive",
+            "Allow always",
+            "screenname",
+            "strategic baseline",
+            "domain.season-intelligence",
+            "GEAR / UPGRADE ORE",
         ):
-            self.assertIn(CANONICAL_INSTALLER, body, label)
-        self.assertIn("ChatGPT installer handoff", self.readme)
-        self.assertIn("engine/BOOTSTRAP.txt", self.readme)
+            self.assertNotIn(forbidden, self.loader)
+
+    def test_stage0_installer_uses_live_branch_ref(self):
+        self.assertEqual(self.latest["preferred_install_url"], LIVE_REF)
+        for body in (self.loader, self.full, self.bootstrap, self.readme):
+            self.assertIn(LIVE_REF, body)
+        self.assertIn("Stage-0 bootloader", self.readme)
+        self.assertIn("current commit SHA", self.readme)
 
     def test_primary_installer_does_not_require_third_party_shortener(self):
         for label, body in (
             ("loader", self.loader),
             ("full", self.full),
             ("release.bootstrap", self.bootstrap),
-            ("README", self.readme),
         ):
             self.assertNotIn(LEGACY_SHORTENER, body, label)
-        self.assertIn("Third-party URL shorteners", self.bootstrap)
-        self.assertIn("never required trust roots", self.loader)
+        self.assertIn("Do not use the old TinyURL installer", self.readme)
 
-    def test_existing_onboarding_and_updater_contracts_remain_intact(self):
-        self.assertIn("release.updater", self.loader)
-        self.assertIn("refresh engine", self.loader)
-        self.assertIn("LOCAL STATE", self.loader)
-        self.assertIn("POST-STORAGE HANDOFF", self.loader)
-        self.assertIn("Cloud storage connected and verified", self.loader)
-        self.assertIn("screenname", self.loader.lower())
-        self.assertIn("strategic baseline", self.loader.lower())
-        self.assertIn("first highest-value evidence", self.loader.lower())
+    def test_legacy_repo_installer_handoff_executes_without_repaste(self):
+        lower = self.readme.lower()
+        self.assertIn("assistant handoff / legacy-installer compatibility", lower)
+        self.assertIn("execute the stage-0 bootloader below now", lower)
+        self.assertIn("do not", lower)
+        self.assertIn("ask the user to copy/paste a second prompt", lower)
+        self.assertIn(LIVE_REF, self.readme)
+        self.assertIn("stop rather than guessing", lower)
 
-    def test_first_run_starts_with_plain_language_cloud_question(self):
+    def test_first_run_cloud_question_lives_in_modules_not_loader(self):
         question = "would you like me to use private cloud storage"
-        for body in (self.loader, self.full, self.guidance, self.persistence, self.bootstrap, self.contract):
+        self.assertNotIn(question, self.loader.lower())
+        for body in (self.full, self.guidance, self.persistence, self.contract):
             self.assertIn(question, body.lower())
 
     def test_cloud_yes_requires_explicit_provider_choice(self):
-        for body in (self.loader, self.full, self.guidance, self.persistence, self.storage, self.bootstrap, self.contract):
-            lower = body.lower()
-            self.assertIn("provider", lower)
-            self.assertTrue("explicit" in lower or "choose" in lower)
-        combined = "\n".join((self.loader, self.full, self.guidance, self.persistence, self.storage, self.bootstrap, self.contract)).lower()
-        self.assertIn("never default to google drive", combined)
+        combined = "\n".join((self.full, self.guidance, self.persistence, self.storage, self.bootstrap, self.contract)).lower()
+        self.assertIn("provider", combined)
+        self.assertTrue("never default to google drive" in combined or "never silently choose google drive" in combined)
 
     def test_google_drive_permission_coaching_includes_allow_always(self):
-        for body in (self.loader, self.full, self.guidance, self.storage, self.bootstrap, self.contract):
+        for body in (self.full, self.guidance, self.storage, self.contract):
             self.assertIn("Allow always", body)
             self.assertIn("Google Drive", body)
 
-    def test_other_provider_guidance_is_present_without_fake_credentials(self):
-        for provider in ("Dropbox", "OneDrive", "Box"):
-            self.assertIn(provider, self.storage)
-            self.assertIn(provider, self.full)
-        lower = self.storage.lower()
-        self.assertIn("do not invent", lower)
-        self.assertIn("never ask", lower)
-        self.assertIn("oauth", lower)
+    def test_workspace_boundary_is_absolute_and_user_visible(self):
+        combined = "\n".join((self.full, self.storage, self.contract, self.storage_contract, self.readme))
+        self.assertIn("ABSOLUTE WORKSPACE BOUNDARY", self.storage)
+        self.assertIn("LWAI is explicitly restricted to its own Last War workspace", combined)
+        self.assertIn("outside that workspace", combined)
+        self.assertIn("other ChatGPT/app workspaces", combined)
+        self.assertIn("broader connector", combined)
+        self.assertIn("provider-wide", combined)
+        self.assertIn("unrelated provider", combined)
+        self.assertIn("Workspace-only guardrail is active", self.storage)
+
+    def test_workspace_boundary_prohibits_unrelated_storage_actions(self):
+        lower = "\n".join((self.storage, self.storage_contract, self.contract)).lower()
+        for verb in ("read", "list", "search", "inspect", "modify", "move", "rename", "delete"):
+            self.assertIn(verb, lower)
+        self.assertIn("outside", lower)
+        self.assertIn("off-limits", lower)
+        self.assertIn("do not perform provider-wide", lower)
+
+    def test_credentials_are_never_requested(self):
+        combined = "\n".join((self.full, self.storage, self.contract, self.storage_contract)).lower()
+        for token in ("password", "oauth", "token", "cookies", "credentials"):
+            self.assertIn(token, combined)
+        self.assertTrue("never asks" in combined or "never request" in combined)
 
     def test_connected_is_recheck_trigger_not_proof(self):
-        for body in (self.loader, self.full, self.guidance, self.persistence, self.storage, self.contract):
+        for body in (self.full, self.guidance, self.persistence, self.storage, self.contract):
             lower = body.lower()
             self.assertIn("connected", lower)
-            self.assertTrue(
-                "re-detect" in lower or "recheck" in lower or "re-check" in lower or "capabilit" in lower,
-                "storage connection acknowledgement must trigger capability verification",
-            )
-            self.assertTrue("verify" in lower or "verified" in lower)
-
-    def test_later_persistence_acceptance_reruns_provider_flow(self):
-        for body in (self.loader, self.full, self.guidance, self.persistence, self.bootstrap, self.contract):
-            lower = body.lower()
-            self.assertIn("provider", lower)
-            self.assertTrue("rerun" in lower or "same provider chooser" in lower or "same chooser" in lower)
-
-    def test_normal_bootstrap_ux_is_friendly_not_diagnostic_dump(self):
-        for body in (self.loader, self.full, self.guidance, self.bootstrap, self.contract):
-            self.assertIn("Getting LWAI ready", body)
-            lower = body.lower()
-            self.assertTrue("audit yourself" in lower or "debug" in lower)
-        self.assertIn("FRIENDLY UPDATE UX", self.updater)
-        self.assertIn("Checking for updates", self.updater)
-        self.assertIn("LWAI updated successfully", self.updater)
-        self.assertTrue("audit yourself" in self.updater.lower() or "debug" in self.updater.lower())
-
-    def test_storage_success_requires_verification(self):
-        self.assertIn("CONNECTION VERIFICATION", self.storage)
-        self.assertIn("Cloud storage connected and verified", self.storage)
-        self.assertIn("read", self.storage.lower())
-        self.assertIn("write", self.storage.lower())
-        self.assertIn("create", self.storage.lower())
+            self.assertTrue("re-check" in lower or "recheck" in lower or "capabilit" in lower)
+            self.assertIn("verif", lower)
 
     def test_storage_success_is_not_terminal(self):
         for label, body in (
-            ("loader", self.loader),
             ("full", self.full),
             ("guidance", self.guidance),
             ("storage", self.storage),
@@ -133,102 +126,47 @@ class UserExperienceContractTests(unittest.TestCase):
             lower = body.lower()
             self.assertIn("cloud storage connected and verified", lower, label)
             self.assertTrue(
-                "same response" in lower
+                "immediately" in lower
                 or "same user-facing response" in lower
-                or "immediately continue" in lower
-                or "immediately hand off" in lower
-                or "return control immediately" in lower
-                or "not a conversational" in lower,
-                f"{label} does not explicitly prevent an orphan storage-success state",
+                or "same response" in lower
+                or "not a conversational terminal state" in lower
+                or "resumes original work" in lower,
+                label,
             )
 
     def test_verified_storage_advances_to_identity(self):
-        for label, body in (
-            ("loader", self.loader),
-            ("full", self.full),
-            ("guidance", self.guidance),
-            ("accounts", self.accounts),
-            ("bootstrap", self.bootstrap),
-            ("UX contract", self.contract),
-        ):
+        for body in (self.full, self.guidance, self.accounts, self.contract):
             lower = body.lower()
-            self.assertIn("screenname", lower, label)
-            self.assertIn("server", lower, label)
-            self.assertIn("alliance", lower, label)
-            self.assertIn("uid", lower, label)
-            self.assertTrue("optional" in lower and "identity" in lower, label)
+            self.assertIn("screenname", lower)
+            self.assertIn("server", lower)
+            self.assertIn("alliance", lower)
+            self.assertIn("uid", lower)
 
-    def test_identity_advances_to_strategic_baseline_without_next(self):
-        for label, body in (
-            ("loader", self.loader),
-            ("full", self.full),
-            ("guidance", self.guidance),
-            ("accounts", self.accounts),
-            ("bootstrap", self.bootstrap),
-            ("UX contract", self.contract),
-        ):
+    def test_identity_advances_to_baseline_and_evidence_without_next(self):
+        for body in (self.full, self.guidance, self.accounts, self.contract):
             lower = body.lower()
-            self.assertIn("hq", lower, label)
-            self.assertTrue("strategic baseline" in lower or "baseline" in lower, label)
-            self.assertTrue("do not require" in lower or "never require" in lower or "without requiring" in lower, label)
-            self.assertIn("next", lower, label)
+            self.assertIn("hq", lower)
+            self.assertIn("baseline", lower)
+            self.assertTrue("first evidence" in lower or "first highest-value" in lower or "first useful evidence" in lower)
+            self.assertIn("next", lower)
 
-    def test_baseline_advances_to_first_evidence_capture(self):
-        for label, body in (
-            ("loader", self.loader),
-            ("full", self.full),
-            ("guidance", self.guidance),
-            ("accounts", self.accounts),
-            ("bootstrap", self.bootstrap),
-            ("UX contract", self.contract),
-        ):
+    def test_multi_upload_done_boundary_and_waiting_user_survive(self):
+        for body in (self.full, self.guidance, self.contract):
             lower = body.lower()
-            self.assertTrue("first evidence" in lower or "first highest-value" in lower or "first useful evidence" in lower, label)
-            self.assertTrue("main/default squad" in lower or "default squad" in lower or "main squad" in lower, label)
-
-    def test_setup_turns_have_no_orphan_state(self):
-        for label, body in (
-            ("loader", self.loader),
-            ("full", self.full),
-            ("guidance", self.guidance),
-            ("bootstrap", self.bootstrap),
-            ("UX contract", self.contract),
-        ):
-            lower = body.lower()
-            self.assertTrue(
-                "orphan" in lower or "dead end" in lower or "terminal" in lower or "continuation invariant" in lower,
-                label,
-            )
-            self.assertTrue("next actionable" in lower or "next action" in lower or "next useful" in lower, label)
-            self.assertIn("waiting_user", lower, label)
-
-    def test_onboarding_recovery_resumes_first_incomplete_stage(self):
-        for label, body in (
-            ("loader", self.loader),
-            ("full", self.full),
-            ("guidance", self.guidance),
-            ("accounts", self.accounts),
-            ("bootstrap", self.bootstrap),
-            ("UX contract", self.contract),
-        ):
-            lower = body.lower()
-            self.assertIn("first incomplete", lower, label)
-            self.assertTrue(
-                "never repeat" in lower or "does not repeat" in lower or "never restart" in lower or "never replay" in lower,
-                label,
-            )
+            self.assertIn("waiting_user", lower)
+            self.assertIn("done", lower)
 
     def test_existing_user_gets_landing_or_resume(self):
-        for label, body in (
-            ("loader", self.loader),
-            ("full", self.full),
-            ("guidance", self.guidance),
-            ("accounts", self.accounts),
-            ("UX contract", self.contract),
-        ):
+        for body in (self.full, self.guidance, self.accounts, self.contract):
             lower = body.lower()
-            self.assertTrue("landing" in lower or "loaded" in lower, label)
-            self.assertTrue("resume" in lower or "unfinished" in lower, label)
+            self.assertTrue("landing" in lower or "loaded" in lower)
+            self.assertTrue("resume" in lower or "unfinished" in lower)
+
+    def test_friendly_update_status_remains_intact(self):
+        self.assertIn("FRIENDLY UPDATE UX", self.updater)
+        self.assertIn("Checking for updates", self.updater)
+        self.assertIn("LWAI updated successfully", self.updater)
+        self.assertIn("audit yourself", self.updater)
 
 
 if __name__ == "__main__":

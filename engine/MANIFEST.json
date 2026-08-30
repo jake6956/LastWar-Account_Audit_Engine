@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.23",
+  "engine_version": "2026-08-30.24",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -7,6 +7,9 @@
   "sanitized": true,
   "account_state_included": false,
   "integrity_mode": "git_blob_sha1",
+  "bootstrap_protocol_version": "2.0",
+  "entrypoint_module": "release.bootstrap",
+  "module_selection": "manifest_activation_v1",
   "modules": [
     {
       "module_id": "core.operating",
@@ -68,6 +71,9 @@
       "dependencies": ["core.operating", "core.accounts"],
       "state_scope": "shared_engine;active_account_reads",
       "required": false,
+      "activation": {
+        "intents": ["gear", "upgrade ore", "hero skills", "skill medals", "exclusive weapons", "hero optimization"]
+      },
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
@@ -81,6 +87,9 @@
       "dependencies": ["core.operating", "core.accounts"],
       "state_scope": "shared_engine;active_account_reads",
       "required": false,
+      "activation": {
+        "intents": ["research", "tech", "drone", "components", "chips", "progression"]
+      },
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
@@ -94,6 +103,9 @@
       "dependencies": ["core.operating", "core.accounts"],
       "state_scope": "shared_engine;active_account_reads",
       "required": false,
+      "activation": {
+        "intents": ["combat", "battle report", "formation", "counter", "battlefield", "pvp", "pve"]
+      },
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
@@ -107,6 +119,10 @@
       "dependencies": ["core.operating", "core.accounts"],
       "state_scope": "shared_engine;active_account_reads;public_gold_assets",
       "required": false,
+      "activation": {
+        "intents": ["season", "season tech", "season building", "season mechanic", "territory", "capture", "season currency"],
+        "system_events": ["season_context_required"]
+      },
       "release_min": "2026-08-29.20",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
@@ -120,6 +136,9 @@
       "dependencies": ["core.operating", "core.accounts", "domain.season-intelligence"],
       "state_scope": "shared_engine;active_account_reads",
       "required": false,
+      "activation": {
+        "intents": ["store", "black market", "bounty", "paid value", "pack", "purchase", "event store"]
+      },
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
@@ -127,16 +146,21 @@
     },
     {
       "module_id": "adapters.storage",
-      "module_version": "2026-08-29.22.1",
+      "module_version": "2026-08-30.24.1",
       "path": "engine/modules/adapters/storage.txt",
       "load_class": "capability_on_demand",
       "dependencies": ["core.persistence", "core.accounts"],
       "state_scope": "shared_engine+provider_rules",
       "required": false,
+      "activation": {
+        "intents": ["connect storage", "enable persistence", "cloud storage"],
+        "system_events": ["persistence_setup", "persistence_recovery", "provider_capability_check"],
+        "required_capabilities": ["storage"]
+      },
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "069a01175ea3ed9b1e858587cec5ad66345fece5"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "71ade01855dcbf3240c813b0fef5c593691cd779"}
     },
     {
       "module_id": "release.runtime",
@@ -152,30 +176,56 @@
       "integrity": {"algorithm": "git_blob_sha1", "digest": "187e9c9098e947c0a250502647fabff5813789b5"}
     },
     {
+      "module_id": "release.resolver",
+      "module_version": "2026-08-30.24.1",
+      "path": "engine/modules/release/resolver.txt",
+      "load_class": "mandatory_core",
+      "dependencies": ["release.runtime"],
+      "state_scope": "shared_engine+workspace_engine_metadata",
+      "required": true,
+      "release_min": "2026-08-30.24",
+      "engine_api": {"min": "1.0", "max": "1.0"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "0ba0f6c75f20ff2141804e6b28999c0dfdf78eb5"}
+    },
+    {
+      "module_id": "release.dispatcher",
+      "module_version": "2026-08-30.24.1",
+      "path": "engine/modules/release/dispatcher.txt",
+      "load_class": "mandatory_core",
+      "dependencies": ["core.operating"],
+      "state_scope": "shared_engine",
+      "required": true,
+      "release_min": "2026-08-30.24",
+      "engine_api": {"min": "1.0", "max": "1.0"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "f6575093ad3840ac036c5a8c6ccba9f40beaf924"}
+    },
+    {
       "module_id": "release.updater",
-      "module_version": "2026-08-29.19.1",
+      "module_version": "2026-08-30.24.1",
       "path": "engine/modules/release/updater.txt",
       "load_class": "mandatory_core",
-      "dependencies": ["release.runtime", "core.persistence"],
+      "dependencies": ["release.resolver", "core.persistence"],
       "state_scope": "shared_engine+workspace_engine_metadata",
       "required": true,
       "release_min": "2026-08-29.18",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "f8484387f520f2aad3a6782cab9831d4e5451371"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "b21ed5b5e1f29337b19f2c34ba3f1115d5437eb3"}
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-08-29.23.1",
+      "module_version": "2026-08-30.24.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
-      "dependencies": ["release.runtime", "release.updater", "core.accounts", "core.guidance"],
+      "dependencies": ["release.resolver", "release.dispatcher", "release.updater", "core.accounts", "core.guidance"],
       "state_scope": "shared_engine",
       "required": true,
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "617e4364b7df361879ef8ed9bf9b75b832ba48c2"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "02034e0ad3080f4cccb60c18c8c7d8f205fb812b"}
     }
   ]
 }

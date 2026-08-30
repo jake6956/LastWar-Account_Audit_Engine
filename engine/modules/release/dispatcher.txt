@@ -1,0 +1,51 @@
+LWAI MODULE — MANIFEST DISPATCHER
+module_id: release.dispatcher
+module_version: 2026-08-30.24.1
+load_class: mandatory_core
+state_scope: shared_engine
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+PURPOSE
+Make MANIFEST the single integration surface for Production capabilities. Stage-1 loads required modules generically; this dispatcher selects optional modules from manifest metadata. New Production functionality must become reachable by manifest registration, not bootstrap edits.
+
+MANDATORY CASCADE
+Treat every MANIFEST entry with `required:true` as mandatory. Resolve its dependencies recursively and load in DAG order. Never maintain a separate hardcoded mandatory-feature list in Stage-1 or this dispatcher.
+
+OPTIONAL ACTIVATION
+Each non-required Production module MUST declare an `activation` object in MANIFEST with one or more of:
+- `intents`: semantic work categories that make the module relevant;
+- `system_events`: runtime lifecycle events that require it;
+- `required_capabilities`: host capabilities needed before it can be useful.
+Activation metadata is routing metadata, not account state.
+
+For the current user action/runtime event:
+1. Match the smallest relevant set of optional modules by activation metadata.
+2. Recursively include their declared dependencies.
+3. Confirm engine API/workspace-schema compatibility before loading.
+4. Apply available manifest integrity validation.
+5. Hand control to the selected module(s) while mandatory core remains active.
+Do not load unrelated optional modules merely because they exist.
+
+NO HARDCODED FEATURE ROUTER
+Do not encode hero, gear, season, combat, storage-provider or future feature names as dispatcher logic. The manifest is the routing table. Adding a new optional Production module with valid activation metadata and dependencies makes it discoverable without changing Stage-1 or dispatcher logic.
+
+SYSTEM EVENTS
+Lifecycle events may activate capability modules even when the user's prose does not name them. Examples include persistence setup/recovery or season-context requirements. The event identifier comes from MANIFEST; do not invent hidden event semantics outside registered metadata.
+
+FAILURE
+A required module failure fails the engine load closed and preserves last-known-good/LOCAL STATE.
+An optional module that is relevant but unavailable/incompatible must not be silently substituted with fabricated behavior. Continue with compatible capabilities only when safe and disclose material limitation.
+Unknown/unregistered module files are not Production capabilities.
+
+PRIVACY
+Module selection may inspect the current task category, runtime event and exposed capability names. Never put player identity, UID, account facts, screenshots, balances, private provider references or other LOCAL STATE into public manifest activation metadata.
+
+RELEASE INVARIANTS
+CI must reject:
+- module files not registered in MANIFEST;
+- duplicate module IDs or paths;
+- unresolved/cyclic dependencies;
+- required modules that are not reachable during Stage-1 load;
+- non-required modules without usable activation metadata;
+- manifest entrypoint that is absent or non-required.

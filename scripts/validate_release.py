@@ -14,36 +14,38 @@ REQUIRED_FILES = [
     "engine/BOOTSTRAP.txt", "engine/BOOTSTRAP_FULL.txt", "engine/MANIFEST.json",
     "engine/modules/core/operating.txt", "engine/modules/core/persistence.txt",
     "engine/modules/core/accounts.txt", "engine/modules/core/guidance.txt",
-    "engine/modules/release/runtime.txt", "engine/modules/release/updater.txt",
-    "engine/modules/release/bootstrap.txt", "engine/modules/adapters/storage.txt",
+    "engine/modules/release/runtime.txt", "engine/modules/release/resolver.txt",
+    "engine/modules/release/updater.txt", "engine/modules/release/bootstrap.txt",
+    "engine/modules/adapters/storage.txt",
     "contracts/operating-canon.md", "contracts/export-bootstrap.md", "contracts/storage-adapter.md",
     "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md",
     "contracts/guided-lifecycle-ingestion.md", "contracts/runtime-checkpoint-recovery.md",
-    "contracts/user-experience.md",
+    "contracts/user-experience.md", "contracts/bootstrap-resolution.md",
     "schemas/workspace-schema.md", "schemas/account-registry.schema.json", "schemas/engine-manifest.schema.json",
     "docs/architecture.md", "docs/deployment.md", "docs/quick-install.md", "docs/runtime-recovery.md",
     "adapters/provider-matrix.md", "gold-assets/README.md", "gold-assets/manifest.json",
     "releases/LATEST.json", "releases/MIGRATIONS.json", "releases/CHANGELOG.md", "tests/RELEASE_GATES.md",
     "tests/reference_runtime.py", "tests/test_runtime_behavior.py", "tests/test_user_experience_contract.py",
-    ".github/workflows/validate.yml", ".github/CODEOWNERS",
+    "tests/test_bootstrap_resolution_contract.py", ".github/workflows/validate.yml", ".github/CODEOWNERS",
 ]
-EXPECTED_REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
-EXPECTED_BOOT = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt"
-EXPECTED_MANIFEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json"
-EXPECTED_FULL = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt"
-EXPECTED_LATEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json"
-EXPECTED_MIGRATIONS = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json"
-EXPECTED_INSTALL = EXPECTED_REPO
+
+REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
+LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
+RAW_BOOT = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt"
+RAW_MANIFEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json"
+RAW_FULL = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt"
+RAW_LATEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json"
+RAW_MIGRATIONS = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json"
 LEGACY_SHORTENER_PREFIX = "https://tinyurl.com/"
 CURRENT_SCHEMA = "2.3"
 HISTORICAL_SCHEMA_PATH = [("2.1", "2.2"), ("2.2", "2.3")]
 MIGRATION_CAPABLE = {
     "core.operating", "core.persistence", "core.accounts", "core.guidance",
-    "release.runtime", "release.updater", "release.bootstrap", "adapters.storage",
+    "release.runtime", "release.resolver", "release.updater", "release.bootstrap", "adapters.storage",
 }
 REQUIRED_MODULES = {
     "core.operating", "core.persistence", "core.accounts", "core.guidance",
-    "release.runtime", "release.updater", "release.bootstrap",
+    "release.runtime", "release.resolver", "release.updater", "release.bootstrap",
 }
 
 
@@ -106,7 +108,7 @@ def validate_manifest_schema_shape(schema: dict) -> None:
 
 def validate_dag(entries: list[dict]) -> None:
     graph = {e["module_id"]: list(e.get("dependencies") or []) for e in entries}
-    state = {}
+    state: dict[str, int] = {}
     def visit(node: str) -> None:
         if state.get(node) == 1:
             fail(f"module dependency cycle includes {node}")
@@ -165,12 +167,78 @@ def validate_modules(entries: list[dict], engine_api: str, schema_version: str) 
             fail(f"integrity mismatch for {module_id}: manifest={integrity['digest']} actual={actual}")
     if by_id["core.guidance"].get("dependencies") != ["core.operating", "core.persistence", "core.accounts"]:
         fail("core.guidance dependency graph invalid")
-    if "release.updater" not in by_id["release.bootstrap"].get("dependencies", []):
-        fail("release.bootstrap must depend on release.updater")
+    if "release.resolver" not in by_id["release.updater"].get("dependencies", []):
+        fail("release.updater must depend on release.resolver")
+    for dep in ["release.resolver", "release.updater"]:
+        if dep not in by_id["release.bootstrap"].get("dependencies", []):
+            fail(f"release.bootstrap must depend on {dep}")
     return by_id
 
 
-def validate_friendly_ux(loader: str, full: str) -> None:
+def validate_loader_boundary(loader: str) -> None:
+    if len(loader.encode("utf-8")) > 4096:
+        fail("Stage-1 loader exceeds 4KiB orchestration budget")
+    require("Stage-1 loader", loader, [
+        "Stage-1 orchestration only", "LIVE REF / CACHE SAFETY", "PINNED SNAPSHOT",
+        "MODULE HANDOFF", "release.resolver", "release.updater", "refresh engine",
+        "LOCAL STATE", "WAITING_USER", LIVE_REF,
+    ])
+    forbidden = [
+        "Before we build your account", "Allow always", "Google Drive", "Dropbox", "OneDrive", "Box",
+        "screenname", "strategic baseline", "GEAR / UPGRADE ORE", "SKILL MEDALS",
+        "DRONE / COMPONENTS / CHIPS", "EVENT STORES / BLACK MARKET / BOUNTY", "COMBAT DIAGNOSIS",
+        "domain.season-intelligence",
+    ]
+    for token in forbidden:
+        if token in loader:
+            fail(f"Stage-1 loader leaked delegated policy/domain content: {token}")
+
+
+def validate_resolution_contract(latest: dict, loader: str, full: str, readme: str) -> None:
+    resolver = read("engine/modules/release/resolver.txt")
+    updater = read("engine/modules/release/updater.txt")
+    bootstrap = read("engine/modules/release/bootstrap.txt")
+    contract = read("contracts/bootstrap-resolution.md")
+    if latest.get("preferred_install_url") != LIVE_REF:
+        fail("LATEST preferred_install_url is not live branch-ref endpoint")
+    if latest.get("live_ref_source") != LIVE_REF or latest.get("mutable_source_urls_are_authority") is not False:
+        fail("LATEST live-ref/cache authority metadata invalid")
+    for label, body in [("loader", loader), ("full", full), ("resolver", resolver), ("bootstrap", bootstrap), ("resolution contract", contract), ("README", readme)]:
+        if LIVE_REF not in body:
+            fail(f"{label} missing live Production ref")
+    require("resolver", resolver, [
+        "LIVE REF RESOLUTION", "PIN-ONCE SNAPSHOT", "production_commit_sha",
+        "40-lowercase-hex", "Do not fabricate a SHA", "cached raw `main` files",
+        "Fresh install with no live ref capability", "release.updater",
+    ])
+    require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine"])
+    require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "search/index caching"])
+    for label, body in [("loader", loader), ("full fallback", full), ("release.bootstrap", bootstrap)]:
+        if LEGACY_SHORTENER_PREFIX in body:
+            fail(f"{label} still advertises/requires legacy shortener")
+
+
+def validate_storage_security(full: str) -> None:
+    storage = read("engine/modules/adapters/storage.txt")
+    contract = read("contracts/storage-adapter.md")
+    ux = read("contracts/user-experience.md")
+    combined = "\n".join([storage, contract, ux, full])
+    require("storage adapter", storage, [
+        "ABSOLUTE WORKSPACE BOUNDARY", "USER-VISIBLE SECURITY REASSURANCE", "storage-api/1",
+        "Never silently choose Google Drive", "Allow always", "CONNECTION VERIFICATION",
+        "Workspace-only guardrail is active", "Dropbox", "OneDrive", "Box",
+    ])
+    for phrase in [
+        "outside that workspace", "other ChatGPT/app workspaces", "broader connector",
+        "never asks for passwords", "provider-wide", "unrelated provider",
+    ]:
+        if phrase.lower() not in combined.lower():
+            fail(f"workspace security contract missing concept: {phrase}")
+    if "LWAI is explicitly restricted to its own Last War workspace" not in combined:
+        fail("user-facing workspace guardrail reassurance missing")
+
+
+def validate_friendly_ux(full: str) -> None:
     guidance = read("engine/modules/core/guidance.txt")
     persistence = read("engine/modules/core/persistence.txt")
     storage = read("engine/modules/adapters/storage.txt")
@@ -178,34 +246,34 @@ def validate_friendly_ux(loader: str, full: str) -> None:
     updater = read("engine/modules/release/updater.txt")
     contract = read("contracts/user-experience.md")
     question = "would you like me to use private cloud storage"
-    for label, body in [("loader", loader), ("full", full), ("guidance", guidance), ("persistence", persistence), ("bootstrap", bootstrap), ("UX contract", contract)]:
+    for label, body in [("full", full), ("guidance", guidance), ("persistence", persistence), ("UX contract", contract)]:
         if question not in body.lower():
             fail(f"{label} lost early plain-language cloud choice")
-    combined = "\n".join([loader, full, guidance, persistence, storage, bootstrap, contract]).lower()
-    if "never default to google drive" not in combined:
+    combined = "\n".join([full, guidance, persistence, storage, bootstrap, contract]).lower()
+    if "never default to google drive" not in combined and "never silently choose google drive" not in combined:
         fail("provider flow does not prohibit silent Google Drive default")
-    for label, body in [("loader", loader), ("full", full), ("guidance", guidance), ("storage", storage), ("bootstrap", bootstrap), ("UX contract", contract)]:
+    for label, body in [("full", full), ("guidance", guidance), ("storage", storage), ("UX contract", contract)]:
         require(label, body, ["Google Drive", "Allow always"])
-    require("storage adapter", storage, ["module_id: adapters.storage", "storage-api/1", "CAPABILITY API", "PERSISTENCE PROFILES", "PROVIDER DISCOVERY / SELECTION", "AUTHORIZATION COACHING", "CONNECTION VERIFICATION", "atomic_append", "compare_and_swap", "AUTHORITATIVE JOURNAL RULE", "Dropbox", "OneDrive", "Box"])
-    require("friendly loader", loader, ["USER EXPERIENCE", "Getting LWAI ready", "Ready.", "audit yourself"])
     require("friendly updater", updater, ["FRIENDLY UPDATE UX", "Checking for updates", "LWAI updated successfully", "audit yourself"])
+    for token in ["WAITING_USER", "strategic baseline", "first", "screenname"]:
+        if token.lower() not in combined:
+            fail(f"guided onboarding contract lost: {token}")
 
 
 def main() -> None:
     for rel in REQUIRED_FILES:
         if not (ROOT / rel).is_file():
             fail(f"required file missing: {rel}")
+
     latest = read_json("releases/LATEST.json")
     manifest = read_json("engine/MANIFEST.json")
     migrations = read_json("releases/MIGRATIONS.json")
     manifest_schema = read_json("schemas/engine-manifest.schema.json")
     account_schema = read_json("schemas/account-registry.schema.json")
-    loader = read("engine/BOOTSTRAP.txt"); full = read("engine/BOOTSTRAP_FULL.txt")
-    readme = read("README.md"); workflow = read(".github/workflows/validate.yml")
-    migration_contract = read("contracts/migration.md")
-    storage_contract = read("contracts/storage-adapter.md")
-    release_runtime = read("engine/modules/release/runtime.txt")
-    release_bootstrap = read("engine/modules/release/bootstrap.txt")
+    loader = read("engine/BOOTSTRAP.txt")
+    full = read("engine/BOOTSTRAP_FULL.txt")
+    readme = read("README.md")
+    workflow = read(".github/workflows/validate.yml")
 
     version = latest.get("engine_version"); schema_version = latest.get("schema_version"); engine_api = latest.get("engine_api_version")
     if not version or not schema_version or not engine_api:
@@ -221,47 +289,44 @@ def main() -> None:
             fail(f"{label} identity mismatch")
         if obj.get("sanitized") is not True or obj.get("account_state_included") is not False:
             fail(f"{label} sanitization flags invalid")
-    if latest.get("channel") != "Production" or manifest.get("channel") != "Production":
-        fail("candidate metadata must identify Production channel")
+        if obj.get("channel") != "Production":
+            fail(f"{label} must identify Production channel")
     if manifest.get("integrity_mode") != "git_blob_sha1":
         fail("unsupported manifest integrity mode")
-    expected_fields = {
-        "github_repository": EXPECTED_REPO, "github_bootstrap_source": EXPECTED_BOOT,
-        "module_manifest_source": EXPECTED_MANIFEST, "full_fallback_source": EXPECTED_FULL,
-        "migration_graph_source": EXPECTED_MIGRATIONS, "preferred_install_url": EXPECTED_INSTALL,
+
+    # Mutable raw URLs may remain as convenience metadata, but cannot be authority.
+    expected_metadata = {
+        "github_repository": REPO,
+        "github_bootstrap_source": RAW_BOOT,
+        "module_manifest_source": RAW_MANIFEST,
+        "full_fallback_source": RAW_FULL,
+        "migration_graph_source": RAW_MIGRATIONS,
     }
-    for key, expected in expected_fields.items():
+    for key, expected in expected_metadata.items():
         if latest.get(key) != expected:
             fail(f"LATEST {key} invalid")
 
-    require("loader", loader, ["SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "MODULE INTEGRITY", "CAPABILITY DISCOVERY", "WORKSPACE SCHEMA MIGRATION", "migration bootstrap mode", "RECOVERY-FIRST STARTUP", "MIGRATION-FIRST ACCOUNT DISCOVERY", "COMMITTED checkpoints are not replayed", "discard it and continue from canonical GitHub", "WAITING_USER", "active_account_id", EXPECTED_REPO, EXPECTED_LATEST, EXPECTED_MANIFEST, EXPECTED_MIGRATIONS, EXPECTED_FULL, EXPECTED_INSTALL])
-    if len(loader.encode("utf-8")) > 9000:
-        fail("thin loader exceeds 9KB bounded orchestration budget")
-    for token in ["GEAR / UPGRADE ORE", "SKILL MEDALS", "EXCLUSIVE WEAPONS", "DRONE / COMPONENTS / CHIPS", "EVENT STORES / BLACK MARKET / BOUNTY", "COMBAT DIAGNOSIS"]:
-        if token in loader:
-            fail(f"thin loader contains domain playbook: {token}")
-    require("full fallback", full, ["SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "WORKSPACE SCHEMA MIGRATION", "MIGRATION-COMPATIBLE BOOTSTRAP", "RUNTIME CHECKPOINT MODEL", "RUNTIME JOURNAL", "RECOVERY-FIRST STARTUP", "WRITE-AHEAD / IDEMPOTENCY", "WAITING_USER", "STORAGE ADAPTER API", "MODULE INTEGRITY", "ENGINE API / COMPATIBILITY", "GEAR / UPGRADE ORE", "SKILL MEDALS", "RESEARCH", "DRONE / COMPONENTS / CHIPS", "COMBAT DIAGNOSIS", "EVENT STORES / BLACK MARKET / BOUNTY", EXPECTED_REPO, EXPECTED_BOOT, EXPECTED_MANIFEST, EXPECTED_MIGRATIONS, EXPECTED_FULL, EXPECTED_INSTALL])
-    for label, body in [("loader", loader), ("full fallback", full), ("release.bootstrap", release_bootstrap), ("README", readme)]:
-        if LEGACY_SHORTENER_PREFIX in body:
-            fail(f"{label} still requires or advertises a third-party shortener")
-    require("release.bootstrap", release_bootstrap, ["Canonical GitHub repository", "Third-party URL shorteners", "canonical GitHub one-line installer"])
-    require("migration contract", migration_contract, ["Version: 2026-08-29.15", "workspace_schema_edges", "2.1 -> 2.2", "2.2 -> 2.3", "Migration-compatible bootstrap", "Alias/cache authority", "Do not fall through to new-user onboarding"])
-    require("storage contract", storage_contract, ["Version: 2026-08-29.12", "storage-api/1", "Persistence profiles", "Authoritative journal rule", "compare-and-swap"])
-    require("release runtime", release_runtime, ["module_version: 2026-08-29.12.1", "MODULE INTEGRITY", "ENGINE API / COMPATIBILITY", "BEHAVIORAL VALIDATION", "LOADER BUDGET"])
-    validate_friendly_ux(loader, full)
+    validate_loader_boundary(loader)
+    validate_resolution_contract(latest, loader, full, readme)
+    validate_storage_security(full)
+    validate_friendly_ux(full)
     validate_manifest_schema_shape(manifest_schema)
     validate_workspace_schema_graph(migrations)
+
     entries = manifest.get("modules") or []
     if not entries:
         fail("manifest contains no modules")
     ids = [e.get("module_id") for e in entries]
     if None in ids or len(ids) != len(set(ids)):
         fail("module ids missing or duplicated")
-    validate_dag(entries); validate_modules(entries, engine_api, schema_version)
+    validate_dag(entries)
+    validate_modules(entries, engine_api, schema_version)
+
     if account_schema.get("title") != "LWAI Workspace Account Registry" or "audit_sessions" not in (account_schema.get("properties") or {}):
         fail("account registry schema identity/coverage invalid")
 
-    migration = latest.get("migration") or {}; migration_from = migration.get("from")
+    migration = latest.get("migration") or {}
+    migration_from = migration.get("from")
     if migration_from:
         matching = [e for e in migrations.get("edges") or [] if e.get("from") == migration_from and e.get("to") == version]
         if not matching:
@@ -276,10 +341,19 @@ def main() -> None:
     archive = read_json(archive_rel)
     if archive.get("engine_version") != version or archive.get("schema_version") != schema_version or archive.get("sanitized") is not True or archive.get("account_state_included") is not False:
         fail("versioned release manifest identity/privacy invalid")
-    if f"**Engine version:** `{version}`" not in readme or EXPECTED_INSTALL not in readme:
+
+    if f"**Engine version:** `{version}`" not in readme or LIVE_REF not in readme:
         fail("README Production identity/install mismatch")
-    require("README", readme, ["2.1 -> 2.2", "2.2 -> 2.3", "single public installer", "Allow always", "provider", "ChatGPT installer handoff"])
-    require("workflow", workflow, ["python scripts/validate_release.py", "python -m unittest -v test_runtime_behavior.py", "test_user_experience_contract.py", "fetch-depth: 0"])
+    require("README", readme, ["Stage-0 bootloader", "4 KiB", "Do not use the old TinyURL installer", "Allow always", "workspace-only", "release.resolver"])
+    require("workflow", workflow, ["python scripts/validate_release.py", "test_runtime_behavior.py", "test_user_experience_contract.py", "test_bootstrap_resolution_contract.py", "fetch-depth: 0"])
+
+    # Standalone fallback remains genuinely useful when modular load fails.
+    require("full fallback", full, [
+        "GLOBAL EPISTEMIC INTEGRITY CONTRACT", "WORKSPACE SCHEMA MIGRATION", "MIGRATION-COMPATIBLE BOOTSTRAP",
+        "RUNTIME CHECKPOINT MODEL", "RUNTIME JOURNAL", "RECOVERY-FIRST STARTUP", "WRITE-AHEAD / IDEMPOTENCY",
+        "STORAGE ADAPTER API", "GEAR / UPGRADE ORE", "SKILL MEDALS", "RESEARCH", "DRONE / COMPONENTS / CHIPS",
+        "EVENT STORES / BLACK MARKET / BOUNTY", "COMBAT DIAGNOSIS", "SEASON INTELLIGENCE",
+    ])
 
     public_text = "\n".join(read(rel) for rel in REQUIRED_FILES if rel.endswith((".md", ".txt", ".json", ".yml", ".py")))
     for marker in ["CP-20260829-011", "J-20260829-011", "CP-20260829-015", "J-20260829-015", "PRIVATE_RC_STAGED"]:
@@ -289,7 +363,9 @@ def main() -> None:
         fail("candidate contains possible credential token")
     if re.search(r"BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY", public_text):
         fail("candidate contains possible private key")
-    print(f"PASS: LWAI Production {version} / API {engine_api} / schema {schema_version} passed identity, graph, integrity, privacy, migration, friendly-UX, canonical-installer and loader-boundary checks")
+
+    print(f"PASS: LWAI Production {version} / API {engine_api} / schema {schema_version} passed live-ref, pinned-snapshot, graph, integrity, privacy, workspace-security, migration, UX and 4KiB loader-boundary checks")
+
 
 if __name__ == "__main__":
     main()

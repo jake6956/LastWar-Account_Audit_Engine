@@ -2,67 +2,36 @@
 
 ## Copy this one line
 
-`Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine`
+`Set up Last War optimization. Read the live GitHub main ref at https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main, use its current commit.sha, then load and follow engine/BOOTSTRAP.txt from that exact commit.`
 
-Paste it into a fresh ChatGPT conversation. The canonical GitHub repository README is the installation entrypoint and hands the assistant to `main/engine/BOOTSTRAP.txt`. A web-capable assistant should execute the sanitized Production loader itself; the user should not need to copy/paste the full standalone runtime.
+Paste it into a fresh ChatGPT conversation.
 
-Third-party URL shorteners are not required. A legacy TinyURL previously used for convenience began serving a deprecated preview/interstitial to some ChatGPT clients and is retired as an installation dependency.
+**Do not use the old TinyURL installer.** It is retired and is not a Production dependency.
 
-## What happens next
-1. The repository README directs ChatGPT to canonical `main/engine/BOOTSTRAP.txt` rather than acting as a documentation-only endpoint.
-2. The assistant fetches canonical GitHub `LATEST.json`, `BOOTSTRAP.txt`, `MANIFEST.json` and `MIGRATIONS.json`; supplied aliases/caches are non-authoritative and cannot downgrade verified Production.
-3. It verifies sanitized Production identity and confirms account state is not embedded.
-4. It runs the automatic freshness/update preflight before ordinary account/domain work.
-5. It capability-detects persistence/ingestion features rather than assuming them.
-6. It discovers existing Workspace Registry/legacy state before onboarding and resolves the correct private account context.
-7. If a supported older workspace is schema `2.1` or `2.2`, migration-capable core/release/storage behavior applies the validated additive path to current schema `2.3` while preserving canonical account state. Domain modules requiring `2.3` stay unloaded until migration verifies.
-8. Existing users then run recovery-first/migration-first reconciliation and resume their state.
-9. A genuinely new user is asked whether to use private cloud storage before identity intake. If yes, LWAI presents only supported providers and requires an explicit choice; if no, it continues session-only immediately.
-10. After provider authorization, LWAI re-checks actual read/create/write capability before claiming persistence. Successful storage immediately advances to identity -> strategic baseline -> first useful evidence capture; it does not stop at a connection receipt.
+## What happens
 
-Existing users with a valid workspace are not redundantly prompted for first-run storage setup. Read-only providers do not count as durable persistence.
-
-If session-only was chosen, LWAI may later re-offer cloud storage only when the current workflow has a concrete durability benefit, such as a large audit, resumable upload boundary, multi-account work, substantial newly captured state, planned continuation in another chat/device, or a recovery limitation. It does not interrupt trivial work. Reminders are limited to once per runtime session; when reliable cross-session metadata exists, a seven-day minimum cooldown applies. `don't ask again` suppresses future benefit-triggered reminders until the user explicitly reopens persistence setup.
-
-No validated workspace-schema path means setup pauses with existing state untouched; it does not guess a conversion or start the user over.
+1. ChatGPT reads the live GitHub `main` branch ref and obtains its current `commit.sha`.
+2. It loads `engine/BOOTSTRAP.txt` from that exact immutable commit.
+3. Stage-1 validates the pinned release/manifest/migration identity.
+4. Stage-1 loads every MANIFEST module with `required:true` in dependency order and hands off to the manifest entrypoint.
+5. `release.dispatcher` selects optional modules from MANIFEST activation metadata and recursively includes their dependencies.
+6. Existing LWAI state is discovered/migrated before genuine new-user onboarding.
+7. A new user chooses session-only or an actually supported cloud provider; storage/provider behavior is module-owned.
+8. After verified storage, onboarding continues automatically through identity, baseline and first evidence.
+9. Future Production capabilities become available through MANIFEST registration; the installer and Stage-1 feature list do not need to change.
 
 ## Staying current
-With web access, LWAI performs a lightweight canonical GitHub `LATEST.json` freshness check at every runtime/session startup before ordinary domain work. During a long-lived runtime it checks again before consequential work after six hours since the last successful canonical check. This is a metadata check, not a full re-download on every message.
 
-When a newer verified Production exists, LWAI preserves private/local state, validates canonical release/module/migration metadata and compatibility/integrity, applies only validated migrations, then refreshes ENGINE and changed modules. It never auto-loads RC/Prod-Dev and never downgrades because an alias/cache is stale. `refresh engine` or `check for LWAI updates` forces the same check immediately.
+`release.resolver` resolves live GitHub `main`; `release.updater` pins each candidate transaction to one exact commit and adopts only validated Production. Existing deployments keep last-known-good ENGINE and LOCAL STATE if current Production cannot be resolved safely.
 
-## Canonical sources
-GitHub `main` is both the installation authority and Production trust root.
+`refresh engine` remains the permanent manual break-glass command and uses the same resolver transaction.
 
-Repository / public installer:
-https://github.com/jake6956/LastWar-Account_Audit_Engine
+## Cloud security boundary
 
-Loader:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
+LWAI is explicitly restricted to its own Last War / LWAI workspace. It will not browse, read, search, inspect, change, move, rename, delete, index or use unrelated connected-storage content—even if the connector technically exposes broader access. Other ChatGPT/app workspaces and personal files are off-limits.
 
-Release metadata:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json
+Authentication happens in the provider/ChatGPT UI. LWAI never asks for passwords, OAuth codes, tokens, cookies or credentials in chat. For Google Drive, choose `Allow always` only when ChatGPT offers it; equivalent persistent authorization is recommended for other providers only when actually shown.
 
-Module graph:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json
+## Recovery
 
-Migration graph:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json
-
-Complete standalone fallback:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt
-
-Fallback order is repository README handoff -> canonical raw loader -> last-known-good compatible engine -> complete GitHub fallback -> manual full-runtime transfer. Third-party shorteners and the retired Google runtime mirror are not required.
-
-## Existing-user compatibility
-Current workspace schema is `2.3`. Supported historical transitions are:
-- `2.1 -> 2.2`: optional guidance metadata and account-scoped Audit Sessions;
-- `2.2 -> 2.3`: optional Runtime Checkpoints and append-only Runtime Journal.
-
-Both are additive/idempotent and preserve Workspace Registry, immutable account identity, active account routing, canonical game facts/history, Corrections, evidence metadata and provider references. They do not require re-onboarding or account rewrite.
-
-## Privacy
-Public Production contains shared sanitized engine behavior only. Account identity, optional game UID, screenshots, balances, corrections, battles, sessions, recovery rows and provider-local references remain in the user's own environment. LWAI does not require game passwords/session tokens/authentication captures for normal operation.
-
-## Offline / recovery install
-Use `export yourself` to obtain the complete sanitized `BOOTSTRAP_FULL` runtime when a self-contained copy is required.
+`engine/BOOTSTRAP_FULL.txt` remains the complete sanitized standalone fallback. Private account snapshots remain separate from the public engine.

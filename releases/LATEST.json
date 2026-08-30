@@ -1,27 +1,34 @@
 {
-  "engine_version": "2026-08-29.23",
+  "engine_version": "2026-08-30.24",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
   "sanitized": true,
   "account_state_included": false,
   "runtime_mode": "modular-hardened-recovery",
-  "preferred_install_url": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
-  "remote_install_mode": "canonical GitHub repository README handoff to thin-loader bootstrap",
+  "bootstrap_protocol_version": "2.0",
+  "entrypoint_module": "release.bootstrap",
+  "module_selection": "manifest_activation_v1",
+  "preferred_install_url": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
+  "preferred_install_instruction": "Set up Last War optimization. Read the live GitHub main ref at https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main, use its current commit.sha, then load and follow engine/BOOTSTRAP.txt from that exact commit.",
+  "remote_install_mode": "stage0_live_ref_then_exact_commit_manifest_bootstrap",
   "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "live_ref_source": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
   "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
   "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
+  "mutable_source_urls_are_authority": false,
+  "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
   "migration": {
-    "from": "2026-08-29.22",
-    "type": "engine_only_canonical_installer_transport",
+    "from": "2026-08-29.23",
+    "type": "engine_only_live_ref_pinned_manifest_dispatch",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Removes third-party TinyURL dependency from the primary installer. The stable public install entrypoint is the canonical GitHub repository README, which hands execution to the existing thin loader. Runtime, account state, updater, onboarding, recovery and module behavior are otherwise unchanged."
+    "notes": "Adds live-ref exact-commit resolution plus generic required-module loading and manifest-driven optional module dispatch. Removes feature routing from Stage-1. Existing onboarding, persistence, account isolation, recovery, Season Intelligence and evidence behavior remain module-owned and unchanged."
   },
-  "notes": "Canonical Installer Transport. A URL-shortener preview/interstitial cannot block installation because the public installer now begins at canonical GitHub. Third-party aliases are non-authoritative and optional."
+  "notes": "Live-ref pinned manifest cascade. Stage 0 resolves current GitHub main commit directly; Stage 1 loads every required manifest module generically; the mandatory dispatcher activates optional modules from manifest metadata. New Production capabilities integrate through MANIFEST registration without bootstrap edits."
 }

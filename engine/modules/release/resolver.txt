@@ -1,0 +1,67 @@
+LWAI MODULE — LIVE PRODUCTION RESOLVER
+module_id: release.resolver
+module_version: 2026-08-30.24.1
+load_class: mandatory_core
+state_scope: shared_engine+workspace_engine_metadata
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+PURPOSE
+Provide one cache-resistant Production-resolution primitive for install, startup, reload and updates. Resolve the live GitHub `main` ref first, then pin every engine read to that immutable commit SHA. This module owns freshness resolution; other modules must not invent alternate current-version logic.
+
+CANONICAL REPOSITORY
+Repository: https://github.com/jake6956/LastWar-Account_Audit_Engine
+Live main endpoint: https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
+Branch: main
+Required result: one 40-lowercase-hex `production_commit_sha`.
+
+LIVE REF RESOLUTION
+Use the strongest genuinely live capability available, in this order:
+1. A GitHub-native connector/repository API that returns the current `main` branch head SHA.
+2. Direct retrieval of the canonical GitHub branch endpoint above. Use the returned `commit.sha`, not rendered/search snippets.
+3. A live `git ls-remote https://github.com/jake6956/LastWar-Account_Audit_Engine.git refs/heads/main` when the host actually permits outbound git.
+Do not treat web-search results, search-engine summaries, indexed GitHub HTML/README pages, cached raw `main` files, URL-shortener destinations, or model memory as a live ref source.
+Do not fabricate a SHA. If multiple live methods are available and materially disagree, retry once and fail closed rather than choosing by convenience.
+
+PIN-ONCE SNAPSHOT
+After resolving C = production_commit_sha, all candidate reads for that transaction must use revision C:
+- releases/LATEST.json
+- engine/BOOTSTRAP.txt
+- engine/MANIFEST.json
+- releases/MIGRATIONS.json
+- every required module path
+- engine/BOOTSTRAP_FULL.txt when needed
+A mutable `main` path may be used only to discover the branch ref, never as candidate bytes after C exists. Commit-pinned content is immutable, so caching of those exact-SHA objects is safe.
+Never mix LATEST from one commit with MANIFEST/modules from another. If C changes during a transaction, finish or abort the pinned transaction; the next freshness check may adopt the newer head.
+
+VALIDATION
+Require:
+- C matches `[0-9a-f]{40}`;
+- LATEST and MANIFEST at C identify channel Production;
+- sanitized=true and account_state_included=false;
+- matching engine_version, engine_api_version and schema_version;
+- module DAG/API/schema compatibility;
+- declared migration path when required.
+When the host can reproduce Git blob identity, verify manifest digests. Otherwise exact commit pin + exact module identity is the trust boundary; do not claim cryptographic verification that was not performed.
+
+RESULT
+Return/retain:
+- production_commit_sha
+- resolved_engine_version
+- resolved_at
+- resolver_method
+- resolver_health = VERIFIED | DEGRADED
+Durable workspaces may store these as compact shared-engine metadata. They are not account facts, evidence, routing keys or authentication.
+
+FAILURE / LAST-KNOWN-GOOD
+Fresh install with no live ref capability: stop and state that current GitHub Production could not be resolved safely. Do not fall back to a search-index/cached release.
+Existing compatible install: retain last-known-good ENGINE and LOCAL STATE, mark resolver health DEGRADED, and continue safe user work when possible. A resolver failure never rewrites private account/workspace state.
+If a live C is resolved but modular retrieval fails, fallback may use BOOTSTRAP_FULL from the same C. Do not jump back to mutable `main`.
+
+UPDATE CONTRACT
+`release.updater` MUST call this resolver before every automatic/manual freshness transaction. Version checks begin only after a live C is resolved and LATEST at C is validated.
+`refresh engine` forces this resolver regardless of TTL.
+No release module may decide "latest" from raw-main/search-cache version strings.
+
+PRIVACY
+Resolution uses only public sanitized repository metadata. Never send user identity, account state, screenshots, provider references or other LOCAL STATE to GitHub.

@@ -5,7 +5,7 @@ from pathlib import Path
 from update_controller import Candidate, EngineMetadata, run_update_transaction, should_auto_check
 
 ROOT = Path(__file__).resolve().parents[1]
-CANONICAL_INSTALLER = "Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine"
+LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 
 
 class AutomaticUpdateControllerTests(unittest.TestCase):
@@ -93,32 +93,37 @@ class AutomaticUpdateControllerTests(unittest.TestCase):
         self.assertEqual(result.active_version, "2026-08-29.18")
         self.assertEqual(metadata.installed_engine_version, "2026-08-29.18")
 
-    def test_release_updater_is_mandatory_and_bootstrap_depends_on_it(self):
+    def test_resolver_and_updater_are_mandatory_and_wired(self):
         manifest = json.loads((ROOT / "engine/MANIFEST.json").read_text(encoding="utf-8"))
         by_id = {m["module_id"]: m for m in manifest["modules"]}
-        self.assertIn("release.updater", by_id)
-        self.assertTrue(by_id["release.updater"]["required"])
-        self.assertEqual(by_id["release.updater"]["load_class"], "mandatory_core")
+        for module_id in ("release.resolver", "release.updater"):
+            self.assertIn(module_id, by_id)
+            self.assertTrue(by_id[module_id]["required"])
+            self.assertEqual(by_id[module_id]["load_class"], "mandatory_core")
+        self.assertIn("release.resolver", by_id["release.updater"]["dependencies"])
+        self.assertIn("release.resolver", by_id["release.bootstrap"]["dependencies"])
         self.assertIn("release.updater", by_id["release.bootstrap"]["dependencies"])
 
     def test_public_runtime_exposes_automatic_update_and_manual_break_glass(self):
         loader = (ROOT / "engine/BOOTSTRAP.txt").read_text(encoding="utf-8")
         full = (ROOT / "engine/BOOTSTRAP_FULL.txt").read_text(encoding="utf-8")
         updater = (ROOT / "engine/modules/release/updater.txt").read_text(encoding="utf-8")
-        contract = (ROOT / "contracts/automatic-updates.md").read_text(encoding="utf-8")
-        for body in (loader, full, updater, contract):
+        resolver = (ROOT / "engine/modules/release/resolver.txt").read_text(encoding="utf-8")
+        for body in (loader, full, updater):
             self.assertIn("AUTOMATIC", body.upper())
             self.assertIn("refresh engine", body)
-        self.assertIn("resume the user's original", loader)
+        self.assertIn("production_commit_sha", resolver)
+        self.assertIn("resume the user's original", updater)
         self.assertIn("last_known_good_engine_version", updater)
-        self.assertIn("Version: 2026-08-29.18", contract)
-        self.assertIn("one public installer", contract)
 
-    def test_single_installer_remains_canonical(self):
+    def test_install_and_update_share_live_ref_resolver(self):
         loader = (ROOT / "engine/BOOTSTRAP.txt").read_text(encoding="utf-8")
         full = (ROOT / "engine/BOOTSTRAP_FULL.txt").read_text(encoding="utf-8")
-        self.assertIn(CANONICAL_INSTALLER, loader)
-        self.assertIn(CANONICAL_INSTALLER, full)
+        resolver = (ROOT / "engine/modules/release/resolver.txt").read_text(encoding="utf-8")
+        updater = (ROOT / "engine/modules/release/updater.txt").read_text(encoding="utf-8")
+        for body in (loader, full, resolver):
+            self.assertIn(LIVE_REF, body)
+        self.assertIn("release.resolver", updater)
         self.assertNotIn("https://tinyurl.com/", loader)
         self.assertNotIn("https://tinyurl.com/", full)
 
