@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.14",
+  "engine_version": "2026-08-29.15",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -14,14 +14,14 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "migration": {
-    "from": "2026-08-29.13",
-    "type": "engine_only",
+    "from": "2026-08-29.14",
+    "type": "engine_only_with_legacy_workspace_compatibility",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds optional private LWAI runtime-session provenance and optional host conversation references for observability/support correlation only. Host references are never required and are not account identity, authentication, routing, recovery ordering, idempotency keys or game evidence."
+    "notes": "Restores historical workspace schema 2.1→2.2→2.3 migration edges, permits bounded migration-capable bootstrap for supported older workspaces, and makes canonical GitHub identity authoritative over stale alias/cache content."
   },
-  "notes": "Session Provenance release. Adds optional Runtime Sessions metadata plus provenance links from Audit Sessions/checkpoints/journal while preserving schema 2.3 and all account/recovery behavior."
+  "notes": "Legacy Workspace Compatibility release. Existing supported 2.1/2.2 workspaces migrate additively to 2.3 before normal domain loading; canonical account facts and account identity are preserved."
 }
