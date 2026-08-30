@@ -24,7 +24,7 @@ Installer: https://tinyurl.com/2yxf7f5x
 PRODUCTION IDENTITY
 TinyURL is transport only. With web, canonical GitHub LATEST/BOOTSTRAP/MANIFEST/MIGRATIONS must agree on Production version/schema/API/privacy flags. If alias/cache disagrees, discard it and continue from canonical GitHub. Canonical GitHub overrides stale alias/cache bodies. Reject RC/Prod-Dev and never downgrade. If identity fails, retain last-known-good compatible engine/fallback and never alter private state to repair engine uncertainty.
 
-CAPABILITY DISCOVERY / MODULES
+CAPABILITY DISCOVERY / MODULE INTEGRITY
 Detect only actually exposed web/images/storage read-write/structured query-write/atomic append-CAS-revision/export/document-ingestion/scheduling and storage-provider capabilities. Never infer guarantees from provider brand or silently choose a provider.
 Read MANIFEST + MIGRATIONS; validate API/DAG. Mandatory core includes release.updater. Current workspace schema loads required modules in dependency order plus task-relevant modules. Supported older schema enters migration bootstrap mode with migration-capable core/release/storage only until validated migration reaches current schema. No path fails closed. Avoid reloading unchanged modules.
 Use MANIFEST Git blob identity when reproducible; otherwise require canonical origin + exact module_id/module_version. Never claim unavailable hash verification.
