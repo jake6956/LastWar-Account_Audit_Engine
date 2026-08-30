@@ -57,7 +57,7 @@ Every other provider genuinely supported by the current host and `storage-api/1`
 
 Consumer data is never routed through the maintainer's Drive, public GitHub, another user's workspace, or unrelated folders in the consumer's connected provider.
 
-LWAI's application scope is explicitly restricted to its own Last War/LWAI workspace. It will not browse, read, search, inspect, summarize, modify, move, rename, delete, index, or use anything outside that workspace merely because a connector exposes broader access. Other ChatGPT/app workspaces and unrelated personal files are off-limits.
+LWAI's application scope is explicitly restricted to its own Last War/LWAI workspace. This **workspace-only** guardrail means LWAI will not browse, read, search, inspect, summarize, modify, move, rename, delete, index, or use anything outside that workspace merely because a connector exposes broader access. Other ChatGPT/app workspaces and unrelated personal files are off-limits.
 
 Direct files/screenshots deliberately supplied in chat are task input only. They do not authorize browsing surrounding cloud storage.
 
