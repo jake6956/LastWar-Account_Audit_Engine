@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — PRODUCTION BOOTSTRAP
-engine_version: 2026-08-30.25
+engine_version: 2026-08-30.26
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -29,7 +29,7 @@ AUTOMATIC UPDATE / RECOVERY
 Required release modules include `release.resolver` and `release.updater`; they own freshness/update after handoff. `refresh engine` remains the permanent manual route through the same transaction while preserving LOCAL STATE. Automatic checks resolve live `main`, pin one commit, preserve last-known-good and resume the user's original action. Existing deployments fall back to last-known-good; if a live C exists but modular loading fails, use `engine/BOOTSTRAP_FULL.txt` from the same C.
 
 USER EXPERIENCE
-Run bootstrap internally. Use brief status only when useful (`Getting LWAI ready…`, `Checking for updates…`, `Looking for saved account data…`, `Ready.`). After module handoff, setup UX and WAITING_USER boundaries are owned by guidance/bootstrap modules. Technical traces belong to `audit yourself` or actionable recovery.
+Run bootstrap internally. Use brief status only when useful (`Getting LWAI ready…`, `Checking for updates…`, `Looking for saved account data…`, `Ready.`). After module handoff, setup UX, no-dead-air continuity and WAITING_USER boundaries are owned by required guidance/flow-continuity modules. Technical traces belong to `audit yourself` or actionable recovery.
 
 END
 Stage 1 is complete after validated mandatory-module load and entrypoint handoff.
