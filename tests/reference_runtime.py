@@ -14,6 +14,14 @@ SUPPORTED_SCHEMA_EDGES = {
     "2.1": ("2.2", {"guidance_metadata", "audit_sessions"}),
     "2.2": ("2.3", {"runtime_checkpoints", "runtime_journal"}),
 }
+ENGINE_FRESHNESS_TTL_HOURS = 6
+PERSISTENCE_REMINDER_COOLDOWN_DAYS = 7
+
+
+def _engine_version_key(value: str) -> tuple[int, ...]:
+    date_part, release_part = value.rsplit(".", 1)
+    year, month, day = (int(x) for x in date_part.split("-"))
+    return year, month, day, int(release_part)
 
 
 def canonicalize_installer_identity(*, alias_version: str | None, canonical_version: str | None, canonical_verified: bool) -> str | None:
@@ -23,6 +31,58 @@ def canonicalize_installer_identity(*, alias_version: str | None, canonical_vers
             raise ValueError("verified canonical identity requires a version")
         return canonical_version
     return None
+
+
+def installer_version_announcement(*, alias_version: str | None, canonical_version: str | None, canonical_verified: bool) -> str | None:
+    """Only the verified canonical version is announced as active; alias versions stay diagnostic."""
+    canonical = canonicalize_installer_identity(
+        alias_version=alias_version,
+        canonical_version=canonical_version,
+        canonical_verified=canonical_verified,
+    )
+    return None if canonical is None else f"Verified Production {canonical}"
+
+
+def should_check_engine_freshness(*, web_available: bool, startup: bool, hours_since_last_success: float | None) -> bool:
+    """Check canonical GitHub on every runtime startup and every six hours in long-lived runtimes."""
+    if not web_available:
+        return False
+    if startup:
+        return True
+    if hours_since_last_success is None:
+        return True
+    return hours_since_last_success >= ENGINE_FRESHNESS_TTL_HOURS
+
+
+def resolve_engine_version(
+    *,
+    current_version: str,
+    canonical_version: str | None,
+    canonical_verified: bool,
+    canonical_channel: str = "Production",
+) -> str:
+    """Adopt only a newer verified Production version; otherwise preserve last-known-good."""
+    if not canonical_verified or canonical_channel != "Production" or canonical_version is None:
+        return current_version
+    if _engine_version_key(canonical_version) > _engine_version_key(current_version):
+        return canonical_version
+    return current_version
+
+
+def should_offer_persistence_reminder(
+    *,
+    session_only: bool,
+    material_benefit: bool,
+    reminded_this_runtime: bool,
+    do_not_ask_again: bool,
+    days_since_last_reminder: int | None = None,
+) -> bool:
+    """Contextual cloud reminder gate; never a generic timer-driven nag."""
+    if not session_only or not material_benefit or reminded_this_runtime or do_not_ask_again:
+        return False
+    if days_since_last_reminder is not None and days_since_last_reminder < PERSISTENCE_REMINDER_COOLDOWN_DAYS:
+        return False
+    return True
 
 
 @dataclass(frozen=True)
@@ -129,6 +189,10 @@ class RuntimeModel:
         self._journal: list[JournalEvent] = []
         self.workspace_schema_version = "2.3"
         self.workspace_optional_structures = {"guidance_metadata", "audit_sessions", "runtime_checkpoints", "runtime_journal"}
+        self.persistence_mode = "UNKNOWN"
+        self.persistence_reminders_suppressed = False
+        self._persistence_reminded_sessions: set[str] = set()
+        self.persistence_last_reminder_day: int | None = None
 
     @property
     def journal(self) -> tuple[JournalEvent, ...]:
@@ -222,6 +286,7 @@ class RuntimeModel:
             if active_account_id is None or active_account_id not in self.accounts:
                 raise RuntimeError("current registry requires a valid active_account_id")
             self.active_account_id = active_account_id
+            self.persistence_mode = "DURABLE"
             steps.append("resolve_active_account")
             if self.workspace_schema_version != "2.3":
                 self.migrate_workspace_schema("2.3")
@@ -247,8 +312,10 @@ class RuntimeModel:
         if decision == "RECHECK_CAPABILITIES":
             return ["recheck_storage_capabilities"]
         if decision == "CREATE_PRIVATE_WORKSPACE":
+            self.persistence_mode = "DURABLE"
             return ["first_run_persistence_choice", "create_private_workspace", "verify_private_workspace", "new_account_guidance"]
         if decision == "SESSION_ONLY":
+            self.persistence_mode = "SESSION_ONLY"
             return ["first_run_persistence_choice", "session_only_acknowledged", "new_account_guidance"]
         raise AssertionError("unhandled persistence decision")
 
@@ -263,6 +330,30 @@ class RuntimeModel:
         self.runtime_sessions[runtime_session_id] = session
         self.current_runtime_session_id = runtime_session_id
         return session
+
+    def consider_persistence_reminder(self, *, material_benefit: bool, day: int | None = None) -> bool:
+        runtime_id = self.current_runtime_session_id or "volatile-runtime"
+        reminded = runtime_id in self._persistence_reminded_sessions
+        days_since = None
+        if day is not None and self.persistence_last_reminder_day is not None:
+            days_since = day - self.persistence_last_reminder_day
+        eligible = should_offer_persistence_reminder(
+            session_only=self.persistence_mode == "SESSION_ONLY",
+            material_benefit=material_benefit,
+            reminded_this_runtime=reminded,
+            do_not_ask_again=self.persistence_reminders_suppressed,
+            days_since_last_reminder=days_since,
+        )
+        if eligible:
+            self._persistence_reminded_sessions.add(runtime_id)
+            if day is not None:
+                self.persistence_last_reminder_day = day
+        return eligible
+
+    def record_persistence_reminder_response(self, response: str) -> None:
+        normalized = response.strip().lower()
+        if normalized in {"don't ask again", "do not ask again", "never ask again"}:
+            self.persistence_reminders_suppressed = True
 
     def switch_account(self, account_id: str) -> None:
         account = self.accounts.get(account_id)
