@@ -62,12 +62,14 @@ class UserExperienceContractTests(unittest.TestCase):
             self.assertTrue("rerun" in lower or "same provider chooser" in lower or "same chooser" in lower)
 
     def test_normal_bootstrap_ux_is_friendly_not_diagnostic_dump(self):
-        for body in (self.loader, self.full, self.guidance, self.bootstrap, self.updater, self.contract):
+        for body in (self.loader, self.full, self.guidance, self.bootstrap, self.contract):
             self.assertIn("Getting LWAI ready", body)
             lower = body.lower()
             self.assertTrue("audit yourself" in lower or "debug" in lower)
+        self.assertIn("FRIENDLY UPDATE UX", self.updater)
         self.assertIn("Checking for updates", self.updater)
         self.assertIn("LWAI updated successfully", self.updater)
+        self.assertTrue("audit yourself" in self.updater.lower() or "debug" in self.updater.lower())
 
     def test_storage_success_requires_verification(self):
         self.assertIn("CONNECTION VERIFICATION", self.storage)
