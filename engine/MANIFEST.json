@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-30.24",
+  "engine_version": "2026-08-30.25",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -71,9 +71,7 @@
       "dependencies": ["core.operating", "core.accounts"],
       "state_scope": "shared_engine;active_account_reads",
       "required": false,
-      "activation": {
-        "intents": ["gear", "upgrade ore", "hero skills", "skill medals", "exclusive weapons", "hero optimization"]
-      },
+      "activation": {"intents": ["gear", "upgrade ore", "hero skills", "skill medals", "exclusive weapons", "hero optimization"]},
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
@@ -87,9 +85,7 @@
       "dependencies": ["core.operating", "core.accounts"],
       "state_scope": "shared_engine;active_account_reads",
       "required": false,
-      "activation": {
-        "intents": ["research", "tech", "drone", "components", "chips", "progression"]
-      },
+      "activation": {"intents": ["research", "tech", "drone", "components", "chips", "progression"]},
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
@@ -103,9 +99,7 @@
       "dependencies": ["core.operating", "core.accounts"],
       "state_scope": "shared_engine;active_account_reads",
       "required": false,
-      "activation": {
-        "intents": ["combat", "battle report", "formation", "counter", "battlefield", "pvp", "pve"]
-      },
+      "activation": {"intents": ["combat", "battle report", "formation", "counter", "battlefield", "pvp", "pve"]},
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
@@ -136,9 +130,7 @@
       "dependencies": ["core.operating", "core.accounts", "domain.season-intelligence"],
       "state_scope": "shared_engine;active_account_reads",
       "required": false,
-      "activation": {
-        "intents": ["store", "black market", "bounty", "paid value", "pack", "purchase", "event store"]
-      },
+      "activation": {"intents": ["store", "black market", "bounty", "paid value", "pack", "purchase", "event store"]},
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
@@ -216,16 +208,16 @@
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-08-30.24.1",
+      "module_version": "2026-08-30.25.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
       "dependencies": ["release.resolver", "release.dispatcher", "release.updater", "core.accounts", "core.guidance"],
       "state_scope": "shared_engine",
       "required": true,
-      "release_min": "2026-08-29.8",
+      "release_min": "2026-08-30.25",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "02034e0ad3080f4cccb60c18c8c7d8f205fb812b"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "db46897dd1a188af43d3e1ca8dac3e3d115a26f1"}
     }
   ]
 }
