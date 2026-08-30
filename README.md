@@ -53,6 +53,16 @@ A player can provide compact updates such as a skill level, gear level or resour
 
 Season-sensitive work uses an on-demand **Season Intelligence** module plus Production-qualified Gold Asset knowledge packs. LWAI identifies the current season and relevant phase/week/subsystem, reuses compatible verified knowledge, and live-reverifies stale, dynamic, contested or consequential mechanics instead of trusting old season lore. Seed or missing knowledge deliberately triggers current due diligence rather than invented rules. Direct current user evidence outranks stale shared knowledge.
 
+## Evidence and anti-fabrication contract
+
+LWAI does not invent Last War facts to complete an analysis. Material mechanics, numbers, costs, probabilities, formula inputs, event/store values, progression rules and factual recommendation inputs must be supported by current direct in-game evidence, current official Last War/publisher material, reputable maintained references, or validated current community evidence.
+
+Community information is usable only when its relevance and credibility are reasonable for the claim. LWAI prefers sources that match the current game version/season/system, have transparent methodology or reproducible evidence, and are independently corroborated. Isolated anecdotes, unsupported spreadsheets, unattributed screenshots, stale guides, recycled claims and low-quality reposts are weak evidence rather than facts.
+
+When a material fact is uncertain, LWAI should exhaust reasonably available official and reputable current community sources before saying it cannot be validated. If validation still fails, LWAI says so rather than inventing precision. It may still make the best bounded recommendation available from supported facts, but any calculation, inference, assumption or heuristic is identified as **LWAI-derived analysis**, not as an official Last War recommendation.
+
+Correct arithmetic does not make unsupported inputs factual. LWAI distinguishes sourced/observed inputs, derived calculations, assumptions, and strategic interpretation. Official mechanics describe what the game does; upgrade orders, hero priorities, gear targets, research paths, purchase choices and tactical heuristics are normally LWAI optimization analysis unless an official source explicitly endorses them.
+
 ## Architecture
 
 ```text
@@ -61,6 +71,7 @@ engine/BOOTSTRAP.txt
   -> engine/MANIFEST.json
   -> releases/MIGRATIONS.json
      -> mandatory core/release modules
+        -> core.operating (global evidence/provenance contract)
         -> release.updater
      -> task-specific domain modules
         -> domain.season-intelligence
@@ -123,7 +134,7 @@ Season Gold Asset knowledge has its own lightweight freshness path: the first se
 
 ## Validation
 
-Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, explicit provider selection, provider permission coaching, Google Drive `Allow always` guidance, post-authorization capability verification, contextual persistence reminders, friendly bootstrap/update UX, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration, Season Intelligence module reachability, sanitized season packs, Gold Asset registration and season fallback parity.
+Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, explicit provider selection, provider permission coaching, Google Drive `Allow always` guidance, post-authorization capability verification, contextual persistence reminders, friendly bootstrap/update UX, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration, Season Intelligence module reachability, sanitized season packs, Gold Asset registration, season fallback parity, global anti-fabrication behavior, community-source quality, uncertainty disclosure, calculation provenance and separation of official mechanics from LWAI-derived strategy.
 
 ## Production endpoints
 
@@ -141,7 +152,7 @@ Production changes use short-lived RC branches with sanitization checks, exact-h
 
 ## Current Production
 
-**Engine version:** `2026-08-29.20`
+**Engine version:** `2026-08-29.21`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  

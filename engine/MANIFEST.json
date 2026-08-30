@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.20",
+  "engine_version": "2026-08-29.21",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -10,7 +10,7 @@
   "modules": [
     {
       "module_id": "core.operating",
-      "module_version": "2026-08-29.8.1",
+      "module_version": "2026-08-29.21.1",
       "path": "engine/modules/core/operating.txt",
       "load_class": "mandatory_core",
       "dependencies": [],
@@ -19,7 +19,7 @@
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "11777df9001afbb7289b9b0a9c6816cf4efc27eb"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "5223e4280bdf7675c4b3f99aef5a4a190adee140"}
     },
     {
       "module_id": "core.persistence",
@@ -101,7 +101,7 @@
     },
     {
       "module_id": "domain.season-intelligence",
-      "module_version": "2026-08-29.20.1",
+      "module_version": "2026-08-29.21.1",
       "path": "engine/modules/domains/season-intelligence.txt",
       "load_class": "domain_on_demand",
       "dependencies": ["core.operating", "core.accounts"],
@@ -110,7 +110,7 @@
       "release_min": "2026-08-29.20",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "90f272395532c279290816619bb62f56b5b34347"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "4bedbc5e99aae26ca77cadfc1b3d0c7b65aef572"}
     },
     {
       "module_id": "domain.season-stores-paid",
