@@ -2,24 +2,23 @@
 
 ## Copy this one line
 
-`Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x`
+`Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine`
 
-Paste it into a fresh ChatGPT conversation. A web-capable assistant should retrieve the sanitized Production thin loader itself. You should not need to copy/paste the full standalone runtime.
+Paste it into a fresh ChatGPT conversation. The canonical GitHub repository README is the installation entrypoint and hands the assistant to `main/engine/BOOTSTRAP.txt`. A web-capable assistant should execute the sanitized Production loader itself; the user should not need to copy/paste the full standalone runtime.
+
+Third-party URL shorteners are not required. A legacy TinyURL previously used for convenience began serving a deprecated preview/interstitial to some ChatGPT clients and is retired as an installation dependency.
 
 ## What happens next
-1. The instruction authorizes retrieval of the linked loader.
-2. The assistant treats the short-link body as transport only and re-checks canonical GitHub `LATEST.json`, `BOOTSTRAP.txt`, `MANIFEST.json` and `MIGRATIONS.json`; stale/cached alias content cannot downgrade verified Production.
-3. Any version observed from the alias/cache is diagnostic only. Normal install UX waits for canonical verification and reports only the single verified GitHub Production version rather than narrating intermediate stale versions.
-4. It verifies sanitized Production identity and confirms account state is not embedded.
+1. The repository README directs ChatGPT to canonical `main/engine/BOOTSTRAP.txt` rather than acting as a documentation-only endpoint.
+2. The assistant fetches canonical GitHub `LATEST.json`, `BOOTSTRAP.txt`, `MANIFEST.json` and `MIGRATIONS.json`; supplied aliases/caches are non-authoritative and cannot downgrade verified Production.
+3. It verifies sanitized Production identity and confirms account state is not embedded.
+4. It runs the automatic freshness/update preflight before ordinary account/domain work.
 5. It capability-detects persistence/ingestion features rather than assuming them.
 6. It discovers existing Workspace Registry/legacy state before onboarding and resolves the correct private account context.
 7. If a supported older workspace is schema `2.1` or `2.2`, migration-capable core/release/storage behavior applies the validated additive path to current schema `2.3` while preserving canonical account state. Domain modules requiring `2.3` stay unloaded until migration verifies.
 8. Existing users then run recovery-first/migration-first reconciliation and resume their state.
-9. A genuinely new user is explicitly asked how to handle persistence **before** identity/account intake:
-   - use/create a verified private cloud workspace when writable storage is available; or
-   - connect a supported writable provider in the host application and reply `storage connected`; or
-   - explicitly `continue session-only`.
-10. After cloud connection, LWAI re-checks actual read/write capability before claiming persistence or creating the private workspace. Session-only remains valid but has naturally limited cross-chat recovery.
+9. A genuinely new user is asked whether to use private cloud storage before identity intake. If yes, LWAI presents only supported providers and requires an explicit choice; if no, it continues session-only immediately.
+10. After provider authorization, LWAI re-checks actual read/create/write capability before claiming persistence. Successful storage immediately advances to identity -> strategic baseline -> first useful evidence capture; it does not stop at a connection receipt.
 
 Existing users with a valid workspace are not redundantly prompted for first-run storage setup. Read-only providers do not count as durable persistence.
 
@@ -33,7 +32,10 @@ With web access, LWAI performs a lightweight canonical GitHub `LATEST.json` fres
 When a newer verified Production exists, LWAI preserves private/local state, validates canonical release/module/migration metadata and compatibility/integrity, applies only validated migrations, then refreshes ENGINE and changed modules. It never auto-loads RC/Prod-Dev and never downgrades because an alias/cache is stale. `refresh engine` or `check for LWAI updates` forces the same check immediately.
 
 ## Canonical sources
-The short URL is transport convenience only. GitHub `main` is authoritative.
+GitHub `main` is both the installation authority and Production trust root.
+
+Repository / public installer:
+https://github.com/jake6956/LastWar-Account_Audit_Engine
 
 Loader:
 https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
@@ -50,7 +52,7 @@ https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/rel
 Complete standalone fallback:
 https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt
 
-Fallback order is short alias -> canonical loader -> last-known-good compatible engine when available -> complete GitHub fallback -> readable legacy mirror -> manual full-runtime transfer. When alias content and canonical GitHub disagree, canonical GitHub wins rather than falling backward to the alias body.
+Fallback order is repository README handoff -> canonical raw loader -> last-known-good compatible engine -> complete GitHub fallback -> manual full-runtime transfer. Third-party shorteners and the retired Google runtime mirror are not required.
 
 ## Existing-user compatibility
 Current workspace schema is `2.3`. Supported historical transitions are:

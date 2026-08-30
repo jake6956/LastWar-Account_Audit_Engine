@@ -1,7 +1,10 @@
+import json
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+CANONICAL_INSTALLER = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
+LEGACY_SHORTENER = "https://tinyurl.com/"
 
 
 def read(path: str) -> str:
@@ -19,9 +22,44 @@ class UserExperienceContractTests(unittest.TestCase):
         self.bootstrap = read("engine/modules/release/bootstrap.txt")
         self.updater = read("engine/modules/release/updater.txt")
         self.contract = read("contracts/user-experience.md")
+        self.readme = read("README.md")
+        self.latest = json.loads(read("releases/LATEST.json"))
 
     def test_thin_loader_remains_bounded(self):
         self.assertLessEqual(len(self.loader.encode("utf-8")), 9000)
+
+    def test_canonical_installer_uses_github_repository(self):
+        self.assertEqual(self.latest["preferred_install_url"], CANONICAL_INSTALLER)
+        for label, body in (
+            ("loader", self.loader),
+            ("full", self.full),
+            ("release.bootstrap", self.bootstrap),
+            ("README", self.readme),
+        ):
+            self.assertIn(CANONICAL_INSTALLER, body, label)
+        self.assertIn("ChatGPT installer handoff", self.readme)
+        self.assertIn("engine/BOOTSTRAP.txt", self.readme)
+
+    def test_primary_installer_does_not_require_third_party_shortener(self):
+        for label, body in (
+            ("loader", self.loader),
+            ("full", self.full),
+            ("release.bootstrap", self.bootstrap),
+            ("README", self.readme),
+        ):
+            self.assertNotIn(LEGACY_SHORTENER, body, label)
+        self.assertIn("Third-party URL shorteners", self.bootstrap)
+        self.assertIn("never required trust roots", self.loader)
+
+    def test_existing_onboarding_and_updater_contracts_remain_intact(self):
+        self.assertIn("release.updater", self.loader)
+        self.assertIn("refresh engine", self.loader)
+        self.assertIn("LOCAL STATE", self.loader)
+        self.assertIn("POST-STORAGE HANDOFF", self.loader)
+        self.assertIn("Cloud storage connected and verified", self.loader)
+        self.assertIn("screenname", self.loader.lower())
+        self.assertIn("strategic baseline", self.loader.lower())
+        self.assertIn("first highest-value evidence", self.loader.lower())
 
     def test_first_run_starts_with_plain_language_cloud_question(self):
         question = "would you like me to use private cloud storage"

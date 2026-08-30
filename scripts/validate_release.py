@@ -33,7 +33,8 @@ EXPECTED_MANIFEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_
 EXPECTED_FULL = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt"
 EXPECTED_LATEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json"
 EXPECTED_MIGRATIONS = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json"
-EXPECTED_INSTALL = "https://tinyurl.com/2yxf7f5x"
+EXPECTED_INSTALL = EXPECTED_REPO
+LEGACY_SHORTENER_PREFIX = "https://tinyurl.com/"
 CURRENT_SCHEMA = "2.3"
 HISTORICAL_SCHEMA_PATH = [("2.1", "2.2"), ("2.2", "2.3")]
 MIGRATION_CAPABLE = {
@@ -204,6 +205,7 @@ def main() -> None:
     migration_contract = read("contracts/migration.md")
     storage_contract = read("contracts/storage-adapter.md")
     release_runtime = read("engine/modules/release/runtime.txt")
+    release_bootstrap = read("engine/modules/release/bootstrap.txt")
 
     version = latest.get("engine_version"); schema_version = latest.get("schema_version"); engine_api = latest.get("engine_api_version")
     if not version or not schema_version or not engine_api:
@@ -239,6 +241,10 @@ def main() -> None:
         if token in loader:
             fail(f"thin loader contains domain playbook: {token}")
     require("full fallback", full, ["SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "WORKSPACE SCHEMA MIGRATION", "MIGRATION-COMPATIBLE BOOTSTRAP", "RUNTIME CHECKPOINT MODEL", "RUNTIME JOURNAL", "RECOVERY-FIRST STARTUP", "WRITE-AHEAD / IDEMPOTENCY", "WAITING_USER", "STORAGE ADAPTER API", "MODULE INTEGRITY", "ENGINE API / COMPATIBILITY", "GEAR / UPGRADE ORE", "SKILL MEDALS", "RESEARCH", "DRONE / COMPONENTS / CHIPS", "COMBAT DIAGNOSIS", "EVENT STORES / BLACK MARKET / BOUNTY", EXPECTED_REPO, EXPECTED_BOOT, EXPECTED_MANIFEST, EXPECTED_MIGRATIONS, EXPECTED_FULL, EXPECTED_INSTALL])
+    for label, body in [("loader", loader), ("full fallback", full), ("release.bootstrap", release_bootstrap), ("README", readme)]:
+        if LEGACY_SHORTENER_PREFIX in body:
+            fail(f"{label} still requires or advertises a third-party shortener")
+    require("release.bootstrap", release_bootstrap, ["Canonical GitHub repository", "Third-party URL shorteners", "canonical GitHub one-line installer"])
     require("migration contract", migration_contract, ["Version: 2026-08-29.15", "workspace_schema_edges", "2.1 -> 2.2", "2.2 -> 2.3", "Migration-compatible bootstrap", "Alias/cache authority", "Do not fall through to new-user onboarding"])
     require("storage contract", storage_contract, ["Version: 2026-08-29.12", "storage-api/1", "Persistence profiles", "Authoritative journal rule", "compare-and-swap"])
     require("release runtime", release_runtime, ["module_version: 2026-08-29.12.1", "MODULE INTEGRITY", "ENGINE API / COMPATIBILITY", "BEHAVIORAL VALIDATION", "LOADER BUDGET"])
@@ -272,7 +278,7 @@ def main() -> None:
         fail("versioned release manifest identity/privacy invalid")
     if f"**Engine version:** `{version}`" not in readme or EXPECTED_INSTALL not in readme:
         fail("README Production identity/install mismatch")
-    require("README", readme, ["2.1 -> 2.2", "2.2 -> 2.3", "stale alias/cache content cannot downgrade", "single public installer", "Allow always", "provider"])
+    require("README", readme, ["2.1 -> 2.2", "2.2 -> 2.3", "single public installer", "Allow always", "provider", "ChatGPT installer handoff"])
     require("workflow", workflow, ["python scripts/validate_release.py", "python -m unittest -v test_runtime_behavior.py", "test_user_experience_contract.py", "fetch-depth: 0"])
 
     public_text = "\n".join(read(rel) for rel in REQUIRED_FILES if rel.endswith((".md", ".txt", ".json", ".yml", ".py")))
@@ -283,7 +289,7 @@ def main() -> None:
         fail("candidate contains possible credential token")
     if re.search(r"BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY", public_text):
         fail("candidate contains possible private key")
-    print(f"PASS: LWAI Production {version} / API {engine_api} / schema {schema_version} passed identity, graph, integrity, privacy, migration, friendly-UX and loader-boundary checks")
+    print(f"PASS: LWAI Production {version} / API {engine_api} / schema {schema_version} passed identity, graph, integrity, privacy, migration, friendly-UX, canonical-installer and loader-boundary checks")
 
 if __name__ == "__main__":
     main()

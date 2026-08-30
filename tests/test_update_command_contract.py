@@ -2,6 +2,7 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+CANONICAL_INSTALLER = "Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine"
 
 
 class UpdateCommandContractTests(unittest.TestCase):
@@ -30,12 +31,15 @@ class UpdateCommandContractTests(unittest.TestCase):
             for token in tokens:
                 self.assertIn(token, body, f"{rel} lost permanent update contract token: {token}")
 
-    def test_single_installer_remains_unchanged(self):
+    def test_single_installer_remains_canonical(self):
         loader = (ROOT / "engine/BOOTSTRAP.txt").read_text(encoding="utf-8")
-        self.assertIn(
-            "Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x",
-            loader,
-        )
+        bootstrap = (ROOT / "engine/modules/release/bootstrap.txt").read_text(encoding="utf-8")
+        contract = (ROOT / "contracts/export-bootstrap.md").read_text(encoding="utf-8")
+        for body in (loader, bootstrap, contract):
+            self.assertIn(CANONICAL_INSTALLER, body)
+        self.assertNotIn("https://tinyurl.com/", loader)
+        self.assertNotIn("https://tinyurl.com/", bootstrap)
+        self.assertNotIn("https://tinyurl.com/", contract)
 
 
 if __name__ == "__main__":

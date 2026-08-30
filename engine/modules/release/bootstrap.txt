@@ -1,14 +1,15 @@
 LWAI MODULE — BOOTSTRAP, EXPORT & UPDATE
 module_id: release.bootstrap
-module_version: 2026-08-29.22.1
+module_version: 2026-08-29.23.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
 REMOTE INSTALL
-Preferred public install instruction: Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
-The alias is transport convenience only. Canonical authority is GitHub Production main, releases/LATEST.json, engine/BOOTSTRAP.txt and engine/MANIFEST.json. If a supplied install URL resolves unexpectedly or content is not sanitized LWAI Production, do not silently trust it.
+Preferred public install instruction: Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine
+The canonical GitHub repository is the public installation entrypoint. Its README hands ChatGPT directly to canonical `main/engine/BOOTSTRAP.txt`; GitHub Production main, releases/LATEST.json, engine/BOOTSTRAP.txt and engine/MANIFEST.json remain authoritative. Third-party URL shorteners, preview pages and interstitials are never required trust roots. A supplied legacy alias may be ignored if it fails or resolves unexpectedly.
+`share LWAI` emits this canonical GitHub one-line installer; it never distributes a third-party shortener as the required install path.
 
 FRIENDLY BOOTSTRAP UX
 The bootstrap source is technical by design; the end-user experience is not. Execute trust, update, module, schema, migration, integrity, storage and recovery instructions internally.
@@ -32,16 +33,15 @@ Alias/cache version strings are diagnostic input only, never the active engine i
 
 STARTUP TRUST / INTEGRITY
 Fetch LATEST.json and MANIFEST.json from canonical Production. Confirm Production channel, sanitized=true, account_state_included=false, matching engine_version/schema_version and compatible engine_api_version. Resolve mandatory module dependencies before use. When the host can inspect/reproduce Git blob identity, compare each module against MANIFEST integrity.git_blob_sha1 before loading it. Otherwise verify canonical origin plus module_id/module_version. Do not expose this trace during normal UX unless a check fails materially.
-When the host retrieval layer is known to cache aggressively, a harmless cache-busting query/nonce may be appended to canonical GitHub reads if the host supports it; authority still comes from canonical GitHub paths and verified metadata, not from the nonce or alias body.
+When the host retrieval layer is known to cache aggressively, a harmless cache-busting query/nonce may be appended to canonical GitHub reads if the host supports it; authority still comes from canonical GitHub paths and verified metadata, not from the nonce or any alias body.
 
 FALLBACK ORDER
-1. Preferred TinyURL alias to canonical thin loader.
+1. Canonical GitHub repository installation entrypoint / README handoff.
 2. Canonical raw GitHub thin loader.
 3. Last-known-good locally cached compatible engine/module state when available.
 4. Canonical GitHub BOOTSTRAP_FULL.txt.
-5. Stable Google distribution mirror when readable.
-6. Manual full-bootstrap transfer only when remote retrieval is unavailable.
-Never repair retrieval/integrity failure by modifying user-local account state.
+5. Manual full-bootstrap transfer only when canonical remote retrieval is unavailable.
+Never repair retrieval/integrity failure by modifying user-local account state. Never require a third-party URL shortener or retired Google runtime mirror for installation/recovery.
 
 AUTOMATIC UPDATE ENTRYPOINT
 release.updater owns consumer engine freshness and adoption. With web access, run its automatic update preflight at every runtime/session startup before ordinary account/domain work. Also run it before `reload LWAI`, before schema-sensitive migration/recovery where canonical compatibility matters, and before consequential work after the six-hour freshness TTL. A successful no-op check is silent. A successful update must preserve the user's original requested action across the engine swap, health-check the new engine, then continue that action under the new verified Production version.

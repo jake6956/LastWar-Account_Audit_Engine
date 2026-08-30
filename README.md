@@ -6,9 +6,11 @@ LWAI is a modular account-intelligence and optimization runtime for **Last War: 
 
 Paste this single instruction into a fresh ChatGPT conversation:
 
-> Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
+> Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine
 
-The short URL is only a convenience alias. Canonical GitHub `main` is authoritative; stale alias/cache content cannot downgrade a newer verified release. There is one **single public installer** and one Production line.
+**ChatGPT installer handoff:** when this repository is supplied as the installation source, use canonical `main/engine/BOOTSTRAP.txt` as the runtime entrypoint, execute its bootstrap/update instructions internally, and continue with the friendly guided setup. Do not stop at merely summarizing this README.
+
+The canonical GitHub repository is the **single public installer entrypoint** and Production authority. Third-party URL shorteners are not required. A legacy TinyURL previously used for convenience began redirecting some clients to a deprecated preview/interstitial page, so it is retired as an installation dependency. Stale aliases/caches cannot downgrade or replace canonical GitHub Production.
 
 For best results, use a higher reasoning/thinking setting when the ChatGPT interface offers one.
 
@@ -78,18 +80,19 @@ Correct arithmetic does not make unsupported inputs factual. LWAI distinguishes 
 ## Architecture
 
 ```text
-engine/BOOTSTRAP.txt
-  -> releases/LATEST.json
-  -> engine/MANIFEST.json
-  -> releases/MIGRATIONS.json
-     -> mandatory core/release modules
-        -> core.operating (global evidence/provenance contract)
-        -> core.accounts + core.guidance (guided onboarding/resume)
-        -> release.updater
-     -> task-specific domain modules
-        -> domain.season-intelligence
-           -> production-qualified season Gold Assets
-     -> capability-specific adapters
+GitHub repository README (public installer entrypoint)
+  -> engine/BOOTSTRAP.txt
+     -> releases/LATEST.json
+     -> engine/MANIFEST.json
+     -> releases/MIGRATIONS.json
+        -> mandatory core/release modules
+           -> core.operating (global evidence/provenance contract)
+           -> core.accounts + core.guidance (guided onboarding/resume)
+           -> release.updater
+        -> task-specific domain modules
+           -> domain.season-intelligence
+              -> production-qualified season Gold Assets
+        -> capability-specific adapters
 
 engine/BOOTSTRAP_FULL.txt
   -> complete standalone fallback
@@ -108,7 +111,7 @@ Production supports explicit workspace-schema migration for supported older depl
 
 These migrations are additive and idempotent. They preserve canonical account facts, immutable `account_id`, `active_account_id`, history, Corrections, evidence metadata and provider references. Domain modules that require schema `2.3` remain blocked until migration is verified. If no validated path exists, setup fails closed instead of guessing or re-onboarding the user.
 
-The `.21 -> .22` transition is engine-only. It changes guided interaction behavior and onboarding recovery, not the user's account schema or canonical account facts.
+The `.22 -> .23` transition is engine-only. It changes the public installer transport from a third-party short-link alias to canonical GitHub; it does not change the user's account schema, canonical account facts, onboarding state, or updater semantics.
 
 ## Persistence model
 
@@ -149,17 +152,17 @@ Season Gold Asset knowledge has its own lightweight freshness path: the first se
 
 ## Validation
 
-Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, explicit provider selection, provider permission coaching, Google Drive `Allow always` guidance, post-authorization capability verification, **post-storage same-response continuation**, identity-to-baseline auto-advance, baseline-to-first-evidence auto-advance, no-orphan-state setup turns, onboarding recovery from the first incomplete verified stage, existing-user landing/resume behavior, contextual persistence reminders, friendly bootstrap/update UX, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration, Season Intelligence module reachability, sanitized season packs, Gold Asset registration, season fallback parity, global anti-fabrication behavior, community-source quality, uncertainty disclosure, calculation provenance and separation of official mechanics from LWAI-derived strategy.
+Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, canonical installer transport, rejection of required third-party shortener dependencies, first-run persistence choice, explicit provider selection, provider permission coaching, Google Drive `Allow always` guidance, post-authorization capability verification, **post-storage same-response continuation**, identity-to-baseline auto-advance, baseline-to-first-evidence auto-advance, no-orphan-state setup turns, onboarding recovery from the first incomplete verified stage, existing-user landing/resume behavior, contextual persistence reminders, friendly bootstrap/update UX, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration, Season Intelligence module reachability, sanitized season packs, Gold Asset registration, season fallback parity, global anti-fabrication behavior, community-source quality, uncertainty disclosure, calculation provenance and separation of official mechanics from LWAI-derived strategy.
 
 ## Production endpoints
 
+- Public installer entrypoint: https://github.com/jake6956/LastWar-Account_Audit_Engine
 - Release metadata: `releases/LATEST.json`
 - Migration graph: `releases/MIGRATIONS.json`
 - Thin loader: `engine/BOOTSTRAP.txt`
 - Module graph: `engine/MANIFEST.json`
 - Complete fallback: `engine/BOOTSTRAP_FULL.txt`
 - Season knowledge registry: `gold-assets/seasons/registry.json`
-- Install alias: https://tinyurl.com/2yxf7f5x
 
 ## Release discipline
 
@@ -167,7 +170,7 @@ Production changes use short-lived RC branches with sanitization checks, exact-h
 
 ## Current Production
 
-**Engine version:** `2026-08-29.22`
+**Engine version:** `2026-08-29.23`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
