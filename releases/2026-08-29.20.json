@@ -1,0 +1,32 @@
+{
+  "engine_version": "2026-08-29.20",
+  "engine_api_version": "1.0",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-hardened-recovery",
+  "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
+  "migration": {
+    "from": "2026-08-29.19",
+    "type": "engine_only_season_intelligence_framework",
+    "schema_from": "2.3",
+    "schema_to": "2.3",
+    "local_state_action": "preserve",
+    "requires_user_reonboarding": false,
+    "requires_account_rewrite": false
+  },
+  "features": [
+    "on-demand domain.season-intelligence module",
+    "Production-qualified season knowledge registry and versioned season packs",
+    "season identity plus phase/week/subsystem resolution before season-sensitive advice",
+    "live re-verification of missing stale contested dynamic or consequential mechanics",
+    "direct user evidence overrides stale shared knowledge",
+    "private Mechanics Registry observations never auto-publish to GitHub",
+    "first season-sensitive task registry check plus 24-hour knowledge freshness TTL",
+    "refresh season knowledge manual freshness command",
+    "domain.season-stores-paid dependency integration",
+    "standalone BOOTSTRAP_FULL parity and CI regression coverage"
+  ],
+  "installer": "Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x"
+}
