@@ -1,5 +1,20 @@
 # Production Changelog
 
+## 2026-08-29.22
+
+- Fixed beta-observed post-connector dead air: verified cloud storage/workspace success is now explicitly non-terminal and immediately hands off to the next onboarding/resume step.
+- Added a mandatory no-orphan-state UX invariant: every setup/onboarding response ends with a clear next action, an explicit `WAITING_USER` instruction, or a useful running-state landing.
+- New cloud users now flow automatically from verified storage to a compact identity block (screenname, server, alliance, optional nickname, optional/private UID) in the same user-facing response.
+- Explicit session-only users follow the same identity handoff immediately instead of receiving a bare acknowledgement.
+- Validated identity creates/registers an isolated immutable `account_id`, sets `active_account_id`, persists/verifies when durable, and automatically advances to a compact strategic baseline without requiring `next`.
+- Strategic baseline (HQ, primary/default squad or squad of interest, main goals) automatically advances to the first highest-value evidence capture, normally the main/default squad overview for a genuinely new account.
+- External authorization and multi-upload pauses require exact return instructions such as `reply connected` or `reply done`; successful verification automatically continues afterward.
+- Durable onboarding progress may resume from the first incomplete verified stage after context loss, without replaying already successful storage/workspace/account creation.
+- Existing users now receive a recognizable loaded-account landing or unfinished-work resume path instead of silent post-discovery completion.
+- Later persistence upgrades bind storage nondestructively and resume the user's original task rather than ending at storage success.
+- Updated `core.guidance`, `core.accounts`, `adapters.storage`, `release.bootstrap`, thin loader, standalone fallback, UX contract and deterministic UX regressions for parity.
+- Preserved engine API `1.0`, workspace schema `2.3`, LOCAL STATE, account isolation, the single TinyURL installer and all public/private data boundaries.
+
 ## 2026-08-29.21
 
 - Made evidence provenance and anti-fabrication mandatory global runtime behavior rather than a season-only safeguard.
