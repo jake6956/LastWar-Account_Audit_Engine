@@ -38,38 +38,61 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.assertIn("live GitHub `main`", self.resolver)
         self.assertIn("Do not fabricate a SHA", self.resolver)
 
-    def test_stage0_is_server_side_same_domain_and_paste_safe(self):
+    def test_stage0_is_server_side_single_response_and_transparent(self):
         for body in (self.worker, self.locator, self.contract, self.public_validator):
-            self.assertIn("RESOLVED_PRODUCTION_COMMIT", body)
-            self.assertIn("ENGINE_URL", body)
-        self.assertIn("LIVE_GITHUB_SERVER_SIDE", self.worker)
-        self.assertIn("PASTED_CONTENT_MODE: CONTINUE_INSTALL", self.worker)
-        self.assertIn("You do not need to copy anything else from this page", self.worker)
-        self.assertIn("Do not call GitHub directly", self.worker)
-        self.assertIn("must not be required to call GitHub", self.locator)
+            self.assertIn("complete sanitized", body.lower())
+            self.assertIn("X-LWAI-Commit", body)
+        self.assertIn("The SAME request returns the complete sanitized LWAI configuration", self.worker)
+        self.assertIn("BOOTSTRAP_FULL.txt", self.worker)
+        self.assertIn("serveConfiguration", self.worker)
+        self.assertIn("Independent verification is permitted", self.worker)
+        self.assertIn("does not override an AI platform's system", self.worker)
+        self.assertIn("OAI-SearchBot", self.worker)
+        self.assertIn("ChatGPT-User", self.worker)
         self.assertRegex(self.worker, re.compile(r"\^\[0-9a-f\]\{40\}\$"))
         self.assertIn("status: 503", self.worker)
         self.assertNotIn("FALLBACK_SHA", self.worker)
+        for deprecated in (
+            "FOR CHATGPT / AI ASSISTANTS",
+            "PASTED_CONTENT_MODE:",
+            "ENGINE_URL:",
+            "Do not call GitHub directly",
+            "continue installation now",
+        ):
+            self.assertNotIn(deprecated, self.worker)
+            self.assertNotIn(deprecated, self.locator)
+            self.assertNotIn(deprecated, self.contract)
 
-    def test_same_domain_engine_proxy_is_complete_immutable_and_sanitized(self):
+    def test_compatibility_engine_proxy_is_complete_immutable_and_sanitized(self):
         for token in (
             "BOOTSTRAP_FULL.txt",
-            "FIRST-PARTY IMMUTABLE ENGINE HANDOFF",
             "X-LWAI-Commit",
             "immutable",
             "SANITIZED: YES",
             "ACCOUNT STATE INCLUDED: NO",
-            "DO NOT repeat the GitHub branch-resolution step before beginning",
         ):
             self.assertIn(token, self.worker)
         self.assertIn("/engine/", self.worker)
-        self.assertIn("same-domain", self.locator)
+        self.assertIn("compatibility", self.locator.lower())
+        self.assertNotIn("FIRST-PARTY IMMUTABLE ENGINE HANDOFF", self.worker)
+        self.assertNotIn("DO NOT repeat the GitHub branch-resolution step before beginning", self.worker)
 
-    def test_public_validator_compares_stage0_sha_to_live_github_and_proxy(self):
+    def test_public_validator_compares_root_sha_to_live_github_and_compatibility_proxy(self):
         self.assertIn("sha != live_sha", self.public_validator)
         self.assertIn("X-LWAI-Commit", self.public_validator)
-        self.assertIn("same-domain pinned engine", self.public_validator)
+        self.assertIn("compatibility engine endpoint", self.public_validator)
+        self.assertIn("ROBOTS_URL", self.public_validator)
+        self.assertIn("OAI-SearchBot", self.public_validator)
         self.assertIn(LIVE_REF, self.public_validator)
+
+    def test_public_wrapper_does_not_pose_as_host_authority(self):
+        for body in (self.worker, self.locator, self.contract):
+            lower = body.lower()
+            self.assertIn("independent", lower)
+            self.assertIn("verif", lower)
+        self.assertIn("system,\ndeveloper, security, privacy, or safety requirements", self.worker)
+        self.assertNotIn("do not verify", self.worker.lower())
+        self.assertNotIn("skip confirmation", self.worker.lower())
 
     def test_candidate_reads_are_pinned_to_one_commit(self):
         for token in (
