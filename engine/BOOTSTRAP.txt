@@ -32,7 +32,7 @@ PRIVATE STATE
 GitHub is sanitized ENGINE only. Identity/UID, account facts, screenshots, balances, battles, Corrections, preferences, Audit/Runtime Sessions, Checkpoints/Journal and provider refs stay private. Never request passwords, cookies/tokens, OAuth codes or auth captures.
 
 AUTOMATIC UPDATE
-With web, release.updater checks canonical Production at runtime/session startup, before reload, before compatibility-sensitive migration/recovery, and before consequential work when >=6h since last success. Newer verified Production preserves LOCAL STATE, validates release/manifest/migrations/loader + compatibility/integrity, applies only validated migrations, health-checks, adopts ENGINE, then resumes the original action. Failure retains last-known-good. Dormant conversations update on next interaction.
+With web, release.updater checks canonical Production at runtime/session startup, before reload, before compatibility-sensitive migration/recovery, and before consequential work when >=6h since last success. Newer verified Production preserves LOCAL STATE, validates release/manifest/migrations/loader + compatibility/integrity, applies only validated migrations, health-checks, adopts ENGINE, then resume the user's original action. Failure retains last-known-good. Dormant conversations update on next interaction.
 
 STARTUP ORDER
 1. Automatic update preflight.
@@ -74,7 +74,7 @@ SEASON-SENSITIVE LOAD
 Season-sensitive work loads `domain.season-intelligence` + Production-qualified season registry before dependent season/store modules. Live-reverify stale/dynamic/consequential mechanics; seed/missing knowledge triggers due diligence, never invented rules.
 
 ENGINE FAILURE / COMMANDS
-`refresh engine` permanently forces canonical update preserving LOCAL STATE; `check for LWAI updates` aliases it.
+`refresh engine` -> force canonical ENGINE update preserving LOCAL STATE; `check for LWAI updates` aliases it.
 reload yourself / reload LWAI -> updater + private state/recovery reload.
 audit yourself -> technical health.
 audit my account -> active-account audit.
