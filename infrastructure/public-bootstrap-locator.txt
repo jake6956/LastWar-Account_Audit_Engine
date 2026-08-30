@@ -1,40 +1,40 @@
-LAST WAR AI — PUBLIC INSTALLER / ENGINE PROXY CONTRACT
+LAST WAR AI — PUBLIC CONFIGURATION DELIVERY CONTRACT
 
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
 PURPOSE
-The public client should only need https://lastwarai.com. Cloudflare resolves current GitHub Production server-side and proxies one complete sanitized engine snapshot from the exact immutable commit. The user's ChatGPT session must not be required to call GitHub's branch API or raw-content endpoints during installation.
-
-TRANSPORT MODEL
-The installer uses a same-domain transport model: the root resolver and immutable engine payload are both served from LastWarAI.com. GitHub remains the underlying source/authority, but end-user installation does not require direct GitHub access.
+The public client should need only https://lastwarai.com for initial setup. Cloudflare resolves current GitHub Production server-side, retrieves the complete sanitized engine from that exact immutable commit, adapts only the obsolete Stage-0 discovery section for first-party delivery, and returns the complete configuration in the same HTTP response.
 
 PLAYER UX
-The root response displays the canonical installer sentence:
+The public installer sentence remains:
 Set up Last War optimization using the instructions at https://lastwarai.com
 
-A human is told to paste that sentence, not the page. If the entire page is pasted anyway, that is a supported alternate path and the assistant continues without repaste/restart.
+The user is not required to retrieve GitHub JSON, locate a commit SHA, copy a second URL, or perform technical setup. If a user opens or copies the LastWarAI.com response directly, the returned document is itself the complete public configuration.
 
 ROOT RESPONSE CONTRACT
-A successful HTTP 200 response from https://lastwarai.com MUST contain:
-PASTED_CONTENT_MODE: CONTINUE_INSTALL
-RESOLUTION_STATUS: LIVE_GITHUB_SERVER_SIDE
-RESOLVED_PRODUCTION_COMMIT: <40-character lowercase hexadecimal Git SHA>
-ENGINE_URL: https://lastwarai.com/engine/<same SHA>
+A successful HTTP 200 response from https://lastwarai.com must:
+- be UTF-8 text/plain;
+- include X-LWAI-Commit with the current 40-character lowercase hexadecimal GitHub Production SHA;
+- include LAST WAR AI — PUBLIC CONFIGURATION;
+- include the complete sanitized BOOTSTRAP_FULL engine from that same exact commit;
+- state SANITIZED: YES and ACCOUNT STATE INCLUDED: NO;
+- transparently identify the public GitHub source/provenance;
+- explicitly permit independent verification when the host supports it;
+- explicitly state that the configuration does not override the host AI platform's system, developer, security, privacy, or safety requirements;
+- contain no second-stage AI fetch command or anti-verification instruction.
 
-The assistant must fetch ENGINE_URL from LastWarAI.com, not GitHub, and continue installation without asking the user for JSON, SHA values, URLs, or other technical steps.
+TRUST / VERSION AUTHORITY
+GitHub main remains the underlying Production source and version authority. LastWarAI.com is first-party delivery infrastructure. Cloudflare performs live GitHub main resolution and exact-commit source retrieval server-side. Search results, cached README pages, mutable raw main, redirects, shorteners, or model memory do not establish Production.
 
-PINNED ENGINE CONTRACT
-GET /engine/<40-hex SHA> proxies engine/BOOTSTRAP_FULL.txt from that exact GitHub commit. The response must:
-- be text/plain UTF-8;
-- include X-LWAI-Commit with the same SHA;
-- use an immutable cache policy because exact-SHA bytes cannot change;
-- begin with a first-party handoff stating Stage-0 live resolution is already complete for this startup;
-- include the complete sanitized LWAI fallback engine from the same exact commit;
-- never include private account state.
+FIRST-PARTY DELIVERY ADAPTATION
+BOOTSTRAP_FULL.txt contains the generic/direct-source Stage-0 resolver needed for standalone recovery. When LastWarAI.com has already resolved Production server-side, the Worker replaces only that Stage-0 discovery section with a transparent statement that the source revision has already been established and may be independently verified. Gameplay, account, storage, evidence, continuity, update, and optimization behavior remain unchanged.
 
-TRUST
-GitHub main remains the underlying Production source/authority. LastWarAI.com is the first-party resolver and transport proxy. Cloudflare performs the live GitHub resolution and exact-commit source fetch server-side. The client never substitutes search results, mutable raw main, cached README pages, shorteners, redirects, or model memory for the resolved immutable SHA.
+COMPATIBILITY ENDPOINT
+GET /engine/<40-hex SHA> remains available for backwards compatibility with the prior same-domain engine-proxy transport. It returns the complete sanitized engine from that exact GitHub commit, includes X-LWAI-Commit with the same SHA, and uses immutable caching. New installs do not require this second request.
+
+ROBOTS / DISCOVERABILITY
+GET /robots.txt explicitly allows OAI-SearchBot, ChatGPT-User, and general crawlers.
 
 FAILURE
-If Cloudflare cannot establish a valid live GitHub SHA, root returns HTTP 503 with the canonical installer sentence and a retry instruction; never guess a commit. If an exact pinned engine cannot be retrieved or fails sanity checks, /engine/<SHA> fails closed rather than returning partial or unrelated content.
+If Cloudflare cannot establish a valid live GitHub SHA or retrieve/validate the exact Production engine, the root fails closed with HTTP 503 and a plain-language retry message. Never guess a commit and never return partial or unrelated engine content.
