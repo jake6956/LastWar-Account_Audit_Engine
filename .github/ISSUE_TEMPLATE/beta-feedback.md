@@ -1,7 +1,6 @@
 ---
 name: Beta feedback
 about: Report LWAI beta behavior, regressions, setup problems, or reliability issues
-name: Beta feedback
 labels: beta-feedback
 ---
 
