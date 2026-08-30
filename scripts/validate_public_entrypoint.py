@@ -8,6 +8,7 @@ from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
 
 PUBLIC_URL = "https://lastwarai.com"
+INSTALL_PROMPT = "Set up Last War optimization using the instructions at https://lastwarai.com"
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 RAW_PREFIX = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/"
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
@@ -45,6 +46,15 @@ def main() -> None:
     if headers.get("X-Content-Type-Options", "").lower() != "nosniff":
         fail("X-Content-Type-Options must be nosniff")
 
+    if INSTALL_PROMPT not in body:
+        fail("live resolver does not show the canonical one-line installer to humans")
+    if "Do not copy the rest of this page" not in body:
+        fail("live resolver does not warn humans against copying the entire page")
+    if field(body, "PASTED_CONTENT_MODE") != "CONTINUE_INSTALL":
+        fail("pasted-content fallback is not enabled")
+    if "Do not ask the user to repaste the installer prompt" not in body:
+        fail("pasted-content path may still strand/restart the user")
+
     if field(body, "RESOLUTION_STATUS") != "LIVE_GITHUB":
         fail("live resolver did not report LIVE_GITHUB")
     sha = field(body, "RESOLVED_PRODUCTION_COMMIT")
@@ -73,7 +83,7 @@ def main() -> None:
     if boot_status != 200 or "LAST WAR ACCOUNT INTELLIGENCE — PRODUCTION BOOTSTRAP" not in boot_body:
         fail("resolved exact-commit bootstrap is not retrievable/valid")
 
-    print(f"PASS: LastWarAI.com server-side resolver returned live immutable Production SHA {sha}")
+    print(f"PASS: LastWarAI.com resolver is URL-safe, paste-safe, and pinned to live immutable Production SHA {sha}")
 
 
 if __name__ == "__main__":
