@@ -80,32 +80,73 @@ class RuntimeBehaviorTests(unittest.TestCase):
         self.assertEqual(rt.active_account_id, "A")
         self.assertEqual(rt.accounts["A"].facts["ore"], 100)
 
-    def test_audit_session_is_account_scoped(self):
+    def test_runtime_session_exists_without_host_reference(self):
         rt = RuntimeModel()
         rt.create_account("A")
+        session = rt.start_runtime_session("RS1", host_platform="chatgpt")
+        self.assertEqual(session.runtime_session_id, "RS1")
+        self.assertEqual(session.account_id, "A")
+        self.assertIsNone(session.host_session_ref)
+        self.assertEqual(rt.current_runtime_session_id, "RS1")
+
+    def test_duplicate_host_ref_does_not_merge_runtime_sessions(self):
+        rt = RuntimeModel()
+        rt.create_account("A")
+        one = rt.start_runtime_session(
+            "RS1", host_platform="chatgpt", host_session_ref="opaque-ref", host_session_ref_source="runtime_exposed"
+        )
+        two = rt.start_runtime_session(
+            "RS2", host_platform="chatgpt", host_session_ref="opaque-ref", host_session_ref_source="import"
+        )
+        self.assertNotEqual(one.runtime_session_id, two.runtime_session_id)
+        self.assertEqual(len(rt.runtime_sessions), 2)
+        self.assertEqual(len(rt.accounts), 1)
+        self.assertEqual(one.account_id, "A")
+        self.assertEqual(two.account_id, "A")
+
+    def test_distinct_host_refs_do_not_duplicate_account(self):
+        rt = RuntimeModel()
+        rt.create_account("A")
+        rt.start_runtime_session("RS1", host_session_ref="ref-one")
+        rt.start_runtime_session("RS2", host_session_ref="ref-two")
+        self.assertEqual(list(rt.accounts), ["A"])
+        self.assertEqual(rt.runtime_sessions["RS1"].account_id, "A")
+        self.assertEqual(rt.runtime_sessions["RS2"].account_id, "A")
+
+    def test_audit_session_is_account_scoped_and_links_provenance(self):
+        rt = RuntimeModel()
+        rt.create_account("A")
+        rt.start_runtime_session("RS-A", host_session_ref="same-host-ref")
         rt.start_audit_session("S-A")
         rt.create_account("B")
+        rt.start_runtime_session("RS-B", host_session_ref="same-host-ref")
         rt.start_audit_session("S-B")
         self.assertEqual(rt.accounts["A"].audit_session["account_id"], "A")
         self.assertEqual(rt.accounts["B"].audit_session["account_id"], "B")
+        self.assertEqual(rt.accounts["A"].audit_session["runtime_session_id"], "RS-A")
+        self.assertEqual(rt.accounts["B"].audit_session["runtime_session_id"], "RS-B")
 
     def test_waiting_user_boundary_survives_model_reload(self):
         rt = RuntimeModel()
         rt.create_account("A")
+        rt.start_runtime_session("RS1")
         cp = rt.create_checkpoint("CP1", scope="AUDIT", account_id="A", objective="screens")
         rt.enter_waiting_user("CP1", "reply done")
         self.assertEqual(cp.status, "WAITING_USER")
         self.assertEqual(cp.pending_user_input, "reply done")
+        self.assertEqual(cp.runtime_session_id, "RS1")
         target = DurableTarget()
         rt.resume_checkpoint("CP1", durable_probe=target.probe, apply_action=target.apply)
         self.assertEqual(cp.status, "WAITING_USER")
         self.assertEqual(target.apply_count, {})
 
-    def test_checkpoint_cannot_cross_active_account(self):
+    def test_checkpoint_cannot_cross_active_account_even_with_matching_host_ref(self):
         rt = RuntimeModel()
         rt.create_account("A")
+        rt.start_runtime_session("RS-A", host_session_ref="shared-host-ref")
         rt.create_checkpoint("CP1", scope="ACCOUNT", account_id="A", objective="update", pending_actions=["x"])
         rt.create_account("B")
+        rt.start_runtime_session("RS-B", host_session_ref="shared-host-ref")
         with self.assertRaises(RuntimeError):
             rt.resume_checkpoint("CP1", durable_probe=lambda _: False, apply_action=lambda _: None)
 
@@ -114,7 +155,7 @@ class RuntimeBehaviorTests(unittest.TestCase):
         rt.create_account("A")
         rt.create_checkpoint("CP1", scope="ACCOUNT", account_id="A", objective="write", pending_actions=["create-record"])
         target = DurableTarget()
-        target.applied.add("create-record")  # durable write succeeded before context loss
+        target.applied.add("create-record")
         rt.resume_checkpoint("CP1", durable_probe=target.probe, apply_action=target.apply)
         self.assertEqual(target.apply_count.get("create-record", 0), 0)
         self.assertEqual(rt.checkpoints["CP1"].status, "COMMITTED")
@@ -147,19 +188,21 @@ class RuntimeBehaviorTests(unittest.TestCase):
     def test_journal_surface_is_append_only_snapshot(self):
         rt = RuntimeModel()
         rt.create_account("A")
+        rt.start_runtime_session("RS1")
         rt.create_checkpoint("CP1", scope="ACCOUNT", account_id="A", objective="noop")
         snapshot = rt.journal
         self.assertIsInstance(snapshot, tuple)
         with self.assertRaises(AttributeError):
             snapshot.append("mutate")
         self.assertEqual(len(rt.journal), 1)
+        self.assertEqual(rt.journal[0].runtime_session_id, "RS1")
 
     def test_provider_profiles_and_journal_safety(self):
         self.assertEqual(ProviderCapabilities(read=False).persistence_profile, "NONE")
         self.assertEqual(ProviderCapabilities(read=True).persistence_profile, "READ_ONLY")
         file_rw = ProviderCapabilities(read=True, write=True, create=True)
         self.assertEqual(file_rw.persistence_profile, "FILE_RW")
-        self.assertTrue(file_rw.can_authoritative_journal)  # immutable uniquely-created events are safe
+        self.assertTrue(file_rw.can_authoritative_journal)
         cas = ProviderCapabilities(read=True, write=True, create=True, compare_and_swap=True)
         self.assertEqual(cas.persistence_profile, "CAS_RW")
         transactional = ProviderCapabilities(

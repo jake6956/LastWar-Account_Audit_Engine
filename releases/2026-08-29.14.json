@@ -1,0 +1,18 @@
+{
+  "engine_version": "2026-08-29.14",
+  "engine_api_version": "1.0",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "runtime_mode": "modular-hardened-recovery",
+  "sanitized": true,
+  "account_state_included": false,
+  "migration_from": "2026-08-29.13",
+  "migration_type": "engine_only",
+  "local_state_action": "preserve",
+  "requires_user_reonboarding": false,
+  "requires_account_rewrite": false,
+  "integrity_mode": "git_blob_sha1",
+  "behavioral_tests": true,
+  "thin_loader_budget_bytes": 9000,
+  "notes": "Adds optional private LWAI runtime_session_id provenance and optional opaque host_session_ref correlation. Host refs are nullable/non-authoritative and cannot affect account identity, routing, recovery ordering, idempotency or canonical game evidence."
+}

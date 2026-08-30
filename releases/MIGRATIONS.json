@@ -35,6 +35,24 @@
         "legacy_migration_preserves_facts"
       ],
       "notes": "Clarifies startup sequencing: current registry-backed deployments resolve active_account_id before recovery; legacy pre-registry deployments discover/register existing state first, establish account context, then run recovery."
+    },
+    {
+      "from": "2026-08-29.13",
+      "to": "2026-08-29.14",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "runtime_session_exists_without_host_reference",
+        "duplicate_host_ref_does_not_merge_runtime_sessions",
+        "distinct_host_refs_do_not_duplicate_account",
+        "audit_session_is_account_scoped_and_links_provenance",
+        "checkpoint_cannot_cross_active_account_even_with_matching_host_ref"
+      ],
+      "notes": "Adds optional private runtime-session provenance. host_session_ref remains nullable/non-authoritative and cannot affect account identity, routing, recovery ordering, idempotency or canonical game evidence."
     }
   ]
 }

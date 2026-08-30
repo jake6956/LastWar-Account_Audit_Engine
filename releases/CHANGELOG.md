@@ -1,5 +1,16 @@
 # Production Changelog
 
+## 2026-08-29.14
+
+- Added optional private LWAI-generated `runtime_session_id` provenance for correlating material changes, Audit Sessions and recovery events across volatile conversational contexts.
+- Added optional `host_platform`, opaque `host_session_ref`, and `host_session_ref_source` only when the host exposes them safely, the user explicitly supplies them, or a user-provided artifact contains them.
+- Host-session references are explicitly non-authoritative: they cannot become account identity, authentication, account-selection/routing authority, recovery ordering, write deduplication/idempotency keys, or canonical game evidence.
+- Normal LWAI use never requires users to create ChatGPT shared links, reveal conversation URLs, or retrieve conversation GUIDs; missing host references are expected and do not reduce core correctness.
+- Added optional Runtime Sessions to the provider-neutral workspace schema plus optional `runtime_session_id` links on Audit Sessions, Runtime Checkpoints, Runtime Journal and Change Log records.
+- Added executable regressions proving operation without a host reference, duplicate host references do not merge sessions/accounts, distinct host references do not duplicate immutable accounts, and matching host provenance cannot bypass `active_account_id` checkpoint isolation.
+- Updated `core.persistence` and `core.guidance` to `2026-08-29.14.1`, updated exact module integrity identities, rebuilt BOOTSTRAP_FULL for parity, and kept the thin loader orchestration-only except for the Production identity bump.
+- Added explicit `.13 -> .14` engine-only migration metadata. Workspace schema remains `2.3`; no user re-onboarding or account rewrite is required.
+
 ## 2026-08-29.13
 
 - Clarified first-run startup for pre-registry legacy LWAI deployments: discover existing legacy state before requiring an `active_account_id` that older generations did not yet have.

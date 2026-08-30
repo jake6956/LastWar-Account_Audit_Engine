@@ -49,12 +49,22 @@ class Account:
     audit_session: dict[str, Any] | None = None
 
 
+@dataclass(frozen=True)
+class RuntimeSession:
+    runtime_session_id: str
+    account_id: str | None = None
+    host_platform: str | None = None
+    host_session_ref: str | None = None
+    host_session_ref_source: str | None = None
+
+
 @dataclass
 class Checkpoint:
     checkpoint_id: str
     scope: str
     account_id: str | None
     objective: str
+    runtime_session_id: str | None = None
     status: str = "OPEN"
     last_safe_point: str | None = None
     completed_actions: list[str] = field(default_factory=list)
@@ -70,12 +80,15 @@ class JournalEvent:
     action: str
     verified: bool
     safe_point_after: str | None = None
+    runtime_session_id: str | None = None
 
 
 class RuntimeModel:
     def __init__(self) -> None:
         self.accounts: dict[str, Account] = {}
         self.active_account_id: str | None = None
+        self.runtime_sessions: dict[str, RuntimeSession] = {}
+        self.current_runtime_session_id: str | None = None
         self.checkpoints: dict[str, Checkpoint] = {}
         self._journal: list[JournalEvent] = []
 
@@ -129,6 +142,33 @@ class RuntimeModel:
 
         return ["new_account_guidance"]
 
+    def start_runtime_session(
+        self,
+        runtime_session_id: str,
+        *,
+        host_platform: str | None = None,
+        host_session_ref: str | None = None,
+        host_session_ref_source: str | None = None,
+        account_id: str | None = None,
+    ) -> RuntimeSession:
+        """Create private provenance independent of any host-provided conversation ID."""
+        if runtime_session_id in self.runtime_sessions:
+            raise ValueError("runtime_session_id must be unique")
+        if account_id is None:
+            account_id = self.active_account_id
+        if account_id is not None and account_id not in self.accounts:
+            raise ValueError("runtime session account_id must reference an existing account")
+        session = RuntimeSession(
+            runtime_session_id=runtime_session_id,
+            account_id=account_id,
+            host_platform=host_platform,
+            host_session_ref=host_session_ref,
+            host_session_ref_source=host_session_ref_source,
+        )
+        self.runtime_sessions[runtime_session_id] = session
+        self.current_runtime_session_id = runtime_session_id
+        return session
+
     def switch_account(self, account_id: str) -> None:
         account = self.accounts.get(account_id)
         if account is None or account.status == "ARCHIVED":
@@ -158,6 +198,7 @@ class RuntimeModel:
         self.accounts[self.active_account_id].audit_session = {
             "session_id": session_id,
             "account_id": self.active_account_id,
+            "runtime_session_id": self.current_runtime_session_id,
             "status": "OPEN",
         }
 
@@ -177,6 +218,7 @@ class RuntimeModel:
             scope=scope,
             account_id=account_id,
             objective=objective,
+            runtime_session_id=self.current_runtime_session_id,
             pending_actions=list(pending_actions or []),
         )
         self.checkpoints[checkpoint_id] = cp
@@ -199,6 +241,7 @@ class RuntimeModel:
         verified: bool,
         safe_point_after: str | None = None,
     ) -> JournalEvent:
+        checkpoint = self.checkpoints.get(checkpoint_id)
         event = JournalEvent(
             journal_id=f"J{len(self._journal)+1}",
             checkpoint_id=checkpoint_id,
@@ -206,6 +249,7 @@ class RuntimeModel:
             action=action,
             verified=verified,
             safe_point_after=safe_point_after,
+            runtime_session_id=checkpoint.runtime_session_id if checkpoint else self.current_runtime_session_id,
         )
         self._journal.append(event)
         return event
