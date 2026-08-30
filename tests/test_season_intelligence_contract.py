@@ -63,14 +63,16 @@ class SeasonIntelligenceContractTests(unittest.TestCase):
         self.assertEqual(asset["path"], "gold-assets/seasons/registry.json")
         self.assertFalse(asset["account_state_included"])
 
-    def test_bootstrap_paths_expose_framework_without_core_bloat(self):
+    def test_stage1_loader_does_not_embed_season_policy(self):
         loader = self.read("engine/BOOTSTRAP.txt")
         full = self.read("engine/BOOTSTRAP_FULL.txt")
-        self.assertIn("domain.season-intelligence", loader)
+        manifest = self.read("engine/MANIFEST.json")
+        self.assertNotIn("domain.season-intelligence", loader)
+        self.assertIn("domain.season-intelligence", manifest)
         self.assertIn("SEASON INTELLIGENCE", full)
         self.assertIn("refresh season knowledge", full)
         self.assertNotIn("fact_id", loader)
-        self.assertLessEqual(len(loader.encode("utf-8")), 9000)
+        self.assertLessEqual(len(loader.encode("utf-8")), 4096)
 
     def test_contract_preserves_privacy_boundary(self):
         contract = self.read("contracts/season-intelligence.md").lower()
