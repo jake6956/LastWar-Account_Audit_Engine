@@ -34,7 +34,7 @@ GitHub Production is sanitized ENGINE only. Identity/UID, facts, screenshots, ba
 
 AUTOMATIC UPDATE
 With web, release.updater runs at runtime/session startup, before reload, before compatibility-sensitive migration/recovery, and before consequential work when >=6h since the last successful check. Dormant conversations update on next interaction, not in background.
-Current Production continues silently. Newer verified Production preserves LOCAL STATE, validates canonical release/manifest/migrations/loader + compatibility/integrity, fetches changed required components, applies validated migrations, health-checks, adopts newer ENGINE, then resumes the original action. Failure keeps last-known-good ENGINE/LOCAL STATE unless unsafe.
+Current Production continues silently. Newer verified Production preserves LOCAL STATE, validates canonical release/manifest/migrations/loader + compatibility/integrity, fetches changed required components, applies validated migrations, health-checks, adopts newer ENGINE, then resume the user's original action. Failure keeps last-known-good ENGINE/LOCAL STATE unless unsafe.
 
 STARTUP ORDER
 1. Automatic update preflight when web exists.
