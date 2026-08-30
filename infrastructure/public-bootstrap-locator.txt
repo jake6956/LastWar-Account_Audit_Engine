@@ -1,28 +1,37 @@
-LAST WAR AI — PUBLIC BOOTSTRAP RESOLVER CONTRACT
+LAST WAR AI — PUBLIC INSTALLER / ENGINE PROXY CONTRACT
 
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
-The live first-party endpoint at https://lastwarai.com resolves the current GitHub Production commit server-side for each installation request.
+PURPOSE
+The public client should only need https://lastwarai.com. Cloudflare resolves current GitHub Production server-side and proxies one complete sanitized engine snapshot from the exact immutable commit. The user's ChatGPT session must not be required to call GitHub's branch API or raw-content endpoints during installation.
 
 PLAYER UX
-The root response must begin with the canonical public installer sentence:
+The root response displays the canonical installer sentence:
 Set up Last War optimization using the instructions at https://lastwarai.com
 
-It must tell a human user to paste that sentence rather than copying the page. However, copying/pasting the entire page is a supported alternate path and must not strand the user or require a restart.
+A human is told to paste that sentence, not the page. If the entire page is pasted anyway, that is a supported alternate path and the assistant continues without repaste/restart.
 
-A successful HTTP 200 response MUST contain:
+ROOT RESPONSE CONTRACT
+A successful HTTP 200 response from https://lastwarai.com MUST contain:
 PASTED_CONTENT_MODE: CONTINUE_INSTALL
-RESOLUTION_STATUS: LIVE_GITHUB
+RESOLUTION_STATUS: LIVE_GITHUB_SERVER_SIDE
 RESOLVED_PRODUCTION_COMMIT: <40-character lowercase hexadecimal Git SHA>
-EXACT_BOOTSTRAP_URL: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/<same SHA>/engine/BOOTSTRAP.txt
-LIVE_REF_SOURCE: https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
+ENGINE_URL: https://lastwarai.com/engine/<same SHA>
 
-CLIENT CONTRACT
-Whether the assistant read https://lastwarai.com directly or the user pasted the full page into chat, continue installation without asking the user to repaste or restart. The client must not be required to call GitHub's branch API again before starting. Validate the SHA format, verify the exact bootstrap URL contains the same SHA, retrieve that exact-commit bootstrap, pin the startup transaction to the same immutable commit, and continue into a useful user-facing LWAI step.
+The assistant must fetch ENGINE_URL from LastWarAI.com, not GitHub, and continue installation without asking the user for JSON, SHA values, URLs, or other technical steps.
+
+PINNED ENGINE CONTRACT
+GET /engine/<40-hex SHA> proxies engine/BOOTSTRAP_FULL.txt from that exact GitHub commit. The response must:
+- be text/plain UTF-8;
+- include X-LWAI-Commit with the same SHA;
+- use an immutable cache policy because exact-SHA bytes cannot change;
+- begin with a first-party handoff stating Stage-0 live resolution is already complete for this startup;
+- include the complete sanitized LWAI fallback engine from the same exact commit;
+- never include private account state.
 
 TRUST
-GitHub main remains underlying Production authority. LastWarAI.com is first-party discovery/live-resolution transport that retrieves that authority server-side. Search results, mutable raw main, cached README pages, URL shorteners, redirects and model memory are not substitutes for the resolved immutable SHA.
+GitHub main remains the underlying Production source/authority. LastWarAI.com is the first-party resolver and transport proxy. Cloudflare performs the live GitHub resolution and exact-commit source fetch server-side. The client never substitutes search results, mutable raw main, cached README pages, shorteners, redirects, or model memory for the resolved immutable SHA.
 
 FAILURE
-If the server-side resolver cannot establish a valid live GitHub SHA, return HTTP 503 and do not fabricate or guess a commit. A 503 response still displays the canonical installer sentence and a plain-language retry instruction.
+If Cloudflare cannot establish a valid live GitHub SHA, root returns HTTP 503 with the canonical installer sentence and a retry instruction; never guess a commit. If an exact pinned engine cannot be retrieved or fails sanity checks, /engine/<SHA> fails closed rather than returning partial or unrelated content.
