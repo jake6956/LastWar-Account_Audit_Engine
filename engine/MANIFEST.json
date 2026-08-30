@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.21",
+  "engine_version": "2026-08-29.22",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -36,7 +36,7 @@
     },
     {
       "module_id": "core.accounts",
-      "module_version": "2026-08-29.16.1",
+      "module_version": "2026-08-29.22.1",
       "path": "engine/modules/core/accounts.txt",
       "load_class": "mandatory_core",
       "dependencies": ["core.operating", "core.persistence"],
@@ -45,11 +45,11 @@
       "release_min": "2026-08-29.9",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "c66f74b706d218dee6814be69ebaa4ec54124e8e"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "0868dcd282944693b8b45a82d1966f508e2ffc36"}
     },
     {
       "module_id": "core.guidance",
-      "module_version": "2026-08-29.19.1",
+      "module_version": "2026-08-29.22.1",
       "path": "engine/modules/core/guidance.txt",
       "load_class": "mandatory_core",
       "dependencies": ["core.operating", "core.persistence", "core.accounts"],
@@ -58,7 +58,7 @@
       "release_min": "2026-08-29.10",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "756b38e86e7869c9082c478d42646b250607f1a7"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "07086cb67ab5adab2da41e8e272e7cb2a8d1ad81"}
     },
     {
       "module_id": "domain.gear-heroes-skills-ew",
@@ -127,7 +127,7 @@
     },
     {
       "module_id": "adapters.storage",
-      "module_version": "2026-08-29.19.1",
+      "module_version": "2026-08-29.22.1",
       "path": "engine/modules/adapters/storage.txt",
       "load_class": "capability_on_demand",
       "dependencies": ["core.persistence", "core.accounts"],
@@ -136,7 +136,7 @@
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "503ff2ee8d3d5b36b10b4222d15c76b487a50772"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "069a01175ea3ed9b1e858587cec5ad66345fece5"}
     },
     {
       "module_id": "release.runtime",
@@ -166,7 +166,7 @@
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-08-29.19.1",
+      "module_version": "2026-08-29.22.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
       "dependencies": ["release.runtime", "release.updater", "core.accounts", "core.guidance"],
@@ -175,7 +175,7 @@
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "6af109c0518e0c31c3c9cb568ae095139805d49f"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "04f0509ee947ef6576d34c8e2aa04f6522b5d359"}
     }
   ]
 }

@@ -13,6 +13,7 @@ class UserExperienceContractTests(unittest.TestCase):
         self.loader = read("engine/BOOTSTRAP.txt")
         self.full = read("engine/BOOTSTRAP_FULL.txt")
         self.guidance = read("engine/modules/core/guidance.txt")
+        self.accounts = read("engine/modules/core/accounts.txt")
         self.persistence = read("engine/modules/core/persistence.txt")
         self.storage = read("engine/modules/adapters/storage.txt")
         self.bootstrap = read("engine/modules/release/bootstrap.txt")
@@ -81,6 +82,115 @@ class UserExperienceContractTests(unittest.TestCase):
         self.assertIn("read", self.storage.lower())
         self.assertIn("write", self.storage.lower())
         self.assertIn("create", self.storage.lower())
+
+    def test_storage_success_is_not_terminal(self):
+        for label, body in (
+            ("loader", self.loader),
+            ("full", self.full),
+            ("guidance", self.guidance),
+            ("storage", self.storage),
+            ("bootstrap", self.bootstrap),
+            ("UX contract", self.contract),
+        ):
+            lower = body.lower()
+            self.assertIn("cloud storage connected and verified", lower, label)
+            self.assertTrue(
+                "same response" in lower
+                or "same user-facing response" in lower
+                or "immediately continue" in lower
+                or "immediately hand off" in lower
+                or "return control immediately" in lower
+                or "not a conversational" in lower,
+                f"{label} does not explicitly prevent an orphan storage-success state",
+            )
+
+    def test_verified_storage_advances_to_identity(self):
+        for label, body in (
+            ("loader", self.loader),
+            ("full", self.full),
+            ("guidance", self.guidance),
+            ("accounts", self.accounts),
+            ("bootstrap", self.bootstrap),
+            ("UX contract", self.contract),
+        ):
+            lower = body.lower()
+            self.assertIn("screenname", lower, label)
+            self.assertIn("server", lower, label)
+            self.assertIn("alliance", lower, label)
+            self.assertIn("uid", lower, label)
+            self.assertTrue("optional" in lower and "identity" in lower, label)
+
+    def test_identity_advances_to_strategic_baseline_without_next(self):
+        for label, body in (
+            ("loader", self.loader),
+            ("full", self.full),
+            ("guidance", self.guidance),
+            ("accounts", self.accounts),
+            ("bootstrap", self.bootstrap),
+            ("UX contract", self.contract),
+        ):
+            lower = body.lower()
+            self.assertIn("hq", lower, label)
+            self.assertTrue("strategic baseline" in lower or "baseline" in lower, label)
+            self.assertTrue("do not require" in lower or "never require" in lower or "without requiring" in lower, label)
+            self.assertIn("next", lower, label)
+
+    def test_baseline_advances_to_first_evidence_capture(self):
+        for label, body in (
+            ("loader", self.loader),
+            ("full", self.full),
+            ("guidance", self.guidance),
+            ("accounts", self.accounts),
+            ("bootstrap", self.bootstrap),
+            ("UX contract", self.contract),
+        ):
+            lower = body.lower()
+            self.assertTrue("first evidence" in lower or "first highest-value" in lower or "first useful evidence" in lower, label)
+            self.assertTrue("main/default squad" in lower or "default squad" in lower or "main squad" in lower, label)
+
+    def test_setup_turns_have_no_orphan_state(self):
+        for label, body in (
+            ("loader", self.loader),
+            ("full", self.full),
+            ("guidance", self.guidance),
+            ("bootstrap", self.bootstrap),
+            ("UX contract", self.contract),
+        ):
+            lower = body.lower()
+            self.assertTrue(
+                "orphan" in lower or "dead end" in lower or "terminal" in lower or "continuation invariant" in lower,
+                label,
+            )
+            self.assertTrue("next actionable" in lower or "next action" in lower or "next useful" in lower, label)
+            self.assertIn("waiting_user", lower, label)
+
+    def test_onboarding_recovery_resumes_first_incomplete_stage(self):
+        for label, body in (
+            ("loader", self.loader),
+            ("full", self.full),
+            ("guidance", self.guidance),
+            ("accounts", self.accounts),
+            ("bootstrap", self.bootstrap),
+            ("UX contract", self.contract),
+        ):
+            lower = body.lower()
+            self.assertIn("first incomplete", lower, label)
+            self.assertTrue(
+                "never repeat" in lower or "does not repeat" in lower or "never restart" in lower or "never replay" in lower,
+                label,
+            )
+
+    def test_existing_user_gets_landing_or_resume(self):
+        for label, body in (
+            ("loader", self.loader),
+            ("full", self.full),
+            ("guidance", self.guidance),
+            ("accounts", self.accounts),
+            ("UX contract", self.contract),
+        ):
+            lower = body.lower()
+            self.assertTrue("landing" in lower or "loaded" in lower, label)
+            self.assertTrue("resume" in lower or "unfinished" in lower, label)
 
 
 if __name__ == "__main__":
