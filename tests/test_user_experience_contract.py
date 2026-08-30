@@ -58,6 +58,15 @@ class UserExperienceContractTests(unittest.TestCase):
             self.assertNotIn(LEGACY_SHORTENER, body, label)
         self.assertIn("Do not use the old TinyURL installer", self.readme)
 
+    def test_legacy_repo_installer_handoff_executes_without_repaste(self):
+        lower = self.readme.lower()
+        self.assertIn("assistant handoff / legacy-installer compatibility", lower)
+        self.assertIn("execute the stage-0 bootloader below now", lower)
+        self.assertIn("do not", lower)
+        self.assertIn("ask the user to copy/paste a second prompt", lower)
+        self.assertIn(LIVE_REF, self.readme)
+        self.assertIn("stop rather than guessing", lower)
+
     def test_first_run_cloud_question_lives_in_modules_not_loader(self):
         question = "would you like me to use private cloud storage"
         self.assertNotIn(question, self.loader.lower())
