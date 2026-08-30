@@ -1,0 +1,37 @@
+{
+  "engine_version": "2026-08-30.25",
+  "engine_api_version": "1.0",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-hardened-recovery",
+  "bootstrap_protocol_version": "2.0",
+  "entrypoint_module": "release.bootstrap",
+  "module_selection": "manifest_activation_v1",
+  "preferred_install_url": "https://lastwarai.com",
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com",
+  "legacy_install_urls": ["https://tinyurl.com/2yxf7f5x"],
+  "live_ref_source": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
+  "public_entrypoint_authority": false,
+  "migration": {
+    "from": "2026-08-30.24",
+    "type": "engine_only_first_party_install_entrypoint",
+    "schema_from": "2.3",
+    "schema_to": "2.3",
+    "local_state_action": "preserve",
+    "requires_user_reonboarding": false,
+    "requires_account_rewrite": false,
+    "notes": "Preferred public installation moves to first-party LastWarAI.com. Existing TinyURL remains compatibility-only. GitHub live-main SHA and exact-commit pinned reads remain authoritative."
+  },
+  "features": [
+    "first-party permanent public installer endpoint at https://lastwarai.com",
+    "legacy TinyURL retained only for already-circulated installer compatibility",
+    "public entrypoint explicitly separated from Production version authority",
+    "live GitHub main commit.sha remains the sole current-version resolver",
+    "all trusted engine reads remain pinned to one immutable commit",
+    "share LWAI returns the LastWarAI.com installer",
+    "Engine API 1.0 and workspace schema 2.3 unchanged",
+    "LOCAL STATE preserved with no re-onboarding or account rewrite"
+  ]
+}

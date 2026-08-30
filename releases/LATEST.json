@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-30.24",
+  "engine_version": "2026-08-30.25",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -9,9 +9,13 @@
   "bootstrap_protocol_version": "2.0",
   "entrypoint_module": "release.bootstrap",
   "module_selection": "manifest_activation_v1",
-  "preferred_install_url": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
-  "preferred_install_instruction": "Set up Last War optimization. Read the live GitHub main ref at https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main, use its current commit.sha, then load and follow engine/BOOTSTRAP.txt from that exact commit.",
-  "remote_install_mode": "stage0_live_ref_then_exact_commit_manifest_bootstrap",
+  "preferred_install_url": "https://lastwarai.com",
+  "preferred_install_instruction": "Set up Last War optimization using the instructions at https://lastwarai.com",
+  "legacy_install_urls": [
+    "https://tinyurl.com/2yxf7f5x"
+  ],
+  "remote_install_mode": "first_party_entrypoint_then_live_ref_exact_commit_manifest_bootstrap",
+  "public_entrypoint_authority": false,
   "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
   "live_ref_source": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
   "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
@@ -21,14 +25,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
   "migration": {
-    "from": "2026-08-29.23",
-    "type": "engine_only_live_ref_pinned_manifest_dispatch",
+    "from": "2026-08-30.24",
+    "type": "engine_only_first_party_install_entrypoint",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds live-ref exact-commit resolution plus generic required-module loading and manifest-driven optional module dispatch. Removes feature routing from Stage-1. Existing onboarding, persistence, account isolation, recovery, Season Intelligence and evidence behavior remain module-owned and unchanged."
+    "notes": "Moves the preferred public installer to the first-party LastWarAI.com bootstrap locator while retaining the previously circulated TinyURL only as a legacy compatibility alias. GitHub live-main SHA resolution remains current-version authority and all trusted engine reads remain exact-commit pinned."
   },
-  "notes": "Live-ref pinned manifest cascade. Stage 0 resolves current GitHub main commit directly; Stage 1 loads every required manifest module generically; the mandatory dispatcher activates optional modules from manifest metadata. New Production capabilities integrate through MANIFEST registration without bootstrap edits."
+  "notes": "First-party stable public entrypoint at LastWarAI.com with GitHub live-ref/exact-commit trust. Public transport may change implementation without changing the installer; engine and LOCAL STATE boundaries remain unchanged."
 }

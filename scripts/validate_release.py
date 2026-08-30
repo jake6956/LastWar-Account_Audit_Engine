@@ -30,13 +30,15 @@ REQUIRED_FILES = [
 ]
 
 REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
+PUBLIC_INSTALL_URL = "https://lastwarai.com"
+PUBLIC_INSTALL_INSTRUCTION = f"Set up Last War optimization using the instructions at {PUBLIC_INSTALL_URL}"
+LEGACY_INSTALL_URL = "https://tinyurl.com/2yxf7f5x"
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 RAW_BOOT = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt"
 RAW_MANIFEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json"
 RAW_FULL = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt"
 RAW_LATEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json"
 RAW_MIGRATIONS = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json"
-LEGACY_SHORTENER_PREFIX = "https://tinyurl.com/"
 CURRENT_SCHEMA = "2.3"
 HISTORICAL_SCHEMA_PATH = [("2.1", "2.2"), ("2.2", "2.3")]
 MIGRATION_CAPABLE = {
@@ -187,11 +189,11 @@ def validate_loader_boundary(loader: str) -> None:
         "Before we build your account", "Allow always", "Google Drive", "Dropbox", "OneDrive", "Box",
         "screenname", "strategic baseline", "GEAR / UPGRADE ORE", "SKILL MEDALS",
         "DRONE / COMPONENTS / CHIPS", "EVENT STORES / BLACK MARKET / BOUNTY", "COMBAT DIAGNOSIS",
-        "domain.season-intelligence",
+        "domain.season-intelligence", PUBLIC_INSTALL_URL, LEGACY_INSTALL_URL,
     ]
     for token in forbidden:
         if token in loader:
-            fail(f"Stage-1 loader leaked delegated policy/domain content: {token}")
+            fail(f"Stage-1 loader leaked delegated policy/domain/transport content: {token}")
 
 
 def validate_resolution_contract(latest: dict, loader: str, full: str, readme: str) -> None:
@@ -199,23 +201,39 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
     updater = read("engine/modules/release/updater.txt")
     bootstrap = read("engine/modules/release/bootstrap.txt")
     contract = read("contracts/bootstrap-resolution.md")
-    if latest.get("preferred_install_url") != LIVE_REF:
-        fail("LATEST preferred_install_url is not live branch-ref endpoint")
+    quick = read("docs/quick-install.md")
+
+    if latest.get("preferred_install_url") != PUBLIC_INSTALL_URL:
+        fail("LATEST preferred_install_url is not first-party LastWarAI.com")
+    if latest.get("preferred_install_instruction") != PUBLIC_INSTALL_INSTRUCTION:
+        fail("LATEST preferred_install_instruction drifted from canonical first-party installer")
+    if LEGACY_INSTALL_URL not in (latest.get("legacy_install_urls") or []):
+        fail("LATEST lost legacy TinyURL compatibility alias")
+    if latest.get("public_entrypoint_authority") is not False:
+        fail("public entrypoint must explicitly be non-authoritative for current version")
     if latest.get("live_ref_source") != LIVE_REF or latest.get("mutable_source_urls_are_authority") is not False:
         fail("LATEST live-ref/cache authority metadata invalid")
+
     for label, body in [("loader", loader), ("full", full), ("resolver", resolver), ("bootstrap", bootstrap), ("resolution contract", contract), ("README", readme)]:
         if LIVE_REF not in body:
             fail(f"{label} missing live Production ref")
+    for label, body in [("full", full), ("bootstrap", bootstrap), ("resolution contract", contract), ("README", readme), ("quick install", quick)]:
+        if PUBLIC_INSTALL_URL not in body:
+            fail(f"{label} missing first-party public installer")
+
     require("resolver", resolver, [
         "LIVE REF RESOLUTION", "PIN-ONCE SNAPSHOT", "production_commit_sha",
         "40-lowercase-hex", "Do not fabricate a SHA", "cached raw `main` files",
         "Fresh install with no live ref capability", "release.updater",
     ])
     require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine"])
-    require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "search/index caching"])
-    for label, body in [("loader", loader), ("full fallback", full), ("release.bootstrap", bootstrap)]:
-        if LEGACY_SHORTENER_PREFIX in body:
-            fail(f"{label} still advertises/requires legacy shortener")
+    require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "legacy compatibility"])
+    require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, LEGACY_INSTALL_URL, "compatibility-only", "current-version authority"])
+
+    if LEGACY_INSTALL_URL in loader or LEGACY_INSTALL_URL in full:
+        fail("legacy shortener leaked into Stage-1/full runtime instead of compatibility metadata/handoff only")
+    if PUBLIC_INSTALL_INSTRUCTION in loader:
+        fail("Stage-1 duplicated public transport installer")
 
 
 def validate_storage_security(full: str) -> None:
@@ -294,7 +312,6 @@ def main() -> None:
     if manifest.get("integrity_mode") != "git_blob_sha1":
         fail("unsupported manifest integrity mode")
 
-    # Mutable raw URLs may remain as convenience metadata, but cannot be authority.
     expected_metadata = {
         "github_repository": REPO,
         "github_bootstrap_source": RAW_BOOT,
@@ -341,13 +358,14 @@ def main() -> None:
     archive = read_json(archive_rel)
     if archive.get("engine_version") != version or archive.get("schema_version") != schema_version or archive.get("sanitized") is not True or archive.get("account_state_included") is not False:
         fail("versioned release manifest identity/privacy invalid")
+    if archive.get("preferred_install_url") != PUBLIC_INSTALL_URL or archive.get("installer") != PUBLIC_INSTALL_INSTRUCTION:
+        fail("versioned release manifest public installer mismatch")
 
-    if f"**Engine version:** `{version}`" not in readme or LIVE_REF not in readme:
+    if f"**Engine version:** `{version}`" not in readme or LIVE_REF not in readme or PUBLIC_INSTALL_URL not in readme:
         fail("README Production identity/install mismatch")
-    require("README", readme, ["Stage-0 bootloader", "4 KiB", "Do not use the old TinyURL installer", "Allow always", "workspace-only", "release.resolver"])
+    require("README", readme, ["Stage-0 bootloader", "4 KiB", "legacy compatibility alias", "Allow always", "workspace-only", "release.resolver"])
     require("workflow", workflow, ["python scripts/validate_release.py", "test_runtime_behavior.py", "test_user_experience_contract.py", "test_bootstrap_resolution_contract.py", "fetch-depth: 0"])
 
-    # Standalone fallback remains genuinely useful when modular load fails.
     require("full fallback", full, [
         "GLOBAL EPISTEMIC INTEGRITY CONTRACT", "WORKSPACE SCHEMA MIGRATION", "MIGRATION-COMPATIBLE BOOTSTRAP",
         "RUNTIME CHECKPOINT MODEL", "RUNTIME JOURNAL", "RECOVERY-FIRST STARTUP", "WRITE-AHEAD / IDEMPOTENCY",
@@ -364,7 +382,7 @@ def main() -> None:
     if re.search(r"BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY", public_text):
         fail("candidate contains possible private key")
 
-    print(f"PASS: LWAI Production {version} / API {engine_api} / schema {schema_version} passed live-ref, pinned-snapshot, graph, integrity, privacy, workspace-security, migration, UX and 4KiB loader-boundary checks")
+    print(f"PASS: LWAI Production {version} / API {engine_api} / schema {schema_version} passed first-party installer, live-ref, pinned-snapshot, graph, integrity, privacy, workspace-security, migration, UX and 4KiB loader-boundary checks")
 
 
 if __name__ == "__main__":

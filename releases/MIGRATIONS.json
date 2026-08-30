@@ -206,6 +206,18 @@
       "requires_account_rewrite": false,
       "tests": ["stage0_installer_resolves_live_branch_ref", "resolver_is_mandatory_and_shared", "candidate_reads_are_commit_pinned", "mutable_cache_is_never_current_authority", "stage1_loader_is_under_4k_and_delegates_onboarding", "existing_onboarding_contracts_remain_in_modules"],
       "notes": "Introduces a live GitHub branch-ref resolver and pins each bootstrap/update transaction to one immutable commit. Search/index/README/raw-main cache bodies can no longer determine current Production. Refactors Stage-1 loader into bounded orchestration only while preserving LOCAL STATE, API 1.0, schema 2.3 and existing account/onboarding/domain behavior."
+    },
+    {
+      "from": "2026-08-30.24",
+      "to": "2026-08-30.25",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_first_party_install_entrypoint",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["canonical_installer_uses_first_party_domain", "public_entrypoint_is_not_version_authority", "legacy_shortlink_is_compatibility_only", "candidate_reads_are_commit_pinned"],
+      "notes": "Moves the preferred public installer to first-party LastWarAI.com while retaining the previously circulated TinyURL only as a legacy compatibility alias. The public entrypoint is transport/discovery only; current Production remains established by live GitHub main commit.sha and exact-commit pinned engine reads. No workspace/account schema change."
     }
   ]
 }
