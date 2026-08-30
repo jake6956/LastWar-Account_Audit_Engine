@@ -26,3 +26,16 @@ jobs:
       - name: Run runtime behavioral regressions
         working-directory: tests
         run: python -m unittest -v test_runtime_behavior.py
+      - name: Verify live one-line installer
+        shell: bash
+        run: |
+          set -euo pipefail
+          CANONICAL='https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt'
+          EFFECTIVE=$(curl -LsS -o /tmp/lwai-alias.txt -w '%{url_effective}' 'https://tinyurl.com/2yxf7f5x')
+          test "$EFFECTIVE" = "$CANONICAL"
+          curl -LsS "$CANONICAL" -o /tmp/lwai-canonical.txt
+          cmp /tmp/lwai-alias.txt /tmp/lwai-canonical.txt
+          grep -Fq 'engine_version: 2026-08-29.14' /tmp/lwai-alias.txt
+          grep -Fq 'engine_api_version: 1.0' /tmp/lwai-alias.txt
+          grep -Fq 'SANITIZED: YES' /tmp/lwai-alias.txt
+          grep -Fq 'ACCOUNT STATE INCLUDED: NO' /tmp/lwai-alias.txt
