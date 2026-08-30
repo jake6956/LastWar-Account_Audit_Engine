@@ -13,7 +13,14 @@ Paste it into a fresh ChatGPT conversation. A web-capable assistant should retri
 4. It capability-detects persistence/ingestion features rather than assuming them.
 5. It discovers existing Workspace Registry/legacy state before onboarding and resolves the correct private account context.
 6. If a supported older workspace is schema `2.1` or `2.2`, migration-capable core/release/storage behavior applies the validated additive path to current schema `2.3` while preserving canonical account state. Domain modules requiring `2.3` stay unloaded until migration verifies.
-7. Recovery-first and migration-first reconciliation then resume existing work/state. Only a genuinely new deployment begins phased onboarding.
+7. Existing users then run recovery-first/migration-first reconciliation and resume their state.
+8. A genuinely new user is explicitly asked how to handle persistence **before** identity/account intake:
+   - use/create a verified private cloud workspace when writable storage is available; or
+   - connect a supported writable provider in the host application and reply `storage connected`; or
+   - explicitly `continue session-only`.
+9. After cloud connection, LWAI re-checks actual read/write capability before claiming persistence or creating the private workspace. Session-only remains valid but has naturally limited cross-chat recovery.
+
+Existing users with a valid workspace are not redundantly prompted for storage setup. Read-only providers do not count as durable persistence.
 
 No validated workspace-schema path means setup pauses with existing state untouched; it does not guess a conversion or start the user over.
 
