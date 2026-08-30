@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.15",
+  "engine_version": "2026-08-29.16",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -14,14 +14,14 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "migration": {
-    "from": "2026-08-29.14",
-    "type": "engine_only_with_legacy_workspace_compatibility",
+    "from": "2026-08-29.15",
+    "type": "engine_only_first_run_persistence_gate",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Restores historical workspace schema 2.1→2.2→2.3 migration edges, permits bounded migration-capable bootstrap for supported older workspaces, and makes canonical GitHub identity authoritative over stale alias/cache content."
+    "notes": "Adds explicit durable-storage choice before genuinely new account onboarding; existing account and workspace state is unchanged."
   },
-  "notes": "Legacy Workspace Compatibility release. Existing supported 2.1/2.2 workspaces migrate additively to 2.3 before normal domain loading; canonical account facts and account identity are preserved."
+  "notes": "First-Run Persistence Choice release. New users explicitly choose verified private cloud persistence or session-only operation before identity/account intake."
 }
