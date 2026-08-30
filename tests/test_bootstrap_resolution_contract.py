@@ -5,6 +5,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
+PUBLIC_URL = "https://lastwarai.com"
+LEGACY_URL = "https://tinyurl.com/2yxf7f5x"
 
 
 def read(rel: str) -> str:
@@ -22,10 +24,14 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.latest = json.loads(read("releases/LATEST.json"))
         self.manifest = json.loads(read("engine/MANIFEST.json"))
 
-    def test_stage0_resolves_live_branch_before_engine_content(self):
-        for body in (self.loader, self.full, self.resolver, self.bootstrap, self.contract):
+    def test_first_party_stage0_and_live_ref_are_separate(self):
+        self.assertEqual(self.latest["preferred_install_url"], PUBLIC_URL)
+        self.assertFalse(self.latest["public_entrypoint_authority"])
+        self.assertEqual(self.latest["live_ref_source"], LIVE_REF)
+        for body in (self.full, self.bootstrap, self.contract):
+            self.assertIn(PUBLIC_URL, body)
             self.assertIn(LIVE_REF, body)
-        self.assertIn("current commit SHA", self.bootstrap)
+        self.assertIn(LIVE_REF, self.loader)
         self.assertIn("live GitHub `main`", self.resolver)
         self.assertIn("Do not fabricate a SHA", self.resolver)
 
@@ -42,11 +48,12 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.assertIn("SAME C", self.updater)
         self.assertIn("Never mix commits", self.updater)
 
-    def test_mutable_cache_cannot_be_current_authority(self):
-        combined = "\n".join((self.loader, self.full, self.resolver, self.contract)).lower()
-        for token in ("search", "cached", "raw `main`", "readme"):
+    def test_mutable_transport_cannot_be_current_authority(self):
+        combined = "\n".join((self.loader, self.full, self.resolver, self.contract, self.bootstrap)).lower()
+        for token in ("search", "raw `main`", "readme"):
             self.assertIn(token, combined)
         self.assertFalse(self.latest["mutable_source_urls_are_authority"])
+        self.assertFalse(self.latest["public_entrypoint_authority"])
         self.assertEqual(self.latest["candidate_read_policy"], "resolve live main SHA first; pin all candidate reads to that exact commit")
 
     def test_resolver_is_mandatory_shared_dependency(self):
@@ -62,6 +69,7 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.assertNotIn("Google Drive", self.loader)
         self.assertNotIn("screenname", self.loader.lower())
         self.assertNotIn("GEAR / UPGRADE ORE", self.loader)
+        self.assertNotIn(PUBLIC_URL, self.loader)
 
     def test_fresh_install_fails_closed_without_live_ref(self):
         self.assertIn("Fresh install with no live ref capability", self.resolver)
@@ -69,10 +77,14 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.assertIn("last-known-good ENGINE", self.resolver)
         self.assertRegex(self.resolver, re.compile(r"40-lowercase-hex"))
 
-    def test_old_shortener_is_not_runtime_dependency(self):
-        for body in (self.loader, self.full, self.bootstrap):
-            self.assertNotIn("https://tinyurl.com/", body)
-        self.assertIn("Do not use the old TinyURL installer", read("README.md"))
+    def test_legacy_shortener_is_compatibility_only(self):
+        self.assertIn(LEGACY_URL, self.latest.get("legacy_install_urls", []))
+        self.assertNotEqual(self.latest["preferred_install_url"], LEGACY_URL)
+        self.assertNotIn(LEGACY_URL, self.loader)
+        self.assertNotIn(LEGACY_URL, self.full)
+        lower = self.bootstrap.lower()
+        self.assertIn("legacy", lower)
+        self.assertIn("compatibility", lower)
 
 
 if __name__ == "__main__":
