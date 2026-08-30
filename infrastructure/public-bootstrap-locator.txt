@@ -6,6 +6,9 @@ ACCOUNT STATE INCLUDED: NO
 PURPOSE
 The public client should only need https://lastwarai.com. Cloudflare resolves current GitHub Production server-side and proxies one complete sanitized engine snapshot from the exact immutable commit. The user's ChatGPT session must not be required to call GitHub's branch API or raw-content endpoints during installation.
 
+TRANSPORT MODEL
+The installer uses a same-domain transport model: the root resolver and immutable engine payload are both served from LastWarAI.com. GitHub remains the underlying source/authority, but end-user installation does not require direct GitHub access.
+
 PLAYER UX
 The root response displays the canonical installer sentence:
 Set up Last War optimization using the instructions at https://lastwarai.com
