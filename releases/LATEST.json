@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-30.25",
+  "engine_version": "2026-08-30.26",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -25,14 +25,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
   "migration": {
-    "from": "2026-08-30.24",
-    "type": "engine_only_first_party_install_entrypoint",
+    "from": "2026-08-30.25",
+    "type": "engine_only_no_dead_air_onboarding_recovery_hardening",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Moves the preferred public installer to the first-party LastWarAI.com bootstrap locator while retaining the previously circulated TinyURL only as a legacy compatibility alias. GitHub live-main SHA resolution remains current-version authority and all trusted engine reads remain exact-commit pinned."
+    "notes": "Adds a mandatory user-flow continuity layer and executable regressions so provider authorization return, storage verification, onboarding interruption recovery and existing-account startup always resolve to an explicit user action, WAITING_USER boundary or running-state handoff. No private/local state schema changes."
   },
-  "notes": "First-party stable public entrypoint at LastWarAI.com with GitHub live-ref/exact-commit trust. Public transport may change implementation without changing the installer; engine and LOCAL STATE boundaries remain unchanged."
+  "notes": "No-dead-air onboarding and recovery hardening. First-party LastWarAI.com transport and GitHub exact-commit trust remain unchanged; Engine API 1.0, workspace schema 2.3 and LOCAL STATE are preserved."
 }
