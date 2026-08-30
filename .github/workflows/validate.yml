@@ -26,3 +26,27 @@ jobs:
       - name: Run runtime behavioral regressions
         working-directory: tests
         run: python -m unittest -v test_runtime_behavior.py test_update_command_contract.py test_auto_update_controller.py test_user_experience_contract.py test_season_intelligence_contract.py test_epistemic_integrity_contract.py
+      - name: Verify live installer and guided handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          alias='https://tinyurl.com/2yxf7f5x'
+          canonical='https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt'
+          effective="$(curl -fsSL -o /tmp/lwai-alias.txt -w '%{url_effective}' "$alias")"
+          test "$effective" = "$canonical"
+          curl -fsSL "$canonical" -o /tmp/lwai-canonical.txt
+          cmp /tmp/lwai-alias.txt /tmp/lwai-canonical.txt
+          grep -F 'engine_version: 2026-08-29.22' /tmp/lwai-canonical.txt
+          grep -F 'SANITIZED: YES' /tmp/lwai-canonical.txt
+          grep -F 'ACCOUNT STATE INCLUDED: NO' /tmp/lwai-canonical.txt
+          grep -F 'NO-ORPHAN RULE' /tmp/lwai-canonical.txt
+          grep -F 'POST-STORAGE HANDOFF' /tmp/lwai-canonical.txt
+          grep -F 'immediately continue in the same response' /tmp/lwai-canonical.txt
+          grep -F 'screenname/commander name' /tmp/lwai-canonical.txt
+          grep -F 'strategic baseline' /tmp/lwai-canonical.txt
+          grep -F 'first highest-value evidence' /tmp/lwai-canonical.txt
+          curl -fsSL 'https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/modules/core/guidance.txt' -o /tmp/lwai-guidance.txt
+          grep -F 'module_version: 2026-08-29.22.1' /tmp/lwai-guidance.txt
+          grep -F 'NO-ORPHAN-STATE RULE' /tmp/lwai-guidance.txt
+          grep -F 'POST-PERSISTENCE / SESSION-ONLY HANDOFF' /tmp/lwai-guidance.txt
+          grep -F 'GUIDED SETUP STATE MACHINE' /tmp/lwai-guidance.txt
