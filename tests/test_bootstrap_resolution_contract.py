@@ -21,6 +21,9 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.updater = read("engine/modules/release/updater.txt")
         self.bootstrap = read("engine/modules/release/bootstrap.txt")
         self.contract = read("contracts/bootstrap-resolution.md")
+        self.worker = read("infrastructure/cloudflare-worker.js")
+        self.locator = read("infrastructure/public-bootstrap-locator.txt")
+        self.public_validator = read("scripts/validate_public_entrypoint.py")
         self.latest = json.loads(read("releases/LATEST.json"))
         self.manifest = json.loads(read("engine/MANIFEST.json"))
 
@@ -34,6 +37,23 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.assertIn(LIVE_REF, self.loader)
         self.assertIn("live GitHub `main`", self.resolver)
         self.assertIn("Do not fabricate a SHA", self.resolver)
+
+    def test_stage0_resolves_sha_server_side_for_fresh_install(self):
+        for body in (self.worker, self.locator, self.contract, self.public_validator):
+            self.assertIn("RESOLVED_PRODUCTION_COMMIT", body)
+            self.assertIn("EXACT_BOOTSTRAP_URL", body)
+            self.assertIn("LIVE_GITHUB", body)
+        self.assertIn("await fetch(LIVE_REF", self.worker)
+        self.assertIn("must not be required to call GitHub's branch API again", self.contract)
+        self.assertIn("Do NOT require the user/client to retrieve the GitHub branch API again", self.worker)
+        self.assertRegex(self.worker, re.compile(r"\^\[0-9a-f\]\{40\}\$"))
+        self.assertIn("status: 503", self.worker)
+        self.assertNotIn("FALLBACK_SHA", self.worker)
+
+    def test_public_validator_compares_stage0_sha_to_live_github(self):
+        self.assertIn("sha != live_sha", self.public_validator)
+        self.assertIn("resolved exact-commit bootstrap", self.public_validator)
+        self.assertIn(LIVE_REF, self.public_validator)
 
     def test_candidate_reads_are_pinned_to_one_commit(self):
         for token in (
@@ -71,7 +91,7 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.assertNotIn("GEAR / UPGRADE ORE", self.loader)
         self.assertNotIn(PUBLIC_URL, self.loader)
 
-    def test_fresh_install_fails_closed_without_live_ref(self):
+    def test_stage1_direct_resolution_still_fails_closed_without_live_ref(self):
         self.assertIn("Fresh install with no live ref capability", self.resolver)
         self.assertRegex(self.loader, re.compile(r"stop(?:s)? rather than guessing"))
         self.assertIn("last-known-good ENGINE", self.resolver)
