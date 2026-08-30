@@ -6,27 +6,33 @@
   "sanitized": true,
   "account_state_included": false,
   "runtime_mode": "modular-hardened-recovery",
+  "bootstrap_protocol_version": "2.0",
+  "entrypoint_module": "release.bootstrap",
+  "module_selection": "manifest_activation_v1",
   "preferred_install_url": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
-  "installer": "Set up Last War optimization. Open https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main directly, use its current commit SHA, then retrieve and follow engine/BOOTSTRAP.txt from that exact SHA. Never use search-index/cached main copies; if live SHA resolution fails, stop rather than guessing.",
+  "installer": "Set up Last War optimization. Read the live GitHub main ref at https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main, use its current commit.sha, then load and follow engine/BOOTSTRAP.txt from that exact commit.",
   "migration": {
     "from": "2026-08-29.23",
-    "type": "engine_only_live_ref_pinned_bootstrap",
+    "type": "engine_only_live_ref_pinned_manifest_dispatch",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds mandatory live Production resolver and exact-commit snapshot loading. Removes README/raw-main/search-cache from current-version authority. Refactors thin loader to Stage-1 orchestration only; onboarding/provider/domain behavior remains in modules."
+    "notes": "Introduces cache-safe live-ref/exact-commit bootstrap plus manifest-driven module integration. Stage-1 contains no provider/account/domain feature routing."
   },
   "features": [
     "Stage-0 installer resolves live GitHub main branch SHA before trusting mutable engine content",
-    "mandatory release.resolver centralizes live-ref resolution for install, startup, reload and updates",
-    "all candidate engine reads are pinned to one immutable commit snapshot",
-    "search-index, README and raw-main cache bodies are non-authoritative for current Production",
-    "thin Stage-1 bootstrap reduced below 4 KiB and delegates onboarding/provider/domain behavior to modules",
-    "automatic updater and refresh engine use the same resolver transaction",
+    "all candidate engine reads are pinned to one immutable Production commit",
+    "Stage-1 loads every required:true manifest module generically instead of maintaining a feature list",
+    "mandatory release.dispatcher selects optional modules from manifest activation metadata and recursively loads dependencies",
+    "new Production modules become discoverable through MANIFEST registration without Stage-1 edits",
+    "CI rejects orphan module files, duplicate module IDs/paths, unresolved dependencies and optional modules without activation metadata",
+    "search-index, README, raw-main caches and URL shorteners are non-authoritative for current Production",
+    "automatic updater and refresh engine use the same live-ref resolver transaction",
     "fresh install fails closed rather than silently loading a stale cached release",
     "existing installs retain last-known-good ENGINE and LOCAL STATE if live resolution is unavailable",
+    "guided onboarding, storage security, recovery, account isolation, Season Intelligence and epistemic-integrity behavior remain module-owned",
     "engine API 1.0 and workspace schema 2.3 unchanged"
   ]
 }
