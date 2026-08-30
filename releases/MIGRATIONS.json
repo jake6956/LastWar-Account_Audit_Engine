@@ -170,6 +170,18 @@
       "requires_account_rewrite": false,
       "tests": ["global_core_prohibits_fabricated_material_claims", "source_quality_rejects_weak_stale_community_material", "uncertain_fact_must_exhaust_sources_then_disclose", "official_mechanics_are_separated_from_lwai_strategy", "season_intelligence_inherits_and_strengthens_contract", "standalone_fallback_has_global_integrity_parity"],
       "notes": "Makes evidence provenance and anti-fabrication a mandatory global runtime contract. Community claims require relevance/credibility/corroboration; uncertain material facts exhaust reasonable sources before disclosure; calculations and strategy distinguish supported inputs from LWAI-derived inference. No workspace/account schema change."
+    },
+    {
+      "from": "2026-08-29.21",
+      "to": "2026-08-29.22",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_guided_onboarding_continuation",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["storage_success_is_not_terminal", "verified_storage_advances_to_identity", "identity_advances_to_strategic_baseline_without_next", "baseline_advances_to_first_evidence_capture", "setup_turns_have_no_orphan_state", "onboarding_recovery_resumes_first_incomplete_stage", "existing_user_gets_landing_or_resume"],
+      "notes": "Eliminates post-connector dead air by making setup a guided no-orphan-state flow. Verified storage or explicit session-only immediately advances to identity, strategic baseline and first useful evidence capture; existing users receive a recognizable landing/resume path; durable onboarding resumes from the first incomplete verified stage. No workspace/account schema change."
     }
   ]
 }
