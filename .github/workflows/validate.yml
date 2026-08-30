@@ -27,4 +27,4 @@ jobs:
         run: python scripts/validate_release.py
       - name: Run runtime behavioral regressions
         working-directory: tests
-        run: python -m unittest -v test_runtime_behavior.py test_onboarding_no_dead_air.py test_update_command_contract.py test_auto_update_controller.py test_user_experience_contract.py test_bootstrap_resolution_contract.py test_season_intelligence_contract.py test_epistemic_integrity_contract.py
+        run: python -m unittest -v test_runtime_behavior.py test_onboarding_no_dead_air.py test_private_failsafe_contract.py test_update_command_contract.py test_auto_update_controller.py test_user_experience_contract.py test_bootstrap_resolution_contract.py test_season_intelligence_contract.py test_epistemic_integrity_contract.py
