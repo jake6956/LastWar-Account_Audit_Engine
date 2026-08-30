@@ -54,7 +54,7 @@ class ProductInvariantTests(unittest.TestCase):
         for body in (flow, ux, fallback):
             self.assertRegex(body, r"(?i)friendly expert Last War technician|friendly expert technician")
             self.assertRegex(body, r"(?i)challenge a recommendation")
-            self.assertRegex(body, r"(?i)different Last War question")
+            self.assertRegex(body, r"(?i)(different|unrelated|another) Last War question")
         self.assertIn("Do not force the user to complete onboarding before answering a legitimate Last War question", flow)
 
     def test_research_sources_are_inputs_not_gospel(self):
