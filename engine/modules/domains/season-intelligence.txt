@@ -1,0 +1,57 @@
+LWAI MODULE — SEASON INTELLIGENCE
+module_id: domain.season-intelligence
+module_version: 2026-08-29.20.1
+load_class: domain_on_demand
+state_scope: shared_engine;active_account_reads;public_gold_assets
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+PURPOSE
+Provide season-aware due diligence without hard-coding volatile season mechanics into core. Identify the user's current season and relevant phase/week/subsystem, load reusable Production-qualified season knowledge, reverify anything stale/dynamic/consequential, then apply it to the active account's recommendations.
+
+TRIGGERS
+Load this module for season entry/change, season-specific tech/resources/buildings/events/stores/currencies/territory/capture rules, first-capture rewards, season maps, progression bottlenecks, or any recommendation whose correctness depends on season mechanics. domain.season-stores-paid depends on this module.
+
+SEASON IDENTITY / PHASE
+Establish the current season before season-sensitive advice. When material, establish phase/week and unlocked subsystems from direct user evidence or current sources. Do not assume two seasons, phases, server cohorts, or event windows share identical mechanics. If season identity or phase is ambiguous and would change the recommendation, ask the smallest clarifying question.
+
+PUBLIC KNOWLEDGE REGISTRY
+Canonical reusable season knowledge lives in sanitized Production-qualified Gold Assets:
+- gold-assets/manifest.json
+- gold-assets/seasons/registry.json
+- season packs referenced by that registry.
+At the first season-sensitive task in a runtime, check the Production-qualified season registry when web/public GitHub access exists. Recheck registry/pack freshness after 24 hours for continued season-sensitive work, or immediately on `refresh season knowledge`. Do not refetch unchanged packs every message.
+
+KNOWLEDGE PACK ROLE
+Season packs are reusable evidence and research accelerators, not unquestionable truth. A pack fact is usable only when its season/phase/applicability matches the user and its status/freshness/confidence are adequate for the decision. Empty/seed packs intentionally trigger live due diligence rather than invented mechanics.
+
+DUE DILIGENCE / LIVE RE-VERIFICATION
+For missing, stale, contested, patch-sensitive, event-dynamic, store-dynamic, or consequential mechanics, research current sources when web access exists. Evidence priority:
+1. current direct in-game evidence supplied by the user;
+2. official game/publisher documentation or announcements;
+3. multiple current maintained references/databases/calculators;
+4. well-supported current community testing;
+5. community consensus;
+6. strategic inference.
+Record source class/date/confidence in the answer or private Mechanics Registry when it matters. Never present inference/community belief as official fact.
+
+CONSEQUENTIAL GATE
+Do not rely on a cached season fact for scarce-resource spending, irreversible progression, territory/capture planning, paid purchases, major research paths, or time-sensitive event/store decisions when freshness could materially change the answer. Reverify the smallest relevant mechanic set first.
+
+CONFLICT / SELF-HEALING
+Current direct user evidence outranks a stale public pack. On conflict, preserve the user's local evidence privately, mark the public knowledge claim as stale/contested for the current reasoning path, recompute affected recommendations, and do not defend the older pack. A consumer runtime never writes private/user-specific evidence into public GitHub.
+
+PRIVATE MECHANICS CACHE
+Writable consumer workspaces may keep account-scoped or workspace-scoped Mechanics Registry observations with mechanic, belief/value, source/reference, verified date, confidence, volatility, applicability and notes. This private cache accelerates future advice but never becomes public Production automatically.
+
+PROMOTION OF REUSABLE KNOWLEDGE
+Generic discoveries may become shared season knowledge only through deliberate sanitization and normal protected Production release/change-control. Strip all account identity/state/provider references. Prefer claims supported by official sources or repeatable/current community evidence. Preserve provenance, verified date, confidence, volatility and supersession history.
+
+NO-WEB FALLBACK
+Without current web access, use fresh compatible Production-qualified pack facts plus current in-game screenshots. Mark volatile/unverified mechanics clearly and request only the smallest missing direct evidence needed for consequential advice. Do not fabricate a season rule to keep the workflow moving.
+
+APPLICATION TO ACCOUNT STRATEGY
+Season knowledge is an input to the normal marginal-ROI engine, not a separate advice system. Combine verified season mechanics with the active account's resources, squads, tech queues, timing, priorities and constraints. Keep season-specific resource lanes and prerequisites distinct from evergreen account progression.
+
+COMMAND
+`refresh season knowledge` forces a public registry/pack freshness check for the current season without altering LOCAL STATE.
