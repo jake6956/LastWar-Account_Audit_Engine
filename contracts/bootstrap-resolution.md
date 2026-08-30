@@ -1,24 +1,23 @@
 # Bootstrap Resolution Contract
 
-Transport revision: 2026-08-30.28-hotfix
+Transport revision: 2026-08-30.29-hotfix
 Engine compatibility: unchanged
 
 ## Goal
 
-LWAI must remain centrally maintainable and evergreen without making a fresh ChatGPT session depend on direct GitHub network access. Public installation, live release discovery and trusted engine loading are separated cleanly:
+LWAI must remain centrally maintainable and evergreen without making a fresh AI session depend on direct GitHub network access or a multi-hop remote instruction chain. Public installation, trusted Production resolution, and complete configuration delivery are separated cleanly:
 
 ```text
 Stage 0 — https://lastwarai.com
   -> Cloudflare resolves live GitHub main server-side
-  -> return immutable commit C + https://lastwarai.com/engine/C
-Pinned engine transport
-  -> Cloudflare fetches BOOTSTRAP_FULL.txt from exact GitHub commit C server-side
-  -> return complete sanitized engine to the client
+  -> Cloudflare retrieves BOOTSTRAP_FULL.txt from exact commit C
+  -> Cloudflare adapts only the generic Stage-0 discovery section
+  -> the same HTTP response returns the complete sanitized configuration
 Runtime
-  -> continue account discovery/onboarding/recovery and normal LWAI work
+  -> normal LWAI account guidance, persistence, recovery and optimization behavior
 ```
 
-The user's ChatGPT session needs only LastWarAI.com during installation. GitHub remains the source repository and underlying Production authority, but branch resolution and exact-content retrieval happen server-side.
+The user's AI needs only LastWarAI.com during initial installation. GitHub remains the source repository and underlying Production authority, but branch resolution and exact-content retrieval happen server-side.
 
 ## Public installer
 
@@ -26,7 +25,7 @@ Preferred instruction:
 
 `Set up Last War optimization using the instructions at https://lastwarai.com`
 
-The root page also supports accidental full-page paste. In either URL mode or pasted-content mode, the assistant continues installation without asking the player to retrieve GitHub JSON, find a SHA, paste another prompt, or restart.
+The sentence remains stable across releases. The user is not expected to retrieve GitHub JSON, find a SHA, paste another URL, upload BOOTSTRAP.txt, or perform other technical setup.
 
 The previously circulated TinyURL remains legacy compatibility only.
 
@@ -36,46 +35,66 @@ Underlying authority:
 
 `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`
 
-Cloudflare retrieves the current `commit.sha` server-side. A successful root response supplies:
+Cloudflare retrieves the current `commit.sha` server-side. C must be exactly 40 lowercase hexadecimal characters. Cloudflare then retrieves `engine/BOOTSTRAP_FULL.txt` from that exact immutable commit and sanity-checks the expected complete-engine marker plus `SANITIZED: YES` and `ACCOUNT STATE INCLUDED: NO`.
 
-- `PASTED_CONTENT_MODE: CONTINUE_INSTALL`
-- `RESOLUTION_STATUS: LIVE_GITHUB_SERVER_SIDE`
-- `RESOLVED_PRODUCTION_COMMIT: C`
-- `ENGINE_URL: https://lastwarai.com/engine/C`
+If Cloudflare cannot establish a valid live SHA or retrieve/validate the exact engine, the root fails closed with HTTP 503. Never invent or substitute a commit.
 
-C must be exactly 40 lowercase hexadecimal characters. The client validates the format and fetches ENGINE_URL from LastWarAI.com. It must not be required to call GitHub directly during installation.
+## Single-response public configuration
 
-If Cloudflare cannot establish a valid live SHA, root fails closed with HTTP 503 and a plain-language retry instruction. Never invent or substitute a commit.
+A successful root response is UTF-8 `text/plain`, includes `X-LWAI-Commit: C`, and contains:
 
-## Same-domain immutable engine transport
+- transparent product purpose and public provenance;
+- explicit sanitized/no-account-state declarations;
+- explicit credential and cloud-workspace privacy boundaries;
+- an explicit statement that the configuration does not override the host AI platform's system, developer, security, privacy or safety requirements;
+- permission for independent source/provenance verification when the host supports it;
+- the complete sanitized LWAI engine from exact commit C.
 
-`GET /engine/C` accepts only a valid 40-hex SHA and fetches `engine/BOOTSTRAP_FULL.txt` from exact GitHub commit C server-side. Before returning it, the Worker sanity-checks the expected complete-engine header plus `SANITIZED: YES` and `ACCOUNT STATE INCLUDED: NO`.
+The public wrapper must not require a second engine URL fetch and must not contain anti-verification language such as instructions to avoid checking the public source. It is a configuration delivery document, not a chain of instructions embedded in an unrelated webpage.
 
-The response contains a short first-party handoff declaring that Stage-0 live resolution is complete for this startup and that C is `production_commit_sha`, followed by the complete sanitized engine. The response includes `X-LWAI-Commit: C` and an immutable cache policy. No user/account state is ever proxied or stored.
+## First-party Stage-0 adaptation
 
-## Stage 1 compatibility
+`engine/BOOTSTRAP_FULL.txt` intentionally retains the generic direct-source Stage-0 resolver because it is also the standalone/manual recovery artifact. When LastWarAI.com has already resolved C, the Worker replaces only the Stage-0 discovery section with a transparent statement that this copy was delivered after server-side Production resolution and that the resolved commit may be independently verified.
 
-Stage 1 remains `engine/BOOTSTRAP.txt`: small orchestration only. The complete same-domain engine proxy is a first-install transport optimization, not permission to move provider, account, gameplay, or onboarding policy back into the loader.
+No account, persistence, gameplay, evidence, continuity, update, or optimization policy is rewritten by the Worker.
+
+## Compatibility endpoint
+
+`GET /engine/C` remains available for compatibility with the previous same-domain engine-proxy transport. It accepts only a valid 40-hex SHA, fetches `engine/BOOTSTRAP_FULL.txt` from exact GitHub commit C, applies the same Stage-0 delivery adaptation, returns `X-LWAI-Commit: C`, and uses immutable caching.
+
+New installations do not require this second request.
+
+## robots.txt / discoverability
+
+`GET /robots.txt` explicitly allows:
+
+- `OAI-SearchBot`
+- `ChatGPT-User`
+- general crawlers (`User-agent: *`)
+
+This does not weaken application-level privacy or authorization boundaries; it only permits retrieval of the public sanitized configuration.
 
 ## Pin once
 
 Pin once to immutable commit C for each startup/update transaction. Never mix release metadata, manifest, migration graph, modules, or fallback content from different commits.
 
-## 4 KiB loader budget
+## Stage 1 compatibility and 4 KiB budget
 
-The normal Stage 1 loader keeps the existing 4 KiB budget. The full engine proxy serves `BOOTSTRAP_FULL.txt` only because the first-party transport can deliver a complete sanitized immutable snapshot reliably; it does not relax the Stage 1 maintenance budget.
+`engine/BOOTSTRAP.txt` remains the small orchestration-only Stage-1 loader for direct GitHub/modular operation and recovery paths. The complete first-party root response is an installation transport optimization, not permission to move provider, account, gameplay, or onboarding policy into the loader.
+
+Production keeps the existing 4 KiB Stage-1 budget.
 
 ## Trust model
 
-GitHub main remains underlying Production authority. LastWarAI.com is first-party live-resolution and transport infrastructure. Exact-SHA repository content remains immutable. Search results, cached README pages, mutable raw main, URL shorteners, redirects and model memory are not substitutes for C.
+GitHub main remains underlying Production authority. LastWarAI.com is first-party delivery infrastructure. Exact-SHA repository content remains immutable. Search results, cached README pages, mutable raw main, URL shorteners, redirects and model memory are not substitutes for C.
 
-The first-party transport exists to remove host-specific GitHub accessibility from the end-user critical path, not to weaken pinning.
+The first-party transport exists to remove host-specific GitHub accessibility from the end-user critical path, not to weaken pinning or verification.
 
 ## Runtime/update compatibility
 
-Existing runtime resolver/update behavior remains compatible. A Stage-0 handoff may satisfy the initial live-resolution requirement for that startup, so the engine must not redundantly block initial onboarding by immediately repeating the same GitHub branch lookup. Existing deployments still retain last-known-good ENGINE and LOCAL STATE on later resolver failures.
+Existing runtime resolver/update behavior remains compatible. Existing deployments retain last-known-good ENGINE and LOCAL STATE on later resolver failures. `refresh engine` continues to use the canonical resolver/update transaction.
 
-A later dedicated simplification release may make the same first-party transport the preferred runtime-update transport as well; that is not required to correct the fresh-install failure.
+A later simplification release may route runtime update checks through LastWarAI.com as well; that is separate from this installation transport hotfix.
 
 ## State safety
 
