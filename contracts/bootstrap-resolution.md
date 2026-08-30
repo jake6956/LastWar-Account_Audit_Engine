@@ -28,7 +28,7 @@ Preferred instruction:
 
 The root page also supports accidental full-page paste. In either URL mode or pasted-content mode, the assistant continues installation without asking the player to retrieve GitHub JSON, find a SHA, paste another prompt, or restart.
 
-The previously circulated TinyURL remains compatibility-only.
+The previously circulated TinyURL remains legacy compatibility only.
 
 ## Server-side live resolution
 
@@ -52,6 +52,18 @@ If Cloudflare cannot establish a valid live SHA, root fails closed with HTTP 503
 `GET /engine/C` accepts only a valid 40-hex SHA and fetches `engine/BOOTSTRAP_FULL.txt` from exact GitHub commit C server-side. Before returning it, the Worker sanity-checks the expected complete-engine header plus `SANITIZED: YES` and `ACCOUNT STATE INCLUDED: NO`.
 
 The response contains a short first-party handoff declaring that Stage-0 live resolution is complete for this startup and that C is `production_commit_sha`, followed by the complete sanitized engine. The response includes `X-LWAI-Commit: C` and an immutable cache policy. No user/account state is ever proxied or stored.
+
+## Stage 1 compatibility
+
+Stage 1 remains `engine/BOOTSTRAP.txt`: small orchestration only. The complete same-domain engine proxy is a first-install transport optimization, not permission to move provider, account, gameplay, or onboarding policy back into the loader.
+
+## Pin once
+
+Pin once to immutable commit C for each startup/update transaction. Never mix release metadata, manifest, migration graph, modules, or fallback content from different commits.
+
+## 4 KiB loader budget
+
+The normal Stage 1 loader keeps the existing 4 KiB budget. The full engine proxy serves `BOOTSTRAP_FULL.txt` only because the first-party transport can deliver a complete sanitized immutable snapshot reliably; it does not relax the Stage 1 maintenance budget.
 
 ## Trust model
 
