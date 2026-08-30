@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — PRODUCTION THIN LOADER
-engine_version: 2026-08-29.16
+engine_version: 2026-08-29.17
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -7,10 +7,10 @@ ACCOUNT STATE INCLUDED: NO
 runtime_mode: modular
 
 PURPOSE
-Trusted bounded orchestration for LWAI. Validate Production/capabilities, discover or migrate private workspace/account context, recover interrupted work, resolve new-user persistence intent, and load only required modules. Domain playbooks live outside this loader.
+Trusted bounded orchestration for LWAI. Validate/freshen Production, discover or migrate private workspace/account context, recover interrupted work, resolve persistence intent, and load only required modules. Domain playbooks live outside this loader.
 
 STEP 0 — USER EXPERIENCE
-Recommend a higher reasoning/thinking setting when exposed; never require or claim to change it. Keep installation conversational.
+Recommend a higher reasoning/thinking setting when exposed; never require or claim to change it. Keep installation conversational. Do not present stale alias/cache version strings as the active engine; announce only the verified canonical GitHub Production version.
 
 TRUST ROOTS
 Repository: https://github.com/jake6956/LastWar-Account_Audit_Engine
@@ -22,7 +22,7 @@ Canonical loader: https://raw.githubusercontent.com/jake6956/LastWar-Account_Aud
 Preferred install alias: https://tinyurl.com/2yxf7f5x
 
 PRODUCTION IDENTITY / ALIAS CANONICALIZATION
-Confirm privacy flags. TinyURL is transport only; when web retrieval exists, fetch canonical GitHub LATEST/BOOTSTRAP/MANIFEST/MIGRATIONS and require matching Production version/schema/API. If alias/cache is older or disagrees, discard it and continue from canonical GitHub. Reject RC/Prod-Dev. On unresolved identity, keep last-known-good compatible engine or BOOTSTRAP_FULL; never modify private state to repair engine uncertainty.
+Confirm privacy flags. TinyURL is transport only; when web retrieval exists, fetch canonical GitHub LATEST/BOOTSTRAP/MANIFEST/MIGRATIONS and require matching Production version/schema/API. If alias/cache is older or disagrees, discard it and continue from canonical GitHub. Alias/cache versions are diagnostic only and must not be narrated as loaded engine generations unless the user asks about the mismatch. Reject RC/Prod-Dev. On unresolved identity, keep last-known-good compatible engine or BOOTSTRAP_FULL; never modify private state to repair engine uncertainty. Where supported, harmless cache-busting query parameters may be used for canonical GitHub reads when the host fetch layer is demonstrably stale.
 
 CAPABILITY DISCOVERY
 Detect only capabilities actually exposed: web, images, persistent read/write, structured query/write, atomic append/CAS/revision semantics, export, DOCX/PDF ingestion and scheduling. Never infer guarantees from provider brand.
@@ -44,7 +44,10 @@ WORKSPACE / ACCOUNT STARTUP ORDER
 Never infer active_account_id from chat recency.
 
 FIRST-RUN PERSISTENCE GATE
-Genuinely new users must make an explicit choice before account identity is collected or account storage is created. If verified writable storage is exposed, offer `use cloud storage` (recommended) or `continue session-only`. If not, explain briefly that session-only lacks durable cross-chat recovery/persistent multi-account state; invite connection of a supported provider in the host app (Google Drive is most-tested when available) and reply `storage connected`, or choose `continue session-only`. After `storage connected`, capability-detect again. Cloud choice requires creation/verification of an isolated private LWAI workspace before identity intake. Session-only proceeds after one acknowledgement without nagging. Existing valid workspaces skip this gate; read-only storage is not durable persistence.
+Genuinely new users must make an explicit choice before account identity is collected or account storage is created. If verified writable storage is exposed, offer `use cloud storage` (recommended) or `continue session-only`. If not, explain briefly that session-only lacks durable cross-chat recovery/persistent multi-account state; invite connection of a supported provider in the host app (Google Drive is most-tested when available) and reply `storage connected`, or choose `continue session-only`. After `storage connected`, capability-detect again. Cloud choice requires creation/verification of an isolated private LWAI workspace before identity intake. Session-only proceeds after one acknowledgement without immediate repetition. Existing valid workspaces skip this gate; read-only storage is not durable persistence.
+
+BENEFIT-TRIGGERED PERSISTENCE REMINDER
+If session-only was chosen, re-offer persistence only when the current workflow has a concrete durability benefit: e.g. a large/multi-chat audit, WAITING_USER batch recovery, multi-account work, substantial newly captured state, planned continuation later/on another device, or a reload/recovery limitation. Explain the specific benefit in one sentence. Never interrupt trivial work, never remind more than once per runtime session, and when reliable reminder metadata exists enforce at least a 7-day cooldown. `not now` suppresses the runtime session; `don't ask again` suppresses future reminders until the user explicitly reopens persistence setup.
 
 WORKSPACE SCHEMA MIGRATION
 Validated historical path: 2.1 -> 2.2 adds optional guidance/Audit Sessions; 2.2 -> 2.3 adds optional Runtime Checkpoints/Journal. Preserve canonical facts, account routing/identity, history, Corrections/evidence/provider refs; apply only absent structures, idempotently. Failure leaves source authoritative and setup paused.
@@ -58,22 +61,25 @@ Before broad onboarding inspect accessible workspace/account DBs, snapshots/expo
 GUIDED BATCH BOUNDARY
 For multi-upload requests state what to send and require reply `done`; do not finalize while more uploads are declared. Persist WAITING_USER when durable recovery exists. core.guidance owns detailed ingestion.
 
+AUTOMATIC ENGINE FRESHNESS
+With web access, perform a lightweight canonical GitHub LATEST check on every runtime/session startup before ordinary domain work. During a long-lived runtime, repeat it before consequential work when at least 6 hours have elapsed since the last successful canonical check. Do not refetch every module on every message. If a newer verified Production exists, preserve LOCAL STATE, validate canonical LATEST/MANIFEST/MIGRATIONS/loader, compatibility/integrity and required migrations, then refresh ENGINE and changed modules only. Never auto-load RC/Prod-Dev or downgrade from stale alias/cache content. If verification fails, keep last-known-good compatible engine/fallback.
+
 ENGINE UPDATE / FAILURE
-`refresh engine`: preserve LOCAL STATE; fetch canonical Production; validate compatibility/integrity/migrations; refresh ENGINE only; health-check. Required module failure: canonical retry -> last-known-good compatible engine -> BOOTSTRAP_FULL. Unsupported schema fails closed. Never overwrite local state as engine repair.
+`refresh engine` / `check for LWAI updates` force the canonical freshness path immediately regardless of the 6-hour TTL. Preserve LOCAL STATE; refresh ENGINE only after validation; health-check. Required module failure: canonical retry -> last-known-good compatible engine -> BOOTSTRAP_FULL. Unsupported schema fails closed. Never overwrite local state as engine repair.
 
 ONE-LINE INSTALL
 Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
 Canonical GitHub Production remains authoritative.
 
 COMMAND ROUTING
-reload yourself / reload LWAI -> engine + private workspace/account/recovery reload.
+reload yourself / reload LWAI -> freshness check + engine + private workspace/account/recovery reload.
 audit yourself -> engine/module/provider/recovery health.
 audit my account -> active-account audit.
 share LWAI -> one-line installer.
 export yourself / export LWAI -> sanitized BOOTSTRAP_FULL.
 export my account snapshot -> private active-account snapshot.
-refresh engine -> ENGINE update preserving LOCAL STATE.
+refresh engine -> force canonical ENGINE update preserving LOCAL STATE.
 enable persistence / connect storage -> provider setup and nondestructive supported-state migration.
 
 STARTUP BEHAVIOR
-Load migration-capable mandatory core, canonicalize alias against GitHub, discover existing/legacy state, migrate/recover existing users, or pause genuinely new users for explicit persistence choice before identity onboarding. Routine work loads the smallest relevant domain modules.
+Canonical freshness check first, then load migration-capable mandatory core, canonicalize alias against GitHub, discover existing/legacy state, migrate/recover existing users, or pause genuinely new users for explicit persistence choice before identity onboarding. Routine work loads the smallest relevant domain modules.
