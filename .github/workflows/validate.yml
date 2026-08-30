@@ -26,3 +26,22 @@ jobs:
       - name: Run runtime behavioral regressions
         working-directory: tests
         run: python -m unittest -v test_runtime_behavior.py test_update_command_contract.py test_auto_update_controller.py test_user_experience_contract.py test_season_intelligence_contract.py test_epistemic_integrity_contract.py
+      - name: Verify live one-line installer and epistemic-integrity Production
+        shell: bash
+        run: |
+          set -euo pipefail
+          alias_url='https://tinyurl.com/2yxf7f5x'
+          canonical='https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt'
+          effective="$(curl -Ls -o /tmp/alias-bootstrap.txt -w '%{url_effective}' "$alias_url")"
+          test "$effective" = "$canonical"
+          curl -Ls "$canonical" -o /tmp/canonical-bootstrap.txt
+          cmp /tmp/alias-bootstrap.txt /tmp/canonical-bootstrap.txt
+          grep -F 'engine_version: 2026-08-29.21' /tmp/canonical-bootstrap.txt
+          grep -F 'SANITIZED: YES' /tmp/canonical-bootstrap.txt
+          grep -F 'ACCOUNT STATE INCLUDED: NO' /tmp/canonical-bootstrap.txt
+          curl -Ls 'https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/modules/core/operating.txt' -o /tmp/core-operating.txt
+          grep -F 'module_version: 2026-08-29.21.1' /tmp/core-operating.txt
+          grep -F 'GLOBAL EPISTEMIC INTEGRITY CONTRACT' /tmp/core-operating.txt
+          grep -F 'Absence of evidence is never permission to invent' /tmp/core-operating.txt
+          grep -F 'exhaust reasonably available relevant sources' /tmp/core-operating.txt
+          grep -F 'RECOMMENDATION PROVENANCE' /tmp/core-operating.txt
