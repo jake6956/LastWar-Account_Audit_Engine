@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-30.26",
+  "engine_version": "2026-08-30.27",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -25,14 +25,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
   "migration": {
-    "from": "2026-08-30.25",
-    "type": "engine_only_user_experience_privacy_research_and_recovery_hardening",
+    "from": "2026-08-30.26",
+    "type": "engine_only_research_source_expansion",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds mandatory no-dead-air flow continuity, friendly-expert interaction behavior, strict public/private data placement, Google Drive as the preferred explicitly selected consumer persistence provider with verified alternatives supported, and current evidence orchestration across official/direct sources plus independently validated community resources. No private/local state schema changes."
+    "notes": "Adds LastWarVault.com as a maintained community research input with the existing evidence hierarchy intact. Its guides, season references and calculators/planners may be used when relevant, while material claims remain subject to official/in-game validation, corroboration and uncertainty disclosure. Adds a concise README design constraint to keep the product centered on one easy installer, a simple modular evergreen engine, silent compatible updates and optional user-owned persistence."
   },
-  "notes": "User-flow, privacy, storage-provider, research-source and friendly-expert experience hardening. LastWarAI.com transport and GitHub exact-commit trust remain unchanged; Engine API 1.0, workspace schema 2.3 and LOCAL STATE are preserved."
+  "notes": "Research-source expansion only; no account, provider, schema or onboarding behavior change. Engine API 1.0, workspace schema 2.3, LastWarAI.com transport and LOCAL STATE are preserved."
 }
