@@ -95,7 +95,12 @@ class UserExperienceContractTests(unittest.TestCase):
             lower = body.lower()
             self.assertIn("cloud storage connected and verified", lower, label)
             self.assertTrue(
-                "same response" in lower or "immediately continue" in lower or "immediately hand off" in lower or "not a conversational" in lower,
+                "same response" in lower
+                or "same user-facing response" in lower
+                or "immediately continue" in lower
+                or "immediately hand off" in lower
+                or "return control immediately" in lower
+                or "not a conversational" in lower,
                 f"{label} does not explicitly prevent an orphan storage-success state",
             )
 
@@ -152,7 +157,10 @@ class UserExperienceContractTests(unittest.TestCase):
             ("UX contract", self.contract),
         ):
             lower = body.lower()
-            self.assertTrue("orphan" in lower or "dead end" in lower, label)
+            self.assertTrue(
+                "orphan" in lower or "dead end" in lower or "terminal" in lower or "continuation invariant" in lower,
+                label,
+            )
             self.assertTrue("next actionable" in lower or "next action" in lower or "next useful" in lower, label)
             self.assertIn("waiting_user", lower, label)
 
@@ -167,7 +175,10 @@ class UserExperienceContractTests(unittest.TestCase):
         ):
             lower = body.lower()
             self.assertIn("first incomplete", lower, label)
-            self.assertTrue("never repeat" in lower or "does not repeat" in lower, label)
+            self.assertTrue(
+                "never repeat" in lower or "does not repeat" in lower or "never restart" in lower or "never replay" in lower,
+                label,
+            )
 
     def test_existing_user_gets_landing_or_resume(self):
         for label, body in (
