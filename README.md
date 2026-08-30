@@ -8,7 +8,7 @@ Paste this single instruction into a fresh ChatGPT conversation:
 
 > Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
 
-The short URL is a convenience alias. Canonical GitHub `main` is authoritative; the loader re-checks canonical Production metadata so stale alias/cache content cannot downgrade a newer verified release.
+The short URL is a convenience alias. Canonical GitHub `main` is authoritative; the loader re-checks canonical Production metadata so stale alias/cache content cannot downgrade a newer verified release. Intermediate alias/cache version strings are diagnostic only: normal install UX reports the single verified canonical GitHub Production version after verification.
 
 For best results, use a higher reasoning/thinking setting when the ChatGPT interface offers one.
 
@@ -23,6 +23,8 @@ A genuinely new user is **not silently placed into session-only mode**. Before i
 - the user may always choose to continue session-only instead.
 
 Google Drive is the most-tested persistent option when available. Durable storage is recommended, not mandatory. Session-only use remains fully supported, with the expected limitation that long-term recovery and cross-chat continuity depend on the host session.
+
+If a user chooses session-only, LWAI does not repeatedly nag them. It may later re-offer persistence only when the current workflow has a concrete durability benefit—for example a large multi-batch audit, a resumable upload boundary, multi-account work, substantial newly captured state, planned continuation in another chat/device, or a recovery limitation caused by missing durable state. Reminders are capped at one per runtime session; when reliable cross-session reminder metadata exists, a minimum seven-day cooldown applies. Users can say `don't ask again` to suppress these reminders until they explicitly reopen persistence setup.
 
 ## What LWAI does
 
@@ -101,13 +103,15 @@ LWAI does not require game passwords, session tokens, cookies or authentication 
 
 ## Updates and self-healing
 
-Production updates are centrally published through GitHub. A deployment compares current engine/workspace state with canonical release/migration metadata, applies only validated compatible transitions and preserves all user-local state.
+Production updates are centrally published through GitHub. On every web-capable runtime/session startup, LWAI performs a lightweight check of canonical GitHub `releases/LATEST.json` before ordinary domain work. In a long-lived runtime, it checks again before consequential work once at least six hours have elapsed since the last successful canonical freshness check. It does not re-download every module on every message.
+
+If a newer verified Production exists, LWAI preserves LOCAL STATE, validates canonical release/module/migration metadata and compatibility/integrity, applies only validated migrations, refreshes ENGINE and changed modules, then health-checks. It never auto-loads RC/Prod-Dev and never downgrades because an alias or cache is stale. `refresh engine` and `check for LWAI updates` force the same canonical path immediately.
 
 If required engine content cannot be retrieved or validated, LWAI retains last-known-good compatible engine state or uses the complete `BOOTSTRAP_FULL.txt` fallback. Engine repair never overwrites private account state.
 
 ## Validation
 
-Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, account isolation, archive/start-over, migration preservation, legacy/current startup ordering, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration and stale-alias canonicalization.
+Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, benefit-triggered persistence reminders, canonical-version reporting, automatic engine freshness, account isolation, archive/start-over, migration preservation, legacy/current startup ordering, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration and stale-alias canonicalization.
 
 ## Production endpoints
 
@@ -139,7 +143,7 @@ Production changes follow short-lived staged RC branches with sanitization check
 
 ## Current Production
 
-**Engine version:** `2026-08-29.16`
+**Engine version:** `2026-08-29.17`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  

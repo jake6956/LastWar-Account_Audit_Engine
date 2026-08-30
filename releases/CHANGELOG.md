@@ -1,5 +1,16 @@
 # Production Changelog
 
+## 2026-08-29.17
+
+- Made installer/update version reporting canonical-only: alias/cache version strings are diagnostic input and normal UX announces only the single verified GitHub Production version after canonical LATEST/BOOTSTRAP/MANIFEST verification.
+- Added benefit-triggered persistence reminders for users who previously chose session-only. LWAI re-offers cloud only when the current workflow has a concrete durability benefit such as a large audit, resumable upload boundary, multi-account work, substantial new state, planned continuation elsewhere or a recovery limitation.
+- Capped persistence reminders at one per runtime session; when reliable cross-session reminder metadata exists, a minimum seven-day cooldown applies. `not now` suppresses the current runtime and `don't ask again` suppresses future reminders until persistence setup is explicitly reopened.
+- Added automatic engine freshness checks: every web-capable runtime/session startup checks canonical GitHub `LATEST.json`, and long-lived runtimes recheck before consequential work after a six-hour freshness TTL.
+- Automatic refresh updates ENGINE only after verifying newer Production channel/privacy/API/schema/migration/integrity metadata; older, unverified or RC/Prod-Dev content cannot replace last-known-good Production and stale alias/cache content can never downgrade it.
+- `refresh engine` / `check for LWAI updates` now force the same canonical freshness path immediately; ordinary messages do not re-download every module.
+- Added executable regressions for contextual reminder eligibility/cooldown/suppression, canonical-only version announcement, startup/six-hour freshness checks and adoption of only newer verified Production.
+- Preserved engine API `1.0`, workspace schema `2.3`, the single public TinyURL installer and all user-local account/workspace state.
+
 ## 2026-08-29.16
 
 - Fixed the beta-observed fresh-user path that could proceed into onboarding without explicitly offering durable persistence.

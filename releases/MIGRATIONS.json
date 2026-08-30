@@ -110,6 +110,18 @@
       "requires_account_rewrite": false,
       "tests": ["new_user_without_writable_storage_is_prompted_before_onboarding", "new_user_with_writable_storage_is_prompted_before_onboarding", "new_user_can_explicitly_continue_session_only", "new_user_cloud_choice_creates_workspace_before_onboarding", "storage_connected_requires_capability_recheck_before_onboarding", "existing_workspace_skips_first_run_persistence_prompt"],
       "notes": "Requires a genuinely new user to make an explicit persistence choice before identity/account onboarding. Existing workspace/legacy startup paths are unchanged and all local state is preserved."
+    },
+    {
+      "from": "2026-08-29.16",
+      "to": "2026-08-29.17",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_freshness_and_contextual_persistence",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["stale_alias_version_is_not_announced_as_active", "session_only_reminder_requires_material_benefit", "session_only_reminder_once_per_runtime_and_seven_day_cooldown", "session_only_do_not_ask_again_suppresses_future_reminders", "engine_freshness_checks_every_runtime_startup", "engine_freshness_rechecks_after_six_hours_not_before", "engine_freshness_adopts_only_newer_verified_production"],
+      "notes": "Makes stale alias/cache version strings diagnostic-only, adds contextual cloud reminders for session-only users, and automatically checks canonical GitHub Production freshness at runtime startup plus a six-hour consequential-work TTL. Local account/workspace state remains unchanged."
     }
   ]
 }

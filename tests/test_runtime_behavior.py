@@ -2,7 +2,15 @@ import json
 import unittest
 from pathlib import Path
 
-from reference_runtime import ProviderCapabilities, RuntimeModel, canonicalize_installer_identity
+from reference_runtime import (
+    ProviderCapabilities,
+    RuntimeModel,
+    canonicalize_installer_identity,
+    installer_version_announcement,
+    resolve_engine_version,
+    should_check_engine_freshness,
+    should_offer_persistence_reminder,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -61,13 +69,13 @@ class RuntimeBehaviorTests(unittest.TestCase):
     def test_new_user_can_explicitly_continue_session_only(self):
         rt = RuntimeModel(); steps = rt.startup_from_storage(provider_capabilities=ProviderCapabilities(read=False, list=False), persistence_choice="continue session-only")
         self.assertEqual(steps, ["first_run_persistence_choice", "session_only_acknowledged", "new_account_guidance"])
-        self.assertEqual(rt.accounts, {})
+        self.assertEqual(rt.accounts, {}); self.assertEqual(rt.persistence_mode, "SESSION_ONLY")
 
     def test_new_user_cloud_choice_creates_workspace_before_onboarding(self):
         caps = ProviderCapabilities(read=True, list=True, write=True, create=True, query=True)
         rt = RuntimeModel(); steps = rt.startup_from_storage(provider_capabilities=caps, persistence_choice="use cloud storage")
         self.assertEqual(steps, ["first_run_persistence_choice", "create_private_workspace", "verify_private_workspace", "new_account_guidance"])
-        self.assertLess(steps.index("verify_private_workspace"), steps.index("new_account_guidance"))
+        self.assertLess(steps.index("verify_private_workspace"), steps.index("new_account_guidance")); self.assertEqual(rt.persistence_mode, "DURABLE")
 
     def test_storage_connected_requires_capability_recheck_before_onboarding(self):
         rt = RuntimeModel(); steps = rt.startup_from_storage(provider_capabilities=ProviderCapabilities(read=False, list=False), persistence_choice="storage connected")
@@ -83,6 +91,28 @@ class RuntimeBehaviorTests(unittest.TestCase):
     def test_existing_workspace_skips_first_run_persistence_prompt(self):
         rt = RuntimeModel(); steps = rt.startup_from_storage(registry_accounts={"A": {"ore": 100}}, active_account_id="A", provider_capabilities=ProviderCapabilities(read=False, list=False))
         self.assertEqual(steps, ["load_registry", "resolve_active_account", "recovery_first", "migration_reconcile"])
+        self.assertEqual(rt.persistence_mode, "DURABLE")
+
+    def test_session_only_reminder_requires_material_benefit(self):
+        self.assertFalse(should_offer_persistence_reminder(session_only=True, material_benefit=False, reminded_this_runtime=False, do_not_ask_again=False))
+        self.assertTrue(should_offer_persistence_reminder(session_only=True, material_benefit=True, reminded_this_runtime=False, do_not_ask_again=False))
+        self.assertFalse(should_offer_persistence_reminder(session_only=False, material_benefit=True, reminded_this_runtime=False, do_not_ask_again=False))
+
+    def test_session_only_reminder_once_per_runtime_and_seven_day_cooldown(self):
+        rt = RuntimeModel(); rt.startup_from_storage(provider_capabilities=ProviderCapabilities(read=False, list=False), persistence_choice="continue session-only")
+        rt.start_runtime_session("RS1")
+        self.assertTrue(rt.consider_persistence_reminder(material_benefit=True, day=100))
+        self.assertFalse(rt.consider_persistence_reminder(material_benefit=True, day=100))
+        rt.start_runtime_session("RS2")
+        self.assertFalse(rt.consider_persistence_reminder(material_benefit=True, day=103))
+        rt.start_runtime_session("RS3")
+        self.assertTrue(rt.consider_persistence_reminder(material_benefit=True, day=107))
+
+    def test_session_only_do_not_ask_again_suppresses_future_reminders(self):
+        rt = RuntimeModel(); rt.startup_from_storage(provider_capabilities=ProviderCapabilities(read=False, list=False), persistence_choice="continue session-only")
+        rt.start_runtime_session("RS1"); self.assertTrue(rt.consider_persistence_reminder(material_benefit=True))
+        rt.record_persistence_reminder_response("don't ask again")
+        rt.start_runtime_session("RS2"); self.assertFalse(rt.consider_persistence_reminder(material_benefit=True))
 
     def test_workspace_schema_21_to_23_preserves_state(self):
         rt = RuntimeModel(); rt.create_account("A"); rt.write_fact("ore", 100); rt.write_fact("correction", "keep me")
@@ -124,8 +154,28 @@ class RuntimeBehaviorTests(unittest.TestCase):
             self.assertEqual(edge["local_state_action"], "preserve"); self.assertFalse(edge["requires_user_reonboarding"]); self.assertFalse(edge["requires_account_rewrite"])
 
     def test_stale_alias_cannot_downgrade_canonical_production(self):
-        self.assertEqual(canonicalize_installer_identity(alias_version="2026-08-29.13", canonical_version="2026-08-29.15", canonical_verified=True), "2026-08-29.15")
+        self.assertEqual(canonicalize_installer_identity(alias_version="2026-08-29.13", canonical_version="2026-08-29.17", canonical_verified=True), "2026-08-29.17")
         self.assertIsNone(canonicalize_installer_identity(alias_version="2026-08-29.13", canonical_version=None, canonical_verified=False))
+
+    def test_stale_alias_version_is_not_announced_as_active(self):
+        announcement = installer_version_announcement(alias_version="2026-08-29.13", canonical_version="2026-08-29.17", canonical_verified=True)
+        self.assertEqual(announcement, "Verified Production 2026-08-29.17")
+        self.assertNotIn("2026-08-29.13", announcement)
+
+    def test_engine_freshness_checks_every_runtime_startup(self):
+        self.assertTrue(should_check_engine_freshness(web_available=True, startup=True, hours_since_last_success=0.1))
+        self.assertFalse(should_check_engine_freshness(web_available=False, startup=True, hours_since_last_success=None))
+
+    def test_engine_freshness_rechecks_after_six_hours_not_before(self):
+        self.assertFalse(should_check_engine_freshness(web_available=True, startup=False, hours_since_last_success=5.99))
+        self.assertTrue(should_check_engine_freshness(web_available=True, startup=False, hours_since_last_success=6.0))
+        self.assertTrue(should_check_engine_freshness(web_available=True, startup=False, hours_since_last_success=None))
+
+    def test_engine_freshness_adopts_only_newer_verified_production(self):
+        self.assertEqual(resolve_engine_version(current_version="2026-08-29.16", canonical_version="2026-08-29.17", canonical_verified=True), "2026-08-29.17")
+        self.assertEqual(resolve_engine_version(current_version="2026-08-29.17", canonical_version="2026-08-29.16", canonical_verified=True), "2026-08-29.17")
+        self.assertEqual(resolve_engine_version(current_version="2026-08-29.16", canonical_version="2026-08-29.18", canonical_verified=False), "2026-08-29.16")
+        self.assertEqual(resolve_engine_version(current_version="2026-08-29.16", canonical_version="2026-08-29.18", canonical_verified=True, canonical_channel="RC"), "2026-08-29.16")
 
     def test_runtime_session_exists_without_host_reference(self):
         rt = RuntimeModel(); rt.create_account("A"); session = rt.start_runtime_session("RS1", host_platform="chatgpt")

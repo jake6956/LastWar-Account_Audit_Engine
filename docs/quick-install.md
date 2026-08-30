@@ -9,20 +9,28 @@ Paste it into a fresh ChatGPT conversation. A web-capable assistant should retri
 ## What happens next
 1. The instruction authorizes retrieval of the linked loader.
 2. The assistant treats the short-link body as transport only and re-checks canonical GitHub `LATEST.json`, `BOOTSTRAP.txt`, `MANIFEST.json` and `MIGRATIONS.json`; stale/cached alias content cannot downgrade verified Production.
-3. It verifies sanitized Production identity and confirms account state is not embedded.
-4. It capability-detects persistence/ingestion features rather than assuming them.
-5. It discovers existing Workspace Registry/legacy state before onboarding and resolves the correct private account context.
-6. If a supported older workspace is schema `2.1` or `2.2`, migration-capable core/release/storage behavior applies the validated additive path to current schema `2.3` while preserving canonical account state. Domain modules requiring `2.3` stay unloaded until migration verifies.
-7. Existing users then run recovery-first/migration-first reconciliation and resume their state.
-8. A genuinely new user is explicitly asked how to handle persistence **before** identity/account intake:
+3. Any version observed from the alias/cache is diagnostic only. Normal install UX waits for canonical verification and reports only the single verified GitHub Production version rather than narrating intermediate stale versions.
+4. It verifies sanitized Production identity and confirms account state is not embedded.
+5. It capability-detects persistence/ingestion features rather than assuming them.
+6. It discovers existing Workspace Registry/legacy state before onboarding and resolves the correct private account context.
+7. If a supported older workspace is schema `2.1` or `2.2`, migration-capable core/release/storage behavior applies the validated additive path to current schema `2.3` while preserving canonical account state. Domain modules requiring `2.3` stay unloaded until migration verifies.
+8. Existing users then run recovery-first/migration-first reconciliation and resume their state.
+9. A genuinely new user is explicitly asked how to handle persistence **before** identity/account intake:
    - use/create a verified private cloud workspace when writable storage is available; or
    - connect a supported writable provider in the host application and reply `storage connected`; or
    - explicitly `continue session-only`.
-9. After cloud connection, LWAI re-checks actual read/write capability before claiming persistence or creating the private workspace. Session-only remains valid but has naturally limited cross-chat recovery.
+10. After cloud connection, LWAI re-checks actual read/write capability before claiming persistence or creating the private workspace. Session-only remains valid but has naturally limited cross-chat recovery.
 
-Existing users with a valid workspace are not redundantly prompted for storage setup. Read-only providers do not count as durable persistence.
+Existing users with a valid workspace are not redundantly prompted for first-run storage setup. Read-only providers do not count as durable persistence.
+
+If session-only was chosen, LWAI may later re-offer cloud storage only when the current workflow has a concrete durability benefit, such as a large audit, resumable upload boundary, multi-account work, substantial newly captured state, planned continuation in another chat/device, or a recovery limitation. It does not interrupt trivial work. Reminders are limited to once per runtime session; when reliable cross-session metadata exists, a seven-day minimum cooldown applies. `don't ask again` suppresses future benefit-triggered reminders until the user explicitly reopens persistence setup.
 
 No validated workspace-schema path means setup pauses with existing state untouched; it does not guess a conversion or start the user over.
+
+## Staying current
+With web access, LWAI performs a lightweight canonical GitHub `LATEST.json` freshness check at every runtime/session startup before ordinary domain work. During a long-lived runtime it checks again before consequential work after six hours since the last successful canonical check. This is a metadata check, not a full re-download on every message.
+
+When a newer verified Production exists, LWAI preserves private/local state, validates canonical release/module/migration metadata and compatibility/integrity, applies only validated migrations, then refreshes ENGINE and changed modules. It never auto-loads RC/Prod-Dev and never downgrades because an alias/cache is stale. `refresh engine` or `check for LWAI updates` forces the same check immediately.
 
 ## Canonical sources
 The short URL is transport convenience only. GitHub `main` is authoritative.
