@@ -1,6 +1,6 @@
 # Guided Lifecycle & Ingestion Contract
 
-Version: 2026-08-29.16
+Version: 2026-08-29.17
 
 ## Purpose
 LWAI upgrades and audits must feel like continuation rather than reset. Existing accessible state is reused first; users are asked only for information that remains missing, ambiguous, contradictory or materially stale. Interaction should feel like a personable technician with a clipboard: clear about what comes next, patient with novices, concise with fluent users.
@@ -14,9 +14,18 @@ Only after discovery establishes that the user is genuinely new may Phase 1 acco
 - If a verified writable supported provider is already exposed, recommend creating an isolated private LWAI workspace and ask the user to choose cloud persistence or session-only operation.
 - If no verified writable provider is exposed, explain briefly that session-only mode works but durable cross-chat recovery and persistent multi-account state are limited. Invite the user to connect a supported writable provider in the host application and reply `storage connected`, or explicitly continue session-only.
 - `storage connected` is not proof of capability. Re-detect provider read/write/create support before claiming persistence or creating the workspace.
-- If cloud persistence is chosen, create and verify the isolated private workspace before identity intake. If session-only is chosen, acknowledge the limitation once and proceed without recurring prompts.
+- If cloud persistence is chosen, create and verify the isolated private workspace before identity intake. If session-only is chosen, acknowledge the limitation once and proceed without immediately repeating the prompt.
 - Existing users with a valid workspace and supported legacy users skip this gate. Read-only/reference storage does not satisfy durable persistence.
 - Later `enable persistence` / `connect storage` requests may move supported session state into durable storage nondestructively; no account reset is implied.
+
+## Benefit-triggered persistence reminders
+A prior session-only choice remains valid. LWAI may re-offer persistence only when the current workflow has a concrete durability benefit rather than on a generic timer or every startup.
+
+Material triggers include a large or multi-batch audit likely to span conversations; a declared `WAITING_USER` upload boundary where durable recovery would preserve position; multi-account creation or switching; a substantial body of newly reconciled state that would be costly to reconstruct; explicit plans to continue later/on another device/new chat; or a reload/recovery request whose result is limited because no durable state exists.
+
+A reminder must name the concrete benefit in one short sentence and offer cloud setup or continued session-only operation. Do not interrupt trivial one-field updates, casual questions or workflows where persistence does not materially change the result. At most one reminder may be shown in a runtime session. When reliable cross-session reminder metadata and a clock are available, enforce a minimum seven-day cooldown. Without reliable durable metadata, do not claim that cross-chat cooldown state is preserved. `not now` suppresses further reminders in the current runtime session. `don't ask again`, `do not ask again`, `never ask again` or an unambiguous equivalent suppresses future benefit-triggered reminders until the user explicitly reopens persistence setup.
+
+If the user accepts a reminder, capability-detect again. Never infer that storage became writable merely because the user agreed. Create/verify the isolated workspace before migrating supported session state nondestructively.
 
 ## Adaptive guidance
 Optional proficiency states are NEW, LEARNING, COMFORTABLE and EXPERT. Guidance may become less verbose as successful usage becomes fluent, but privacy, evidence hierarchy, account isolation and declared batch boundaries are invariant.
@@ -44,4 +53,4 @@ Archive is nondestructive and reversible. `list archived accounts`, `restore acc
 Identity, imported prior state, screenshots, Audit Session contents, Runtime Session/host references and provider-local paths remain private deployment state. Shared Production contains only generic rules/schemas. UID remains optional; normal operation never requests game passwords, session tokens/cookies, captured authentication files, ChatGPT credentials or shared-link creation.
 
 ## Release gates
-Production promotion requires: explicit genuinely-new-user persistence choice before identity onboarding; session-only remains valid; cloud persistence is capability-verified before use; existing valid workspaces bypass redundant setup; core.guidance is mandatory and dependency-resolved; full fallback parity; migration-first reuse; missing/stale-only collection; explicit done-boundary behavior; direct/document/guided evidence parity; resumable account-scoped sessions; runtime-session provenance remains optional/non-authoritative; duplicate/missing/different host references cannot merge accounts or bypass active_account_id; safe auto-continuation; archive/restore identity preservation; terse expert-update compatibility; private-state denylist; and healthy one-line installer.
+Production promotion requires: explicit genuinely-new-user persistence choice before identity onboarding; session-only remains valid; benefit-triggered reminders require a concrete durability benefit, are capped at one per runtime session, honor seven-day reliable-metadata cooldown and do-not-ask-again suppression; cloud persistence is capability-verified before use; existing valid workspaces bypass redundant first-run setup; core.guidance is mandatory and dependency-resolved; full fallback parity; migration-first reuse; missing/stale-only collection; explicit done-boundary behavior; direct/document/guided evidence parity; resumable account-scoped sessions; runtime-session provenance remains optional/non-authoritative; duplicate/missing/different host references cannot merge accounts or bypass active_account_id; safe auto-continuation; archive/restore identity preservation; terse expert-update compatibility; private-state denylist; and healthy one-line installer.
