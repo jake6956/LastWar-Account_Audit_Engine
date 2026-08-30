@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP, EXPORT & UPDATE
 module_id: release.bootstrap
-module_version: 2026-08-29.17.1
+module_version: 2026-08-29.18.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -26,8 +26,12 @@ FALLBACK ORDER
 6. Manual full-bootstrap transfer only when remote retrieval is unavailable.
 Never repair retrieval/integrity failure by modifying user-local account state.
 
+AUTOMATIC UPDATE ENTRYPOINT
+release.updater owns consumer engine freshness and adoption. With web access, run its automatic update preflight at every runtime/session startup before ordinary account/domain work. Also run it before `reload LWAI`, before schema-sensitive migration/recovery where canonical compatibility matters, and before consequential work after the six-hour freshness TTL. A successful no-op check is silent. A successful update must preserve the user's original requested action across the engine swap, health-check the new engine, then continue that action under the new verified Production version.
+Durable workspaces may persist only compact workspace-level engine metadata such as installed version, last successful check/update, last-known-good version, update policy and health. Session-only deployments keep equivalent metadata ephemerally. None of this metadata is account evidence or a routing key.
+
 STARTUP / MIGRATION-FIRST DISCOVERY
-After mandatory core modules load, recommend HIGH reasoning if available and capability-detect persistence/ingestion. Inspect Workspace Registry and accessible legacy LWAI databases/snapshots/exports/current-conversation state/user-provided legacy files before broad onboarding. Registry-backed deployments resolve active_account_id and recovery; pre-registry legacy deployments register/migrate existing state first. Reuse supported current facts with source/confidence/freshness preserved and ask only for missing, ambiguous, contradictory or materially stale data. Never pretend inaccessible prior conversations are retrievable.
+After mandatory core modules and automatic update preflight, recommend HIGH reasoning if available and capability-detect persistence/ingestion. Inspect Workspace Registry and accessible legacy LWAI databases/snapshots/exports/current-conversation state/user-provided legacy files before broad onboarding. Registry-backed deployments resolve active_account_id and recovery; pre-registry legacy deployments register/migrate existing state first. Reuse supported current facts with source/confidence/freshness preserved and ask only for missing, ambiguous, contradictory or materially stale data. Never pretend inaccessible prior conversations are retrievable.
 
 FIRST-RUN PERSISTENCE GATE
 If and only if discovery confirms a genuinely new user with no existing LWAI state, resolve persistence before account identity onboarding:
@@ -42,13 +46,14 @@ GUIDED INGESTION
 core.guidance owns adaptive instruction, declared `done` boundaries, direct screenshot batches, supported DOCX/PDF screenshot bundles, guided capture, account-scoped resumable Audit Sessions and safe auto-continuation. A declared incomplete batch must not be finalized early. Audit Sessions resolve through active_account_id and may never cross accounts.
 
 AUTOMATIC ENGINE FRESHNESS
-When web access exists, perform a lightweight canonical GitHub freshness check automatically at every runtime/session startup before ordinary domain work. The check begins with canonical `releases/LATEST.json`; do not re-fetch every module when the installed version is already current.
-During a long-lived runtime, repeat the canonical LATEST check before consequential work when at least 6 hours have elapsed since the last successful canonical freshness check in that runtime. Trivial one-field updates do not require a new check inside the TTL.
-If a newer verified Production release exists: preserve LOCAL STATE; fetch canonical LATEST/MANIFEST/MIGRATIONS/loader plus changed mandatory modules; verify Production channel, privacy flags, API/schema compatibility, declared migration edges and available integrity; apply only validated migrations; refresh ENGINE; then health-check before ordinary work continues. Unchanged modules may remain loaded/cached when their manifest identity is unchanged.
-Never auto-load RC/Prod-Dev, never downgrade because an alias/cache is older, and never use an unverified newer body as authority. If canonical verification is unavailable or fails, keep the last-known-good compatible engine and continue where safe. Runtime-local last-check time is sufficient; no workspace-schema change or private account-state write is required for this feature.
+release.updater performs the canonical GitHub freshness/update transaction. The first network step is canonical `releases/LATEST.json`; do not re-fetch every module when installed Production is still current. If a newer verified Production exists, validate LATEST/MANIFEST/MIGRATIONS/loader identity, Production channel/privacy flags, engine API/workspace compatibility, declared migration chain and available module integrity. Fetch only changed mandatory components plus task-relevant modules, apply only validated migrations, health-check, atomically adopt the newer ENGINE from the runtime's point of view, update compact engine metadata when durable persistence exists, and resume the user's pending action.
+Never auto-load RC/Prod-Dev, never downgrade because an alias/cache is older, and never partially activate an unverified candidate. Failure retains last-known-good compatible ENGINE and LOCAL STATE. Continue the user's requested work when safe; fail closed only when engine incompatibility makes that work unsafe.
 
 ENGINE UPDATE
-`refresh engine` and `check for LWAI updates` force the same canonical freshness path immediately regardless of the 6-hour runtime TTL. Preserve LOCAL STATE first. Fetch Production release metadata and migration graph, compare engine/API/schema compatibility, apply only required validated migration edges, then refresh ENGINE. Never pull RC/Prod-Dev into ordinary consumer deployments. If upstream content is incompatible, integrity-mismatched or unavailable, remain on last-known-good engine/fallback and preserve local state.
+`refresh engine` is the permanent backwards-compatible manual escape hatch and `check for LWAI updates` is an alias. They bypass TTL and force the same release.updater canonical transaction immediately. Preserve LOCAL STATE. If upstream content is incompatible, integrity-mismatched or unavailable, remain on last-known-good engine/fallback.
+
+NO BACKGROUND CLAIM
+Automatic updating is interaction-triggered unless the user separately opts into a supported scheduler/automation. Do not imply a dormant ChatGPT conversation is being updated in the background.
 
 EXPORTS
 `export yourself` / `export LWAI` = complete sanitized self-contained BOOTSTRAP_FULL runtime with no account-specific state.
