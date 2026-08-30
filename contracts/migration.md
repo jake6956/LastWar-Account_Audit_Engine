@@ -1,65 +1,100 @@
 # Migration Contract
 
-Version: 2026-08-29.13
+Version: 2026-08-29.15
 
 ## Principle
 Engine/schema/provider changes must preserve deployment-local state. A breaking migration cannot be promoted until preservation is validated. Multi-account migrations preserve the Workspace Registry, active-account pointer, immutable account IDs and every account-local namespace independently.
 
 ## Migration graph
-`releases/MIGRATIONS.json` is the machine-readable migration graph. Each supported edge declares `from`, `to`, schema versions, migration type, local-state action, whether re-onboarding/account rewrite is required, relevant tests and notes.
+`releases/MIGRATIONS.json` is the machine-readable migration authority. It contains two related graphs:
 
-Ordinary engine refresh must follow an explicit graph edge when crossing promoted versions. Missing required edges fail closed rather than improvising a state transformation. Engine-only edges may preserve the current workspace schema without rewriting account state.
+- `edges`: promoted engine-version transitions.
+- `workspace_schema_edges`: supported local workspace-schema transitions that may need to run when an existing deployment skips one or more historical engine releases.
+
+Missing required paths fail closed rather than improvising state transformation.
+
+## Historical workspace compatibility
+Current workspace schema is `2.3`. Production explicitly supports additive migration from the two earlier multi-account schemas:
+
+### 2.1 -> 2.2
+Introduced with Guided Lifecycle. Preserve all existing registry/account state and optionally add, only when supported/absent:
+- guidance proficiency metadata;
+- account-scoped Audit Sessions.
+
+### 2.2 -> 2.3
+Introduced with Runtime Checkpointing. Preserve all prior state and optionally add, only when supported/absent:
+- Runtime Checkpoints;
+- append-only Runtime Journal.
+
+Both transitions are nondestructive and idempotent. They do not require re-onboarding, change immutable `account_id`, rewrite canonical game facts/history, drop Corrections/evidence metadata, or replace provider references.
+
+A deployment may be structurally newer than its stored schema-version marker because optional stores were added by earlier maintenance. Normalize the version only after verifying preservation invariants and current structures. Never infer that a version-string mismatch authorizes destructive rewriting.
+
+## Migration-compatible bootstrap
+`engine/MANIFEST.json` distinguishes migration-capable components from current-schema-only domain modules.
+
+For an older supported workspace:
+1. Verify canonical GitHub Production and the migration graph.
+2. Resolve account context from an existing registry, or register pre-registry legacy state first.
+3. Load only mandatory core/release components whose workspace compatibility includes the source schema, plus storage adapter behavior if migration requires provider writes and its range permits the source.
+4. Keep domain/task modules that require target schema unloaded.
+5. Apply workspace-schema edges sequentially with verify-before-write semantics.
+6. Re-read workspace metadata, registry/account pointers and created optional structures.
+7. Only after target schema is verified may normal current-schema domain loading and ordinary recovery continue.
+
+If no validated path reaches current schema, preserve the workspace untouched and pause setup. Do not fall through to new-user onboarding.
 
 ## Compatibility
-`engine/MANIFEST.json` declares `engine_api_version` plus per-module engine API and workspace-schema ranges. A module that excludes the current engine API/workspace schema is incompatible and must not load. Schema-breaking changes require an explicit migration edge and local-state survival tests before promotion.
+`engine/MANIFEST.json` declares `engine_api_version` plus per-module engine API and workspace-schema ranges. A module may load only inside its declared ranges. Migration-capable core/release/storage components may intentionally span supported historical workspace schemas; domain modules may remain target-schema-only.
 
 ## Required sequence
-1. Resolve current promoted engine/schema/API versions and target edge.
-2. Snapshot canonical local state, Workspace Registry when present, account identities and engine/provider metadata when durable snapshot capability exists.
-3. Export a provider-neutral representation where practical for schema/provider migrations.
-4. Apply transformation to a copy or reversible target.
-5. Validate registry/account counts, immutable account IDs, unique domain IDs, latest canonical values, Corrections, Change Log continuity, resource-lane targets, preferences and provider-local database references.
-6. Rebuild Hot Cache from migrated canonical state rather than blindly copying stale cache.
-7. Run State Health, account-isolation and recovery regression checks.
-8. Switch canonical pointers only after validation passes.
-9. Retain prior known-good snapshot until the deployment has operated successfully.
+1. Resolve canonical current engine/schema/API versions and target migration path.
+2. Resolve account context without inventing missing identifiers.
+3. Snapshot canonical local state when durable snapshot capability exists.
+4. Verify source workspace metadata/structures.
+5. Apply transformations only to a reversible/copy-on-write target or with provider-level compare-and-swap/verify-before-write semantics.
+6. Validate registry/account counts, immutable account IDs, `active_account_id`, latest canonical values, Corrections, Change Log continuity, evidence/confidence/freshness, preferences and provider-local references.
+7. Rebuild Hot Cache from canonical state rather than blindly copying stale cache.
+8. Validate newly introduced optional structures only when the provider supports them.
+9. Re-read the workspace and confirm target schema before enabling target-schema-only domain behavior.
+10. Retain prior known-good state/snapshot until successful operation is confirmed.
 
-For an `engine_only` edge with unchanged workspace schema, preserve LOCAL STATE in place and refresh only ENGINE artifacts; no account rewrite or user re-onboarding is permitted.
+For an `engine_only` edge with unchanged workspace schema, preserve LOCAL STATE in place and refresh only ENGINE artifacts.
 
 ## Startup ordering across generations
-A current registry-backed deployment and a pre-registry legacy deployment have different valid prerequisites:
+- Current registry-backed deployment: load registry, resolve `active_account_id`, migrate supported older workspace schema if required, then run account-scoped recovery and ordinary reconciliation.
+- Pre-registry legacy deployment: discover existing state, register it nondestructively, generate immutable `account_id`, create registry/set `active_account_id`, migrate schema if required, then run recovery.
+- No registry/legacy state: genuinely-new-account guidance.
 
-- If a current Workspace Registry exists, load it and resolve `active_account_id` before account-scoped recovery. Then inspect unresolved Runtime Checkpoints/Journal and continue migration/reconciliation.
-- If no Workspace Registry exists but accessible legacy LWAI single-account state exists, do **not** require `active_account_id` first. Discover the legacy state, register it nondestructively, generate its immutable LWAI `account_id`, create the Workspace Registry, set `active_account_id`, and only then run recovery-first continuation.
-- If neither a registry nor legacy state exists, proceed to genuinely-new-account guidance/onboarding.
-
-This ordering prevents a circular dependency where an older deployment is asked to supply account-routing metadata that did not exist in that generation. Legacy discovery before registry creation is not permission to bypass account isolation after the account context has been established.
+This prevents both circular account-routing dependencies and accidental re-onboarding of valid older deployments.
 
 ## Single-account -> multi-account migration
-For an existing deployment that predates Workspace Registry:
-1. Discover and validate the accessible legacy LWAI account database/state before requiring `active_account_id`.
-2. Generate one immutable LWAI `account_id` for the existing game account.
-3. Create workspace-level Account Registry and record workspace schema/version/privacy metadata.
-4. Register the existing canonical account database in place; do not rewrite historical domain data merely to satisfy new registry structure.
-5. Add Account Identity when supported. UID remains optional/private and is not required for migration.
-6. Set `active_account_id` to the migrated account.
+1. Discover and validate accessible legacy account state.
+2. Generate immutable LWAI `account_id`.
+3. Create workspace Account Registry and privacy/version metadata.
+4. Register the existing canonical database in place; do not rewrite history merely to satisfy registry structure.
+5. Add Account Identity when supported; UID remains optional/private.
+6. Set `active_account_id`.
 7. Preserve all existing domain state, Change Log, Corrections, preferences, screenshots/assets, snapshots and provider metadata.
-8. After account context exists, run recovery-first checks for any supported recovery metadata, then verify reload/account isolation.
-9. Do not force new-account onboarding solely because multi-account support was added.
+8. Apply validated workspace-schema edges as required.
+9. Run recovery/isolation checks and continue without broad re-onboarding.
 
 ## Multi-account invariants
-- `account_id` is immutable and authoritative; mutable identity fields do not create a new account automatically.
-- Engine refresh preserves Workspace Registry, `active_account_id`, every registry entry and every account database/namespace.
-- Account switches clear account-scoped working cache before loading the target account.
-- Cross-account comparison is read-only and preserves prior active account unless explicitly switched.
-- `start over` archives prior account and creates a clean one by default; deletion requires explicit intent.
-- Provider migration preserves account isolation. A weaker provider that cannot guarantee independent writes cannot be declared fully supported canonical multi-account storage.
+- `account_id` is immutable and authoritative.
+- Engine/schema migration preserves Workspace Registry, `active_account_id`, every registry entry and every account namespace.
+- Account switches clear account-scoped working cache before loading target state.
+- Cross-account comparison is read-only.
+- `start over` archives rather than deletes by default.
+- Provider migration cannot collapse isolated accounts into one ambiguous ledger.
+
+## Alias/cache authority
+The public one-line short URL is transport convenience only. If its fetched body is stale or differs from canonical GitHub `main`, `releases/LATEST.json` plus canonical `engine/BOOTSTRAP.txt`/`MANIFEST.json`/`MIGRATIONS.json` are authoritative. A stale alias/cache body may never downgrade a verified newer Production release.
 
 ## Never overwrite during engine refresh
-Workspace Registry, `active_account_id`, account identities/facts, screenshots, battles, balances, local Corrections, formations/presets, provider credentials/references, user preferences, Audit Sessions, Runtime Checkpoints and Runtime Journal remain local unless an explicit validated migration transforms their schema while preserving meaning.
+Workspace Registry, `active_account_id`, identities/facts, screenshots, battles, balances, Corrections, formations/presets, provider references, preferences, Audit Sessions, Runtime Sessions, Runtime Checkpoints and Runtime Journal remain local unless an explicit validated schema edge adds or transforms metadata while preserving meaning.
 
 ## Privacy during migration
-Game UID and identifying fields are private deployment-local metadata. Never copy them into shared GitHub Production, public Gold Assets, release manifests or another user's deployment. Never request passwords, session tokens/cookies, captured authentication files or game login credentials as a migration requirement.
+Game UID, identity, actual account IDs, provider IDs/paths, screenshots, balances, local Corrections, battle history and runtime/checkpoint rows stay private. Never copy them into shared GitHub Production, public Gold Assets or another deployment. Never request credentials/session tokens/auth captures as a migration requirement.
 
 ## Failure behavior
-Abort/rollback to last known-good local state and engine. Do not partially promote a migration that loses data, collapses account namespaces, changes immutable IDs, silently drops logical domains or exposes private identity.
+Fail closed to last known-good local state and engine. Migration failure must not trigger redundant onboarding, partially change schema version, collapse account namespaces, alter immutable IDs, replay COMMITTED recovery work, silently drop logical domains or expose private identity.
