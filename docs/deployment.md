@@ -3,14 +3,17 @@
 ## Fastest path for a player
 Paste exactly this into a fresh ChatGPT conversation:
 
-`Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x`
+`Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine`
 
-That remains the single preferred install path. A web-capable assistant retrieves the sanitized Production loader, canonicalizes its identity against GitHub, automatically checks for newer verified Production, discovers/resumes supported private state, migrates supported older workspaces when necessary, then begins or resumes operation. The player should not need to copy/paste the complete engine or manually reinstall to receive later Production updates.
+That is the single preferred install path. The canonical repository README directs a web-capable assistant to `main/engine/BOOTSTRAP.txt`; the assistant then verifies current Production, automatically checks for a newer compatible release, discovers/resumes supported private state, migrates supported older workspaces when necessary, and begins or resumes guided operation. The player should not need to copy/paste the complete engine or manually reinstall to receive later Production updates.
 
 For best results, use a higher reasoning/thinking setting when exposed. Durable cloud persistence is strongly recommended but optional.
 
-## What the short link does
-TinyURL is convenience only; it is not a trust root or alternate release channel. Canonical Production lives on GitHub `main`.
+## Why the installer starts at GitHub
+Canonical Production lives on GitHub `main`, so the public installer now begins there too. Third-party URL shorteners are not trust roots or required transport. A legacy TinyURL previously used for convenience began serving a deprecated preview/interstitial page to some ChatGPT clients and is retired as an installation dependency.
+
+Canonical repository / installer:
+https://github.com/jake6956/LastWar-Account_Audit_Engine
 
 Canonical loader:
 https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
@@ -27,11 +30,11 @@ https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/rel
 Complete fallback:
 https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt
 
-If the alias body is stale/cached or disagrees with canonical GitHub, discard the alias body and continue from verified canonical Production. If modular retrieval fails, use last-known-good compatible engine state or the complete fallback. A readable legacy Google mirror may follow canonical GitHub options; manual full-bootstrap transfer is last resort.
+If a supplied alias/cache is stale, unavailable or disagrees with canonical GitHub, ignore it and continue from verified canonical Production. If modular retrieval fails, use last-known-good compatible engine state or the complete fallback. Manual full-bootstrap transfer is last resort. Neither a third-party shortener nor the retired Google runtime mirror is required.
 
 ## Startup sequence
 A deployment should:
-1. retrieve the linked loader, then fetch canonical `LATEST.json`, `BOOTSTRAP.txt`, `MANIFEST.json` and `MIGRATIONS.json` when web exists;
+1. use the repository README handoff to retrieve canonical `main/engine/BOOTSTRAP.txt`, then fetch canonical `LATEST.json`, `MANIFEST.json` and `MIGRATIONS.json` when web exists;
 2. run the automatic updater before ordinary account/domain work: if Production is current, continue silently; if a newer verified Production exists, validate/adopt it while preserving LOCAL STATE and preserve the user's original requested action across the update;
 3. verify Production/privacy identity and engine API;
 4. capability-detect persistence/ingestion features;
@@ -79,7 +82,7 @@ Automatic updating does not imply a background daemon. A dormant ChatGPT convers
 `refresh engine` remains a permanent backwards-compatible manual escape hatch that bypasses freshness TTLs and forces the same canonical update transaction. `check for LWAI updates` is an alias. Failed verification retains last-known-good ENGINE and leaves private/local state untouched.
 
 ## Sharing LWAI
-`share LWAI`, `give me the install prompt`, and equivalents return the same one-line TinyURL instruction. Do not create beta/stable/alternate installer paths; RC branches are maintainer-only and temporary.
+`share LWAI`, `give me the install prompt`, and equivalents return the same canonical GitHub one-line instruction shown above. Do not create beta/stable/alternate installer paths; RC branches are maintainer-only and temporary.
 
 ## Recovery
 - `reload LWAI`: automatic update preflight, then reconstruct from canonical engine metadata + workspace/account/schema/recovery state.
@@ -90,4 +93,4 @@ Automatic updating does not imply a background daemon. A dormant ChatGPT convers
 ## Maintainer path
 Develop against private Prod-Dev, update relevant contracts/registries, sanitize, freeze an RC, create `rc/<version>` from current known-good `main`, run exact-head PR CI plus private gates, merge only the validated head SHA, require post-merge main CI, verify public Production/installer, then synchronize private Production archives/release records.
 
-Production CI validates release-tree structure plus executable runtime invariants, including historical workspace-schema migration, stale-alias canonicalization, permanent `refresh engine` compatibility and automatic consumer update behavior. Failed pre-merge candidates leave `main` untouched.
+Production CI validates release-tree structure plus executable runtime invariants, including canonical installer transport, historical workspace-schema migration, stale-alias canonicalization, permanent `refresh engine` compatibility, automatic consumer update behavior, no-orphan onboarding, account isolation and evidence/privacy rules. Failed pre-merge candidates leave `main` untouched.
