@@ -1,9 +1,15 @@
 # Storage Adapter Contract
 
-Version: 2026-08-30.24
+Version: 2026-08-30.26
 Capability API: `storage-api/1`
 
 LWAI maps one provider-neutral persistence model onto verified storage capabilities. Provider branding is never a substitute for capability discovery.
+
+## Data placement invariant
+
+Public GitHub contains sanitized engine code, contracts, schemas, tests, release metadata and reusable non-user-specific knowledge only. Private maintainer/Prod-Dev state and private failsafe artifacts remain in the maintainer-controlled private LWAI Google Drive workspace and are never copied into public GitHub.
+
+Consumer/player account state is never stored in the maintainer's Drive or in GitHub. Each end user's private LWAI state is stored only in that user's explicitly selected personal storage provider, inside that user's dedicated Last War / LWAI workspace. Session-only users remain in the current conversation/runtime and are told that cross-chat durability is limited.
 
 ## Absolute workspace boundary
 
@@ -44,15 +50,19 @@ Every adapter declares booleans for `read`, `list`, `write`, `create`, `query`, 
 
 Never infer a stronger profile from file type, vendor reputation or expected API behavior.
 
-## Provider selection and authorization
+## Provider preference, selection and authorization
 
-Cloud persistence is recommended but optional. Detect providers actually available/installable and require explicit user selection; never silently default to Google Drive.
+Cloud persistence is recommended but optional. **Google Drive is LWAI's preferred/recommended and most-tested consumer storage provider when it is actually available with verified writable capability.** Present it first and label it Recommended/Preferred when appropriate.
+
+Preference is not consent. The user must explicitly choose Google Drive or another offered provider; never silently select a provider. Detect providers actually available/installable and offer every genuinely supported writable alternative. Supported alternatives may include Dropbox, OneDrive / Microsoft 365, Box when writable, or another provider that satisfies `storage-api/1` read/write/create verification.
+
+A fully verified alternative provider is a supported persistence target, not a degraded fake option. Capability differences may change implementation details and recovery guarantees, but account isolation, workspace-only scope, privacy and no-dead-air handoff remain mandatory.
 
 Before opening authorization, show the workspace-only reassurance above.
 
 For Google Drive, explain the guardrail, approve access needed for the LWAI workspace, and choose **`Allow always`** if ChatGPT offers it. For Dropbox, OneDrive/Microsoft 365, Box or another supported provider, use the actual host/provider wording and recommend an equivalent persistent authorization option only when truly shown. Never invent OAuth scope names or request credentials in chat.
 
-A user saying `connected` is a recheck trigger, not proof. Re-detect capability, locate/create only the LWAI workspace, perform a harmless workspace-local write/read when appropriate, and then confirm connection plus the active workspace-only guardrail.
+A user saying `connected` is a recheck trigger, not proof. Re-detect capability, locate/create only the LWAI workspace, perform a harmless workspace-local write/read when appropriate, and then confirm connection plus the active workspace-only guardrail. Successful verification immediately returns to the next user-visible onboarding/resume step; it may not end on connection status alone.
 
 ## Authoritative journal rule
 
@@ -72,4 +82,4 @@ Validate workspace scope isolation, capability claims, account isolation, timest
 
 ## GitHub role
 
-GitHub is Production engineering/source control, not live player state. Account facts, balances, screenshots, battle history, local Corrections, checkpoints/journal rows and provider-local state remain inside each user's private LWAI workspace. Unrelated connected-storage content is never part of LWAI state.
+GitHub is sanitized Production engineering/source control, not live player state and not private Prod-Dev storage. Account facts, balances, screenshots, battle history, local Corrections, checkpoints/journal rows and provider-local state remain inside each user's private LWAI workspace. Unrelated connected-storage content is never part of LWAI state.

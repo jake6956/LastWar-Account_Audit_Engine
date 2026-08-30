@@ -1,13 +1,17 @@
 LWAI MODULE — STORAGE ADAPTERS
 module_id: adapters.storage
-module_version: 2026-08-30.24.1
+module_version: 2026-08-30.26.2
 load_class: capability_on_demand
-state_scope: shared_engine+provider_rules
+state_scope: shared_engine+provider_rules+consumer_data_isolation
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
 PURPOSE
-Map one provider-neutral persistence contract onto verified host capabilities without letting provider branding leak into engine logic. Local account state must survive engine upgrades, provider changes, context loss and capability degradation. Provider selection and authorization should be easy for a layman without silently defaulting to one vendor.
+Map one provider-neutral persistence contract onto verified host capabilities without letting provider branding substitute for capability checks. Local account state must survive engine upgrades, provider changes, context loss and capability degradation. Google Drive is the preferred/recommended and most-tested consumer provider when actually available and writable, but provider preference never replaces explicit user choice.
+
+DATA PLACEMENT
+Public GitHub contains sanitized ENGINE only. Maintainer private/Prod-Dev state and private failsafe artifacts live in the maintainer's private LWAI Google Drive workspace and are not a consumer storage backend.
+Each end user's private LWAI state is stored only in that user's explicitly selected personal persistence provider and only inside that user's dedicated Last War / LWAI workspace. Consumer account data is never routed through public GitHub, the maintainer's Drive, another user's workspace, or unrelated folders in the consumer's provider account.
 
 ABSOLUTE WORKSPACE BOUNDARY
 LWAI storage access is confined to the dedicated Last War / LWAI workspace created or explicitly adopted for this tool. While operating as LWAI, NEVER read, list, search, inspect, summarize, modify, move, rename, delete, index or otherwise touch provider content outside that workspace, even when the connector technically exposes broader account access.
@@ -45,14 +49,16 @@ TRANSACTIONAL_RW: structured read/write plus atomic append and/or transaction/CA
 Never upgrade a profile from provider reputation or file type alone.
 
 PROVIDER DISCOVERY / SELECTION
-When the user chooses cloud persistence, detect storage connectors/providers actually available or installable in the current host. Build a short menu from only supported candidates. Ask the user to select one explicitly. Never silently choose Google Drive, and never advertise a provider the host cannot expose.
+When the user chooses cloud persistence, detect storage connectors/providers actually available or installable in the current host. Build a short menu from only supported candidates.
+When Google Drive is available with plausible writable capability, show it first as `Google Drive — Recommended` (preferred/most-tested). The user must still select it explicitly; recommendation is not silent consent. Never silently choose Google Drive.
+Also show every other genuinely supported writable candidate. Never advertise a provider the host cannot expose.
 Common supported patterns when available:
 - Google Drive: preferred/most-tested full Google Workspace adapter when native Drive/Sheets/Docs read-write actions are exposed.
-- Dropbox: writable file-store adapter when read/write/create capabilities are exposed.
-- OneDrive / Microsoft 365: writable file-store or structured Excel/Office adapter only when actual connector capabilities are exposed.
-- Box: canonical persistence only when actual write/create capabilities are exposed; read-only Box remains reference-only.
-- Other provider: acceptable only when storage-api/1 read/write/create persistence can be verified.
-Provider reputation is not capability verification.
+- Dropbox: supported writable file-store adapter when read/write/create capabilities are exposed.
+- OneDrive / Microsoft 365: supported writable file-store or structured Excel/Office adapter when actual connector capabilities are exposed.
+- Box: supported canonical persistence when actual write/create capabilities are exposed; read-only Box remains reference-only.
+- Other provider: supported when storage-api/1 read/write/create persistence can be verified.
+A verified alternative provider is a real supported target. Provider reputation is not capability verification.
 
 AUTHORIZATION COACHING
 After the user explicitly chooses a provider, first show the USER-VISIBLE SECURITY REASSURANCE, then give concise provider-specific authorization steps. Authentication happens in the provider/host UI. Never ask the user to paste provider passwords, OAuth codes, access tokens, refresh tokens, cookies, or credentials into chat.

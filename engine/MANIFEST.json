@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-30.25",
+  "engine_version": "2026-08-30.26",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -62,6 +62,19 @@
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
       "integrity": {"algorithm": "git_blob_sha1", "digest": "07086cb67ab5adab2da41e8e272e7cb2a8d1ad81"}
+    },
+    {
+      "module_id": "core.flow-continuity",
+      "module_version": "2026-08-30.26.2",
+      "path": "engine/modules/core/flow-continuity.txt",
+      "load_class": "mandatory_core",
+      "dependencies": ["core.persistence", "core.accounts", "core.guidance"],
+      "state_scope": "shared_engine+onboarding_recovery_rules+expert_experience+research_source_policy+data_placement",
+      "required": true,
+      "release_min": "2026-08-30.26",
+      "engine_api": {"min": "1.0", "max": "1.0"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "a5dbc98bb2b735022811ea32d0fc917ac860b89b"}
     },
     {
       "module_id": "domain.gear-heroes-skills-ew",
@@ -138,11 +151,11 @@
     },
     {
       "module_id": "adapters.storage",
-      "module_version": "2026-08-30.24.1",
+      "module_version": "2026-08-30.26.2",
       "path": "engine/modules/adapters/storage.txt",
       "load_class": "capability_on_demand",
       "dependencies": ["core.persistence", "core.accounts"],
-      "state_scope": "shared_engine+provider_rules",
+      "state_scope": "shared_engine+provider_rules+consumer_data_isolation",
       "required": false,
       "activation": {
         "intents": ["connect storage", "enable persistence", "cloud storage"],
@@ -152,7 +165,7 @@
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "71ade01855dcbf3240c813b0fef5c593691cd779"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "fd431c1d4af4afb11b4af52eaae569cc956093e8"}
     },
     {
       "module_id": "release.runtime",
@@ -211,7 +224,7 @@
       "module_version": "2026-08-30.25.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
-      "dependencies": ["release.resolver", "release.dispatcher", "release.updater", "core.accounts", "core.guidance"],
+      "dependencies": ["release.resolver", "release.dispatcher", "release.updater", "core.accounts", "core.guidance", "core.flow-continuity"],
       "state_scope": "shared_engine",
       "required": true,
       "release_min": "2026-08-30.25",

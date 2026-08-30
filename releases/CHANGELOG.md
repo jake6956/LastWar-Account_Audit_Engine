@@ -1,5 +1,42 @@
 # Production Changelog
 
+## 2026-08-30.26
+
+- Added mandatory `core.flow-continuity` to make the no-dead-air onboarding/recovery contract executable rather than prose-only.
+- Provider authorization return (`connected` / `storage connected`) is now explicitly an internal recheck trigger; successful verification must continue in the same user-facing response to new-user identity, existing-account resume, or the original persistence-upgrade task.
+- Failed/read-only storage verification must offer a concrete safe next choice: retry, another available provider, or session-only operation.
+- Added durable onboarding recovery pointers (`IDENTITY_PENDING`, `BASELINE_PENDING`, `FIRST_EVIDENCE_PENDING`, `WAITING_USER`, `RUNNING`) and a deterministic mapping from each state to the next visible user action.
+- Context loss can never become implicit `done`, and verified storage/account creation must not replay merely because a conversation was interrupted.
+- Added high-level executable regressions rejecting infrastructure-only terminal states and proving storage success/failure, existing-account resume, later persistence upgrades, durable-stage recovery and `WAITING_USER` continuity.
+- Added a private Google Drive failsafe-mirror release contract: the exact sanitized RC must be synchronized and verified in the LWAI Drive workspace before Production promotion; an empty/stale source-staging tree is a release-health failure.
+- Repaired the private Drive source-staging failsafe with a versioned `.26` source/recovery snapshot and brought the module manifest/critical failsafe documents forward before promotion.
+- Preserved the first-party `https://lastwarai.com` installer, live GitHub `main` SHA authority, exact-commit engine pinning, Engine API `1.0`, workspace schema `2.3`, LOCAL STATE, account isolation and no-re-onboarding behavior.
+
+## 2026-08-30.25
+
+- Moved the preferred public installer to the first-party `https://lastwarai.com` domain served directly by Cloudflare Worker, eliminating a third-party shortener as the primary distribution dependency.
+- Kept LastWarAI.com strictly version-neutral: it serves only a sanitized Stage-0 locator and never establishes the active engine version.
+- Retained live GitHub `main` `commit.sha` as current-version authority and exact-commit pinning for every trusted engine read in a startup/update transaction.
+- Retained the previously circulated TinyURL only as a legacy compatibility alias; new `share LWAI` output uses LastWarAI.com.
+- Checked the canonical Stage-0 locator and Worker source into GitHub and added CI that fetches the live public domain and verifies its content against source-controlled locator bytes/contract before release-tree/runtime tests.
+- Preserved Engine API `1.0`, workspace schema `2.3` and LOCAL STATE without re-onboarding or account rewrite.
+
+## 2026-08-30.24
+
+- Replaced mutable/cache-sensitive startup resolution with live GitHub branch-ref resolution followed by one exact immutable commit pin for the entire bootstrap/update transaction.
+- Added mandatory `release.resolver` and manifest-driven `release.dispatcher`; Stage-1 now loads every `required:true` module generically and hands optional task/capability selection to MANIFEST activation metadata.
+- Reduced `engine/BOOTSTRAP.txt` to a bounded 4 KiB orchestration-only Stage-1 loader; provider/onboarding/domain behavior remains module-owned.
+- Search indexes, README snapshots, mutable raw `main`, shortener content and model memory can no longer establish current Production.
+- Fresh installs fail closed when a live SHA cannot be established; existing compatible deployments retain last-known-good ENGINE and LOCAL STATE.
+- Preserved Engine API `1.0`, workspace schema `2.3`, migration behavior, account isolation and guided onboarding semantics.
+
+## 2026-08-29.23
+
+- Retired the third-party TinyURL as a required installer dependency after preview/interstitial behavior made it unreliable for some clients.
+- Moved the public installation handoff to canonical GitHub documentation while preserving one-step assistant execution and avoiding a second copy/paste prompt.
+- Kept GitHub Production as authoritative and treated aliases/README/search cache content as transport/discovery only.
+- Preserved existing updater, onboarding, persistence, evidence, account-isolation and LOCAL STATE behavior with no workspace schema change.
+
 ## 2026-08-29.22
 
 - Fixed beta-observed post-connector dead air: verified cloud storage/workspace success is now explicitly non-terminal and immediately hands off to the next onboarding/resume step.
@@ -151,7 +188,7 @@
 ## 2026-08-29.10
 
 - Added mandatory `core.guidance` with dependencies on `core.operating`, `core.persistence`, and `core.accounts`.
-- Added migration-first startup: inspect accessible prior LWAI state before broad onboarding, preserve source/confidence/freshness, and ask only for missing, ambiguous, contradictory, or materially stale information.
+- Added migration-first startup: inspect accessible prior LWAI state before broad onboarding, preserve source/confidence/freshness, and ask only for missing, ambiguous, contradictory or materially stale information.
 - Added adaptive guidance states (NEW, LEARNING,COMFORTABLE, EXPERT) while keeping privacy, evidence hierarchy, account isolation, and batch-boundary rules invariant.
 - Added explicit multi-upload completion boundaries: users are told what to send and to reply `done`; declared batches are not finalized early.
 - Added three evidence-equivalent ingestion modes: direct screenshot batches, supported DOCX/PDF screenshot bundles, and phone-friendly guided capture.
@@ -229,7 +266,7 @@
 
 ## 2026-08-29.4
 
-- Added lossless domain playbooks for screenshots, gear/Ore, Skill Medals, EW, hero shards/WoH, squad-slot tech, counter/meta modeling, formations, Drone/chips, Decorations, Profession/global bonuses, research, stores/paid value, season systems and Battlefield-vs-dueling behavior.
+- Added lossless domain playbooks for screenshots, gear/Ore, Skill Medals, EW shards/WoH, squad-slot tech, counter/meta modeling, formations, Drone/chips, Decorations, Profession/global bonuses, research, stores/paid value, season systems and Battlefield-vs-dueling behavior.
 - Formalized recommendation contract and noob-safe onboarding.
 
 ## 2026-08-29.3
