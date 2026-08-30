@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.21",
+  "engine_version": "2026-08-29.22",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -14,14 +14,14 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "migration": {
-    "from": "2026-08-29.20",
-    "type": "engine_only_epistemic_integrity_hardening",
+    "from": "2026-08-29.21",
+    "type": "engine_only_guided_onboarding_continuation",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Makes evidence provenance, community-source quality, anti-fabrication, uncertainty disclosure, and calculation/recommendation provenance mandatory global runtime behavior. LOCAL STATE and workspace schema remain unchanged."
+    "notes": "Eliminates post-connector dead air and makes onboarding/resume a no-orphan-state guided flow. Verified storage or explicit session-only immediately advances to identity, strategic baseline and first useful evidence capture; existing users receive a recognizable landing/resume path."
   },
-  "notes": "Epistemic Integrity Hardening. No material Last War fact may be fabricated. Current official/direct evidence is preferred; community material must be reputable, relevant and corroborated; uncertain consequential facts exhaust reasonable sources before disclosure; calculations and optimization advice clearly distinguish supported inputs from LWAI-derived analysis."
+  "notes": "Guided Onboarding Continuation. Storage/workspace success is never a terminal conversational state. Every setup step advances to a clear next action, an explicit WAITING_USER boundary, or a useful running-state landing while preserving LOCAL STATE and existing account isolation."
 }
