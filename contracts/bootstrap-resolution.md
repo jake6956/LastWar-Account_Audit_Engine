@@ -1,15 +1,16 @@
 # Bootstrap Resolution Contract
 
-Version: 2026-08-30.25
+Transport revision: 2026-08-30.28-hotfix
+Engine compatibility: unchanged
 
 ## Goal
 
-LWAI must remain centrally maintainable and evergreen without trusting a mutable web-cache snapshot. Public installation, release discovery and trusted engine loading are separate layers:
+LWAI must remain centrally maintainable and evergreen without making a fresh ChatGPT session depend on direct access to GitHub's branch API. Public installation, live release discovery and trusted engine loading are separate layers:
 
 ```text
 Stage 0 — permanent first-party installer at https://lastwarai.com
-  -> serve tiny locator text
-  -> resolve live GitHub main commit SHA
+  -> server-side fetch live GitHub main
+  -> return resolved immutable commit SHA + exact bootstrap URL
 Stage 1 — engine/BOOTSTRAP.txt at that exact SHA
   -> validate pinned release metadata + module graph
 Stage 2 — mandatory/on-demand modules at the same SHA
@@ -24,35 +25,46 @@ Preferred public instruction:
 
 `Set up Last War optimization using the instructions at https://lastwarai.com`
 
-`https://lastwarai.com` is a first-party discovery/transport endpoint. It is not current-version authority and may be reimplemented behind the same domain without changing the installer contract.
+`https://lastwarai.com` is first-party discovery/live-resolution transport. It does not contain private state and does not replace GitHub as the underlying Production source.
 
-The previously circulated `https://tinyurl.com/2yxf7f5x` is a legacy compatibility alias only. It may help an already-distributed prompt reach LWAI, but it is never preferred and never authoritative.
+The previously circulated `https://tinyurl.com/2yxf7f5x` remains a legacy compatibility alias only.
 
-## Live ref resolution
+## Server-side live ref resolution
 
-Canonical current-version endpoint:
+Underlying canonical current-version endpoint:
 
 `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`
 
-Resolve `commit.sha` using a genuinely live GitHub connector/API or live git transport. A valid SHA is exactly 40 lowercase hex characters. Search results, indexed GitHub HTML, README snapshots, raw `main` bodies, aliases, redirects and model memory are not current-version authority.
+The LastWarAI.com Worker retrieves this endpoint server-side for each successful install request. A successful Stage-0 response supplies:
 
-If fresh installation cannot establish a live SHA, fail closed rather than silently installing an older cached engine. Existing compatible deployments keep last-known-good ENGINE and LOCAL STATE.
+- `RESOLUTION_STATUS: LIVE_GITHUB`
+- `RESOLVED_PRODUCTION_COMMIT: C`, where C is exactly 40 lowercase hex characters
+- `EXACT_BOOTSTRAP_URL`, whose path embeds the same C
+- `LIVE_REF_SOURCE`, identifying the GitHub main branch endpoint
+
+The client validates those fields and loads the exact bootstrap directly. **A fresh client must not be required to call GitHub's branch API again before starting.** This removes a host/browser/network capability from the critical installation path while preserving immutable commit pinning.
+
+If the first-party server-side resolver itself cannot establish a valid live SHA, it returns HTTP 503 rather than fabricating or guessing a commit. Existing compatible deployments retain their normal last-known-good ENGINE behavior.
+
+## Direct resolver compatibility
+
+Stage 1 and `release.resolver` retain direct live-GitHub resolution for updater/reload/freshness operations when the host genuinely has that capability. They may also accept a valid `RESOLVED_PRODUCTION_COMMIT` handed off by Stage 0. Both paths converge on the same immutable-commit validation rules.
+
+Search results, indexed GitHub HTML, README snapshots, mutable raw `main` bodies, aliases, redirects and model memory are never valid substitutes for a resolved SHA.
 
 ## Pin once
 
-After resolving `production_commit_sha = C`, every candidate read in that transaction uses C: LATEST, MANIFEST, MIGRATIONS, BOOTSTRAP, required modules and fallback. Never mix revisions. Exact-SHA content is immutable, so cached exact-SHA content is safe.
-
-If the initial Stage-0/bootstrap text arrived through mutable public transport, it may only direct the resolver. Trusted Stage-1 and release identity are re-read from exact C.
+After establishing `production_commit_sha = C`, every candidate read in that transaction uses C: LATEST, MANIFEST, MIGRATIONS, BOOTSTRAP, required modules and fallback. Never mix revisions. Exact-SHA content is immutable, so cached exact-SHA content is safe.
 
 ## Cascading maintenance
 
-`release.resolver` is mandatory core and owns the live-ref algorithm. `release.updater` must call it for startup/reload/TTL/manual freshness checks. `release.bootstrap` delegates account/provider UX to core modules.
+`release.resolver` remains mandatory core and owns runtime freshness. `release.updater` calls it for startup/reload/TTL/manual checks. Stage 0 only removes direct branch-ref discovery from the initial client-side install path; it does not absorb account/provider/domain behavior.
 
-The preferred public installer is release metadata plus a first-party stable domain. Internal GitHub/release implementation may evolve without requiring a new public URL.
+The preferred public installer remains the stable first-party domain, so future internal GitHub/release implementation may evolve without changing the one-line public prompt.
 
 ## Loader budget
 
-The previous 9 KiB loader ceiling was an internal CI guard, not a ChatGPT limit. Production enforces a 4 KiB Stage-1 budget to prevent policy/domain leakage. Raising the budget is not an acceptable fix for loader bloat.
+Production keeps the 4 KiB Stage-1 budget. Moving live-ref discovery server-side is specifically intended to keep Stage 1 simple rather than adding more client orchestration.
 
 ## State safety
 
