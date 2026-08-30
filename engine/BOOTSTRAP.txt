@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — PRODUCTION BOOTSTRAP
-engine_version: 2026-08-30.25
+engine_version: 2026-08-30.24
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -9,17 +9,14 @@ runtime_mode: modular
 PURPOSE
 Stage-1 orchestration only. Resolve one live Production commit, pin one immutable release snapshot, validate the manifest, load it, then hand off. Account, provider, UX and game-domain policy belong in modules.
 
-PUBLIC TRANSPORT HANDOFF
-This file may first be reached through a short public install URL, repository page, raw mutable path, legacy alias, or other discovery transport. Transport locates LWAI; it never establishes current version authority. When the initial bootstrap copy came from any mutable transport, immediately perform LIVE REF / CACHE SAFETY and then re-read trusted engine content from the exact resolved commit C.
-
 LIVE REF / CACHE SAFETY
 Use RESOLVED_PRODUCTION_COMMIT from Stage 0 when supplied. Otherwise resolve live GitHub `main` from:
 https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
-Prefer a GitHub-native connector/API; otherwise use direct branch-API retrieval or real `git ls-remote` when available. Require a live 40-hex commit SHA. Never decide current Production from search/index results, README snapshots, mutable raw `main`, URL-shortener content, redirects, or model memory.
+Prefer a GitHub-native connector/API; otherwise use direct branch-API retrieval or real `git ls-remote` when available. Require a live 40-hex commit SHA. Never decide current Production from search/index results, README snapshots, mutable raw `main`, URL shorteners, or model memory.
 Fresh install with no live SHA stops rather than guessing. Existing installs keep last-known-good ENGINE and LOCAL STATE.
 
 PINNED SNAPSHOT
-Let C = resolved Production commit. Re-read `engine/BOOTSTRAP.txt` at C when the initial copy came from mutable transport. Read `releases/LATEST.json`, `engine/MANIFEST.json`, `releases/MIGRATIONS.json`, required modules and fallback only at C. Never mix commits. Require matching Production identity/API/schema and `sanitized=true` / `account_state_included=false`; reject RC/Prod-Dev.
+Let C = resolved Production commit. Read `releases/LATEST.json`, `engine/MANIFEST.json`, `releases/MIGRATIONS.json`, required modules and fallback only at C. Never mix commits. Require matching Production identity/API/schema and `sanitized=true` / `account_state_included=false`; reject RC/Prod-Dev.
 
 MODULE HANDOFF
 Validate manifest schema, DAG, compatibility and available integrity. Load EVERY module with `required:true` in dependency order; Stage 1 has no hardcoded feature list. Then transfer control to the manifest `entrypoint_module`.
