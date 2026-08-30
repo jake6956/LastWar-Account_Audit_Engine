@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/gold-assets/seasons/season-pack.schema.json",
+  "title": "LWAI Season Knowledge Pack",
+  "type": "object",
+  "required": ["schema_version", "pack_version", "season_id", "display_name", "status", "sanitized", "account_state_included", "facts", "research_topics"],
+  "properties": {
+    "schema_version": {"const": "season-knowledge/1"},
+    "pack_version": {"type": "string"},
+    "season_id": {"type": "string"},
+    "display_name": {"type": "string"},
+    "aliases": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "status": {"enum": ["seed", "active", "deprecated"]},
+    "sanitized": {"const": true},
+    "account_state_included": {"const": false},
+    "last_pack_reviewed": {"type": ["string", "null"]},
+    "research_topics": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fact_id", "topic", "claim", "source_class", "confidence", "volatility", "status", "verified_at", "sources"],
+        "properties": {
+          "fact_id": {"type": "string"},
+          "topic": {"type": "string"},
+          "mechanic": {"type": ["string", "null"]},
+          "claim": {"type": "string"},
+          "applicability": {"type": "object"},
+          "source_class": {"enum": ["official", "maintained_reference", "community_test", "community_consensus", "strategic_inference"]},
+          "confidence": {"enum": ["high", "medium", "low"]},
+          "volatility": {"enum": ["static", "patch_sensitive", "phase_sensitive", "event_dynamic", "store_dynamic"]},
+          "status": {"enum": ["verified", "provisional", "contested", "deprecated"]},
+          "verified_at": {"type": "string"},
+          "expires_after_days": {"type": ["integer", "null"], "minimum": 0},
+          "sources": {"type": "array", "items": {"type": "object"}},
+          "supersedes": {"type": "array", "items": {"type": "string"}},
+          "notes": {"type": ["string", "null"]}
+        },
+        "additionalProperties": false
+      }
+    },
+    "notes": {"type": ["string", "null"]}
+  },
+  "additionalProperties": false
+}
