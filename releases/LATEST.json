@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.20",
+  "engine_version": "2026-08-29.21",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -14,14 +14,14 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "migration": {
-    "from": "2026-08-29.19",
-    "type": "engine_only_season_intelligence_framework",
+    "from": "2026-08-29.20",
+    "type": "engine_only_epistemic_integrity_hardening",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds an on-demand Season Intelligence module plus Production-qualified season knowledge registry/packs. Current account/workspace state is preserved; no schema or onboarding rewrite is required."
+    "notes": "Makes evidence provenance, community-source quality, anti-fabrication, uncertainty disclosure, and calculation/recommendation provenance mandatory global runtime behavior. LOCAL STATE and workspace schema remain unchanged."
   },
-  "notes": "Season Intelligence Framework. Season-sensitive work identifies current season/phase, consults reusable sanitized Gold Asset knowledge, live-reverifies stale/dynamic/consequential mechanics, self-heals against stronger direct evidence, and applies verified mechanics through normal account optimization."
+  "notes": "Epistemic Integrity Hardening. No material Last War fact may be fabricated. Current official/direct evidence is preferred; community material must be reputable, relevant and corroborated; uncertain consequential facts exhaust reasonable sources before disclosure; calculations and optimization advice clearly distinguish supported inputs from LWAI-derived analysis."
 }
