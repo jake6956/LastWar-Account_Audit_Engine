@@ -5,6 +5,7 @@ from pathlib import Path
 from update_controller import Candidate, EngineMetadata, run_update_transaction, should_auto_check
 
 ROOT = Path(__file__).resolve().parents[1]
+CANONICAL_INSTALLER = "Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine"
 
 
 class AutomaticUpdateControllerTests(unittest.TestCase):
@@ -113,12 +114,13 @@ class AutomaticUpdateControllerTests(unittest.TestCase):
         self.assertIn("Version: 2026-08-29.18", contract)
         self.assertIn("one public installer", contract)
 
-    def test_single_installer_is_unchanged(self):
+    def test_single_installer_remains_canonical(self):
         loader = (ROOT / "engine/BOOTSTRAP.txt").read_text(encoding="utf-8")
-        self.assertIn(
-            "Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x",
-            loader,
-        )
+        full = (ROOT / "engine/BOOTSTRAP_FULL.txt").read_text(encoding="utf-8")
+        self.assertIn(CANONICAL_INSTALLER, loader)
+        self.assertIn(CANONICAL_INSTALLER, full)
+        self.assertNotIn("https://tinyurl.com/", loader)
+        self.assertNotIn("https://tinyurl.com/", full)
 
 
 if __name__ == "__main__":
