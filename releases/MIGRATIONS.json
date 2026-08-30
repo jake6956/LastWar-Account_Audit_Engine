@@ -182,6 +182,18 @@
       "requires_account_rewrite": false,
       "tests": ["storage_success_is_not_terminal", "verified_storage_advances_to_identity", "identity_advances_to_strategic_baseline_without_next", "baseline_advances_to_first_evidence_capture", "setup_turns_have_no_orphan_state", "onboarding_recovery_resumes_first_incomplete_stage", "existing_user_gets_landing_or_resume"],
       "notes": "Eliminates post-connector dead air by making setup a guided no-orphan-state flow. Verified storage or explicit session-only immediately advances to identity, strategic baseline and first useful evidence capture; existing users receive a recognizable landing/resume path; durable onboarding resumes from the first incomplete verified stage. No workspace/account schema change."
+    },
+    {
+      "from": "2026-08-29.22",
+      "to": "2026-08-29.23",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_canonical_installer_transport",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["canonical_installer_uses_github_repository", "primary_installer_does_not_require_third_party_shortener", "legacy_shortlink_failure_does_not_change_runtime_state", "existing_onboarding_and_updater_contracts_remain_intact"],
+      "notes": "Moves the permanent public installation entrypoint from a third-party TinyURL alias to the canonical GitHub repository README, which hands execution to main/engine/BOOTSTRAP.txt. No workspace/account/runtime behavior changes beyond installer transport; LOCAL STATE is preserved."
     }
   ]
 }
