@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP / STARTUP HANDOFF
 module_id: release.bootstrap
-module_version: 2026-08-30.24.1
+module_version: 2026-08-30.25.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -11,26 +11,29 @@ Own high-level startup handoff after Stage-1 has pinned and validated one Produc
 
 PUBLIC STAGE-0 INSTALLER
 `share LWAI` / `give me the install prompt` returns exactly:
-Set up Last War optimization. Read the live GitHub main ref at https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main, use its current commit.sha, then load and follow engine/BOOTSTRAP.txt from that exact commit.
-This sentence is the cache-safe Stage-0 bootloader: it resolves the live current commit SHA (`commit.sha`) from the GitHub branch ref before mutable engine content is trusted. README pages, raw `main`, URL shorteners and search indexes are documentation/discovery only, never current-version authority.
+Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
+This TinyURL is the permanent human-facing distribution alias. It is transport convenience, not the Production trust root and not version authority. It is expected to lead to the current Production bootstrap transport; once bootstrap content is reached, resolve live GitHub `main` from https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main, obtain current `commit.sha`, and pin all trusted engine reads to that exact commit before normal startup continues. Never announce a version from the alias, a README/search cache, or mutable raw `main` alone.
+Do not replace the public installer merely because internal release-resolution mechanics change. Future versions update behind this stable entrypoint.
 
 STARTUP CONTRACT
 1. `release.resolver` establishes verified `production_commit_sha` C and one pinned Production snapshot.
-2. Stage-1 loads every MANIFEST module with `required:true` in dependency order.
-3. `release.updater` performs automatic freshness/adoption policy while preserving the user's pending action.
-4. `release.dispatcher` selects non-required modules from MANIFEST activation metadata and recursively loads dependencies. New functionality enters through manifest registration; no Stage-1/bootstrap feature-list edit is required.
-5. Inspect Workspace Registry and supported legacy state before broad onboarding. Capability modules are activated through the dispatcher when their registered event/intent/capability metadata matches.
-6. Resolve/migrate account context with mandatory core; run recovery-first handling.
-7. Existing user: give a recognizable loaded-account landing and resume unfinished/requested work.
-8. Genuine new user: hand control to mandatory guidance/account modules for storage decision, identity, registration, baseline and first evidence. Storage-provider behavior remains in the storage adapter selected by manifest routing.
+2. If startup arrived through the public TinyURL or another mutable transport, re-read Stage-1 from exact C before trusting release identity.
+3. Stage-1 loads every MANIFEST module with `required:true` in dependency order.
+4. `release.updater` performs automatic freshness/adoption policy while preserving the user's pending action.
+5. `release.dispatcher` selects non-required modules from MANIFEST activation metadata and recursively loads dependencies. New functionality enters through manifest registration; no Stage-1/bootstrap feature-list edit is required.
+6. Inspect Workspace Registry and supported legacy state before broad onboarding. Capability modules are activated through the dispatcher when their registered event/intent/capability metadata matches.
+7. Resolve/migrate account context with mandatory core; run recovery-first handling.
+8. Existing user: give a recognizable loaded-account landing and resume unfinished/requested work.
+9. Genuine new user: hand control to mandatory guidance/account modules for storage decision, identity, registration, baseline and first evidence. Storage-provider behavior remains in the storage adapter selected by manifest routing.
 Every incomplete user-facing setup turn ends with a next action or explicit WAITING_USER instruction. Infrastructure success is not a conversational terminal state.
 
 MIGRATION / STATE
 Follow the pinned MIGRATIONS graph. Migration-capable required modules may span supported older schemas only long enough to reach current schema; incompatible optional modules wait. Engine-only releases preserve LOCAL STATE. Never re-onboard a valid existing account because engine capabilities changed.
 
 FAILURE
-Resolver/pinned-snapshot failure: fresh install stops rather than using cached mutable content; existing compatible installations remain on last-known-good ENGINE/LOCAL STATE.
-Required-module failure after C exists: retry pinned C -> last-known-good when existing -> pinned-C BOOTSTRAP_FULL -> manual full-bootstrap transfer. Never fall backward to a cached `main` body or short-link alias.
+Public-alias failure before any LWAI bootstrap content is obtained is a transport failure; do not fabricate destination content. If canonical GitHub coordinates are already available from a verified LWAI context, use the canonical direct fallback; otherwise report the alias retrieval problem clearly.
+Resolver/pinned-snapshot failure after bootstrap content is obtained: fresh install stops rather than using cached mutable content; existing compatible installations remain on last-known-good ENGINE/LOCAL STATE.
+Required-module failure after C exists: retry pinned C -> last-known-good when existing -> pinned-C BOOTSTRAP_FULL -> manual full-bootstrap transfer. Never fall backward to a cached `main` body.
 Relevant optional-module failure must not be replaced by invented behavior; continue only when the degraded capability is safe and disclose material limitation.
 
 FRIENDLY UX
@@ -42,7 +45,7 @@ reload yourself / reload LWAI -> resolver + updater + private state/recovery rel
 check for LWAI updates -> alias for `refresh engine`.
 audit yourself -> detailed engine/resolver/manifest/module/provider/recovery health.
 audit my account -> active-account audit.
-share LWAI -> exact Stage-0 installer above.
+share LWAI -> exact permanent TinyURL installer above.
 export yourself / export LWAI -> sanitized self-contained BOOTSTRAP_FULL.
 export my account snapshot -> private active-account state only.
 export full recovery package -> sanitized engine + separate private state artifacts + manifest.
@@ -50,4 +53,4 @@ enable persistence / connect storage -> dispatcher activates storage capability 
 refresh season knowledge -> dispatcher activates registered season intelligence and refreshes public season knowledge without altering LOCAL STATE.
 
 EXPORT / SANITIZATION
-Generic engine exports may contain public resolver/repository endpoints, manifest activation metadata and schemas but no player/alliance/server identity, game UID, account facts, screenshots, private Corrections, spending/diplomacy, provider IDs, credentials, runtime/audit/checkpoint/journal rows or host-session references.
+Generic engine exports may contain the permanent public TinyURL, public resolver/repository endpoints, manifest activation metadata and schemas but no player/alliance/server identity, game UID, account facts, screenshots, private Corrections, spending/diplomacy, provider IDs, credentials, runtime/audit/checkpoint/journal rows or host-session references.
