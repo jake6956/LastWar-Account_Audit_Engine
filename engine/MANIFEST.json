@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.22",
+  "engine_version": "2026-08-29.23",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -166,7 +166,7 @@
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-08-29.22.1",
+      "module_version": "2026-08-29.23.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
       "dependencies": ["release.runtime", "release.updater", "core.accounts", "core.guidance"],
@@ -175,7 +175,7 @@
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "04f0509ee947ef6576d34c8e2aa04f6522b5d359"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "98a284b757532cee0f18a5069ed7fbf489025c3f"}
     }
   ]
 }
