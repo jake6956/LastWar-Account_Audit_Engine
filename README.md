@@ -8,7 +8,7 @@ Copy this one line into a fresh AI conversation:
 
 > Set up Last War optimization using the instructions at https://lastwarai.com
 
-`https://lastwarai.com` is LWAI's permanent first-party public configuration endpoint.
+`https://lastwarai.com` is LWAI's permanent first-party **Stage-0 bootloader** and public configuration endpoint.
 
 For initial setup, LastWarAI.com resolves the live GitHub Production `main` commit server-side, retrieves `engine/BOOTSTRAP_FULL.txt` from that exact immutable commit, adapts only the already-completed Stage-0 discovery section, and returns the complete sanitized LWAI configuration in the same response. The user's AI does not need to make a second GitHub or engine-URL request to install LWAI.
 
@@ -45,7 +45,7 @@ A user returning `connected` after provider authorization triggers capability re
 
 ## Storage provider policy
 
-**Google Drive is LWAI's preferred/recommended and most-tested consumer persistence provider when it is actually available with verified writable capability.** It is shown first and labeled Recommended, but the player must explicitly choose it. Preferred never means silently selected.
+**Google Drive is LWAI's preferred/recommended and most-tested consumer persistence provider when it is actually available with verified writable capability.** It is shown first and labeled Recommended, but the player must explicitly choose it. Preferred never means silently selected. When the host genuinely presents an `Allow always` permission option for the selected Google Drive connection, LWAI may recommend it for durable continuity; it never invents that option when the host does not offer it.
 
 Every other provider genuinely supported by the current host and `storage-api/1` capability checks is also offered and supported. Depending on actual available capabilities, that may include Dropbox, OneDrive / Microsoft 365, Box when writable, or another verified writable provider.
 
