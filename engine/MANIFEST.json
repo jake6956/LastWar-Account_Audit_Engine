@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-30.26",
+  "engine_version": "2026-08-30.27",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -65,7 +65,7 @@
     },
     {
       "module_id": "core.flow-continuity",
-      "module_version": "2026-08-30.26.2",
+      "module_version": "2026-08-30.27.1",
       "path": "engine/modules/core/flow-continuity.txt",
       "load_class": "mandatory_core",
       "dependencies": ["core.persistence", "core.accounts", "core.guidance"],
@@ -74,7 +74,7 @@
       "release_min": "2026-08-30.26",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "a5dbc98bb2b735022811ea32d0fc917ac860b89b"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "59046f9f866b478ab283f9aeab4e80e1008ed046"}
     },
     {
       "module_id": "domain.gear-heroes-skills-ew",
