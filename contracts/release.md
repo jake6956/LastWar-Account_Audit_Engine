@@ -1,6 +1,6 @@
 # Release Engineering Contract
 
-Contract revision: 2026-08-29.12
+Contract revision: 2026-08-30.25
 
 ## Channels
 - **Prod-Dev:** private live development/proving ground; may contain real account data and private provider references.
@@ -13,12 +13,12 @@ Contract revision: 2026-08-29.12
 Repository settings SHOULD enforce this process mechanically with required PRs, required Production validation, blocked force-push and blocked branch deletion. When repository-control APIs are unavailable, process enforcement remains mandatory and the missing infrastructure control is tracked explicitly.
 
 ## Promotion path
-`Private Prod-Dev -> frozen sanitized RC -> GitHub rc/<version> -> PR -> exact-head CI + private gates -> merge exact validated head -> main CI/public verification -> versioned private Production archive/release records`
+`Private Prod-Dev -> frozen sanitized RC -> GitHub rc/<version> -> PR -> exact-head CI + private gates -> merge exact validated head -> main CI/public verification -> versioned Production archive/release records`
 
 ## Public release tree
 A complete candidate contains:
 - bounded `engine/BOOTSTRAP.txt` orchestration loader;
-- `releases/LATEST.json` Production identity;
+- `releases/LATEST.json` Production identity and public-installer metadata;
 - `releases/MIGRATIONS.json` explicit migration graph;
 - `engine/MANIFEST.json` dependency/compatibility/integrity graph;
 - independently versioned modules;
@@ -35,11 +35,12 @@ A complete candidate contains:
 6. Module engine API/workspace schema ranges include current Production.
 7. Manifest schema describes the actual modular manifest contract.
 8. Required migration edge exists and declares local-state behavior.
-9. Thin loader remains within bounded size and excludes known domain playbooks.
+9. Thin loader remains within bounded size and excludes known domain/public-transport policy.
 10. BOOTSTRAP_FULL retains complete current recovery/storage/domain behavior.
 11. Storage adapter exposes explicit capability semantics and concurrency-safe journal rules.
 12. Runtime behavioral tests execute and pass for account isolation/recovery/provider degradation.
-13. README/release metadata/install endpoint are consistent.
+13. README/release metadata/public installer are consistent.
+14. The live first-party `https://lastwarai.com` Stage-0 locator is reachable, sanitized, version-neutral and directs the host to live GitHub exact-commit resolution.
 
 ## Required private gates
 - denylist scan against actual private identities/account/provider references;
@@ -51,17 +52,17 @@ A complete candidate contains:
 - provider capability fallback/concurrency checks;
 - BOOTSTRAP_FULL parity review;
 - exact-head PR CI success;
-- one-line installer verification.
+- first-party one-line installer verification.
 
 ## Consumer distribution hierarchy
-1. Preferred human install alias: https://tinyurl.com/2yxf7f5x
-2. Canonical raw loader: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
-3. Canonical release metadata: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json
-4. Canonical module graph: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json
-5. Canonical full fallback: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt
-6. Secondary legacy mirror when readable.
+1. Preferred human installer: `https://lastwarai.com`
+2. Current-version authority: `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`
+3. Exact-commit Stage-1 loader: `engine/BOOTSTRAP.txt` at resolved commit C
+4. Exact-commit release metadata/module graph/migration graph at C
+5. Exact-commit `engine/BOOTSTRAP_FULL.txt` fallback at C
+6. Legacy compatibility alias: `https://tinyurl.com/2yxf7f5x` only when an already-circulated prompt presents it
 
-The shortener is transport convenience only. GitHub `main` is authoritative.
+The first-party domain and legacy alias are transport/discovery only. GitHub live `main` commit.sha establishes current Production; trusted candidate reads are pinned to that exact commit.
 
 ## Merge discipline
 - Create RC from current verified `main`.
@@ -70,10 +71,10 @@ The shortener is transport convenience only. GitHub `main` is authoritative.
 - Read exact PR head SHA after all candidate writes.
 - Require CI success associated with that exact head.
 - Merge with `expected_head_sha`; if GitHub rejects because head moved, do not bypass it.
-- Require post-merge main CI success.
+- Require post-merge main CI success, including live public-entrypoint health.
 
 ## Failure behavior
-Any pre-merge gate failure leaves `main` untouched. A post-merge secondary mirror/archive failure does not silently roll back healthy GitHub Production; record synchronization degradation and retry privately. Installer/TinyURL mismatch is a release-health failure requiring review, while direct canonical GitHub remains the source authority.
+Any pre-merge gate failure leaves `main` untouched. A post-merge secondary archive/record failure does not silently roll back healthy GitHub Production; record synchronization degradation and retry privately. A broken LastWarAI.com locator is a release-health failure. If trusted LWAI material already provides canonical GitHub coordinates, existing deployments may use the direct live-ref resolver while the public endpoint is repaired; LOCAL STATE is never rewritten to compensate for transport failure.
 
 ## Versioning and compatibility
 Engine versions use `YYYY-MM-DD.N`. Production also declares `engine_api_version` and workspace schema version. Per-module API/schema ranges make compatibility explicit. `releases/MIGRATIONS.json` declares supported transitions.
