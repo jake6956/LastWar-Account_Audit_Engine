@@ -151,11 +151,11 @@
     },
     {
       "module_id": "adapters.storage",
-      "module_version": "2026-08-30.24.1",
+      "module_version": "2026-08-30.26.1",
       "path": "engine/modules/adapters/storage.txt",
       "load_class": "capability_on_demand",
       "dependencies": ["core.persistence", "core.accounts"],
-      "state_scope": "shared_engine+provider_rules",
+      "state_scope": "shared_engine+provider_rules+consumer_data_isolation",
       "required": false,
       "activation": {
         "intents": ["connect storage", "enable persistence", "cloud storage"],
@@ -165,7 +165,7 @@
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "71ade01855dcbf3240c813b0fef5c593691cd779"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "aed744eb7184cc6f4315b539b299ff37b77b3920"}
     },
     {
       "module_id": "release.runtime",
