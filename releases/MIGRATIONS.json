@@ -1,7 +1,56 @@
 {
-  "graph_version": "1.0",
+  "graph_version": "1.1",
   "engine_api_version": "1.0",
+  "workspace_schema_current": "2.3",
+  "workspace_schema_edges": [
+    {
+      "from": "2.1",
+      "to": "2.2",
+      "type": "additive_optional_guidance_audit",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "add_if_supported": ["guidance_metadata", "account_scoped_audit_sessions"],
+      "preserve": ["workspace_registry", "active_account_id", "immutable_account_id", "canonical_account_state", "history", "corrections", "evidence_metadata", "provider_references"],
+      "notes": "Introduced by 2026-08-29.10. Add optional guidance metadata and Audit Sessions only when absent/supported. Existing canonical state remains authoritative."
+    },
+    {
+      "from": "2.2",
+      "to": "2.3",
+      "type": "additive_optional_recovery",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "add_if_supported": ["runtime_checkpoints", "append_only_runtime_journal"],
+      "preserve": ["workspace_registry", "active_account_id", "immutable_account_id", "canonical_account_state", "audit_sessions", "history", "corrections", "evidence_metadata", "provider_references"],
+      "notes": "Introduced by 2026-08-29.11. Add optional recovery metadata only when absent/supported. Missing optional recovery stores never invalidate canonical account facts."
+    }
+  ],
   "edges": [
+    {
+      "from": "2026-08-29.9",
+      "to": "2026-08-29.10",
+      "schema_from": "2.1",
+      "schema_to": "2.2",
+      "type": "additive_local_state_schema",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["workspace_schema_21_to_23_preserves_state", "workspace_schema_migration_is_idempotent"],
+      "notes": "Historical edge restored in 2026-08-29.15. Adds optional guidance metadata and Audit Sessions only."
+    },
+    {
+      "from": "2026-08-29.10",
+      "to": "2026-08-29.11",
+      "schema_from": "2.2",
+      "schema_to": "2.3",
+      "type": "additive_workspace_recovery_schema",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["workspace_schema_21_to_23_preserves_state", "workspace_schema_migration_is_idempotent", "committed_checkpoint_not_replayed_during_schema_migration"],
+      "notes": "Historical edge restored in 2026-08-29.15. Adds optional Runtime Checkpoints and append-only Runtime Journal only."
+    },
     {
       "from": "2026-08-29.11",
       "to": "2026-08-29.12",
@@ -11,13 +60,7 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": [
-        "active_account_routing_isolation",
-        "legacy_migration_preserves_facts",
-        "waiting_user_boundary_survives_reload",
-        "verify_before_replay_does_not_duplicate_successful_write",
-        "checkpoint_loss_cannot_destroy_canonical_facts"
-      ],
+      "tests": ["active_account_routing_isolation", "legacy_migration_preserves_facts", "waiting_user_boundary_survives_reload", "verify_before_replay_does_not_duplicate_successful_write", "checkpoint_loss_cannot_destroy_canonical_facts"],
       "notes": "Hardens validation, manifest integrity, storage capability abstraction and loader boundaries without changing workspace/account schema."
     },
     {
@@ -29,11 +72,7 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": [
-        "pre_registry_legacy_startup_registers_before_recovery",
-        "current_registry_resolves_account_before_recovery",
-        "legacy_migration_preserves_facts"
-      ],
+      "tests": ["pre_registry_legacy_startup_registers_before_recovery", "current_registry_resolves_account_before_recovery", "legacy_migration_preserves_facts"],
       "notes": "Clarifies startup sequencing: current registry-backed deployments resolve active_account_id before recovery; legacy pre-registry deployments discover/register existing state first, establish account context, then run recovery."
     },
     {
@@ -45,14 +84,20 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": [
-        "runtime_session_exists_without_host_reference",
-        "duplicate_host_ref_does_not_merge_runtime_sessions",
-        "distinct_host_refs_do_not_duplicate_account",
-        "audit_session_is_account_scoped_and_links_provenance",
-        "checkpoint_cannot_cross_active_account_even_with_matching_host_ref"
-      ],
+      "tests": ["runtime_session_exists_without_host_reference", "duplicate_host_ref_does_not_merge_runtime_sessions", "distinct_host_refs_do_not_duplicate_account", "audit_session_is_account_scoped_and_links_provenance", "checkpoint_cannot_cross_active_account_even_with_matching_host_ref"],
       "notes": "Adds optional private runtime-session provenance. host_session_ref remains nullable/non-authoritative and cannot affect account identity, routing, recovery ordering, idempotency or canonical game evidence."
+    },
+    {
+      "from": "2026-08-29.14",
+      "to": "2026-08-29.15",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_with_legacy_workspace_compatibility",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["workspace_schema_21_to_23_preserves_state", "workspace_schema_migration_is_idempotent", "workspace_schema_migration_failure_preserves_original", "migration_capable_modules_bootstrap_legacy_schema", "domain_modules_blocked_before_target_schema", "stale_alias_cannot_downgrade_canonical_production", "committed_checkpoint_not_replayed_during_schema_migration"],
+      "notes": "Restores validated historical workspace-schema edges and permits migration-capable core bootstrap from supported 2.1/2.2 workspaces before normal current-schema domain loading. Canonical GitHub identity overrides stale alias/cache content."
     }
   ]
 }
