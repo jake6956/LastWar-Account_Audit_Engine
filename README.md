@@ -71,6 +71,8 @@ Before storage authorization LWAI must explain the application boundary clearly:
 
 > **LWAI is explicitly restricted to its own Last War workspace. I will not browse, read, change, move, delete, search, index or use anything else in your connected storage. Even if the connector technically exposes broader access, everything outside the LWAI workspace is off-limits to this tool.**
 
+This workspace-only boundary is a runtime rule, not merely a user-facing reassurance.
+
 That includes personal files, sibling folders, other ChatGPT/app workspaces and unrelated provider content. Broader connector visibility is not permission for provider-wide exploration.
 
 Authentication happens in the provider/ChatGPT UI. LWAI never asks the user to paste passwords, OAuth codes, access/refresh tokens, cookies or credentials into chat. Google Drive users are told to choose **`Allow always`** when ChatGPT actually offers that option. Equivalent persistent authorization is recommended for other providers only when genuinely available.
