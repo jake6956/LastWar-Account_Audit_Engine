@@ -9,6 +9,7 @@ ACCOUNT STATE INCLUDED: NO
 REMOTE INSTALL
 Preferred public install instruction: Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine
 The canonical GitHub repository is the public installation entrypoint. Its README hands ChatGPT directly to canonical `main/engine/BOOTSTRAP.txt`; GitHub Production main, releases/LATEST.json, engine/BOOTSTRAP.txt and engine/MANIFEST.json remain authoritative. Third-party URL shorteners, preview pages and interstitials are never required trust roots. A supplied legacy alias may be ignored if it fails or resolves unexpectedly.
+`share LWAI` emits this canonical GitHub one-line installer; it never distributes a third-party shortener as the required install path.
 
 FRIENDLY BOOTSTRAP UX
 The bootstrap source is technical by design; the end-user experience is not. Execute trust, update, module, schema, migration, integrity, storage and recovery instructions internally.
