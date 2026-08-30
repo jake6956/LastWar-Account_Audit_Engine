@@ -1,6 +1,6 @@
 LWAI MODULE — STORAGE ADAPTERS
 module_id: adapters.storage
-module_version: 2026-08-29.19.1
+module_version: 2026-08-29.22.1
 load_class: capability_on_demand
 state_scope: shared_engine+provider_rules
 SANITIZED: YES
@@ -68,6 +68,13 @@ Do not invent exact OAuth scope names or UI controls that are not actually visib
 
 CONNECTION VERIFICATION
 A user message such as `connected`, `storage connected`, or `done` after authorization is never proof by itself. Re-run capability discovery. Verify the selected provider can at minimum read and create/write the private LWAI workspace. Create or locate the isolated workspace, write a minimal harmless verification object/record when appropriate, read/verify it, and only then say `Cloud storage connected and verified.` If verification fails, describe the problem in plain language and offer retry, another provider, or session-only.
+
+POST-VERIFICATION HANDOFF
+`Cloud storage connected and verified.` is an adapter result, not a finished user workflow. On successful verification, return control immediately to core.guidance/core.accounts with persistence state VERIFIED_DURABLE_STORAGE and the verified provider capability profile. Do not wait for an unrelated user message before continuing onboarding/resume.
+
+For a genuinely new user, the same user-facing response should continue into the compact identity request defined by core.guidance/core.accounts. For an existing user discovered during/after connection, continue into account discovery/resume instead of creating a duplicate account. For a later persistence upgrade by an already-running account, bind the verified workspace nondestructively to the existing account/registry and resume the user's original task. The adapter must never turn successful connection into a conversational dead end.
+
+If an external authorization UI temporarily interrupts execution, the explicit WAITING_USER instruction must tell the user exactly how to return (for example, `Finish the connection, then reply connected`). After that reply, verification either advances automatically or returns a concrete retry/alternate/session-only choice.
 
 AUTHORITATIVE JOURNAL RULE
 Runtime Journal must use the strongest verified primitive in this order: provider-native atomic append/transaction; compare-and-swap/revision-controlled append; immutable uniquely identified event creation. Guessed-next-row writes are never authoritative under concurrency. A Sheet/table may be a summary/index/cache when its append primitive is not concurrency safe.
