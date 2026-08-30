@@ -26,13 +26,13 @@
   "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
   "migration": {
     "from": "2026-08-30.25",
-    "type": "engine_only_no_dead_air_onboarding_recovery_hardening",
+    "type": "engine_only_user_experience_privacy_research_and_recovery_hardening",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds a mandatory user-flow continuity layer and executable regressions so provider authorization return, storage verification, onboarding interruption recovery and existing-account startup always resolve to an explicit user action, WAITING_USER boundary or running-state handoff. No private/local state schema changes."
+    "notes": "Adds mandatory no-dead-air flow continuity, friendly-expert interaction behavior, strict public/private data placement, Google Drive as the preferred explicitly selected consumer persistence provider with verified alternatives supported, and current evidence orchestration across official/direct sources plus independently validated community resources. No private/local state schema changes."
   },
-  "notes": "No-dead-air onboarding and recovery hardening. First-party LastWarAI.com transport and GitHub exact-commit trust remain unchanged; Engine API 1.0, workspace schema 2.3 and LOCAL STATE are preserved."
+  "notes": "User-flow, privacy, storage-provider, research-source and friendly-expert experience hardening. LastWarAI.com transport and GitHub exact-commit trust remain unchanged; Engine API 1.0, workspace schema 2.3 and LOCAL STATE are preserved."
 }
