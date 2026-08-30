@@ -38,21 +38,37 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.assertIn("live GitHub `main`", self.resolver)
         self.assertIn("Do not fabricate a SHA", self.resolver)
 
-    def test_stage0_resolves_sha_server_side_for_fresh_install(self):
+    def test_stage0_is_server_side_same_domain_and_paste_safe(self):
         for body in (self.worker, self.locator, self.contract, self.public_validator):
             self.assertIn("RESOLVED_PRODUCTION_COMMIT", body)
-            self.assertIn("EXACT_BOOTSTRAP_URL", body)
-            self.assertIn("LIVE_GITHUB", body)
-        self.assertIn("await fetch(LIVE_REF", self.worker)
-        self.assertIn("must not be required to call GitHub's branch API again", self.contract)
-        self.assertIn("Do NOT require the user/client to retrieve the GitHub branch API again", self.worker)
+            self.assertIn("ENGINE_URL", body)
+        self.assertIn("LIVE_GITHUB_SERVER_SIDE", self.worker)
+        self.assertIn("PASTED_CONTENT_MODE: CONTINUE_INSTALL", self.worker)
+        self.assertIn("You do not need to copy anything else from this page", self.worker)
+        self.assertIn("Do not call GitHub directly", self.worker)
+        self.assertIn("must not be required to call GitHub", self.locator)
         self.assertRegex(self.worker, re.compile(r"\^\[0-9a-f\]\{40\}\$"))
         self.assertIn("status: 503", self.worker)
         self.assertNotIn("FALLBACK_SHA", self.worker)
 
-    def test_public_validator_compares_stage0_sha_to_live_github(self):
+    def test_same_domain_engine_proxy_is_complete_immutable_and_sanitized(self):
+        for token in (
+            "BOOTSTRAP_FULL.txt",
+            "FIRST-PARTY IMMUTABLE ENGINE HANDOFF",
+            "X-LWAI-Commit",
+            "immutable",
+            "SANITIZED: YES",
+            "ACCOUNT STATE INCLUDED: NO",
+            "DO NOT repeat the GitHub branch-resolution step before beginning",
+        ):
+            self.assertIn(token, self.worker)
+        self.assertIn("/engine/", self.worker)
+        self.assertIn("same-domain", self.locator)
+
+    def test_public_validator_compares_stage0_sha_to_live_github_and_proxy(self):
         self.assertIn("sha != live_sha", self.public_validator)
-        self.assertIn("resolved exact-commit bootstrap", self.public_validator)
+        self.assertIn("X-LWAI-Commit", self.public_validator)
+        self.assertIn("same-domain pinned engine", self.public_validator)
         self.assertIn(LIVE_REF, self.public_validator)
 
     def test_candidate_reads_are_pinned_to_one_commit(self):
