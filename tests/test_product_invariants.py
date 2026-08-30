@@ -64,11 +64,13 @@ class ProductInvariantTests(unittest.TestCase):
         for body in (flow, fallback, readme):
             self.assertIn("LastWarTutorial.com", body)
             self.assertIn("cpt-hedge.com", body)
+            self.assertIn("LastWarVault.com", body)
             self.assertIn("r/LastWarMobileGame", body)
             self.assertRegex(body, r"(?i)official|in-game")
             self.assertRegex(body, r"(?i)high confidence")
         self.assertIn("These named community sources are research inputs, never automatic authority", flow)
         self.assertIn("independently check the claim against current official/in-game evidence", flow)
+        self.assertRegex(flow, r"(?i)verified in-game data.*estimates or recommendations")
 
     def test_no_dead_air_contract_still_dominates_setup(self):
         flow = text("engine/modules/core/flow-continuity.txt")
@@ -86,7 +88,7 @@ class ProductInvariantTests(unittest.TestCase):
         modules = {m["module_id"]: m for m in manifest["modules"]}
         mod = modules["core.flow-continuity"]
         self.assertTrue(mod["required"])
-        self.assertEqual(mod["module_version"], "2026-08-30.26.2")
+        self.assertEqual(mod["module_version"], "2026-08-30.27.1")
         self.assertIn("expert_experience", mod["state_scope"])
         self.assertIn("research_source_policy", mod["state_scope"])
         self.assertIn("data_placement", mod["state_scope"])

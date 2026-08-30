@@ -11,6 +11,7 @@
   "module_selection": "manifest_activation_v1",
   "preferred_install_url": "https://lastwarai.com",
   "preferred_install_instruction": "Set up Last War optimization using the instructions at https://lastwarai.com",
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com",
   "legacy_install_urls": [
     "https://tinyurl.com/2yxf7f5x"
   ],

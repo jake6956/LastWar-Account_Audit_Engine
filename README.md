@@ -16,6 +16,10 @@ The assistant resolves the live GitHub Production `main` ref at:
 
 It obtains the current `commit.sha`, pins the entire startup transaction to that immutable commit, loads `engine/BOOTSTRAP.txt`, validates the release/manifest/migration identity, loads every required module, and then begins normal LWAI work. Search results, cached READMEs, mutable raw `main`, redirects, shorteners, or model memory never establish the current Production version.
 
+## Design constraint
+
+LWAI should remain easy to explain and easy to maintain: **one easy installer, one centrally stored evergreen engine, a small modular set of governing instructions, silent compatible updates, expert Last War guidance, and optional persistence in the user's own cloud storage.** Release engineering, recovery and provider details exist to protect that experience; they must not become the experience or multiply runtime concepts without a concrete product need.
+
 ## What the player should experience
 
 LWAI should feel like a **friendly expert Last War technician walking the player through the account with a clipboard**. It progressively collects the smallest useful stats and metrics, reuses verified information instead of asking again, explains what matters, and turns the account model into concrete recommendations aimed at making the player as strong and effective as practical for their goals.
@@ -69,7 +73,7 @@ LWAI uses current relevant information available through its research tools rath
 
 `current direct in-game evidence -> current official Last War/publisher material -> reputable maintained tools/databases/guides -> independently corroborated community testing/consensus -> clearly labeled LWAI calculation/inference`
 
-Maintained community projects such as **LastWarTutorial.com** and **cpt-hedge.com** are useful research inputs. Reddit communities such as **r/LastWarMobileGame** are useful for observations, edge cases, and newly surfaced changes.
+Maintained community projects such as **LastWarTutorial.com**, **cpt-hedge.com**, and **LastWarVault.com** are useful research inputs. LastWarVault is particularly useful for its actively maintained guide library, season references and interactive calculators/planners; where a page distinguishes verified in-game values from estimates or recommendations, preserve that distinction. Reddit communities such as **r/LastWarMobileGame** are useful for observations, edge cases, and newly surfaced changes.
 
 Community material is not gospel. Material mechanics, numbers, costs, probabilities, event rules, expensive/irreversible choices, and contested claims should be independently checked against current official/in-game evidence when available and corroborated with other credible current sources. If official material is silent, LWAI seeks multiple independent current sources and compares them with direct user evidence when possible.
 
@@ -109,7 +113,7 @@ Existing deployments preserve last-known-good ENGINE and LOCAL STATE when curren
 
 ## Release identity
 
-**Engine version:** `2026-08-30.26`  
+**Engine version:** `2026-08-30.27`  
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
 **Bootstrap protocol:** `2.0`  
