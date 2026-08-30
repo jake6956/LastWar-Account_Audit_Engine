@@ -4,7 +4,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
-LEGACY_SHORTENER = "https://tinyurl.com/"
+PUBLIC_URL = "https://lastwarai.com"
+LEGACY_URL = "https://tinyurl.com/2yxf7f5x"
 
 
 def read(path: str) -> str:
@@ -42,30 +43,32 @@ class UserExperienceContractTests(unittest.TestCase):
         ):
             self.assertNotIn(forbidden, self.loader)
 
-    def test_stage0_installer_uses_live_branch_ref(self):
-        self.assertEqual(self.latest["preferred_install_url"], LIVE_REF)
-        for body in (self.loader, self.full, self.bootstrap, self.readme):
+    def test_stage0_uses_first_party_entrypoint_then_live_ref(self):
+        self.assertEqual(self.latest["preferred_install_url"], PUBLIC_URL)
+        self.assertEqual(self.latest["live_ref_source"], LIVE_REF)
+        self.assertFalse(self.latest["public_entrypoint_authority"])
+        for body in (self.full, self.bootstrap, self.readme):
+            self.assertIn(PUBLIC_URL, body)
             self.assertIn(LIVE_REF, body)
+        self.assertIn(LIVE_REF, self.loader)
         self.assertIn("Stage-0 bootloader", self.readme)
-        self.assertIn("current commit SHA", self.readme)
 
-    def test_primary_installer_does_not_require_third_party_shortener(self):
-        for label, body in (
-            ("loader", self.loader),
-            ("full", self.full),
-            ("release.bootstrap", self.bootstrap),
-        ):
-            self.assertNotIn(LEGACY_SHORTENER, body, label)
-        self.assertIn("Do not use the old TinyURL installer", self.readme)
+    def test_primary_installer_is_first_party_not_third_party_shortener(self):
+        self.assertEqual(
+            self.latest["preferred_install_instruction"],
+            f"Set up Last War optimization using the instructions at {PUBLIC_URL}",
+        )
+        self.assertIn(LEGACY_URL, self.latest.get("legacy_install_urls", []))
+        self.assertNotIn(LEGACY_URL, self.loader)
+        self.assertNotIn(LEGACY_URL, self.full)
+        self.assertIn("legacy compatibility alias", self.readme.lower())
 
     def test_legacy_repo_installer_handoff_executes_without_repaste(self):
         lower = self.readme.lower()
-        self.assertIn("assistant handoff / legacy-installer compatibility", lower)
-        self.assertIn("execute the stage-0 bootloader below now", lower)
-        self.assertIn("do not", lower)
-        self.assertIn("ask the user to copy/paste a second prompt", lower)
+        self.assertIn("legacy repository-installer compatibility", lower)
+        self.assertIn("do not stop at the readme", lower)
+        self.assertIn("ask the user to paste another prompt", lower)
         self.assertIn(LIVE_REF, self.readme)
-        self.assertIn("stop rather than guessing", lower)
 
     def test_first_run_cloud_question_lives_in_modules_not_loader(self):
         question = "would you like me to use private cloud storage"
