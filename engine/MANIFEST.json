@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.16",
+  "engine_version": "2026-08-29.17",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -23,7 +23,7 @@
     },
     {
       "module_id": "core.persistence",
-      "module_version": "2026-08-29.16.1",
+      "module_version": "2026-08-29.17.1",
       "path": "engine/modules/core/persistence.txt",
       "load_class": "mandatory_core",
       "dependencies": ["core.operating"],
@@ -32,7 +32,7 @@
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "70ef6c1a128ac8b4bd2eee7757f51238f24ed704"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "ee53d583e01af9fbf0e8f1f3d1ec686692d46289"}
     },
     {
       "module_id": "core.accounts",
@@ -49,7 +49,7 @@
     },
     {
       "module_id": "core.guidance",
-      "module_version": "2026-08-29.16.1",
+      "module_version": "2026-08-29.17.1",
       "path": "engine/modules/core/guidance.txt",
       "load_class": "mandatory_core",
       "dependencies": ["core.operating", "core.persistence", "core.accounts"],
@@ -58,7 +58,7 @@
       "release_min": "2026-08-29.10",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "68cffabd42c5102a315626d48b2abacd2e68607c"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "3fd36bc3feb4d7fec46d51d85147a088ba2bec61"}
     },
     {
       "module_id": "domain.gear-heroes-skills-ew",
@@ -140,7 +140,7 @@
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-08-29.16.1",
+      "module_version": "2026-08-29.17.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
       "dependencies": ["release.runtime", "core.accounts", "core.guidance"],
@@ -149,7 +149,7 @@
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "dd29507b57a7709cbfcd545394878388a147de43"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "a8800bff7b06f0a3d541f5d6ce353a78d81c578e"}
     }
   ]
 }
