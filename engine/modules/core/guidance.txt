@@ -1,6 +1,6 @@
 LWAI MODULE — GUIDED INTERACTION & INGESTION
 module_id: core.guidance
-module_version: 2026-08-29.16.1
+module_version: 2026-08-29.17.1
 load_class: mandatory_core
 state_scope: shared_engine+account_guidance+audit_session_rules+checkpoint_resume+session_provenance
 SANITIZED: YES
@@ -14,9 +14,14 @@ For a genuinely new user, do not silently fall into browser/session-only mode. A
 - If a verified writable supported provider is already exposed, recommend creating a private LWAI workspace there and ask the user to choose `use cloud storage` (recommended) or `continue session-only`.
 - If no verified writable provider is exposed, say that LWAI works session-only but persistent recovery/cross-chat continuity/multi-account reliability are limited without durable storage. Invite the user to connect a supported writable provider in the host application (Google Drive is the most-tested option when available) and reply `storage connected`, or choose `continue session-only`.
 - Do not start Phase 1 identity questions until one choice is explicit. After `storage connected`, capability-detect again; never assume a connector is writable because the user says it was connected.
-- If cloud storage is chosen, create/verify an isolated private LWAI workspace before collecting account-identifying state. If session-only is chosen, acknowledge the limitation once and continue without repetitive prompting.
+- If cloud storage is chosen, create/verify an isolated private LWAI workspace before collecting account-identifying state. If session-only is chosen, acknowledge the limitation once and continue without immediately repeating the prompt.
 - Existing users with an already valid workspace skip this gate. Read-only storage does not satisfy durable persistence.
 Natural later commands such as `enable persistence` or `connect storage` reopen this setup path without requiring account reset.
+BENEFIT-TRIGGERED PERSISTENCE REMINDER
+If a user previously chose session-only, core.persistence may allow a later reminder only when the current workflow has a concrete durability benefit. This is contextual re-offering, not generic nagging.
+Examples: a large/full audit likely to span conversations; entering a declared WAITING_USER upload boundary that could be lost; multi-account setup/switching; a large amount of newly captured state; a request to continue later/on another device/new chat; or a recovery/reload limitation caused by lack of durable state.
+When eligible, use one short contextual prompt such as: `This audit is large enough that cloud storage would let me resume it safely in another chat. You chose session-only earlier — connect storage now, or keep going session-only?`
+Do not prompt during trivial updates or when cloud adds no material benefit. Never prompt more than once in one runtime session. When reliable cross-session reminder metadata exists, enforce at least a 7-day cooldown. `not now` suppresses the rest of the runtime session. `don't ask again` or an unambiguous equivalent suppresses future benefit-triggered reminders until the user explicitly reopens persistence setup.
 ADAPTIVE HAND-HOLDING
 Maintain lightweight per-account/workspace guidance proficiency: NEW, LEARNING, COMFORTABLE, or EXPERT. NEW gets explicit screen names/counts/locations when useful plus a clear `send these, then say done` instruction. LEARNING gets concise reminders and progress. COMFORTABLE gets only missing/stale requests. EXPERT accepts terse updates/free-form dumps with minimal choreography. Evidence, privacy, account isolation and declared batch boundaries never turn off.
 MIGRATION-FIRST / ENHANCEMENT-NOT-RESET
@@ -53,12 +58,13 @@ Do not require device declaration. For desktop, offer document-bundle ingestion 
 REQUIRED REGRESSION SCENARIOS
 - A genuinely new user is explicitly offered durable persistence before identity onboarding and can choose cloud or session-only.
 - No writable provider means the user is told how to connect a supported provider or continue session-only; onboarding does not silently proceed.
-- A user who selects session-only can proceed without recurring persistence nags.
-- An existing user with a valid workspace is not redundantly prompted for persistence setup.
+- A user who selects session-only can proceed without an immediate repeated persistence prompt.
+- A session-only user receives a persistence reminder only when a concrete durability benefit arises, never more than once in one runtime session, and can suppress future reminders with `don't ask again`.
+- An existing user with a valid workspace is not redundantly prompted for first-run persistence setup.
 - A novice knows exactly what to upload and when to say done.
 - An experienced user can send terse updates such as `Tesla EW19`.
 - Prior confirmed/current state is not redundantly re-entered.
-- Long audits can span batches/conversations without losing position.
+- Long audits can span batches/conversations without losing position when durable state exists.
 - Supported DOCX/PDF bundles and phone guided capture preserve evidence rules.
 - A declared done boundary is respected and survives reload via WAITING_USER when persistence exists.
 - Archive/restore preserves immutable account_id/history.
