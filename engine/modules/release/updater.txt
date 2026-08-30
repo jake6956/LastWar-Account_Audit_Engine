@@ -1,6 +1,6 @@
 LWAI MODULE — AUTOMATIC ENGINE UPDATER
 module_id: release.updater
-module_version: 2026-08-29.18.1
+module_version: 2026-08-29.19.1
 load_class: mandatory_core
 state_scope: shared_engine+workspace_engine_metadata
 SANITIZED: YES
@@ -43,8 +43,13 @@ When a freshness trigger fires and web is available:
 7. Health-check the refreshed engine/module graph before making it active.
 8. Atomically adopt the verified newer engine from the runtime's point of view, update installed_engine_version/last_known_good_engine_version/update metadata when durable storage exists, then resume the user's original requested action under the new engine.
 
-SILENT NORMAL UX
-A successful no-op freshness check is silent. A successful automatic update should normally produce at most a compact one-line note when surfacing the version is useful; do not derail the user's requested task with release notes. The original user action remains pending across the update and must be completed after the update health check.
+FRIENDLY UPDATE UX
+The update mechanism is technical; the normal user-facing experience is not.
+- A successful no-op freshness check is silent.
+- If a visible status is useful, say `Checking for updates…` rather than narrating URLs, manifests, hashes, schemas or modules.
+- After a successful automatic update, use at most a short confirmation such as `LWAI updated successfully.` and immediately continue the user's original task.
+- Do not print release notes, changed-module lists, migration traces, integrity digests or internal transaction steps unless the user asks for `audit yourself`/debug details.
+- On recoverable failure, continue safely on last-known-good and explain only the plain-language impact. Technical detail appears only if needed to recover or explicitly requested.
 
 FAILURE / ROLLBACK
 Any failed identity, channel, privacy, API, schema, migration, module-integrity, retrieval or post-update health check leaves last-known-good ENGINE active and LOCAL STATE untouched. Never partially activate a candidate release. Never rewrite account state to repair engine uncertainty. Record only a compact private update-health/error summary when durable metadata exists.
