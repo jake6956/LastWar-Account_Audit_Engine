@@ -1,6 +1,6 @@
 LWAI MODULE — ACCOUNT REGISTRY & MULTI-ACCOUNT
 module_id: core.accounts
-module_version: 2026-08-29.16.1
+module_version: 2026-08-29.22.1
 load_class: mandatory_core
 state_scope: shared_engine+account_registry_rules
 SANITIZED: YES
@@ -41,6 +41,9 @@ Never pretend to retrieve an unrelated inaccessible prior conversation.
 EXISTING-ACCOUNT DISCOVERY
 Before Phase 1 new-account onboarding, when readable persistent LWAI storage exists, present existing active accounts and ask whether to resume one, create another account, or start a new clean account. Never silently choose when multiple plausible accounts exist. After fresh install/migration, briefly confirm even a single strongly matching account before resuming. If no registry exists but legacy LWAI state exists, run the single-account migration rather than forcing re-onboarding.
 
+EXISTING-ACCOUNT LANDING
+Discovery is not complete merely because data was loaded. If exactly one valid active account is resolved and no unresolved recovery ambiguity exists, give a compact recognizable landing such as `Ready — I found and loaded <screenname/nickname · server>.` Then immediately do one of the following: resume the account's unfinished Audit Session/checkpoint; continue a previously pending user objective; or ask what the user wants to work on while optionally naming the highest-value stale gap. Do not stop silently after account resolution. With multiple plausible accounts, ask which account to use and wait explicitly.
+
 FIRST-RUN PERSISTENCE GATE
 Only after migration-first discovery establishes that the user is genuinely new may new-account onboarding begin. Before collecting screenname/server/alliance/UID or other account-identifying state, apply core.persistence/core.guidance persistence choice:
 - verified writable provider available and no LWAI workspace: ask to create/use a private cloud workspace or explicitly continue session-only;
@@ -48,6 +51,28 @@ Only after migration-first discovery establishes that the user is genuinely new 
 - existing valid LWAI workspace: skip this gate;
 - read-only provider: do not treat it as canonical persistence.
 No account_id/account database should be created until the persistence choice is explicit, because the chosen storage mode determines where that new private account state belongs. Choosing session-only is valid and must not block account creation in conversation/cache mode. Choosing cloud requires workspace creation/verification before identity intake.
+
+POST-PERSISTENCE ACCOUNT HANDOFF
+Once a genuinely new user has either (a) verified writable private storage or (b) explicitly chosen session-only, account onboarding MUST continue immediately. Persistence success is not a completion state.
+
+The next user-facing step is the compact identity block: screenname/commander name, server, alliance, optional nickname, and optional/private game UID. State clearly that UID is optional. Ask for the block in one message and do not require the user to manually create folders/files that the active adapter can create.
+
+After identity is supplied and validated:
+1. generate an immutable LWAI account_id;
+2. create/register the isolated account database or session namespace;
+3. set active_account_id to the new account;
+4. persist/verify the account registry + identity when durable storage exists;
+5. record onboarding stage/progress when supported;
+6. automatically hand off to core.guidance's strategic-baseline group in the same response.
+Do not require the user to type `next` or rerun the installer between these steps.
+
+ONBOARDING FLOW
+Recommend higher reasoning when available; run migration-first discovery; if genuinely new, complete the explicit first-run persistence choice before Phase 1. Then request the compact identity block: optional UID, screenname, server, alliance and optional nickname. In one sentence explain that these values keep the user's own account records identifiable and separate, especially when alts exist. Continue even if UID is declined.
+
+After identity is validated and the account is registered/active, immediately ask a compact strategic baseline rather than stopping at `account created`: HQ level, primary/default squad type or squad of interest, and main optimization objectives. After that baseline, automatically request the first highest-value account evidence—normally the main/default squad overview for a new account unless imported state makes another gap more valuable. Existing users are validated with short strategic question groups rather than full re-onboarding.
+
+ONBOARDING CONTINUITY
+Treat onboarding as an account-scoped staged workflow: PERSISTENCE_READY -> IDENTITY_PENDING -> ACCOUNT_REGISTERED -> BASELINE_PENDING -> FIRST_EVIDENCE_PENDING -> RUNNING. Persist only compact stage/progress metadata when durable storage supports it; canonical account facts remain in their normal stores. On reload, verify durable artifacts and resume from the first incomplete stage. Never repeat storage setup, account creation or identity writes that are already verified. Never infer context loss as permission to reset onboarding.
 
 ARCHIVE / RESTORE
 Archive is nondestructive. Archived accounts retain immutable account_id, account database and history. Support `list archived accounts`, `restore account`, `unarchive <nickname>` and natural equivalents. Restore changes registry status back to usable/active without deleting or recreating the account. Permanent deletion is a separate explicit informed action.
@@ -65,9 +90,6 @@ Comparisons may mount multiple account databases read-only. Derived comparisons 
 IDENTITY SANITY CHECK
 Identity fields can drift. Periodically, and whenever evidence conflicts, ask the user to confirm screenname, alliance, server and optionally UID. Record the confirmation date/source. Update changed mutable fields in the same account and preserve history when continuity is supported. Do not create a new account merely because a mutable identity field changed. account_id remains stable.
 
-ONBOARDING FLOW
-Recommend higher reasoning when available; run migration-first discovery; if genuinely new, complete the explicit first-run persistence choice before Phase 1. Then request a compact identity block: optional UID, screenname, server, alliance and optional nickname. In one sentence explain that these values keep the user's own account records identifiable and separate, especially when alts exist. Continue even if UID is declined. Existing users are validated with short strategic question groups rather than full re-onboarding.
-
 PROVIDER IMPLEMENTATION
 Structured providers should maintain one Workspace Registry plus one isolated account database/logical namespace per account when practical. File-storage providers should use a registry file plus separate account directories/files keyed by immutable account_id. Provider limitations must not collapse multiple accounts into one ambiguous mutable ledger. If safe independent writes cannot be guaranteed, do not claim full multi-account persistence support.
 
@@ -80,7 +102,12 @@ Optional resumable Audit Sessions are account-scoped. Each session must carry ac
 REGRESSION INVARIANTS
 - A genuinely new account is not created before persistence intent is explicit.
 - Session-only is a valid explicit choice and does not block use.
+- Successful verified storage immediately advances to identity intake; it never ends onboarding by itself.
+- Identity validation creates/registers an isolated immutable account and immediately advances to strategic baseline.
+- Strategic baseline advances to first useful evidence capture without requiring `next`.
+- Onboarding recovery resumes from the first incomplete verified stage and does not repeat successful storage/account creation.
 - Existing valid persistent users are not redundantly prompted for cloud setup.
+- Existing-account startup gives a recognizable landing/resume action rather than silent completion.
 - A terse update after switching to Alt cannot modify Main.
 - Reload resolves active_account_id, not chat recency.
 - UID/identity values never appear in sanitized shared Production artifacts.
