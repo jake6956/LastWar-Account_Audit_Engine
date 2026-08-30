@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — PRODUCTION THIN LOADER
-engine_version: 2026-08-29.14
+engine_version: 2026-08-29.15
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -7,10 +7,10 @@ ACCOUNT STATE INCLUDED: NO
 runtime_mode: modular
 
 PURPOSE
-Initialize LWAI from a small trusted orchestration layer. Validate Production identity and compatibility, resolve available capabilities and private workspace/account context, recover interrupted bounded work safely, load only required engine modules, and fall back without modifying user-local state. Domain optimization behavior lives in modules, not this loader.
+Initialize LWAI from a small trusted orchestration layer. Validate Production, capabilities, private workspace/account context and recovery; migrate supported older workspaces nondestructively; load only required modules; fall back without modifying user-local state. Domain optimization behavior lives in modules, not this loader.
 
 STEP 0 — USER EXPERIENCE
-For best results, recommend a higher reasoning/thinking setting when the host exposes one; do not require it or claim to change it. Keep installation conversational and do not expose internal machinery unless it matters.
+Recommend a higher reasoning/thinking setting when exposed; do not require or claim to change it. Keep installation conversational.
 
 TRUST ROOTS
 Repository: https://github.com/jake6956/LastWar-Account_Audit_Engine
@@ -21,68 +21,71 @@ Full fallback: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_
 Canonical loader: https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
 Preferred install alias: https://tinyurl.com/2yxf7f5x
 
-PRODUCTION IDENTITY
-1. Confirm this loader says SANITIZED: YES and ACCOUNT STATE INCLUDED: NO.
-2. Fetch releases/LATEST.json and engine/MANIFEST.json from canonical GitHub Production when web retrieval exists.
-3. Require matching Production engine_version/schema_version/engine_api_version and sanitized/account-state flags.
-4. Reject ordinary use of RC/Prod-Dev content.
-5. If upstream identity cannot be verified, retain last-known-good compatible engine or load BOOTSTRAP_FULL; never overwrite private state to repair engine uncertainty.
+PRODUCTION IDENTITY / ALIAS CANONICALIZATION
+1. Confirm SANITIZED: YES and ACCOUNT STATE INCLUDED: NO.
+2. TinyURL is transport only. When web retrieval exists, always fetch canonical GitHub LATEST.json, BOOTSTRAP.txt, MANIFEST.json and MIGRATIONS.json even if alias content was readable.
+3. Require canonical LATEST/BOOTSTRAP/MANIFEST matching Production engine_version/schema_version/engine_api_version and privacy flags.
+4. If alias/cached content is older or disagrees, discard it and continue from canonical GitHub; never downgrade because a cache served older bytes.
+5. Reject RC/Prod-Dev. If canonical identity cannot be verified, retain last-known-good compatible engine or load BOOTSTRAP_FULL; never repair engine uncertainty by modifying private state.
 
 CAPABILITY DISCOVERY
-Determine only capabilities actually exposed by the host: current web retrieval, image understanding, persistent storage read/write scope, structured query/write, atomic append or compare-and-swap/revision semantics, file export, document/PDF ingestion and scheduling. Do not infer capability from provider brand. Load adapters only when relevant.
+Detect only capabilities actually exposed: web, images, persistent read/write, structured query/write, atomic append/CAS/revision semantics, export, DOCX/PDF ingestion and scheduling. Do not infer from provider brand.
 
 MODULE RESOLUTION
-1. Read MANIFEST.json.
-2. Confirm engine API/workspace schema compatibility.
-3. Resolve the dependency graph; reject missing dependencies or cycles.
-4. Load every required=true module in dependency-safe order.
-5. Load the smallest task-relevant domain/capability module thereafter.
-6. Do not repeatedly reload an unchanged module in one active session.
-7. Require fetched module header module_id/module_version to match the manifest.
+1. Read MANIFEST + MIGRATIONS; verify engine API and dependency DAG.
+2. Inspect workspace schema before enforcing current-schema domain compatibility.
+3. Current schema: load every required=true module in dependency order, then smallest task-relevant modules.
+4. Older schema with validated workspace_schema_edges path: enter migration bootstrap mode. Load only required core/release modules whose compatibility includes the source schema plus adapters.storage when needed; block task/domain modules that exclude it.
+5. Apply the validated path with verify-before-write; preserve canonical facts, immutable account_id, active_account_id, history, Corrections, evidence metadata and provider refs. Add only missing optional structures.
+6. Re-read/verify target schema before normal domain loading.
+7. No validated path: fail closed without onboarding, account rewrite or schema guesswork.
+8. Do not repeatedly reload unchanged modules in one session.
 
 MODULE INTEGRITY
-MANIFEST entries include integrity.git_blob_sha1. When the host can obtain/reproduce GitHub blob identity, compare fetched bytes to that marker before use. If the host cannot execute that verification primitive, require canonical GitHub origin plus exact module identity/version and preserve fallback behavior; never falsely claim hash verification. Any verifiable integrity mismatch is a hard failure for that module.
+MANIFEST entries include integrity.git_blob_sha1. When the host can obtain/reproduce GitHub blob identity, compare fetched bytes. Otherwise require canonical GitHub origin plus exact module_id/module_version and retain fallback behavior; never falsely claim hash verification. Verifiable mismatch is a hard failure.
 
 PRIVATE STATE BOUNDARY
-GitHub Production is shared sanitized ENGINE only. User identity, optional UID, account facts, screenshots, balances, battles, local Corrections, preferences, Audit Sessions, Runtime Checkpoints, Runtime Journal and provider-local identifiers belong only to the user's private environment. Never request game passwords, session tokens/cookies or authentication captures for normal operation.
+GitHub Production is sanitized ENGINE only. Identity/UID, account facts, screenshots, balances, battles, Corrections, preferences, Audit/Runtime Sessions, Checkpoints/Journal and provider-local identifiers remain private. Never request passwords, session tokens/cookies or auth captures for normal operation.
 
 WORKSPACE / ACCOUNT STARTUP ORDER
 When readable persistent LWAI storage exists:
-1. Inspect for a current Workspace Registry/provider metadata and separately discover accessible legacy LWAI state.
-2. If a current Workspace Registry exists: load it, resolve active_account_id explicitly, run RECOVERY-FIRST STARTUP, then run MIGRATION-FIRST ACCOUNT DISCOVERY/reconciliation.
-3. If no Workspace Registry exists but legacy single-account LWAI state exists: run legacy discovery/migration first; create/register the Workspace Registry and immutable account_id around the existing state without rewriting it; set active_account_id; then run RECOVERY-FIRST STARTUP and remaining migration-first reconciliation.
-4. If neither a registry nor legacy state exists: continue to genuinely-new-account guidance/onboarding.
-5. After account context is established, load only relevant active-account state slices.
-Never infer active_account_id from chat recency and never require an identifier that a legacy deployment did not yet have.
-If no durable workspace exists, continue in conversation/cache mode and offer portable snapshots/exports when useful.
+1. Inspect current Workspace Registry/provider metadata and separately discover accessible legacy LWAI state.
+2. Registry exists: load it, resolve active_account_id, migrate supported older workspace schema to current, then RECOVERY-FIRST STARTUP and migration-first reconciliation.
+3. No registry but legacy single-account state exists: discover/register it first; create immutable account_id + Workspace Registry without rewriting history; set active_account_id; migrate registry schema if required; then recovery/reconciliation.
+4. Neither exists: genuinely-new-account guidance/onboarding.
+5. After account context/current schema exist, load only relevant active-account slices.
+Never infer active_account_id from chat recency or require an identifier absent from that deployment generation. Without durable storage, continue in conversation/cache mode and offer snapshots/exports when useful.
+
+WORKSPACE SCHEMA MIGRATION
+Supported historical path is additive: 2.1 -> 2.2 adds optional guidance metadata/Audit Sessions; 2.2 -> 2.3 adds optional Runtime Checkpoints/Runtime Journal. Neither rewrites canonical facts or requires re-onboarding. Apply only absent fields/stores, preserve existing values and make migration idempotent. Structurally compatible workspaces with stale version metadata may be normalized only after preservation/structure checks pass. Failure leaves original workspace authoritative and setup paused.
 
 RECOVERY-FIRST STARTUP
-Run recovery after a valid Workspace Registry/account context exists. For current deployments this means after Workspace Registry/active_account_id resolution; for pre-registry legacy deployments it means immediately after nondestructive legacy registration establishes them. Inspect unresolved workspace/account Runtime Checkpoints and recent Runtime Journal events before ordinary continuation. For each relevant OPEN, WAITING_USER or RECOVERY_REQUIRED checkpoint: inspect actual durable artifacts; verified durable state outranks stale checkpoint claims; never replay verified successful writes; resume at the first unverified/pending action; preserve declared WAITING_USER/`done` boundaries; account-scoped checkpoints may not resume under another active_account_id; mark COMMITTED only after intended durable end state is verified. Never persist hidden reasoning or full transcripts for recovery.
+After valid account context/current schema, inspect unresolved Checkpoints + recent Journal events. For OPEN/WAITING_USER/RECOVERY_REQUIRED: inspect durable artifacts; verified durable state outranks checkpoint claims; never replay verified writes; resume first pending action; preserve WAITING_USER/`done`; never cross active_account_id; mark COMMITTED only after verification. COMMITTED checkpoints are not replayed. Never persist hidden reasoning/full transcripts.
 
 MIGRATION-FIRST ACCOUNT DISCOVERY
-Before broad onboarding, inspect accessible current/legacy LWAI workspace state, account databases, snapshots/exports, current-conversation state and user-provided legacy files. If a registry does not yet exist, legacy discovery is allowed to precede active_account_id resolution specifically so the legacy account can be registered and assigned its immutable account_id first. Reuse supported facts with source/confidence/freshness preserved. Ask only for missing, ambiguous, contradictory or materially stale information. Multiple plausible accounts are never silently selected. Legacy single-account deployments migrate non-destructively to immutable account_id + Workspace Registry. UID is optional/private.
+Before broad onboarding inspect accessible workspace/account DBs, snapshots/exports, current-conversation state and user-provided legacy files. Reuse supported facts with source/confidence/freshness; ask only missing/ambiguous/contradictory/materially stale data. Never silently choose among multiple plausible accounts. UID is optional/private.
 
 GUIDED BATCH BOUNDARY
-For any multi-upload request, explicitly say what to send and tell the user to reply `done` when finished. If the user declares more uploads are coming, do not finalize early. With durable recovery, persist WAITING_USER so the boundary survives reload. core.guidance owns detailed capture/ingestion behavior.
+For multi-upload requests say what to send and tell the user to reply `done`; do not finalize while more uploads are declared. Persist WAITING_USER when durable recovery exists. core.guidance owns detailed ingestion.
 
 ENGINE UPDATE
-`refresh engine` / `check for LWAI updates`: preserve LOCAL STATE; fetch Production release/manifest/migration metadata; verify compatibility/integrity where supported; apply only required migration edges; refresh ENGINE only; run health checks. If upstream is unavailable/incompatible/mismatched, keep last-known-good engine or fallback.
+`refresh engine` / `check for LWAI updates`: preserve LOCAL STATE; fetch canonical Production metadata; verify compatibility/integrity; apply only validated migrations; refresh ENGINE only; health-check. On mismatch/unavailability, keep last-known-good/fallback.
 
 FAILURE / SELF-HEALING
-Required module missing, incompatible or integrity-mismatched: retry canonical GitHub once -> use last-known-good compatible engine if available -> load BOOTSTRAP_FULL. Optional module failure degrades only its capability. Engine repair never overwrites Workspace Registry or account-local state.
+Required module missing/incompatible/integrity-mismatched: retry canonical GitHub once -> last-known-good compatible engine -> BOOTSTRAP_FULL. Unsupported workspace schema: validated migration path or fail closed. Optional module failure degrades only that capability. Never overwrite local state as engine repair.
 
 ONE-LINE INSTALL
 Preferred instruction: Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
-The alias is transport convenience only; canonical GitHub Production is authoritative.
+Alias is transport convenience; canonical GitHub Production is authoritative.
 
 COMMAND ROUTING
-reload yourself / reload LWAI -> rebuild from current Production metadata + private workspace/account/recovery state.
-audit yourself -> engine/module/provider/recovery health audit.
-audit my account -> active-account audit through relevant domain modules.
+reload yourself / reload LWAI -> current Production + private workspace/account/recovery state.
+audit yourself -> engine/module/provider/recovery health.
+audit my account -> active-account audit.
 share LWAI -> one-line installer.
-export yourself / export LWAI -> complete sanitized BOOTSTRAP_FULL runtime.
+export yourself / export LWAI -> complete sanitized BOOTSTRAP_FULL.
 export my account snapshot -> private account-state export.
-refresh engine -> update ENGINE while preserving LOCAL STATE.
+refresh engine -> update ENGINE preserving LOCAL STATE.
 
 STARTUP BEHAVIOR
-Load mandatory core modules and inspect private persistence. If a current Workspace Registry exists, resolve its active account before recovery; if only pre-registry legacy LWAI state exists, migrate/register that state first to establish account context, then run recovery. Perform remaining migration-first reconciliation and continue/resume. For a genuinely new account, core.guidance handles phased onboarding. Routine optimization is delegated to the smallest relevant domain modules.
+Load migration-capable mandatory core, canonicalize alias content against GitHub, establish account context, migrate any supported older workspace schema nondestructively, verify target schema, then recover/reconcile. Genuinely new accounts use core.guidance; routine optimization loads the smallest relevant domain modules.

@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.14",
+  "engine_version": "2026-08-29.15",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -18,7 +18,7 @@
       "required": true,
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
-      "workspace_schema": {"min": "2.3", "max": "2.3"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
       "integrity": {"algorithm": "git_blob_sha1", "digest": "11777df9001afbb7289b9b0a9c6816cf4efc27eb"}
     },
     {
@@ -31,7 +31,7 @@
       "required": true,
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
-      "workspace_schema": {"min": "2.3", "max": "2.3"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
       "integrity": {"algorithm": "git_blob_sha1", "digest": "fd651a9091bb65ec916405c91fd94760f27e40d2"}
     },
     {
@@ -44,7 +44,7 @@
       "required": true,
       "release_min": "2026-08-29.9",
       "engine_api": {"min": "1.0", "max": "1.0"},
-      "workspace_schema": {"min": "2.3", "max": "2.3"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
       "integrity": {"algorithm": "git_blob_sha1", "digest": "e5715642a644f612416a2e752ca54cb8a1cd3981"}
     },
     {
@@ -57,7 +57,7 @@
       "required": true,
       "release_min": "2026-08-29.10",
       "engine_api": {"min": "1.0", "max": "1.0"},
-      "workspace_schema": {"min": "2.3", "max": "2.3"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
       "integrity": {"algorithm": "git_blob_sha1", "digest": "8ca45df886e023d33f88d40928bbc87f2df372ff"}
     },
     {
@@ -122,7 +122,7 @@
       "required": false,
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
-      "workspace_schema": {"min": "2.3", "max": "2.3"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
       "integrity": {"algorithm": "git_blob_sha1", "digest": "e612ce23d71980a2fccfd336d18452cd5d9f5e90"}
     },
     {
@@ -135,7 +135,7 @@
       "required": true,
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
-      "workspace_schema": {"min": "2.3", "max": "2.3"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
       "integrity": {"algorithm": "git_blob_sha1", "digest": "187e9c9098e947c0a250502647fabff5813789b5"}
     },
     {
@@ -148,7 +148,7 @@
       "required": true,
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
-      "workspace_schema": {"min": "2.3", "max": "2.3"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
       "integrity": {"algorithm": "git_blob_sha1", "digest": "84689754967ce5ac1a9d59ec9dd2ecf8d566f9dd"}
     }
   ]

@@ -1,12 +1,28 @@
 """Deterministic reference model for LWAI runtime invariants.
 
 This is not the conversational engine. It is an executable state-machine model used by
-CI to prove core persistence/account/recovery contracts independently of prompt wording.
+CI to prove core persistence/account/recovery/migration contracts independently of prompt wording.
 """
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any, Callable
+
+
+SUPPORTED_SCHEMA_EDGES = {
+    "2.1": ("2.2", {"guidance_metadata", "audit_sessions"}),
+    "2.2": ("2.3", {"runtime_checkpoints", "runtime_journal"}),
+}
+
+
+def canonicalize_installer_identity(*, alias_version: str | None, canonical_version: str | None, canonical_verified: bool) -> str | None:
+    """Canonical GitHub Production wins over alias/cache content."""
+    if canonical_verified:
+        if canonical_version is None:
+            raise ValueError("verified canonical identity requires a version")
+        return canonical_version
+    return None
 
 
 @dataclass(frozen=True)
@@ -91,10 +107,66 @@ class RuntimeModel:
         self.current_runtime_session_id: str | None = None
         self.checkpoints: dict[str, Checkpoint] = {}
         self._journal: list[JournalEvent] = []
+        self.workspace_schema_version = "2.3"
+        self.workspace_optional_structures = {"guidance_metadata", "audit_sessions", "runtime_checkpoints", "runtime_journal"}
 
     @property
     def journal(self) -> tuple[JournalEvent, ...]:
         return tuple(self._journal)
+
+    def set_workspace_schema(self, version: str, *, optional_structures: set[str] | None = None) -> None:
+        self.workspace_schema_version = version
+        if optional_structures is not None:
+            self.workspace_optional_structures = set(optional_structures)
+        elif version == "2.1":
+            self.workspace_optional_structures = set()
+        elif version == "2.2":
+            self.workspace_optional_structures = {"guidance_metadata", "audit_sessions"}
+        elif version == "2.3":
+            self.workspace_optional_structures = {"guidance_metadata", "audit_sessions", "runtime_checkpoints", "runtime_journal"}
+        else:
+            self.workspace_optional_structures = set()
+
+    def migrate_workspace_schema(self, target: str = "2.3", *, fail_after_edge: str | None = None) -> list[str]:
+        """Apply only validated additive schema edges, atomically from the model's view."""
+        if self.workspace_schema_version == target:
+            return []
+        original = (
+            self.workspace_schema_version,
+            set(self.workspace_optional_structures),
+            deepcopy(self.accounts),
+            self.active_account_id,
+            deepcopy(self.checkpoints),
+            list(self._journal),
+        )
+        version = self.workspace_schema_version
+        structures = set(self.workspace_optional_structures)
+        applied: list[str] = []
+        try:
+            while version != target:
+                edge = SUPPORTED_SCHEMA_EDGES.get(version)
+                if edge is None:
+                    raise RuntimeError(f"no validated workspace migration from {version} to {target}")
+                next_version, additions = edge
+                structures.update(additions)
+                edge_name = f"{version}->{next_version}"
+                applied.append(edge_name)
+                version = next_version
+                if fail_after_edge == edge_name:
+                    raise RuntimeError("simulated migration failure")
+            self.workspace_schema_version = version
+            self.workspace_optional_structures = structures
+            return applied
+        except Exception:
+            (
+                self.workspace_schema_version,
+                self.workspace_optional_structures,
+                self.accounts,
+                self.active_account_id,
+                self.checkpoints,
+                self._journal,
+            ) = original
+            raise
 
     def create_account(self, account_id: str, *, activate: bool = True) -> Account:
         if account_id in self.accounts:
@@ -110,19 +182,9 @@ class RuntimeModel:
         account.facts = dict(legacy_facts)
         return account
 
-    def startup_from_storage(
-        self,
-        *,
-        registry_accounts: dict[str, dict[str, Any]] | None = None,
-        active_account_id: str | None = None,
-        legacy_facts: dict[str, Any] | None = None,
-    ) -> list[str]:
-        """Return the durable startup sequence while enforcing legacy-first bootstrap.
-
-        A current registry permits active-account resolution before recovery. A legacy
-        pre-registry account must first be discovered and registered so an immutable
-        account_id/active_account_id actually exists; only then may recovery run.
-        """
+    def startup_from_storage(self, *, registry_accounts: dict[str, dict[str, Any]] | None = None, active_account_id: str | None = None, legacy_facts: dict[str, Any] | None = None, workspace_schema_version: str | None = None) -> list[str]:
+        if workspace_schema_version is not None:
+            self.set_workspace_schema(workspace_schema_version)
         if registry_accounts is not None:
             steps = ["load_registry"]
             for account_id, facts in registry_accounts.items():
@@ -131,40 +193,31 @@ class RuntimeModel:
             if active_account_id is None or active_account_id not in self.accounts:
                 raise RuntimeError("current registry requires a valid active_account_id")
             self.active_account_id = active_account_id
-            steps.extend(["resolve_active_account", "recovery_first", "migration_reconcile"])
+            steps.append("resolve_active_account")
+            if self.workspace_schema_version != "2.3":
+                self.migrate_workspace_schema("2.3")
+                steps.append("workspace_schema_migrate")
+            steps.extend(["recovery_first", "migration_reconcile"])
             return steps
-
         if legacy_facts is not None:
             steps = ["legacy_discovery"]
             self.migrate_legacy("legacy", legacy_facts)
-            steps.extend(["register_legacy", "resolve_active_account", "recovery_first", "migration_reconcile"])
+            steps.extend(["register_legacy", "resolve_active_account"])
+            if self.workspace_schema_version != "2.3":
+                self.migrate_workspace_schema("2.3")
+                steps.append("workspace_schema_migrate")
+            steps.extend(["recovery_first", "migration_reconcile"])
             return steps
-
         return ["new_account_guidance"]
 
-    def start_runtime_session(
-        self,
-        runtime_session_id: str,
-        *,
-        host_platform: str | None = None,
-        host_session_ref: str | None = None,
-        host_session_ref_source: str | None = None,
-        account_id: str | None = None,
-    ) -> RuntimeSession:
-        """Create private provenance independent of any host-provided conversation ID."""
+    def start_runtime_session(self, runtime_session_id: str, *, host_platform: str | None = None, host_session_ref: str | None = None, host_session_ref_source: str | None = None, account_id: str | None = None) -> RuntimeSession:
         if runtime_session_id in self.runtime_sessions:
             raise ValueError("runtime_session_id must be unique")
         if account_id is None:
             account_id = self.active_account_id
         if account_id is not None and account_id not in self.accounts:
             raise ValueError("runtime session account_id must reference an existing account")
-        session = RuntimeSession(
-            runtime_session_id=runtime_session_id,
-            account_id=account_id,
-            host_platform=host_platform,
-            host_session_ref=host_session_ref,
-            host_session_ref_source=host_session_ref_source,
-        )
+        session = RuntimeSession(runtime_session_id, account_id, host_platform, host_session_ref, host_session_ref_source)
         self.runtime_sessions[runtime_session_id] = session
         self.current_runtime_session_id = runtime_session_id
         return session
@@ -189,38 +242,17 @@ class RuntimeModel:
         return self.create_account(new_account_id)
 
     def restore_account(self, account_id: str) -> None:
-        account = self.accounts[account_id]
-        account.status = "ACTIVE"
+        self.accounts[account_id].status = "ACTIVE"
 
     def start_audit_session(self, session_id: str) -> None:
         if self.active_account_id is None:
             raise RuntimeError("active account required")
-        self.accounts[self.active_account_id].audit_session = {
-            "session_id": session_id,
-            "account_id": self.active_account_id,
-            "runtime_session_id": self.current_runtime_session_id,
-            "status": "OPEN",
-        }
+        self.accounts[self.active_account_id].audit_session = {"session_id": session_id, "account_id": self.active_account_id, "runtime_session_id": self.current_runtime_session_id, "status": "OPEN"}
 
-    def create_checkpoint(
-        self,
-        checkpoint_id: str,
-        *,
-        scope: str,
-        objective: str,
-        account_id: str | None = None,
-        pending_actions: list[str] | None = None,
-    ) -> Checkpoint:
+    def create_checkpoint(self, checkpoint_id: str, *, scope: str, objective: str, account_id: str | None = None, pending_actions: list[str] | None = None) -> Checkpoint:
         if checkpoint_id in self.checkpoints:
             raise ValueError("checkpoint already exists")
-        cp = Checkpoint(
-            checkpoint_id=checkpoint_id,
-            scope=scope,
-            account_id=account_id,
-            objective=objective,
-            runtime_session_id=self.current_runtime_session_id,
-            pending_actions=list(pending_actions or []),
-        )
+        cp = Checkpoint(checkpoint_id, scope, account_id, objective, self.current_runtime_session_id, pending_actions=list(pending_actions or []))
         self.checkpoints[checkpoint_id] = cp
         self.append_journal(checkpoint_id, "BEGIN", "checkpoint", verified=True)
         return cp
@@ -232,40 +264,17 @@ class RuntimeModel:
         cp.pending_user_input = boundary
         self.append_journal(checkpoint_id, "WAITING_USER", boundary, verified=True)
 
-    def append_journal(
-        self,
-        checkpoint_id: str,
-        event_type: str,
-        action: str,
-        *,
-        verified: bool,
-        safe_point_after: str | None = None,
-    ) -> JournalEvent:
+    def append_journal(self, checkpoint_id: str, event_type: str, action: str, *, verified: bool, safe_point_after: str | None = None) -> JournalEvent:
         checkpoint = self.checkpoints.get(checkpoint_id)
-        event = JournalEvent(
-            journal_id=f"J{len(self._journal)+1}",
-            checkpoint_id=checkpoint_id,
-            event_type=event_type,
-            action=action,
-            verified=verified,
-            safe_point_after=safe_point_after,
-            runtime_session_id=checkpoint.runtime_session_id if checkpoint else self.current_runtime_session_id,
-        )
+        event = JournalEvent(f"J{len(self._journal)+1}", checkpoint_id, event_type, action, verified, safe_point_after, checkpoint.runtime_session_id if checkpoint else self.current_runtime_session_id)
         self._journal.append(event)
         return event
 
-    def resume_checkpoint(
-        self,
-        checkpoint_id: str,
-        *,
-        durable_probe: Callable[[str], bool],
-        apply_action: Callable[[str], None],
-    ) -> None:
+    def resume_checkpoint(self, checkpoint_id: str, *, durable_probe: Callable[[str], bool], apply_action: Callable[[str], None]) -> None:
         cp = self.checkpoints[checkpoint_id]
         self._assert_checkpoint_scope(cp)
-        if cp.status == "WAITING_USER":
+        if cp.status in {"WAITING_USER", "COMMITTED"}:
             return
-
         remaining: list[str] = []
         for action in cp.pending_actions:
             if durable_probe(action):
@@ -289,14 +298,7 @@ class RuntimeModel:
                 continue
             cp.completed_actions.append(action)
             cp.last_safe_point = action
-            self.append_journal(
-                checkpoint_id,
-                "WRITE_SUCCESS",
-                action,
-                verified=True,
-                safe_point_after=action,
-            )
-
+            self.append_journal(checkpoint_id, "WRITE_SUCCESS", action, verified=True, safe_point_after=action)
         cp.pending_actions = remaining
         if not cp.pending_actions:
             cp.status = "COMMITTED"

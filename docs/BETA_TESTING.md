@@ -1,6 +1,6 @@
 # LWAI Public Beta Testing
 
-LWAI Production `2026-08-29.14` is ready for controlled external beta testing.
+LWAI Production `2026-08-29.15` is ready for controlled external beta testing.
 
 ## Install
 
@@ -18,15 +18,18 @@ Useful test paths include:
 
 - brand-new user with no durable cloud storage;
 - brand-new user with a supported writable cloud-storage connector;
-- existing legacy/single-account LWAI user upgrading from an earlier export;
+- existing schema-2.1/2.2 or legacy single-account LWAI user upgrading from an earlier export/workspace;
 - current LWAI user resuming an existing persistent workspace;
 - multi-account switching, archive/restore and terse updates;
 - long screenshot or document-bundle audits, including interruption/reload during a declared `done` upload boundary;
-- engine refresh/reload after useful account state already exists.
+- engine refresh/reload after useful account state already exists;
+- environments where the short-link body appears stale/cached while canonical GitHub Production is newer.
 
 ## What good behavior looks like
 
-LWAI should install from the one-line instruction, discover available capabilities, preserve existing supported state, avoid redundant onboarding, ask only for missing/ambiguous/materially stale information, keep accounts isolated, preserve declared upload boundaries, and degrade honestly when persistence or another host capability is unavailable.
+LWAI should install from the one-line instruction, re-check canonical GitHub Production, discover capabilities, preserve supported existing state, migrate supported older workspace schemas additively before normal domain work, avoid redundant onboarding, ask only for missing/ambiguous/materially stale information, keep accounts isolated, preserve declared upload boundaries, and degrade honestly when a capability is unavailable.
+
+A supported older workspace that cannot complete migration must remain untouched and must not fall through to new-user onboarding.
 
 The public GitHub engine must never contain a tester's private account state.
 
@@ -40,8 +43,9 @@ If reproducing a problem requires private data, describe the failure generically
 
 ## Current beta baseline
 
-- Engine: `2026-08-29.14`
+- Engine: `2026-08-29.15`
 - Engine API: `1.0`
 - Workspace schema: `2.3`
+- Supported additive upgrade schemas: `2.1`, `2.2`
 - Public engine: sanitized
 - Public account state: none

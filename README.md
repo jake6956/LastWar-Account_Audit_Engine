@@ -8,7 +8,7 @@ Paste this single instruction into a fresh ChatGPT conversation:
 
 > Set up Last War optimization using the instructions at https://tinyurl.com/2yxf7f5x
 
-The installer retrieves the current sanitized Production loader from GitHub. The short URL is a convenience alias; GitHub `main` is the authoritative public Production source.
+The short URL is a convenience alias. Canonical GitHub `main` is authoritative; the loader re-checks canonical Production metadata so stale alias/cache content cannot downgrade a newer verified release.
 
 For best results, use a higher reasoning/thinking setting when the ChatGPT interface offers one.
 
@@ -16,85 +16,86 @@ For best results, use a higher reasoning/thinking setting when the ChatGPT inter
 
 LWAI builds and continuously reconciles a model of a player's account from screenshots, terse updates, current mechanics, resource constraints, battle evidence and user corrections. It uses that model to produce practical upgrade priorities, research plans, formation advice and account-wide optimization recommendations.
 
-The runtime is designed for low-friction use. A player can provide compact updates such as a skill level, gear level or resource balance without completing a formal intake process. LWAI updates only the affected state and recomputes only what materially changed.
+A player can provide compact updates such as a skill level, gear level or resource balance without completing a formal intake. LWAI updates only affected state and recomputes only what materially changed.
 
 ## Architecture
-
-LWAI uses a thin-loader, modular-runtime design:
 
 ```text
 engine/BOOTSTRAP.txt
   -> releases/LATEST.json
   -> engine/MANIFEST.json
-     -> mandatory core modules
+  -> releases/MIGRATIONS.json
+     -> mandatory core/release modules
      -> task-specific domain modules
      -> capability-specific adapters
-     -> release/update/recovery modules
 
 engine/BOOTSTRAP_FULL.txt
   -> complete standalone fallback
 ```
 
-The loader stays intentionally small and contains orchestration rather than game-domain playbooks. Mandatory core behavior is loaded at startup, while domain modules are retrieved only when the current task requires them. This keeps active context bounded and lets individual engine components evolve independently.
+The thin loader stays intentionally bounded and contains orchestration rather than game-domain playbooks. Mandatory core behavior loads first; domain modules load only when needed.
+
+## Existing users and migration
+
+LWAI discovers supported prior state before onboarding. Current registry-backed users resume their existing immutable account identity and canonical database; older pre-registry single-account deployments are registered nondestructively rather than rebuilt.
+
+Production `2026-08-29.15` also restores explicit workspace-schema migration for supported older multi-account deployments:
+
+- schema `2.1 -> 2.2`: optional guidance metadata and Audit Sessions;
+- schema `2.2 -> 2.3`: optional Runtime Checkpoints and Runtime Journal.
+
+These migrations are additive and idempotent. They preserve canonical account facts, immutable `account_id`, `active_account_id`, history, Corrections, evidence metadata and provider references. Domain modules that require schema `2.3` remain blocked until migration is verified. If no validated path exists, setup fails closed instead of guessing or re-onboarding the user.
 
 ## Integrity and compatibility
 
-Production declares an engine API version, workspace schema version and per-module compatibility range. `engine/MANIFEST.json` also pins each module to a Git blob identity so CI can verify that the manifest describes the exact checked-in bytes.
+Production declares an engine API version, workspace schema version and per-module compatibility range. `engine/MANIFEST.json` pins each module to a Git blob identity so CI can verify the exact checked-in bytes.
 
-When a host can reproduce or inspect the same identity, LWAI can verify a fetched module before use. If that primitive is unavailable, the runtime falls back to canonical-origin plus exact module identity/version checks and last-known-good recovery rather than pretending a cryptographic verification occurred.
-
-Version-to-version state transitions are declared in `releases/MIGRATIONS.json`. Engine-only releases preserve private user state in place; schema-changing releases require explicit migration behavior and preservation tests.
+Migration-capable core/release/storage components may explicitly support older validated workspace schemas; ordinary domain components may remain current-schema-only. `releases/MIGRATIONS.json` defines both promoted engine transitions and supported workspace-schema transitions.
 
 ## Persistence model
 
-LWAI separates shared engine behavior from private user state.
-
 **GitHub Production contains:**
-- sanitized runtime instructions and modules
-- provider-neutral schemas and adapters
-- release metadata and migrations
-- validation tests and documentation
-- reusable non-user-specific reference assets
+- sanitized runtime instructions and modules;
+- provider-neutral schemas/adapters;
+- release metadata and migrations;
+- validation tests/documentation;
+- reusable non-user-specific reference assets.
 
 **User-local storage may contain:**
-- account identity and game state
-- screenshots and evidence
-- resource balances and battle history
-- local corrections and preferences
-- account-specific audit sessions and recovery state
-- optional runtime-session provenance used for private support/debug correlation
+- account identity and game state;
+- screenshots/evidence;
+- balances and battle history;
+- local corrections/preferences;
+- account-specific audit/recovery state;
+- optional runtime-session provenance.
 
-Private account data and actual runtime-session/host-conversation references are not required for the public repository and must not be committed here.
+Private account data and actual runtime-session/host-conversation references are never required in this public repository.
 
-Durable storage is optional. Without a writable supported storage provider, LWAI can still operate within the active conversation and use portable snapshots/exports, but persistence and recovery are naturally limited by the host session.
+Durable storage is optional. Without writable supported storage, LWAI still operates in the active conversation and can use portable snapshots/exports, but persistence/recovery are naturally limited by the host session.
 
 ## Storage adapters
 
-Persistence is capability-driven, not provider-name-driven. An adapter reports what it can actually do—read, list, create/update, structured query, atomic append, compare-and-swap, snapshot and restore—and the runtime selects the strongest safe persistence profile available.
-
-A provider is never treated as transaction-safe merely because it offers spreadsheets or cloud files. Recovery journals require atomic append, revision/CAS semantics, or immutable uniquely identified event records.
+Persistence is capability-driven, not provider-name-driven. An adapter reports verified read/list/create/update/query/atomic-append/CAS/snapshot/restore capability and LWAI selects the strongest safe profile available. Recovery journals require actual atomic append, revision/CAS semantics, or immutable uniquely identified events.
 
 ## Multi-account, provenance and recovery
 
-Persistent deployments can manage multiple isolated accounts under a workspace registry. Each account receives an immutable LWAI-generated `account_id`; human-recognition metadata such as screenname, server, alliance, nickname and optional game UID remains private to the user's environment.
+Persistent deployments can manage multiple isolated accounts under a workspace registry. Each account receives immutable LWAI-generated `account_id`; screenname, server, alliance, nickname and optional game UID remain private.
 
-The runtime supports migration-first startup, including legacy pre-registry discovery: an older single-account LWAI database can be registered in place before `active_account_id` is required, then normal account-scoped recovery begins. Current registry-backed deployments resolve their active account before recovery. Nondestructive archive/restore, account switching, resumable audit sessions and recovery checkpoints remain supported.
+The runtime supports account switching, nondestructive archive/restore, migration-first startup, resumable audits and verify-before-replay checkpoints.
 
-When durable persistence exists, LWAI may generate its own private `runtime_session_id` for provenance. A host platform's conversation/session reference may also be stored when the host actually exposes one, but it is optional and non-authoritative. LWAI does not ask users to create ChatGPT shared links or retrieve conversation GUIDs for normal operation, and host references are never used as account identity, authentication, routing, recovery-ordering or write-deduplication keys.
-
-Recovery follows a verify-before-replay model so already committed writes are not duplicated after context loss.
+When durable persistence exists, LWAI may generate a private `runtime_session_id`. A host conversation/session reference may also be stored when safely exposed, but it is optional and non-authoritative. It is never account identity, authentication, routing, recovery ordering or write deduplication.
 
 LWAI does not require game passwords, session tokens, cookies or authentication captures for normal operation.
 
 ## Updates and self-healing
 
-Production updates are centrally published through GitHub. A deployment can compare its current engine version with `releases/LATEST.json`, apply compatible engine updates and migrations, and preserve all user-local state.
+Production updates are centrally published through GitHub. A deployment compares current engine/workspace state with canonical release/migration metadata, applies only validated compatible transitions and preserves all user-local state.
 
-If a module cannot be retrieved or validated, the runtime falls back to the last-known-good engine state or the complete `BOOTSTRAP_FULL.txt` artifact. Engine recovery must never overwrite private account state as a repair mechanism.
+If required engine content cannot be retrieved or validated, LWAI retains last-known-good compatible engine state or uses the complete `BOOTSTRAP_FULL.txt` fallback. Engine repair never overwrites private account state.
 
 ## Validation
 
-Production CI performs both structural validation and executable behavioral regression tests. Structural gates verify release/version parity, dependency graph validity, module byte identity, privacy markers, loader boundaries, compatibility metadata and fallback completeness. A deterministic reference state machine separately exercises account isolation, archive/start-over behavior, migration preservation, legacy/current startup ordering, runtime-session provenance isolation, `WAITING_USER`, verify-before-replay, checkpoint-loss tolerance, append-only journal semantics and provider degradation.
+Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, account isolation, archive/start-over, migration preservation, legacy/current startup ordering, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration and stale-alias canonicalization.
 
 ## Production endpoints
 
@@ -112,21 +113,21 @@ engine/          loader, module graph, runtime modules and full fallback
 contracts/       behavioral and release contracts
 schemas/         provider-neutral workspace/account/engine schemas
 adapters/        persistence/provider mappings
-docs/            deployment and architecture documentation
+docs/            deployment, beta and architecture documentation
 scripts/         release-validation tooling
 tests/           executable regressions and release-gate specifications
 releases/        version manifests, migration graph and changelog
 gold-assets/     reusable sanitized shared assets
-.github/         CI configuration
+.github/         CI and issue templates
 ```
 
 ## Release discipline
 
-Production changes follow a staged release path with sanitization checks, candidate validation, pull-request CI, exact-head verification and post-merge Production checks. User-specific state is excluded from release artifacts.
+Production changes follow short-lived staged RC branches with sanitization checks, exact-head PR CI, validated-head merge and post-merge verification. There is one single public installer and one canonical Production line; RC branches are temporary engineering branches, not alternate installers.
 
 ## Current Production
 
-**Engine version:** `2026-08-29.14`
+**Engine version:** `2026-08-29.15`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  

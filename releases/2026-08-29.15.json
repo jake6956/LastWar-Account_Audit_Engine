@@ -23,5 +23,15 @@
     "requires_account_rewrite": false,
     "notes": "Restores historical workspace schema 2.1→2.2→2.3 migration edges, permits bounded migration-capable bootstrap for supported older workspaces, and makes canonical GitHub identity authoritative over stale alias/cache content."
   },
-  "notes": "Legacy Workspace Compatibility release. Existing supported 2.1/2.2 workspaces migrate additively to 2.3 before normal domain loading; canonical account facts and account identity are preserved."
+  "notes": "Legacy Workspace Compatibility release. Existing supported 2.1/2.2 workspaces migrate additively to 2.3 before normal domain loading; canonical account facts and account identity are preserved.",
+  "features": [
+    "validated workspace-schema edges 2.1→2.2→2.3",
+    "migration-compatible bootstrap mode for supported older workspaces",
+    "additive/idempotent guidance and recovery metadata migration",
+    "canonical account facts/account_id/active_account_id preservation",
+    "domain-module blocking until current schema is verified",
+    "fail-closed unsupported-schema behavior without redundant onboarding",
+    "canonical GitHub authority over stale TinyURL/alias cache bodies",
+    "executable legacy-workspace migration regressions"
+  ]
 }
