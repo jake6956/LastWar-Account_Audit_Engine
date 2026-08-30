@@ -1,13 +1,13 @@
 LWAI MODULE — STORAGE ADAPTERS
 module_id: adapters.storage
-module_version: 2026-08-29.12.1
+module_version: 2026-08-29.19.1
 load_class: capability_on_demand
 state_scope: shared_engine+provider_rules
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
 PURPOSE
-Map one provider-neutral persistence contract onto verified host capabilities without letting provider branding leak into engine logic. Local account state must survive engine upgrades, provider changes, context loss and capability degradation.
+Map one provider-neutral persistence contract onto verified host capabilities without letting provider branding leak into engine logic. Local account state must survive engine upgrades, provider changes, context loss and capability degradation. Provider selection and authorization should be easy for a layman without silently defaulting to one vendor.
 
 CAPABILITY API
 Every adapter exposes a capability descriptor before it is trusted for persistence. Capability version: storage-api/1.
@@ -31,6 +31,43 @@ CAS_RW: writable store with revision/version compare-and-swap semantics.
 STRUCTURED_RW: bounded structured query/read/write semantics; journal safety still requires atomic_append, CAS, or immutable uniquely-created events.
 TRANSACTIONAL_RW: structured read/write plus atomic append and/or transaction/CAS suitable for authoritative recovery metadata.
 Never upgrade a profile from provider reputation or file type alone.
+
+PROVIDER DISCOVERY / SELECTION
+When the user chooses cloud persistence, detect storage connectors/providers actually available or installable in the current host. Build a short menu from only supported candidates. Ask the user to select one explicitly. Never silently choose Google Drive, and never advertise a provider the host cannot expose.
+Common supported patterns when available:
+- Google Drive: preferred/most-tested full Google Workspace adapter when native Drive/Sheets/Docs read-write actions are exposed.
+- Dropbox: writable file-store adapter when read/write/create capabilities are exposed.
+- OneDrive / Microsoft 365: writable file-store or structured Excel/Office adapter only when actual connector capabilities are exposed.
+- Box: canonical persistence only when actual write/create capabilities are exposed; read-only Box remains reference-only.
+- Other provider: acceptable only when storage-api/1 read/write/create persistence can be verified.
+Provider reputation is not capability verification.
+
+AUTHORIZATION COACHING
+After the user explicitly chooses a provider, give concise provider-specific authorization steps before testing the workspace. Authentication happens in the provider/host UI. Never ask the user to paste provider passwords, OAuth codes, access tokens, refresh tokens, cookies, or credentials into chat.
+
+Google Drive:
+1. Open/approve the Google Drive connection prompt.
+2. Sign in to the intended Google account if asked.
+3. Approve the requested Drive file access needed for LWAI to create, read, and update its private workspace.
+4. If ChatGPT offers `Allow always`, recommend selecting it so the connection can be reused in future chats instead of requiring repeated authorization.
+5. Re-detect capabilities and verify the isolated LWAI workspace before reporting success.
+
+Dropbox:
+Authorize the intended Dropbox account and approve the requested file access needed for the LWAI workspace. If the host offers `Allow always`, `Always allow`, or an equivalent persistent authorization option, recommend it. Re-detect capabilities before reporting success.
+
+OneDrive / Microsoft 365:
+Authorize the intended Microsoft account and approve requested file read/write access needed for the LWAI workspace. If a persistent/always-allow option is offered by the host, recommend it. Re-detect capabilities before reporting success.
+
+Box:
+Authorize the intended Box account and approve requested file access. Recommend a persistent/always-allow option when offered. After authorization, verify actual write/create capability; if Box is read-only in the current host, explain that it can be used only as reference storage and offer another provider or session-only.
+
+Other provider:
+Use the actual host/provider wording shown to the user. Approve only file/workspace access required to read/write/create the isolated LWAI workspace; recommend persistent authorization when the host offers it; then verify capabilities.
+
+Do not invent exact OAuth scope names or UI controls that are not actually visible. `Allow always` is an explicit Google Drive/ChatGPT example and a general recommendation only when an equivalent option is truly presented.
+
+CONNECTION VERIFICATION
+A user message such as `connected`, `storage connected`, or `done` after authorization is never proof by itself. Re-run capability discovery. Verify the selected provider can at minimum read and create/write the private LWAI workspace. Create or locate the isolated workspace, write a minimal harmless verification object/record when appropriate, read/verify it, and only then say `Cloud storage connected and verified.` If verification fails, describe the problem in plain language and offer retry, another provider, or session-only.
 
 AUTHORITATIVE JOURNAL RULE
 Runtime Journal must use the strongest verified primitive in this order: provider-native atomic append/transaction; compare-and-swap/revision-controlled append; immutable uniquely identified event creation. Guessed-next-row writes are never authoritative under concurrency. A Sheet/table may be a summary/index/cache when its append primitive is not concurrency safe.
