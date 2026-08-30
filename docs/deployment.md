@@ -3,50 +3,53 @@
 ## Fastest path for a player
 Paste exactly this into a fresh ChatGPT conversation:
 
-`Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine`
+`Set up Last War optimization using the instructions at https://lastwarai.com`
 
-That is the single preferred install path. The canonical repository README directs a web-capable assistant to `main/engine/BOOTSTRAP.txt`; the assistant then verifies current Production, automatically checks for a newer compatible release, discovers/resumes supported private state, migrates supported older workspaces when necessary, and begins or resumes guided operation. The player should not need to copy/paste the complete engine or manually reinstall to receive later Production updates.
+That is the single preferred public install path. LastWarAI.com serves a tiny first-party Stage-0 locator. The assistant then resolves the live GitHub Production `main` ref, pins the current commit SHA, loads `engine/BOOTSTRAP.txt` from that exact commit, discovers/resumes supported private state, migrates supported older workspaces when necessary, and begins or resumes guided operation.
 
-For best results, use a higher reasoning/thinking setting when exposed. Durable cloud persistence is strongly recommended but optional.
+The player should not need to copy/paste the complete engine or manually reinstall to receive later Production updates. Durable cloud persistence is strongly recommended but optional.
 
-## Why the installer starts at GitHub
-Canonical Production lives on GitHub `main`, so the public installer now begins there too. Third-party URL shorteners are not trust roots or required transport. A legacy TinyURL previously used for convenience began serving a deprecated preview/interstitial page to some ChatGPT clients and is retired as an installation dependency.
+## Why the installer starts at LastWarAI.com
+The public URL should be short, stable and controlled by LWAI rather than a third-party shortener or a long implementation URL. LastWarAI.com can change hosting implementation without changing the installer users circulate.
 
-Canonical repository / installer:
-https://github.com/jake6956/LastWar-Account_Audit_Engine
+It is transport/discovery only. It does not determine the current engine version.
 
-Canonical loader:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt
+The previously circulated `https://tinyurl.com/2yxf7f5x` is legacy compatibility only. It is not used for new sharing and is never current-version authority.
 
-Current release metadata:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json
+## Production authority
+Current Production is resolved from:
 
-Module graph:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json
+`https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`
 
-Migration graph:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json
+The assistant obtains current `commit.sha` and then reads trusted engine files only from that exact immutable commit. Search results, redirects, cached pages, mutable raw `main`, legacy aliases and model memory cannot establish current Production.
 
-Complete fallback:
-https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt
+Canonical GitHub coordinates:
 
-If a supplied alias/cache is stale, unavailable or disagrees with canonical GitHub, ignore it and continue from verified canonical Production. If modular retrieval fails, use last-known-good compatible engine state or the complete fallback. Manual full-bootstrap transfer is last resort. Neither a third-party shortener nor the retired Google runtime mirror is required.
+- Repository: `https://github.com/jake6956/LastWar-Account_Audit_Engine`
+- Live ref: `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`
+- Stage-1: `engine/BOOTSTRAP.txt` at resolved commit C
+- Release metadata: `releases/LATEST.json` at C
+- Module graph: `engine/MANIFEST.json` at C
+- Migration graph: `releases/MIGRATIONS.json` at C
+- Complete fallback: `engine/BOOTSTRAP_FULL.txt` at C
 
 ## Startup sequence
 A deployment should:
-1. use the repository README handoff to retrieve canonical `main/engine/BOOTSTRAP.txt`, then fetch canonical `LATEST.json`, `MANIFEST.json` and `MIGRATIONS.json` when web exists;
-2. run the automatic updater before ordinary account/domain work: if Production is current, continue silently; if a newer verified Production exists, validate/adopt it while preserving LOCAL STATE and preserve the user's original requested action across the update;
-3. verify Production/privacy identity and engine API;
-4. capability-detect persistence/ingestion features;
-5. inspect for current Workspace Registry plus accessible legacy LWAI state before onboarding;
-6. establish account context: resolve registry `active_account_id`, or register pre-registry legacy state first;
-7. inspect the workspace schema before ordinary domain loading;
-8. if schema is current `2.3`, load mandatory core normally;
-9. if schema is supported historical `2.1`/`2.2`, load only migration-capable core/release/storage behavior, apply validated additive migration edges, re-read/verify target schema, then enable current-schema-only domain modules;
-10. if no validated path exists, fail closed with existing local state untouched and do not start redundant onboarding;
-11. run recovery-first handling, then migration-first reconciliation and load only task-specific domain modules.
+1. retrieve the LastWarAI.com Stage-0 locator;
+2. resolve live GitHub `main` and require a valid current commit SHA C;
+3. retrieve Stage-1 plus release metadata/manifest/migrations from C only;
+4. run the automatic updater before ordinary account/domain work while preserving the user's requested action;
+5. verify Production/privacy identity and engine API;
+6. capability-detect persistence/ingestion features;
+7. inspect for current Workspace Registry plus accessible legacy LWAI state before onboarding;
+8. establish account context: resolve registry `active_account_id`, or register pre-registry legacy state first;
+9. inspect workspace schema before ordinary domain loading;
+10. if schema is current `2.3`, load mandatory core normally;
+11. if schema is supported historical `2.1`/`2.2`, load only migration-capable core/release/storage behavior, apply validated additive migration edges, re-read/verify target schema, then enable current-schema-only domain modules;
+12. if no validated path exists, fail closed with existing local state untouched and do not start redundant onboarding;
+13. run recovery-first handling and load only task-specific domain modules.
 
-When integrity primitives are available, verify module byte identity; otherwise require canonical origin plus exact identity/version without pretending a cryptographic check occurred.
+When integrity primitives are available, verify module byte identity; otherwise require exact-commit canonical origin plus exact identity/version without pretending a cryptographic check occurred.
 
 ## Supported historical workspace migration
 Current schema is `2.3`.
@@ -56,8 +59,6 @@ Current schema is `2.3`.
 
 These transitions are additive, idempotent and non-destructive. They preserve Workspace Registry, immutable `account_id`, `active_account_id`, account databases, history, Corrections, source/confidence/freshness and provider-local references. They require neither account rewrite nor user re-onboarding.
 
-Migration-capable core/release/storage modules explicitly span validated schemas `2.1`–`2.3`; domain modules may remain `2.3`-only and must not run early.
-
 ## Persistence capability profiles
 Persistence is selected from verified capabilities rather than provider branding. Adapters report read/list/write/create/query/atomic-append/CAS/snapshot/restore and derive the strongest safe profile.
 
@@ -66,23 +67,25 @@ Recovery journals require atomic append/transaction, revision/CAS-controlled app
 Without durable writable persistence, LWAI continues in conversation/cache mode and may use portable snapshots/exports. It must not claim durable recovery the host cannot provide.
 
 ## Automatic engine updates
-`release.updater` is mandatory Production behavior. With web access it checks canonical GitHub automatically:
+`release.updater` is mandatory Production behavior. With web access it checks live GitHub Production automatically:
 
 - on every new runtime/session startup;
 - before `reload LWAI` / `reload yourself`;
 - before schema-sensitive migration/recovery when compatibility matters;
 - before consequential work after six hours since the last successful canonical check in a long-running runtime.
 
-The first check is lightweight: `releases/LATEST.json`. If installed Production is current, no modules are re-downloaded and normal UX remains silent. If a newer verified Production exists, LWAI validates channel/privacy/API/schema/migration/integrity metadata, fetches only changed required engine components plus task-relevant modules, health-checks, adopts the new ENGINE while preserving LOCAL STATE, then continues the user's original requested task.
+The first check is lightweight. If installed Production is current, normal UX remains silent. If a newer verified Production exists, LWAI validates channel/privacy/API/schema/migration/integrity metadata, fetches changed required components from one exact commit, health-checks, adopts the new ENGINE while preserving LOCAL STATE, then continues the user's original task.
 
-Durable workspaces may store compact private workspace-level engine metadata such as installed version, last successful check/update, last-known-good version, update policy and health. These values are not account evidence or routing data. Session-only deployments keep equivalent metadata ephemerally when possible.
+Automatic updating does not imply a background daemon. A dormant ChatGPT conversation updates when the user next interacts unless the user separately opts into a genuinely available scheduling system.
 
-Automatic updating does not imply a background daemon. A dormant ChatGPT conversation updates when the user next interacts unless the user separately opted into a genuinely available scheduling system.
-
-`refresh engine` remains a permanent backwards-compatible manual escape hatch that bypasses freshness TTLs and forces the same canonical update transaction. `check for LWAI updates` is an alias. Failed verification retains last-known-good ENGINE and leaves private/local state untouched.
+`refresh engine` remains a permanent backwards-compatible manual escape hatch that bypasses freshness TTLs and forces the same live-ref/exact-commit update transaction. `check for LWAI updates` is an alias. Failed verification retains last-known-good ENGINE and leaves private/local state untouched.
 
 ## Sharing LWAI
-`share LWAI`, `give me the install prompt`, and equivalents return the same canonical GitHub one-line instruction shown above. Do not create beta/stable/alternate installer paths; RC branches are maintainer-only and temporary.
+`share LWAI`, `give me the install prompt`, and equivalents return:
+
+`Set up Last War optimization using the instructions at https://lastwarai.com`
+
+Do not create beta/stable/alternate public installer paths. RC branches are maintainer-only and temporary. The legacy TinyURL is compatibility-only for already-circulated instructions.
 
 ## Recovery
 - `reload LWAI`: automatic update preflight, then reconstruct from canonical engine metadata + workspace/account/schema/recovery state.
@@ -91,6 +94,6 @@ Automatic updating does not imply a background daemon. A dormant ChatGPT convers
 - `export full recovery package`: separate sanitized engine + private snapshot/registry/recovery artifacts + manifest.
 
 ## Maintainer path
-Develop against private Prod-Dev, update relevant contracts/registries, sanitize, freeze an RC, create `rc/<version>` from current known-good `main`, run exact-head PR CI plus private gates, merge only the validated head SHA, require post-merge main CI, verify public Production/installer, then synchronize private Production archives/release records.
+Develop against private Prod-Dev, update relevant contracts/registries, sanitize, freeze an RC, create `rc/<version>` from current known-good `main`, run exact-head PR CI plus private gates, merge only the validated head SHA, require post-merge main CI, verify the live LastWarAI.com locator and GitHub Production, then synchronize private Production archives/release records.
 
-Production CI validates release-tree structure plus executable runtime invariants, including canonical installer transport, historical workspace-schema migration, stale-alias canonicalization, permanent `refresh engine` compatibility, automatic consumer update behavior, no-orphan onboarding, account isolation and evidence/privacy rules. Failed pre-merge candidates leave `main` untouched.
+Production CI validates the live first-party Stage-0 endpoint, release-tree structure and executable runtime invariants. Failed pre-merge candidates leave `main` untouched.
