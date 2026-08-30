@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-08-29.15
+engine_version: 2026-08-29.16
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -42,6 +42,15 @@ Workspace state may include Account Registry, active_account_id, provider/engine
 
 EXISTING-ACCOUNT DISCOVERY
 Before Phase 1 onboarding inspect current Workspace Registry plus accessible prior LWAI databases/snapshots/exports/current-conversation state/user-provided legacy files. Registry-backed deployments resolve active_account_id before account-scoped work. Pre-registry legacy single-account deployments discover/register existing state first, generate immutable account_id, create registry, set active_account_id, then continue. Reuse supported facts with source/confidence/freshness; ask only missing, ambiguous, contradictory or materially stale information. Never pretend to retrieve inaccessible prior conversations.
+
+FIRST-RUN PERSISTENCE GATE
+Only after existing/legacy discovery confirms there is no prior LWAI state may new-account onboarding begin. Before collecting identity or creating a new account:
+- Capability-detect storage actually exposed by the host.
+- If a verified writable provider is available, recommend creating an isolated private LWAI workspace and ask the user to choose `use cloud storage` (recommended) or `continue session-only`.
+- If no verified writable provider is available, explain once that session-only mode works but lacks durable cross-chat recovery and reliable persistent multi-account state. Invite the user to connect a supported writable provider in the host application (Google Drive is the most-tested option when available) and reply `storage connected`, or choose `continue session-only`.
+- Do not ask Phase 1 identity questions and do not create account_id/account storage until the choice is explicit.
+- After `storage connected`, capability-detect again; never claim persistence until read/write capability is verified. If cloud is chosen, create/verify an isolated private LWAI workspace before identity intake. If session-only is chosen, acknowledge the limitation once and proceed without recurring prompts.
+Existing users with a valid workspace skip this gate. Read-only/reference storage is not durable persistence. Later `enable persistence` / `connect storage` can reopen setup and migrate supported session state nondestructively.
 
 WORKSPACE SCHEMA MIGRATION
 Current workspace schema is 2.3. Supported historical path is additive and validated:
@@ -163,7 +172,7 @@ RELEASE TRANSACTION RECOVERY
 Production changes use RC branch -> exact-head CI -> merge exact validated head -> main CI/public identity/installer verification -> private archive/records. Recovery verifies durable branch/PR/commit/CI/archive state before replay. Failed pre-merge promotion preserves last-known-good main.
 
 DOCUMENTATION-AS-CODE / BEHAVIOR-AS-TESTED-CODE
-Material behavior changes update loader/fallback, manifest/schema, contracts, tests and release metadata together. CI runs structural integrity/privacy gates plus deterministic regressions for account isolation, migration, startup ordering, Audit/Runtime Session isolation, WAITING_USER, verify-before-replay, checkpoint loss, append-only journal, provider degradation, legacy schema migration and alias canonicalization.
+Material behavior changes update loader/fallback, manifest/schema, contracts, tests and release metadata together. CI runs structural integrity/privacy gates plus deterministic regressions for account isolation, migration, startup ordering, first-run persistence choice, Audit/Runtime Session isolation, WAITING_USER, verify-before-replay, checkpoint loss, append-only journal, provider degradation, legacy schema migration and alias canonicalization.
 
 COMMAND VOCABULARY
 reload yourself / reload LWAI = rebuild from current engine + private workspace/account/recovery.
@@ -176,12 +185,16 @@ share LWAI = one-line installer.
 export yourself / export LWAI = this sanitized standalone runtime.
 export my account snapshot = private active-account recovery export.
 refresh engine = update ENGINE preserving LOCAL STATE.
+enable persistence / connect storage = reopen provider setup and migrate supported current session state nondestructively.
 
 EXPORT SANITIZATION
 Remove player/alliance/server identifiers, game UIDs, exact account powers/inventories/current targets, personal spending history, diplomacy, screenshots, local Corrections, actual Runtime/Audit Session and Checkpoint/Journal rows, provider IDs/paths, credentials/auth details. Intentional public Production endpoints/generic examples are allowed.
 
 HEALTH / REGRESSION INVARIANTS
 - Existing supported state is reused before redundant onboarding.
+- Genuinely new users explicitly choose durable cloud setup or session-only before identity onboarding.
+- No writable provider causes a connect-or-session prompt rather than silent session-only fallback.
+- Existing valid persistent users are not redundantly prompted for persistence setup.
 - Registry-backed active_account_id resolves before account-scoped recovery.
 - Pre-registry legacy state is registered before account-scoped recovery.
 - Supported workspace schema 2.1/2.2 migrates additively/idempotently to 2.3 before domain work.
@@ -198,4 +211,4 @@ HEALTH / REGRESSION INVARIANTS
 - Sanitized exports contain no consumer identity/state/provenance rows.
 
 STARTUP BEHAVIOR
-Treat this fallback as current ENGINE. Canonicalize alias against GitHub when possible; detect capabilities; inspect registry/legacy state; resolve/register account context; migrate any supported older workspace schema to 2.3 with preservation checks; then run recovery-first and migration-first reconciliation. For genuinely new accounts begin phased guidance. Do not require private Prod-Dev access.
+Treat this fallback as current ENGINE. Canonicalize alias against GitHub when possible; detect capabilities; inspect registry/legacy state. Existing users resolve/register account context, migrate supported workspace schema to 2.3 with preservation checks, then run recovery-first and reconciliation. Genuinely new users must complete the explicit persistence choice before Phase 1 identity guidance. Do not require private Prod-Dev access.

@@ -1,6 +1,6 @@
 # LastWar Account Audit Engine (LWAI)
 
-LWAI is a modular account-intelligence and optimization runtime for **Last War: Survival**. ChatGPT provides the conversational interface; the shared engine is centrally maintained in this repository; optional user persistence remains in the user's own supported storage.
+LWAI is a modular account-intelligence and optimization runtime for **Last War: Survival**. ChatGPT provides the conversational interface; the shared engine is centrally maintained in this repository; user-specific state stays in the user's own supported storage or, by explicit choice, in the current session only.
 
 ## Install
 
@@ -11,6 +11,18 @@ Paste this single instruction into a fresh ChatGPT conversation:
 The short URL is a convenience alias. Canonical GitHub `main` is authoritative; the loader re-checks canonical Production metadata so stale alias/cache content cannot downgrade a newer verified release.
 
 For best results, use a higher reasoning/thinking setting when the ChatGPT interface offers one.
+
+## First run
+
+LWAI first looks for an existing Workspace Registry, legacy LWAI state, supported snapshots/exports, and usable persistent-storage capabilities. Existing users resume or migrate before broad onboarding.
+
+A genuinely new user is **not silently placed into session-only mode**. Before identity/account intake, LWAI explicitly offers durable persistence:
+
+- if a verified writable provider is already available, LWAI offers to create an isolated private workspace there;
+- if no writable provider is exposed, LWAI explains how to connect a supported provider in the host application and re-checks capability after connection;
+- the user may always choose to continue session-only instead.
+
+Google Drive is the most-tested persistent option when available. Durable storage is recommended, not mandatory. Session-only use remains fully supported, with the expected limitation that long-term recovery and cross-chat continuity depend on the host session.
 
 ## What LWAI does
 
@@ -39,7 +51,7 @@ The thin loader stays intentionally bounded and contains orchestration rather th
 
 LWAI discovers supported prior state before onboarding. Current registry-backed users resume their existing immutable account identity and canonical database; older pre-registry single-account deployments are registered nondestructively rather than rebuilt.
 
-Production `2026-08-29.15` also restores explicit workspace-schema migration for supported older multi-account deployments:
+Production supports explicit workspace-schema migration for supported older deployments:
 
 - schema `2.1 -> 2.2`: optional guidance metadata and Audit Sessions;
 - schema `2.2 -> 2.3`: optional Runtime Checkpoints and Runtime Journal.
@@ -71,7 +83,7 @@ Migration-capable core/release/storage components may explicitly support older v
 
 Private account data and actual runtime-session/host-conversation references are never required in this public repository.
 
-Durable storage is optional. Without writable supported storage, LWAI still operates in the active conversation and can use portable snapshots/exports, but persistence/recovery are naturally limited by the host session.
+Durable storage is optional but explicitly offered to new users. Without writable supported storage, LWAI still operates in the active conversation and can use portable snapshots/exports, but persistence/recovery are naturally limited by the host session.
 
 ## Storage adapters
 
@@ -95,7 +107,7 @@ If required engine content cannot be retrieved or validated, LWAI retains last-k
 
 ## Validation
 
-Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, account isolation, archive/start-over, migration preservation, legacy/current startup ordering, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration and stale-alias canonicalization.
+Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, account isolation, archive/start-over, migration preservation, legacy/current startup ordering, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration and stale-alias canonicalization.
 
 ## Production endpoints
 
@@ -127,7 +139,7 @@ Production changes follow short-lived staged RC branches with sanitization check
 
 ## Current Production
 
-**Engine version:** `2026-08-29.15`
+**Engine version:** `2026-08-29.16`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  

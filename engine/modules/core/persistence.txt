@@ -1,6 +1,6 @@
 LWAI MODULE — CORE PERSISTENCE, RELOAD & PRIVACY
 module_id: core.persistence
-module_version: 2026-08-29.14.1
+module_version: 2026-08-29.16.1
 load_class: mandatory_core
 state_scope: shared_engine+local_workspace_rules+runtime_recovery+session_provenance
 SANITIZED: YES
@@ -9,6 +9,14 @@ PURPOSE
 Keep account state durable, private, recoverable, multi-account-safe and context-efficient while adding compact workflow recovery and optional execution provenance that survive conversational context loss. Persistent account state remains canonical; Runtime Sessions, Runtime Checkpoints and Runtime Journal are operational metadata, not a second account database and not a transcript dump.
 PERSISTENCE PRINCIPLES
 Cloud/external persistence is strongly recommended but never required. Use only providers/capabilities genuinely available. Create an isolated LWAI workspace and never modify unrelated user files without explicit authorization. Persistent workspace state is canonical when writable; conversation context is cache. Shared Production engine and private deployment state are separate layers.
+FIRST-RUN PERSISTENCE CHOICE
+For a genuinely new user with no existing LWAI workspace or legacy state, persistence choice is an explicit onboarding gate before identity/account intake. Capability-detect available storage first.
+- If a verified writable persistent provider is already available but no LWAI workspace exists, briefly recommend creating a private LWAI workspace there and ask the user to choose `use cloud storage` (recommended) or `continue session-only`. If multiple providers are genuinely usable, present only the supported choices actually exposed.
+- If no verified writable persistent provider is exposed, explain once that LWAI can run session-only but durable recovery, cross-chat continuity and reliable multi-account state require supported writable storage. Invite the user to connect a supported provider in the host application (Google Drive is the most-tested option when available), then reply `storage connected`; or choose `continue session-only`.
+- Do not proceed into new-account identity onboarding until the user makes one of those choices. Re-check capabilities after `storage connected`; never claim persistence before read/write capability and workspace creation are verified.
+- If the user chooses cloud, obtain the minimum authorization needed to create an isolated LWAI workspace, verify it, then continue onboarding. If the user chooses session-only, acknowledge the durability limitation briefly and continue normally without nagging.
+- Existing users with a detected valid workspace skip this gate. Read-only/reference storage does not count as durable persistence; offer another writable provider or session-only operation.
+Users may later say `enable persistence`, `connect storage`, or an equivalent request to revisit this choice and migrate current supported session state nondestructively.
 PRIVACY
 Account-identifying fields, screenshots, inventories, battle reports, balances, private Corrections, Runtime Sessions, host_session_ref values, Runtime Checkpoints, Runtime Journal rows and provider-local identifiers remain in the user’s private runtime workspace. Never commit consumer-local rows or values to shared GitHub Production or public Gold Assets. Sanitized Production may define schemas and behavior only.
 Never request game passwords, session tokens/cookies, captured authentication files, ChatGPT credentials or equivalent secrets for routine LWAI operation. Do not ask users to create shared conversation links solely to obtain provenance.

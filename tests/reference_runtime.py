@@ -55,6 +55,26 @@ class ProviderCapabilities:
     def can_authoritative_journal(self) -> bool:
         return self.atomic_append or self.compare_and_swap or self.create
 
+    @property
+    def can_durable_persist(self) -> bool:
+        return self.read and (self.write or self.create)
+
+
+def first_run_persistence_gate(capabilities: ProviderCapabilities, choice: str | None = None) -> str:
+    """Resolve the mandatory new-user persistence decision before identity onboarding."""
+    if choice is None:
+        return "PROMPT_CLOUD_OR_SESSION" if capabilities.can_durable_persist else "PROMPT_CONNECT_OR_SESSION"
+    normalized = choice.strip().lower().replace("_", " ")
+    if normalized in {"continue session-only", "continue session only", "session-only", "session only"}:
+        return "SESSION_ONLY"
+    if normalized in {"use cloud storage", "use cloud", "cloud"}:
+        if not capabilities.can_durable_persist:
+            raise RuntimeError("cloud choice requires verified writable persistence")
+        return "CREATE_PRIVATE_WORKSPACE"
+    if normalized in {"storage connected", "connected"}:
+        return "RECHECK_CAPABILITIES"
+    raise ValueError("unrecognized persistence choice")
+
 
 @dataclass
 class Account:
@@ -182,7 +202,16 @@ class RuntimeModel:
         account.facts = dict(legacy_facts)
         return account
 
-    def startup_from_storage(self, *, registry_accounts: dict[str, dict[str, Any]] | None = None, active_account_id: str | None = None, legacy_facts: dict[str, Any] | None = None, workspace_schema_version: str | None = None) -> list[str]:
+    def startup_from_storage(
+        self,
+        *,
+        registry_accounts: dict[str, dict[str, Any]] | None = None,
+        active_account_id: str | None = None,
+        legacy_facts: dict[str, Any] | None = None,
+        workspace_schema_version: str | None = None,
+        provider_capabilities: ProviderCapabilities | None = None,
+        persistence_choice: str | None = None,
+    ) -> list[str]:
         if workspace_schema_version is not None:
             self.set_workspace_schema(workspace_schema_version)
         if registry_accounts is not None:
@@ -208,7 +237,20 @@ class RuntimeModel:
                 steps.append("workspace_schema_migrate")
             steps.extend(["recovery_first", "migration_reconcile"])
             return steps
-        return ["new_account_guidance"]
+
+        caps = provider_capabilities or ProviderCapabilities(read=False, list=False)
+        decision = first_run_persistence_gate(caps, persistence_choice)
+        if decision == "PROMPT_CLOUD_OR_SESSION":
+            return ["first_run_persistence_prompt_cloud_or_session"]
+        if decision == "PROMPT_CONNECT_OR_SESSION":
+            return ["first_run_persistence_prompt_connect_or_session"]
+        if decision == "RECHECK_CAPABILITIES":
+            return ["recheck_storage_capabilities"]
+        if decision == "CREATE_PRIVATE_WORKSPACE":
+            return ["first_run_persistence_choice", "create_private_workspace", "verify_private_workspace", "new_account_guidance"]
+        if decision == "SESSION_ONLY":
+            return ["first_run_persistence_choice", "session_only_acknowledged", "new_account_guidance"]
+        raise AssertionError("unhandled persistence decision")
 
     def start_runtime_session(self, runtime_session_id: str, *, host_platform: str | None = None, host_session_ref: str | None = None, host_session_ref_source: str | None = None, account_id: str | None = None) -> RuntimeSession:
         if runtime_session_id in self.runtime_sessions:

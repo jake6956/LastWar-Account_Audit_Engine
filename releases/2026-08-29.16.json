@@ -21,7 +21,18 @@
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds explicit durable-storage choice before genuinely new account onboarding; existing account and workspace state is unchanged."
+    "notes": "Adds an explicit persistence choice for genuinely new users before identity onboarding. Existing persistent and legacy users retain their current startup path unchanged."
   },
-  "notes": "First-Run Persistence Choice release. New users explicitly choose verified private cloud persistence or session-only operation before identity/account intake."
+  "notes": "First-Run Persistence Choice release. New users are no longer allowed to fall silently into session-only mode; they explicitly choose verified private cloud persistence or session-only operation before account identity intake.",
+  "features": [
+    "mandatory first-run persistence decision before new-account identity intake",
+    "verified writable-provider cloud-workspace offer when storage is already exposed",
+    "connect-supported-storage or continue-session-only prompt when no writable provider is exposed",
+    "capability recheck after user reports storage connected",
+    "no persistence claim until private workspace read/write capability is verified",
+    "existing valid workspaces bypass redundant persistence prompts",
+    "read-only storage is not treated as canonical persistence",
+    "later enable persistence/connect storage path without account reset",
+    "executable first-run persistence regression coverage"
+  ]
 }

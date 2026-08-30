@@ -1,12 +1,22 @@
 # Guided Lifecycle & Ingestion Contract
 
-Version: 2026-08-29.14
+Version: 2026-08-29.16
 
 ## Purpose
 LWAI upgrades and audits must feel like continuation rather than reset. Existing accessible state is reused first; users are asked only for information that remains missing, ambiguous, contradictory or materially stale. Interaction should feel like a personable technician with a clipboard: clear about what comes next, patient with novices, concise with fluent users.
 
 ## Migration-first startup
 Before broad onboarding, inspect any readable Workspace Registry, active account, prior LWAI database, snapshot/export, current-conversation state or user-provided legacy file. Reconcile supported facts into the current schema while preserving source, confidence and freshness. Persist immediately when writable storage exists. Never imply access to unrelated prior conversations that are not actually available. If no registry exists but legacy state exists, register that state first to establish account context before account-scoped recovery.
+
+## First-run persistence choice
+Only after discovery establishes that the user is genuinely new may Phase 1 account intake begin. Persistence intent must be explicit before collecting account identity or creating a new account record.
+
+- If a verified writable supported provider is already exposed, recommend creating an isolated private LWAI workspace and ask the user to choose cloud persistence or session-only operation.
+- If no verified writable provider is exposed, explain briefly that session-only mode works but durable cross-chat recovery and persistent multi-account state are limited. Invite the user to connect a supported writable provider in the host application and reply `storage connected`, or explicitly continue session-only.
+- `storage connected` is not proof of capability. Re-detect provider read/write/create support before claiming persistence or creating the workspace.
+- If cloud persistence is chosen, create and verify the isolated private workspace before identity intake. If session-only is chosen, acknowledge the limitation once and proceed without recurring prompts.
+- Existing users with a valid workspace and supported legacy users skip this gate. Read-only/reference storage does not satisfy durable persistence.
+- Later `enable persistence` / `connect storage` requests may move supported session state into durable storage nondestructively; no account reset is implied.
 
 ## Adaptive guidance
 Optional proficiency states are NEW, LEARNING, COMFORTABLE and EXPERT. Guidance may become less verbose as successful usage becomes fluent, but privacy, evidence hierarchy, account isolation and declared batch boundaries are invariant.
@@ -34,4 +44,4 @@ Archive is nondestructive and reversible. `list archived accounts`, `restore acc
 Identity, imported prior state, screenshots, Audit Session contents, Runtime Session/host references and provider-local paths remain private deployment state. Shared Production contains only generic rules/schemas. UID remains optional; normal operation never requests game passwords, session tokens/cookies, captured authentication files, ChatGPT credentials or shared-link creation.
 
 ## Release gates
-Production promotion requires: core.guidance is mandatory and dependency-resolved; full fallback parity; migration-first reuse; missing/stale-only collection; explicit done-boundary behavior; direct/document/guided evidence parity; resumable account-scoped sessions; runtime-session provenance remains optional/non-authoritative; duplicate/missing/different host references cannot merge accounts or bypass active_account_id; safe auto-continuation; archive/restore identity preservation; terse expert-update compatibility; private-state denylist; and healthy one-line installer.
+Production promotion requires: explicit genuinely-new-user persistence choice before identity onboarding; session-only remains valid; cloud persistence is capability-verified before use; existing valid workspaces bypass redundant setup; core.guidance is mandatory and dependency-resolved; full fallback parity; migration-first reuse; missing/stale-only collection; explicit done-boundary behavior; direct/document/guided evidence parity; resumable account-scoped sessions; runtime-session provenance remains optional/non-authoritative; duplicate/missing/different host references cannot merge accounts or bypass active_account_id; safe auto-continuation; archive/restore identity preservation; terse expert-update compatibility; private-state denylist; and healthy one-line installer.

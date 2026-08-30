@@ -17,10 +17,12 @@ Every public promotion is fail-closed.
 - provider-neutral workspace schema retains optional Runtime Sessions, Runtime Checkpoints and Runtime Journal;
 - storage adapter exposes `storage-api/1`, explicit capabilities, persistence profiles and concurrency-safe journal rules;
 - thin loader is <= 9KB, contains orchestration/recovery/integrity/migration-bootstrap behavior and does not embed game-domain playbooks;
+- thin loader, mandatory core guidance/persistence/accounts, release bootstrap and BOOTSTRAP_FULL all contain an explicit genuinely-new-user persistence gate before identity onboarding;
 - BOOTSTRAP_FULL contains complete current account/guidance/recovery/session/storage/integrity/migration and domain behavior;
 - release validation derives expected version/API/schema from metadata rather than candidate constants;
 - migration graph contains required previous-Production edge and historical workspace-schema edges `2.1 -> 2.2 -> 2.3`;
-- deterministic runtime tests execute for account isolation, archive/start-over, legacy migration, current/legacy startup, workspace-schema migration, Audit Session isolation, Runtime Session provenance, `WAITING_USER`, verify-before-replay, checkpoint-loss tolerance, append-only journal, provider degradation and installer canonicalization;
+- deterministic runtime tests execute for first-run persistence choice, account isolation, archive/start-over, legacy migration, current/legacy startup, workspace-schema migration, Audit Session isolation, Runtime Session provenance, `WAITING_USER`, verify-before-replay, checkpoint-loss tolerance, append-only journal, provider degradation and installer canonicalization;
+- new-user regressions prove no writable provider yields a connect-or-session prompt, writable storage yields a cloud-or-session prompt, session-only remains valid, cloud setup verifies before onboarding, and existing workspaces skip redundant persistence setup;
 - workspace migration regressions prove canonical account facts/history/account_id/active_account_id survive `2.1 -> 2.3`, migration is idempotent, failed migration rolls back, and COMMITTED checkpoints are not replayed;
 - manifest regressions prove migration-capable modules can bootstrap schema `2.1` and domain modules requiring `2.3` remain blocked before target schema;
 - stale short-link/cache content cannot override a newer verified canonical GitHub Production identity;
@@ -33,6 +35,11 @@ Every public promotion is fail-closed.
 - local-state preservation/migration test;
 - module graph/full fallback parity test;
 - capability/provider fallback test;
+- brand-new user without writable storage is explicitly offered supported-cloud connection or session-only before identity intake;
+- brand-new user with verified writable storage is explicitly offered private workspace creation or session-only before identity intake;
+- `storage connected` triggers capability re-detection and does not trust the declaration alone;
+- session-only choice does not block normal use and does not produce repeated persistence nagging;
+- existing valid workspace users do not receive redundant persistence prompts;
 - legacy state reuse and multi-account isolation tests;
 - existing schema-2.1/2.2 workspace migration test using sanitized fixtures only;
 - migration failure leaves source workspace authoritative and suppresses redundant onboarding;
@@ -56,27 +63,34 @@ Every public promotion is fail-closed.
 
 ## Executable regression scenarios
 The deterministic reference runtime must prove at minimum:
-1. terse writes route only to `active_account_id`;
-2. `start over` archives prior account rather than deleting it;
-3. legacy migration preserves canonical facts;
-4. current and pre-registry startup ordering establish account context before account-scoped recovery;
-5. a registry-backed schema-2.1 workspace migrates to 2.3 before recovery/domain work;
-6. `2.1 -> 2.3` migration preserves account facts/history/account routing;
-7. repeated migration is a no-op;
-8. simulated migration failure restores original schema/state;
-9. migration-capable modules declare schema-2.1 support while domain modules can remain 2.3-only;
-10. stale alias content cannot downgrade canonical Production;
-11. an LWAI `runtime_session_id` exists without host-session reference;
-12. duplicate/different host refs cannot merge/duplicate immutable accounts;
-13. Audit Session ownership remains account-scoped;
-14. `WAITING_USER` prevents continuation until boundary closes;
-15. account-scoped checkpoints cannot cross `active_account_id`;
-16. verify-before-replay skips already-durable writes;
-17. recovery applies only missing actions once;
-18. a COMMITTED checkpoint is not replayed during schema migration;
-19. checkpoint loss cannot destroy canonical facts;
-20. journal exposure is append-only;
-21. provider profiles degrade according to verified capabilities.
+1. a genuinely new user without writable persistence stops at a connect-or-session choice before onboarding;
+2. a genuinely new user with writable persistence stops at a cloud-or-session choice before onboarding;
+3. explicit session-only choice proceeds to onboarding without creating a durable workspace;
+4. explicit cloud choice creates and verifies the private workspace before onboarding;
+5. `storage connected` causes capability re-check rather than immediate onboarding;
+6. unverified cloud choice fails closed;
+7. an existing valid workspace bypasses the first-run persistence gate;
+8. terse writes route only to `active_account_id`;
+9. `start over` archives prior account rather than deleting it;
+10. legacy migration preserves canonical facts;
+11. current and pre-registry startup ordering establish account context before account-scoped recovery;
+12. a registry-backed schema-2.1 workspace migrates to 2.3 before recovery/domain work;
+13. `2.1 -> 2.3` migration preserves account facts/history/account routing;
+14. repeated migration is a no-op;
+15. simulated migration failure restores original schema/state;
+16. migration-capable modules declare schema-2.1 support while domain modules can remain 2.3-only;
+17. stale alias content cannot downgrade canonical Production;
+18. an LWAI `runtime_session_id` exists without host-session reference;
+19. duplicate/different host refs cannot merge/duplicate immutable accounts;
+20. Audit Session ownership remains account-scoped;
+21. `WAITING_USER` prevents continuation until boundary closes;
+22. account-scoped checkpoints cannot cross `active_account_id`;
+23. verify-before-replay skips already-durable writes;
+24. recovery applies only missing actions once;
+25. a COMMITTED checkpoint is not replayed during schema migration;
+26. checkpoint loss cannot destroy canonical facts;
+27. journal exposure is append-only;
+28. provider profiles degrade according to verified capabilities.
 
 ## Non-executable contract regressions
 - shared gear remains transferable within an account rather than hero-owned;
@@ -89,6 +103,8 @@ The deterministic reference runtime must prove at minimum:
 - engine refresh preserves Workspace Registry, `active_account_id`, every account namespace, Audit Sessions, optional Runtime Sessions, Runtime Checkpoints and Runtime Journal;
 - no-cloud deployment functions without claiming durable recovery/provenance;
 - unsupported provider capabilities are never invented;
+- new-user persistence choice occurs before account identity collection;
+- session-only remains a supported explicit choice;
 - UID remains optional/private;
 - existing state is discovered before redundant onboarding;
 - supported older workspace schemas migrate before normal domain work;

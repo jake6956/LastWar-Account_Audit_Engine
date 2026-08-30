@@ -98,6 +98,18 @@
       "requires_account_rewrite": false,
       "tests": ["workspace_schema_21_to_23_preserves_state", "workspace_schema_migration_is_idempotent", "workspace_schema_migration_failure_preserves_original", "migration_capable_modules_bootstrap_legacy_schema", "domain_modules_blocked_before_target_schema", "stale_alias_cannot_downgrade_canonical_production", "committed_checkpoint_not_replayed_during_schema_migration"],
       "notes": "Restores validated historical workspace-schema edges and permits migration-capable core bootstrap from supported 2.1/2.2 workspaces before normal current-schema domain loading. Canonical GitHub identity overrides stale alias/cache content."
+    },
+    {
+      "from": "2026-08-29.15",
+      "to": "2026-08-29.16",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_first_run_persistence_gate",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["new_user_without_writable_storage_is_prompted_before_onboarding", "new_user_with_writable_storage_is_prompted_before_onboarding", "new_user_can_explicitly_continue_session_only", "new_user_cloud_choice_creates_workspace_before_onboarding", "storage_connected_requires_capability_recheck_before_onboarding", "existing_workspace_skips_first_run_persistence_prompt"],
+      "notes": "Requires a genuinely new user to make an explicit persistence choice before identity/account onboarding. Existing workspace/legacy startup paths are unchanged and all local state is preserved."
     }
   ]
 }
