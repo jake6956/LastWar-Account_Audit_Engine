@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.23",
+  "engine_version": "2026-08-30.24",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -152,30 +152,43 @@
       "integrity": {"algorithm": "git_blob_sha1", "digest": "187e9c9098e947c0a250502647fabff5813789b5"}
     },
     {
+      "module_id": "release.resolver",
+      "module_version": "2026-08-30.24.1",
+      "path": "engine/modules/release/resolver.txt",
+      "load_class": "mandatory_core",
+      "dependencies": ["release.runtime"],
+      "state_scope": "shared_engine+workspace_engine_metadata",
+      "required": true,
+      "release_min": "2026-08-30.24",
+      "engine_api": {"min": "1.0", "max": "1.0"},
+      "workspace_schema": {"min": "2.1", "max": "2.3"},
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "0ba0f6c75f20ff2141804e6b28999c0dfdf78eb5"}
+    },
+    {
       "module_id": "release.updater",
-      "module_version": "2026-08-29.19.1",
+      "module_version": "2026-08-30.24.1",
       "path": "engine/modules/release/updater.txt",
       "load_class": "mandatory_core",
-      "dependencies": ["release.runtime", "core.persistence"],
+      "dependencies": ["release.resolver", "core.persistence"],
       "state_scope": "shared_engine+workspace_engine_metadata",
       "required": true,
       "release_min": "2026-08-29.18",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "f8484387f520f2aad3a6782cab9831d4e5451371"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "b21ed5b5e1f29337b19f2c34ba3f1115d5437eb3"}
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-08-29.23.1",
+      "module_version": "2026-08-30.24.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
-      "dependencies": ["release.runtime", "release.updater", "core.accounts", "core.guidance"],
+      "dependencies": ["release.resolver", "release.updater", "core.accounts", "core.guidance"],
       "state_scope": "shared_engine",
       "required": true,
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "617e4364b7df361879ef8ed9bf9b75b832ba48c2"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "10f1d0d1c1c3b83afa12242a541c1b7ac11e7a99"}
     }
   ]
 }
