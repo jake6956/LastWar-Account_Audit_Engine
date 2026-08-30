@@ -53,7 +53,11 @@ class UserExperienceContractTests(unittest.TestCase):
         for body in (self.loader, self.full, self.guidance, self.persistence, self.storage, self.contract):
             lower = body.lower()
             self.assertIn("connected", lower)
-            self.assertTrue("not proof" in lower or "is not proof" in lower or "confirmation is not proof" in lower)
+            self.assertTrue(
+                "re-detect" in lower or "recheck" in lower or "re-check" in lower or "capabilit" in lower,
+                "storage connection acknowledgement must trigger capability verification",
+            )
+            self.assertTrue("verify" in lower or "verified" in lower)
 
     def test_later_persistence_acceptance_reruns_provider_flow(self):
         for body in (self.loader, self.full, self.guidance, self.persistence, self.bootstrap, self.contract):
