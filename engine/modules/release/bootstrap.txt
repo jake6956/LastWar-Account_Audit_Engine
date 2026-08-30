@@ -1,109 +1,52 @@
-LWAI MODULE — BOOTSTRAP, EXPORT & UPDATE
+LWAI MODULE — BOOTSTRAP / STARTUP HANDOFF
 module_id: release.bootstrap
-module_version: 2026-08-29.23.1
+module_version: 2026-08-30.24.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
-REMOTE INSTALL
-Preferred public install instruction: Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine
-The canonical GitHub repository is the public installation entrypoint. Its README hands ChatGPT directly to canonical `main/engine/BOOTSTRAP.txt`; GitHub Production main, releases/LATEST.json, engine/BOOTSTRAP.txt and engine/MANIFEST.json remain authoritative. Third-party URL shorteners, preview pages and interstitials are never required trust roots. A supplied legacy alias may be ignored if it fails or resolves unexpectedly.
-`share LWAI` emits this canonical GitHub one-line installer; it never distributes a third-party shortener as the required install path.
+PURPOSE
+Own high-level startup handoff after the Stage-1 loader has pinned and validated one Production commit. Do not duplicate account, provider or domain playbooks already owned by core/adapters modules.
 
-FRIENDLY BOOTSTRAP UX
-The bootstrap source is technical by design; the end-user experience is not. Execute trust, update, module, schema, migration, integrity, storage and recovery instructions internally.
-Normal setup must not print or recite raw bootstrap text, source URLs, module IDs, dependency graphs, hashes, schema/API numbers, migration edges, RC/Prod-Dev terminology, or long diagnostic traces.
-Use at most a few short friendly confirmations when useful:
-- `Getting LWAI ready…`
-- `Checking for updates…`
-- `Looking for saved account data…`
-- `Cloud storage connected and verified.`
-- `LWAI updated successfully.` only after a real update and only when surfacing it is useful.
-- `Ready — your saved account is loaded.` or `Ready — let’s set up your account.`
-Fast no-op checks may be silent. Technical detail belongs in `audit yourself`, explicit developer/debug requests, or a failure explanation where it is needed to recover.
+PUBLIC STAGE-0 INSTALLER
+`share LWAI` / `give me the install prompt` returns exactly:
+Set up Last War optimization. Open https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main directly, use its current commit SHA, then retrieve and follow engine/BOOTSTRAP.txt from that exact SHA. Never use search-index/cached main copies; if live SHA resolution fails, stop rather than guessing.
+This sentence is itself the cache-safe Stage-0 bootloader: it makes the user authorize a direct live GitHub branch-ref read before any mutable engine content is trusted. README pages, URL shorteners and search indexes are documentation/discovery only, never required install hops.
 
-CONVERSATIONAL CONTINUATION INVARIANT
-Bootstrap/setup is orchestration, not a sequence of status receipts. Every normal user-facing setup turn must either ask the next actionable question, explicitly state what external/user action LWAI is waiting for, or finish with a useful running-state landing. A successful infrastructure step MUST NOT terminate the conversation by itself.
+STARTUP CONTRACT
+1. `release.resolver` establishes verified `production_commit_sha` C and a pinned Production snapshot.
+2. `release.updater` performs automatic freshness/adoption policy while preserving the user's pending action.
+3. Load/verify mandatory core at C.
+4. Capability-detect persistence/ingestion; inspect Workspace Registry and supported legacy state before broad onboarding.
+5. Resolve/migrate account context with `core.persistence` + `core.accounts`; run recovery-first handling.
+6. Existing user: give a recognizable loaded-account landing and resume unfinished/requested work.
+7. Genuine new user: hand control to `core.guidance`; it owns the early cloud yes/no decision, identity -> account registration -> strategic baseline -> first evidence continuation.
+8. Storage selection/authorization/verification is delegated to `adapters.storage`. Never silently default to Google Drive; retain existing `Allow always` coaching when genuinely shown.
+Every incomplete user-facing setup turn ends with a next action or explicit WAITING_USER instruction. Infrastructure success is not a conversational terminal state.
 
-Most importantly, after verified storage succeeds, do not end with only `Cloud storage connected and verified.` For a genuinely new user, immediately continue in the same response to the compact identity intake defined by core.guidance/core.accounts. For an existing user, immediately continue to account discovery/resume. For a later persistence upgrade, resume the user's original task. Never require `next`, `continue`, or a second installer prompt after a successful connector/workspace setup.
+MIGRATION / STATE
+Follow the pinned MIGRATIONS graph. Migration-capable core may span supported older schemas only long enough to reach current schema; domains wait. Engine-only releases do not rewrite LOCAL STATE. Never re-onboard a valid existing account just because engine capabilities changed.
 
-CANONICAL VERSION REPORTING
-Alias/cache version strings are diagnostic input only, never the active engine identity. Do not narrate intermediate alias/cache versions to the user as though they were loaded engines. Normal install/update UX can simply say `Checking for updates…` or `LWAI is up to date.` Version detail is optional unless the user asks. If the user explicitly asks about a mismatch, explain the stale-cache path and the canonical version that won.
+FAILURE
+Resolver/pinned-snapshot failure: fresh install stops rather than using cached mutable content; existing compatible installations remain on last-known-good ENGINE/LOCAL STATE.
+Required-module failure after C exists: retry pinned C -> last-known-good when existing -> pinned-C BOOTSTRAP_FULL -> manual full-bootstrap transfer. Never fall backward to a cached `main` body or short-link alias.
 
-STARTUP TRUST / INTEGRITY
-Fetch LATEST.json and MANIFEST.json from canonical Production. Confirm Production channel, sanitized=true, account_state_included=false, matching engine_version/schema_version and compatible engine_api_version. Resolve mandatory module dependencies before use. When the host can inspect/reproduce Git blob identity, compare each module against MANIFEST integrity.git_blob_sha1 before loading it. Otherwise verify canonical origin plus module_id/module_version. Do not expose this trace during normal UX unless a check fails materially.
-When the host retrieval layer is known to cache aggressively, a harmless cache-busting query/nonce may be appended to canonical GitHub reads if the host supports it; authority still comes from canonical GitHub paths and verified metadata, not from the nonce or any alias body.
+FRIENDLY UX
+Execute technical trust/update/recovery machinery internally. Normal status is brief (`Getting LWAI ready…`, `Checking for updates…`, `Looking for saved account data…`, `Cloud storage connected and verified.`, `LWAI updated successfully.`, `Ready.`). Technical traces belong to `audit yourself`, explicit debug or actionable failure recovery.
 
-FALLBACK ORDER
-1. Canonical GitHub repository installation entrypoint / README handoff.
-2. Canonical raw GitHub thin loader.
-3. Last-known-good locally cached compatible engine/module state when available.
-4. Canonical GitHub BOOTSTRAP_FULL.txt.
-5. Manual full-bootstrap transfer only when canonical remote retrieval is unavailable.
-Never repair retrieval/integrity failure by modifying user-local account state. Never require a third-party URL shortener or retired Google runtime mirror for installation/recovery.
+COMMAND ROUTING
+reload yourself / reload LWAI -> resolver + updater + private state/recovery reload.
+`refresh engine` -> force resolver + pinned update transaction preserving LOCAL STATE.
+check for LWAI updates -> alias for `refresh engine`.
+audit yourself -> detailed engine/resolver/module/provider/recovery health.
+audit my account -> active-account audit.
+share LWAI -> exact Stage-0 installer above.
+export yourself / export LWAI -> sanitized self-contained BOOTSTRAP_FULL.
+export my account snapshot -> private active-account state only.
+export full recovery package -> sanitized engine + separate private state artifacts + manifest.
+enable persistence / connect storage -> provider chooser + verified setup + nondestructive state migration, then resume original work.
+refresh season knowledge -> public season registry/pack freshness check without altering LOCAL STATE.
 
-AUTOMATIC UPDATE ENTRYPOINT
-release.updater owns consumer engine freshness and adoption. With web access, run its automatic update preflight at every runtime/session startup before ordinary account/domain work. Also run it before `reload LWAI`, before schema-sensitive migration/recovery where canonical compatibility matters, and before consequential work after the six-hour freshness TTL. A successful no-op check is silent. A successful update must preserve the user's original requested action across the engine swap, health-check the new engine, then continue that action under the new verified Production version.
-Durable workspaces may persist only compact workspace-level engine metadata such as installed version, last successful check/update, last-known-good version, update policy and health. Session-only deployments keep equivalent metadata ephemerally. None of this metadata is account evidence or a routing key.
-
-STARTUP / MIGRATION-FIRST DISCOVERY
-After mandatory core modules and automatic update preflight, recommend HIGH reasoning if available and capability-detect persistence/ingestion. Inspect Workspace Registry and accessible legacy LWAI databases/snapshots/exports/current-conversation state/user-provided legacy files before broad onboarding. Registry-backed deployments resolve active_account_id and recovery; pre-registry legacy deployments register/migrate existing state first. Reuse supported current facts with source/confidence/freshness preserved and ask only for missing, ambiguous, contradictory or materially stale data. Never pretend inaccessible prior conversations are retrievable.
-
-FRIENDLY FIRST-RUN PERSISTENCE FLOW
-If and only if discovery confirms a genuinely new user with no existing LWAI state, resolve persistence before account identity onboarding.
-
-First ask:
-`Before we build your account, would you like me to use private cloud storage so I can safely pick up where we left off in future chats? It’s recommended, but optional. Reply yes or no.`
-
-If NO: acknowledge once and immediately continue to identity intake in the same response.
-
-If YES:
-1. Capability-detect storage providers/connectors actually available or installable in the host.
-2. Present only supported candidates in a clean menu and ask the user to choose one explicitly. Never default to Google Drive. Typical options when truly supported: Google Drive, Dropbox, OneDrive / Microsoft 365, Box when writable, or another verified writable provider.
-3. Load adapters.storage and give provider-specific authorization instructions. Authentication happens in the provider/host UI; never request credentials/tokens in chat.
-4. Google Drive guidance must explicitly tell the user to approve the requested Drive file access and choose `Allow always` if ChatGPT presents that option. For other providers, use actual host/provider wording and recommend the equivalent persistent authorization option when offered.
-5. After authorization or `storage connected`, capability-detect again. Create/verify the isolated private LWAI workspace before collecting identity. The user's confirmation is not proof of writability.
-6. On successful verification, immediately hand off to core.guidance/core.accounts and ask the compact identity block in the same response. Do not stop at a storage-success confirmation.
-7. Read-only/failed authorization: explain simply and offer retry, another provider, or session-only.
-
-Existing users with a valid workspace skip this gate. Later `enable persistence` / `connect storage` and accepted benefit-triggered reminders run the same provider chooser + authorization + verification flow. If a previous provider is remembered, offer to use it again or choose another; do not silently select it.
-
-GUIDED NEW-USER CONTINUATION
-After persistence mode is resolved (verified cloud or explicit session-only), core.guidance owns a compact staged setup:
-1. Identity: screenname/commander name, server, alliance, optional nickname, optional/private UID.
-2. Account creation: generate immutable account_id, create/register isolated namespace, set active_account_id, persist/verify when durable.
-3. Strategic baseline: HQ level, primary/default squad or squad of interest, main objectives; season only if known/needed.
-4. First evidence capture: normally main/default squad overview for a new user, or another highest-value missing item if imported state already covers it.
-5. Running optimization: provide the first useful recommendation or continue the guided audit.
-Each completed step validates/persists then automatically presents the next step. Do not require the user to type `next`.
-
-If authorization or multi-upload requires pausing, use explicit WAITING_USER with an exact return instruction (`reply connected`, `reply done`, etc.). Durable deployments preserve the compact onboarding stage/checkpoint. Reload resumes at the first incomplete verified stage and never repeats successful storage/account creation simply because chat context changed.
-
-GUIDED INGESTION
-core.guidance owns adaptive instruction, declared `done` boundaries, direct screenshot batches, supported DOCX/PDF screenshot bundles, guided capture, account-scoped resumable Audit Sessions and safe auto-continuation. A declared incomplete batch must not be finalized early. Audit Sessions resolve through active_account_id and may never cross accounts.
-
-AUTOMATIC ENGINE FRESHNESS
-release.updater performs the canonical GitHub freshness/update transaction. The first network step is canonical `releases/LATEST.json`; do not re-fetch every module when installed Production is still current. If a newer verified Production exists, validate LATEST/MANIFEST/MIGRATIONS/loader identity, Production channel/privacy flags, engine API/workspace compatibility, declared migration chain and available module integrity. Fetch only changed mandatory components plus task-relevant modules, apply only validated migrations, health-check, atomically adopt the newer ENGINE from the runtime's point of view, update compact engine metadata when durable persistence exists, and resume the user's pending action.
-Never auto-load RC/Prod-Dev, never downgrade because an alias/cache is older, and never partially activate an unverified candidate. Failure retains last-known-good compatible ENGINE and LOCAL STATE. Continue the user's requested work when safe; fail closed only when engine incompatibility makes that work unsafe.
-
-ENGINE UPDATE
-`refresh engine` is the permanent backwards-compatible manual escape hatch and `check for LWAI updates` is an alias. They bypass TTL and force the same canonical freshness path immediately through release.updater. Preserve LOCAL STATE. If upstream content is incompatible, integrity-mismatched or unavailable, remain on last-known-good engine/fallback.
-
-NO BACKGROUND CLAIM
-Automatic updating is interaction-triggered unless the user separately opts into a supported scheduler/automation. Do not imply a dormant ChatGPT conversation is being updated in the background.
-
-EXPORTS
-`export yourself` / `export LWAI` = complete sanitized self-contained BOOTSTRAP_FULL runtime with no account-specific state.
-`export my account snapshot` = private active-account state only unless another scope is explicitly requested.
-`export full recovery package` = sanitized engine + separate private registry/account snapshots + small manifest.
-Never mix private identity/state, Audit Session content, checkpoint/journal rows or provider-local references into shareable engine output.
-
-SANITIZATION
-Remove player/alliance/server identifiers, game UIDs, exact account powers/inventories/current targets, personal spending history, diplomacy, private screenshots, private corrections, private provider IDs/URLs, credentials/authentication details and account-scoped workflow state. Intentional public Production endpoints are allowed.
-
-MIGRATION
-Follow releases/MIGRATIONS.json plus contracts/migration.md. Single-account migration generates immutable account_id, creates/registers Workspace Registry, registers existing database in place, sets active_account_id, preserves existing domain data and evidence metadata, then runs isolation/reload tests. Engine-only releases must not rewrite local account schema/state.
-
-ARCHIVE / RESTORE
-Starting over creates a new clean account and archives the previous registry entry by default. Archive is reversible; restore/unarchive preserves immutable account_id and history. Destructive deletion requires an explicit informed request.
+EXPORT / SANITIZATION
+Generic engine exports may contain public resolver/repository endpoints and schemas but no player/alliance/server identity, game UID, account facts, screenshots, private Corrections, spending/diplomacy, provider IDs, credentials, runtime/audit/checkpoint/journal rows or host-session references.
