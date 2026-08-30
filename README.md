@@ -123,7 +123,7 @@ gold-assets/     reusable sanitized shared assets
 
 ## Release discipline
 
-Production changes follow short-lived staged RC branches with sanitization checks, exact-head PR CI, validated-head merge and post-merge verification. Users always install the single canonical Production line; RC branches are not alternate installers.
+Production changes follow short-lived staged RC branches with sanitization checks, exact-head PR CI, validated-head merge and post-merge verification. There is one single public installer and one canonical Production line; RC branches are temporary engineering branches, not alternate installers.
 
 ## Current Production
 
