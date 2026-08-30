@@ -1,0 +1,32 @@
+{
+  "engine_version": "2026-08-30.24",
+  "engine_api_version": "1.0",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-hardened-recovery",
+  "preferred_install_url": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
+  "installer": "Set up Last War optimization. Open https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main directly, use its current commit SHA, then retrieve and follow engine/BOOTSTRAP.txt from that exact SHA. Never use search-index/cached main copies; if live SHA resolution fails, stop rather than guessing.",
+  "migration": {
+    "from": "2026-08-29.23",
+    "type": "engine_only_live_ref_pinned_bootstrap",
+    "schema_from": "2.3",
+    "schema_to": "2.3",
+    "local_state_action": "preserve",
+    "requires_user_reonboarding": false,
+    "requires_account_rewrite": false,
+    "notes": "Adds mandatory live Production resolver and exact-commit snapshot loading. Removes README/raw-main/search-cache from current-version authority. Refactors thin loader to Stage-1 orchestration only; onboarding/provider/domain behavior remains in modules."
+  },
+  "features": [
+    "Stage-0 installer resolves live GitHub main branch SHA before trusting mutable engine content",
+    "mandatory release.resolver centralizes live-ref resolution for install, startup, reload and updates",
+    "all candidate engine reads are pinned to one immutable commit snapshot",
+    "search-index, README and raw-main cache bodies are non-authoritative for current Production",
+    "thin Stage-1 bootstrap reduced below 4 KiB and delegates onboarding/provider/domain behavior to modules",
+    "automatic updater and refresh engine use the same resolver transaction",
+    "fresh install fails closed rather than silently loading a stale cached release",
+    "existing installs retain last-known-good ENGINE and LOCAL STATE if live resolution is unavailable",
+    "engine API 1.0 and workspace schema 2.3 unchanged"
+  ]
+}
