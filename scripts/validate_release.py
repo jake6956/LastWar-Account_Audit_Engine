@@ -34,6 +34,12 @@ EXPECTED_FULL = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audi
 EXPECTED_LATEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/LATEST.json"
 EXPECTED_MIGRATIONS = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json"
 EXPECTED_INSTALL = "https://tinyurl.com/2yxf7f5x"
+CURRENT_SCHEMA = "2.3"
+HISTORICAL_SCHEMA_PATH = [("2.1", "2.2"), ("2.2", "2.3")]
+MIGRATION_CAPABLE = {
+    "core.operating", "core.persistence", "core.accounts", "core.guidance",
+    "release.runtime", "release.bootstrap", "adapters.storage",
+}
 
 
 def fail(message: str) -> None:
@@ -68,23 +74,16 @@ def header_value(body: str, key: str) -> str:
 def version_tuple(value: str) -> tuple[int, ...]:
     try:
         return tuple(int(part) for part in value.split("."))
-    except ValueError:
+    except (ValueError, AttributeError):
         fail(f"invalid numeric compatibility version: {value}")
 
 
 def in_range(value: str, lower: str, upper: str) -> bool:
-    v, lo, hi = version_tuple(value), version_tuple(lower), version_tuple(upper)
-    return lo <= v <= hi
+    return version_tuple(lower) <= version_tuple(value) <= version_tuple(upper)
 
 
 def git_blob_sha(rel: str) -> str:
-    result = subprocess.run(
-        ["git", "hash-object", rel],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
-    )
+    result = subprocess.run(["git", "hash-object", rel], cwd=ROOT, check=True, capture_output=True, text=True)
     return result.stdout.strip()
 
 
@@ -123,6 +122,66 @@ def validate_dag(entries: list[dict]) -> None:
         visit(node)
 
 
+def validate_workspace_schema_graph(migrations: dict) -> None:
+    if migrations.get("workspace_schema_current") != CURRENT_SCHEMA:
+        fail("migration graph current workspace schema mismatch")
+    edges = migrations.get("workspace_schema_edges") or []
+    pairs = {(edge.get("from"), edge.get("to")): edge for edge in edges}
+    for pair in HISTORICAL_SCHEMA_PATH:
+        edge = pairs.get(pair)
+        if not edge:
+            fail(f"missing historical workspace schema edge {pair[0]} -> {pair[1]}")
+        if edge.get("local_state_action") != "preserve":
+            fail(f"workspace schema edge {pair[0]} -> {pair[1]} does not preserve local state")
+        if edge.get("requires_user_reonboarding") is not False:
+            fail(f"workspace schema edge {pair[0]} -> {pair[1]} requires re-onboarding")
+        if edge.get("requires_account_rewrite") is not False:
+            fail(f"workspace schema edge {pair[0]} -> {pair[1]} requires account rewrite")
+
+
+def validate_module_compatibility(entries: list[dict], engine_api: str, schema_version: str) -> dict[str, dict]:
+    by_id = {entry["module_id"]: entry for entry in entries}
+    required_ids = ["core.operating", "core.persistence", "core.accounts", "core.guidance", "release.runtime", "release.bootstrap"]
+    for module_id in required_ids:
+        if module_id not in by_id or by_id[module_id].get("required") is not True:
+            fail(f"required module not marked required: {module_id}")
+
+    for entry in entries:
+        rel = entry.get("path")
+        if not rel or not (ROOT / rel).is_file():
+            fail(f"missing module path for {entry.get('module_id')}")
+        body = read(rel)
+        require(entry["module_id"], body, [
+            f"module_id: {entry['module_id']}", f"module_version: {entry['module_version']}",
+            "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO",
+        ])
+        compat_api = entry.get("engine_api") or {}
+        compat_schema = entry.get("workspace_schema") or {}
+        if not in_range(engine_api, compat_api.get("min", ""), compat_api.get("max", "")):
+            fail(f"engine API incompatible for {entry['module_id']}")
+        if not in_range(schema_version, compat_schema.get("min", ""), compat_schema.get("max", "")):
+            fail(f"current workspace schema incompatible for {entry['module_id']}")
+
+        module_id = entry["module_id"]
+        if module_id in MIGRATION_CAPABLE:
+            if compat_schema.get("min") != "2.1" or compat_schema.get("max") != CURRENT_SCHEMA:
+                fail(f"migration-capable module does not span 2.1-{CURRENT_SCHEMA}: {module_id}")
+        elif entry.get("load_class") == "domain_on_demand":
+            if compat_schema.get("min") != CURRENT_SCHEMA or compat_schema.get("max") != CURRENT_SCHEMA:
+                fail(f"domain module must remain current-schema-only: {module_id}")
+
+        integrity = entry.get("integrity") or {}
+        if integrity.get("algorithm") != "git_blob_sha1" or not re.fullmatch(r"[0-9a-f]{40}", integrity.get("digest", "")):
+            fail(f"invalid integrity metadata for {module_id}")
+        actual = git_blob_sha(rel)
+        if actual != integrity["digest"]:
+            fail(f"integrity mismatch for {module_id}: manifest={integrity['digest']} actual={actual}")
+
+    if by_id["core.guidance"].get("dependencies") != ["core.operating", "core.persistence", "core.accounts"]:
+        fail("core.guidance dependency graph invalid")
+    return by_id
+
+
 def main() -> None:
     for rel in REQUIRED_FILES:
         if not (ROOT / rel).is_file():
@@ -141,12 +200,15 @@ def main() -> None:
     storage = read("engine/modules/adapters/storage.txt")
     storage_contract = read("contracts/storage-adapter.md")
     release_runtime = read("engine/modules/release/runtime.txt")
+    migration_contract = read("contracts/migration.md")
 
     version = latest.get("engine_version")
     schema_version = latest.get("schema_version")
     engine_api = latest.get("engine_api_version")
     if not version or not schema_version or not engine_api:
         fail("LATEST missing engine/schema/API identity")
+    if schema_version != CURRENT_SCHEMA:
+        fail("Production current schema unexpectedly changed; migration validator requires explicit update")
 
     if header_value(loader, "engine_version") != version or header_value(full, "engine_version") != version:
         fail("loader/full fallback version mismatch with LATEST")
@@ -179,44 +241,47 @@ def main() -> None:
         fail("LATEST installer invalid")
 
     require("loader", loader, [
-        "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "MODULE INTEGRITY",
-        "CAPABILITY DISCOVERY", "RECOVERY-FIRST STARTUP", "MIGRATION-FIRST ACCOUNT DISCOVERY",
-        "WAITING_USER", "active_account_id", EXPECTED_REPO, EXPECTED_LATEST,
-        EXPECTED_MANIFEST, EXPECTED_MIGRATIONS, EXPECTED_FULL, EXPECTED_INSTALL,
+        "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "MODULE INTEGRITY", "CAPABILITY DISCOVERY",
+        "WORKSPACE SCHEMA MIGRATION", "migration bootstrap mode", "RECOVERY-FIRST STARTUP",
+        "MIGRATION-FIRST ACCOUNT DISCOVERY", "COMMITTED checkpoints are not replayed",
+        "discard it and continue from canonical GitHub", "WAITING_USER", "active_account_id",
+        EXPECTED_REPO, EXPECTED_LATEST, EXPECTED_MANIFEST, EXPECTED_MIGRATIONS, EXPECTED_FULL, EXPECTED_INSTALL,
     ])
     if len(loader.encode("utf-8")) > 9000:
         fail("thin loader exceeds 9KB bounded orchestration budget")
     for domain_token in [
         "GEAR / UPGRADE ORE", "SKILL MEDALS", "EXCLUSIVE WEAPONS",
-        "DRONE / COMPONENTS / CHIPS", "EVENT STORES / BLACK MARKET / BOUNTY",
-        "COMBAT DIAGNOSIS",
+        "DRONE / COMPONENTS / CHIPS", "EVENT STORES / BLACK MARKET / BOUNTY", "COMBAT DIAGNOSIS",
     ]:
         if domain_token in loader:
             fail(f"thin loader contains domain playbook: {domain_token}")
 
     require("full fallback", full, [
-        "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "RUNTIME CHECKPOINT MODEL",
-        "RUNTIME JOURNAL", "RECOVERY-FIRST STARTUP", "WRITE-AHEAD / IDEMPOTENCY",
-        "WAITING_USER", "STORAGE ADAPTER API", "MODULE INTEGRITY", "ENGINE API / COMPATIBILITY",
+        "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO", "WORKSPACE SCHEMA MIGRATION",
+        "MIGRATION-COMPATIBLE BOOTSTRAP", "RUNTIME CHECKPOINT MODEL", "RUNTIME JOURNAL",
+        "RECOVERY-FIRST STARTUP", "WRITE-AHEAD / IDEMPOTENCY", "WAITING_USER",
+        "STORAGE ADAPTER API", "MODULE INTEGRITY", "ENGINE API / COMPATIBILITY",
         "GEAR / UPGRADE ORE", "SKILL MEDALS", "RESEARCH", "DRONE / COMPONENTS / CHIPS",
         "COMBAT DIAGNOSIS", "EVENT STORES / BLACK MARKET / BOUNTY",
         EXPECTED_REPO, EXPECTED_BOOT, EXPECTED_MANIFEST, EXPECTED_MIGRATIONS, EXPECTED_FULL, EXPECTED_INSTALL,
     ])
-
+    require("migration contract", migration_contract, [
+        "Version: 2026-08-29.15", "workspace_schema_edges", "2.1 -> 2.2", "2.2 -> 2.3",
+        "Migration-compatible bootstrap", "Alias/cache authority", "Do not fall through to new-user onboarding",
+    ])
     require("storage adapter", storage, [
         "module_version: 2026-08-29.12.1", "storage-api/1", "CAPABILITY API",
         "atomic_append", "compare_and_swap", "PERSISTENCE PROFILES", "AUTHORITATIVE JOURNAL RULE",
     ])
     require("storage contract", storage_contract, [
-        "Version: 2026-08-29.12", "storage-api/1", "Persistence profiles",
-        "Authoritative journal rule", "compare-and-swap",
+        "Version: 2026-08-29.12", "storage-api/1", "Persistence profiles", "Authoritative journal rule", "compare-and-swap",
     ])
     require("release runtime", release_runtime, [
-        "module_version: 2026-08-29.12.1", "MODULE INTEGRITY", "ENGINE API / COMPATIBILITY",
-        "BEHAVIORAL VALIDATION", "LOADER BUDGET",
+        "module_version: 2026-08-29.12.1", "MODULE INTEGRITY", "ENGINE API / COMPATIBILITY", "BEHAVIORAL VALIDATION", "LOADER BUDGET",
     ])
 
     validate_manifest_schema_shape(manifest_schema)
+    validate_workspace_schema_graph(migrations)
 
     entries = manifest.get("modules") or []
     if not entries:
@@ -225,76 +290,46 @@ def main() -> None:
     if None in ids or len(ids) != len(set(ids)):
         fail("module ids missing or duplicated")
     validate_dag(entries)
-
-    by_id = {entry["module_id"]: entry for entry in entries}
-    required_ids = ["core.operating", "core.persistence", "core.accounts", "core.guidance", "release.runtime", "release.bootstrap"]
-    for module_id in required_ids:
-        if module_id not in by_id or by_id[module_id].get("required") is not True:
-            fail(f"required module not marked required: {module_id}")
-
-    for entry in entries:
-        rel = entry.get("path")
-        if not rel or not (ROOT / rel).is_file():
-            fail(f"missing module path for {entry.get('module_id')}")
-        body = read(rel)
-        require(entry["module_id"], body, [
-            f"module_id: {entry['module_id']}",
-            f"module_version: {entry['module_version']}",
-            "SANITIZED: YES", "ACCOUNT STATE INCLUDED: NO",
-        ])
-        compat_api = entry.get("engine_api") or {}
-        compat_schema = entry.get("workspace_schema") or {}
-        if not in_range(engine_api, compat_api.get("min", ""), compat_api.get("max", "")):
-            fail(f"engine API incompatible for {entry['module_id']}")
-        if not in_range(schema_version, compat_schema.get("min", ""), compat_schema.get("max", "")):
-            fail(f"workspace schema incompatible for {entry['module_id']}")
-        integrity = entry.get("integrity") or {}
-        if integrity.get("algorithm") != "git_blob_sha1" or not re.fullmatch(r"[0-9a-f]{40}", integrity.get("digest", "")):
-            fail(f"invalid integrity metadata for {entry['module_id']}")
-        actual = git_blob_sha(rel)
-        if actual != integrity["digest"]:
-            fail(f"integrity mismatch for {entry['module_id']}: manifest={integrity['digest']} actual={actual}")
-
-    if by_id["core.guidance"].get("dependencies") != ["core.operating", "core.persistence", "core.accounts"]:
-        fail("core.guidance dependency graph invalid")
+    validate_module_compatibility(entries, engine_api, schema_version)
 
     if account_schema.get("title") != "LWAI Workspace Account Registry":
         fail("account registry schema identity invalid")
     if "audit_sessions" not in (account_schema.get("properties") or {}):
         fail("account registry schema lost audit_sessions")
 
-    edges = migrations.get("edges") or []
+    engine_edges = migrations.get("edges") or []
     migration = latest.get("migration") or {}
     migration_from = migration.get("from")
     if migration_from:
-        matching = [edge for edge in edges if edge.get("from") == migration_from and edge.get("to") == version]
+        matching = [edge for edge in engine_edges if edge.get("from") == migration_from and edge.get("to") == version]
         if not matching:
             fail(f"missing migration graph edge {migration_from} -> {version}")
         edge = matching[0]
         if edge.get("schema_to") != schema_version or edge.get("local_state_action") != "preserve":
-            fail("migration edge does not preserve expected schema/local state")
-        if edge.get("requires_user_reonboarding") is not False:
-            fail("hardening release must not require user re-onboarding")
+            fail("release migration edge does not preserve expected schema/local state")
+        if edge.get("requires_user_reonboarding") is not False or edge.get("requires_account_rewrite") is not False:
+            fail("release migration edge requires user/account rewrite")
 
     archive_rel = f"releases/{version}.json"
     if not (ROOT / archive_rel).is_file():
         fail(f"versioned release manifest missing: {archive_rel}")
     archive = read_json(archive_rel)
-    if archive.get("engine_version") != version or archive.get("sanitized") is not True or archive.get("account_state_included") is not False:
-        fail("versioned release manifest invalid")
+    if archive.get("engine_version") != version or archive.get("schema_version") != schema_version:
+        fail("versioned release manifest identity invalid")
+    if archive.get("sanitized") is not True or archive.get("account_state_included") is not False:
+        fail("versioned release manifest privacy flags invalid")
 
     if f"**Engine version:** `{version}`" not in readme or EXPECTED_INSTALL not in readme:
         fail("README Production identity/install mismatch")
+    require("README", readme, [
+        "2.1 -> 2.2", "2.2 -> 2.3", "stale alias/cache content cannot downgrade", "single public installer",
+    ])
     require("workflow", workflow, [
-        "python scripts/validate_release.py",
-        "python -m unittest -v test_runtime_behavior.py",
-        "fetch-depth: 0",
+        "python scripts/validate_release.py", "python -m unittest -v test_runtime_behavior.py", "fetch-depth: 0",
     ])
 
-    public_text = "\n".join(
-        read(rel) for rel in REQUIRED_FILES if rel.endswith((".md", ".txt", ".json", ".yml", ".py"))
-    )
-    private_markers = ["CP-20260829-011", "J-20260829-011", "PRIVATE_RC_STAGED"]
+    public_text = "\n".join(read(rel) for rel in REQUIRED_FILES if rel.endswith((".md", ".txt", ".json", ".yml", ".py")))
+    private_markers = ["CP-20260829-011", "J-20260829-011", "CP-20260829-015", "J-20260829-015", "PRIVATE_RC_STAGED"]
     for marker in private_markers:
         if marker in public_text:
             fail(f"candidate contains private release marker: {marker}")
@@ -305,7 +340,7 @@ def main() -> None:
 
     print(
         f"PASS: LWAI Production {version} / API {engine_api} / schema {schema_version} "
-        f"passed metadata, graph, integrity, privacy and loader-boundary checks"
+        "passed identity, graph, integrity, privacy, historical-migration and loader-boundary checks"
     )
 
 
