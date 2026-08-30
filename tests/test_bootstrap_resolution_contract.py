@@ -65,7 +65,7 @@ class BootstrapResolutionContractTests(unittest.TestCase):
 
     def test_fresh_install_fails_closed_without_live_ref(self):
         self.assertIn("Fresh install with no live ref capability", self.resolver)
-        self.assertIn("stop rather than guessing", self.loader)
+        self.assertRegex(self.loader, re.compile(r"stop(?:s)? rather than guessing"))
         self.assertIn("last-known-good ENGINE", self.resolver)
         self.assertRegex(self.resolver, re.compile(r"40-lowercase-hex"))
 
