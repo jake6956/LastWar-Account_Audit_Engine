@@ -2,44 +2,33 @@ from pathlib import Path
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-CANONICAL_INSTALLER = "Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine"
+LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
+STAGE0_FRAGMENT = "use its current commit SHA"
 
 
 class UpdateCommandContractTests(unittest.TestCase):
     def test_refresh_engine_is_permanent_public_escape_hatch(self):
         required = {
-            "engine/BOOTSTRAP.txt": [
-                "refresh engine",
-                "force canonical ENGINE update preserving LOCAL STATE",
-            ],
-            "engine/BOOTSTRAP_FULL.txt": [
-                "refresh engine",
-                "LOCAL STATE",
-            ],
-            "engine/modules/release/bootstrap.txt": [
-                "`refresh engine`",
-                "force the same canonical freshness path immediately",
-                "Preserve LOCAL STATE",
-            ],
-            "contracts/export-bootstrap.md": [
-                "`refresh engine`",
-                "permanent backwards-compatible update escape hatch",
-            ],
+            "engine/BOOTSTRAP.txt": ["refresh engine", "preserving LOCAL STATE"],
+            "engine/BOOTSTRAP_FULL.txt": ["refresh engine", "LOCAL STATE"],
+            "engine/modules/release/bootstrap.txt": ["`refresh engine`", "preserving LOCAL STATE"],
+            "engine/modules/release/updater.txt": ["`refresh engine`", "release.resolver"],
+            "contracts/export-bootstrap.md": ["`refresh engine`"],
         }
         for rel, tokens in required.items():
             body = (ROOT / rel).read_text(encoding="utf-8")
             for token in tokens:
                 self.assertIn(token, body, f"{rel} lost permanent update contract token: {token}")
 
-    def test_single_installer_remains_canonical(self):
+    def test_single_installer_is_live_ref_stage0(self):
         loader = (ROOT / "engine/BOOTSTRAP.txt").read_text(encoding="utf-8")
         bootstrap = (ROOT / "engine/modules/release/bootstrap.txt").read_text(encoding="utf-8")
-        contract = (ROOT / "contracts/export-bootstrap.md").read_text(encoding="utf-8")
-        for body in (loader, bootstrap, contract):
-            self.assertIn(CANONICAL_INSTALLER, body)
+        readme = (ROOT / "README.md").read_text(encoding="utf-8")
+        for body in (loader, bootstrap, readme):
+            self.assertIn(LIVE_REF, body)
+            self.assertIn(STAGE0_FRAGMENT, body)
         self.assertNotIn("https://tinyurl.com/", loader)
         self.assertNotIn("https://tinyurl.com/", bootstrap)
-        self.assertNotIn("https://tinyurl.com/", contract)
 
 
 if __name__ == "__main__":
