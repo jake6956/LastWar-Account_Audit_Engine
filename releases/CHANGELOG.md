@@ -1,5 +1,15 @@
 # Production Changelog
 
+## 2026-08-29.15
+
+- Restored explicit supported historical workspace-schema migration: `2.1 -> 2.2 -> 2.3`, so valid older persistent LWAI workspaces can upgrade without being mistaken for incompatible/new deployments.
+- Defined `2.1 -> 2.2` as additive optional guidance metadata/Audit Sessions and `2.2 -> 2.3` as additive optional Runtime Checkpoints/append-only Runtime Journal; both preserve canonical state and require no re-onboarding or account rewrite.
+- Added migration-compatible bootstrap mode: mandatory core/release components and the storage adapter can operate across validated schemas `2.1`–`2.3`, while domain modules remain blocked until current schema `2.3` is verified.
+- Added idempotent migration, preservation verification, rollback/fail-closed behavior, and explicit suppression of redundant onboarding when a supported older workspace cannot yet be migrated safely.
+- Made short-link/alias content explicitly non-authoritative: canonical GitHub `LATEST.json`, loader, manifest and migration graph win when a cache or alias body is stale or disagrees.
+- Added executable regressions for `2.1 -> 2.3` fact/history/account-routing preservation, migration idempotence, simulated rollback, startup ordering, module compatibility gating, stale-alias handling and COMMITTED-checkpoint no-replay behavior.
+- Rebuilt the thin loader and `BOOTSTRAP_FULL.txt` for migration/fallback parity while preserving engine API `1.0`, current workspace schema `2.3`, the single public installer and all private user state boundaries.
+
 ## 2026-08-29.14
 
 - Added optional private LWAI-generated `runtime_session_id` provenance for correlating material changes, Audit Sessions and recovery events across volatile conversational contexts.
