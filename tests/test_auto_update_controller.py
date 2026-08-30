@@ -104,11 +104,14 @@ class AutomaticUpdateControllerTests(unittest.TestCase):
         loader = (ROOT / "engine/BOOTSTRAP.txt").read_text(encoding="utf-8")
         full = (ROOT / "engine/BOOTSTRAP_FULL.txt").read_text(encoding="utf-8")
         updater = (ROOT / "engine/modules/release/updater.txt").read_text(encoding="utf-8")
-        for body in (loader, full, updater):
+        contract = (ROOT / "contracts/automatic-updates.md").read_text(encoding="utf-8")
+        for body in (loader, full, updater, contract):
             self.assertIn("AUTOMATIC", body.upper())
             self.assertIn("refresh engine", body)
         self.assertIn("resume the user's original", loader)
         self.assertIn("last_known_good_engine_version", updater)
+        self.assertIn("Version: 2026-08-29.18", contract)
+        self.assertIn("one public installer", contract)
 
     def test_single_installer_is_unchanged(self):
         loader = (ROOT / "engine/BOOTSTRAP.txt").read_text(encoding="utf-8")
