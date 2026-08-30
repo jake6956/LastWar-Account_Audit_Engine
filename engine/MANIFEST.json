@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-29.19",
+  "engine_version": "2026-08-29.20",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -100,17 +100,30 @@
       "integrity": {"algorithm": "git_blob_sha1", "digest": "87047b0c1b4c64193a2aee3af3c62efb08287ef3"}
     },
     {
-      "module_id": "domain.season-stores-paid",
-      "module_version": "2026-08-29.8.1",
-      "path": "engine/modules/domains/season-stores-paid.txt",
+      "module_id": "domain.season-intelligence",
+      "module_version": "2026-08-29.20.1",
+      "path": "engine/modules/domains/season-intelligence.txt",
       "load_class": "domain_on_demand",
       "dependencies": ["core.operating", "core.accounts"],
+      "state_scope": "shared_engine;active_account_reads;public_gold_assets",
+      "required": false,
+      "release_min": "2026-08-29.20",
+      "engine_api": {"min": "1.0", "max": "1.0"},
+      "workspace_schema": {"min": "2.3", "max": "2.3"},
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "90f272395532c279290816619bb62f56b5b34347"}
+    },
+    {
+      "module_id": "domain.season-stores-paid",
+      "module_version": "2026-08-29.20.1",
+      "path": "engine/modules/domains/season-stores-paid.txt",
+      "load_class": "domain_on_demand",
+      "dependencies": ["core.operating", "core.accounts", "domain.season-intelligence"],
       "state_scope": "shared_engine;active_account_reads",
       "required": false,
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.3", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "44cb7217b6a88cc52dea9563be44713b29ad5cd7"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "b41d30c5b89b10041e03083b4307d50c1ab4eeb2"}
     },
     {
       "module_id": "adapters.storage",

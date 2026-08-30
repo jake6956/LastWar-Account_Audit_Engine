@@ -146,6 +146,18 @@
       "requires_account_rewrite": false,
       "tests": ["first_run_starts_with_plain_language_cloud_question", "cloud_yes_requires_explicit_provider_choice", "google_drive_permission_coaching_includes_allow_always", "connected_is_recheck_trigger_not_proof", "later_persistence_acceptance_reruns_provider_flow", "normal_bootstrap_ux_is_friendly_not_diagnostic_dump"],
       "notes": "Adds a provider-neutral early cloud yes/no choice, explicit supported-provider selection, provider-specific permission coaching and verified connection flow. Normal bootstrap/update output becomes concise and friendly. Automatic update, API 1.0, workspace schema 2.3 and all local account/workspace state are preserved."
+    },
+    {
+      "from": "2026-08-29.19",
+      "to": "2026-08-29.20",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_season_intelligence_framework",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["module_is_reachable_and_stores_depend_on_it", "module_enforces_due_diligence_and_self_healing", "public_registry_and_seed_packs_are_sanitized", "gold_assets_register_season_registry", "bootstrap_paths_expose_framework_without_core_bloat"],
+      "notes": "Adds an on-demand Season Intelligence module and Production-qualified reusable season knowledge packs. Dynamic/consequential mechanics are reverified from current evidence; LOCAL STATE and workspace schema remain unchanged."
     }
   ]
 }

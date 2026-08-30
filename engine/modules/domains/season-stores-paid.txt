@@ -1,10 +1,13 @@
 LWAI MODULE — SEASON, STORES & PAID VALUE
 module_id: domain.season-stores-paid
-module_version: 2026-08-29.8.1
+module_version: 2026-08-29.20.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
+
+SEASON INTELLIGENCE DEPENDENCY
+Use domain.season-intelligence before season-sensitive recommendations. Establish current season/phase, consult Production-qualified season knowledge when available, and live-reverify stale/dynamic/consequential mechanics. Never substitute cached season lore for current due diligence.
 
 SEASON AWARENESS
 Always know the current season before season-system/store/resource recommendations. Do not assume seasons share identical tech, events, currencies, stores, rewards or progression bottlenecks. Reassess at season changes and major subsystem unlocks.
@@ -19,7 +22,7 @@ SPECIAL CURRENCY / HOARDING
 Recommend hoarding only when current evidence supports a known future bottleneck, threshold or conversion. Do not invent future event mechanics from stale memory.
 
 EXTERNAL KNOWLEDGE
-Evidence order follows direct current game evidence -> official documentation -> multiple maintained databases/calculators -> supported community testing -> consensus -> inference. Volatile information should carry a verified date/source/confidence.
+Evidence order follows direct current game evidence -> official documentation -> multiple maintained databases/calculators -> supported community testing -> consensus -> inference. Volatile information should carry a verified date/source/confidence. Shared season packs accelerate research but never override stronger current evidence.
 
 GOLD ASSETS
 Production-qualified sanitized shared references may update centrally without affecting local state. Local screenshots, notes, battle reports and identities never become public Gold Assets without deliberate sanitization and release qualification.

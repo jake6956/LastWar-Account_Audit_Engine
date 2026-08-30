@@ -51,6 +51,8 @@ LWAI builds and continuously reconciles a model of a player's account from scree
 
 A player can provide compact updates such as a skill level, gear level or resource balance without completing a formal intake. LWAI updates only affected state and recomputes only what materially changed.
 
+Season-sensitive work uses an on-demand **Season Intelligence** module plus Production-qualified Gold Asset knowledge packs. LWAI identifies the current season and relevant phase/week/subsystem, reuses compatible verified knowledge, and live-reverifies stale, dynamic, contested or consequential mechanics instead of trusting old season lore. Seed or missing knowledge deliberately triggers current due diligence rather than invented rules. Direct current user evidence outranks stale shared knowledge.
+
 ## Architecture
 
 ```text
@@ -61,6 +63,8 @@ engine/BOOTSTRAP.txt
      -> mandatory core/release modules
         -> release.updater
      -> task-specific domain modules
+        -> domain.season-intelligence
+           -> production-qualified season Gold Assets
      -> capability-specific adapters
 
 engine/BOOTSTRAP_FULL.txt
@@ -115,9 +119,11 @@ Automatic updating does not imply a background daemon. A dormant ChatGPT convers
 
 `refresh engine` remains the permanent backwards-compatible manual escape hatch and bypasses freshness TTLs to force the same canonical update transaction. `check for LWAI updates` is an alias.
 
+Season Gold Asset knowledge has its own lightweight freshness path: the first season-sensitive task in a runtime checks the Production-qualified season registry when web access exists, continued season work rechecks after 24 hours, and `refresh season knowledge` forces an immediate knowledge refresh without altering LOCAL STATE.
+
 ## Validation
 
-Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, explicit provider selection, provider permission coaching, Google Drive `Allow always` guidance, post-authorization capability verification, contextual persistence reminders, friendly bootstrap/update UX, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation and historical workspace-schema migration.
+Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, explicit provider selection, provider permission coaching, Google Drive `Allow always` guidance, post-authorization capability verification, contextual persistence reminders, friendly bootstrap/update UX, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration, Season Intelligence module reachability, sanitized season packs, Gold Asset registration and season fallback parity.
 
 ## Production endpoints
 
@@ -126,6 +132,7 @@ Production CI performs structural validation plus executable deterministic regre
 - Thin loader: `engine/BOOTSTRAP.txt`
 - Module graph: `engine/MANIFEST.json`
 - Complete fallback: `engine/BOOTSTRAP_FULL.txt`
+- Season knowledge registry: `gold-assets/seasons/registry.json`
 - Install alias: https://tinyurl.com/2yxf7f5x
 
 ## Release discipline
@@ -134,7 +141,7 @@ Production changes use short-lived RC branches with sanitization checks, exact-h
 
 ## Current Production
 
-**Engine version:** `2026-08-29.19`
+**Engine version:** `2026-08-29.20`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  

@@ -1,0 +1,22 @@
+{
+  "schema_version": "season-knowledge/1",
+  "pack_version": "2026-08-29.20.1",
+  "season_id": "3",
+  "display_name": "Season 3",
+  "aliases": ["Age of Oil"],
+  "status": "seed",
+  "sanitized": true,
+  "account_state_included": false,
+  "last_pack_reviewed": null,
+  "research_topics": [
+    "season phase/week progression",
+    "season-specific technology and prerequisites",
+    "season currencies, stores and conversion rules",
+    "season buildings and subsystem unlocks",
+    "territory, capture and first-capture mechanics",
+    "season events and rewards",
+    "progression bottlenecks and irreversible choices"
+  ],
+  "facts": [],
+  "notes": "Seed pack. Alias identifies the public season label only; no mechanic claim is published until sanitized evidence and provenance pass Production qualification."
+}

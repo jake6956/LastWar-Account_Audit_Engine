@@ -1,0 +1,39 @@
+{
+  "registry_version": "2026-08-29.20.1",
+  "schema_version": "season-knowledge/1",
+  "engine_compatibility": ">=2026-08-29.20",
+  "sanitized": true,
+  "account_state_included": false,
+  "pack_schema": "gold-assets/seasons/season-pack.schema.json",
+  "packs": [
+    {
+      "season_id": "1",
+      "display_name": "Season 1",
+      "path": "gold-assets/seasons/season-1.json",
+      "status": "seed",
+      "pack_version": "2026-08-29.20.1"
+    },
+    {
+      "season_id": "2",
+      "display_name": "Season 2",
+      "path": "gold-assets/seasons/season-2.json",
+      "status": "seed",
+      "pack_version": "2026-08-29.20.1"
+    },
+    {
+      "season_id": "3",
+      "display_name": "Season 3",
+      "path": "gold-assets/seasons/season-3.json",
+      "status": "seed",
+      "pack_version": "2026-08-29.20.1"
+    }
+  ],
+  "policy": {
+    "first_runtime_check": "first season-sensitive task",
+    "registry_ttl_hours": 24,
+    "consequential_live_reverification": true,
+    "consumer_public_writeback": false,
+    "promotion_path": "sanitized protected Production change-control"
+  },
+  "notes": "Registry is intentionally reusable and account-agnostic. Seed packs contain no unverified mechanic claims; missing knowledge triggers current due diligence rather than inference."
+}
