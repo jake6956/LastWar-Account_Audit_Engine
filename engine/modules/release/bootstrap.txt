@@ -50,7 +50,7 @@ release.updater performs the canonical GitHub freshness/update transaction. The 
 Never auto-load RC/Prod-Dev, never downgrade because an alias/cache is older, and never partially activate an unverified candidate. Failure retains last-known-good compatible ENGINE and LOCAL STATE. Continue the user's requested work when safe; fail closed only when engine incompatibility makes that work unsafe.
 
 ENGINE UPDATE
-`refresh engine` is the permanent backwards-compatible manual escape hatch and `check for LWAI updates` is an alias. They bypass TTL and force the same release.updater canonical transaction immediately. Preserve LOCAL STATE. If upstream content is incompatible, integrity-mismatched or unavailable, remain on last-known-good engine/fallback.
+`refresh engine` is the permanent backwards-compatible manual escape hatch and `check for LWAI updates` is an alias. They bypass TTL and force the same canonical freshness path immediately through release.updater. Preserve LOCAL STATE. If upstream content is incompatible, integrity-mismatched or unavailable, remain on last-known-good engine/fallback.
 
 NO BACKGROUND CLAIM
 Automatic updating is interaction-triggered unless the user separately opts into a supported scheduler/automation. Do not imply a dormant ChatGPT conversation is being updated in the background.
