@@ -1,0 +1,60 @@
+LWAI MODULE — AUTOMATIC ENGINE UPDATER
+module_id: release.updater
+module_version: 2026-08-29.18.1
+load_class: mandatory_core
+state_scope: shared_engine+workspace_engine_metadata
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+PURPOSE
+Keep a running LWAI deployment on the newest verified GitHub Production engine without requiring reinstall or routine manual refresh. Updating is pull-based: LWAI checks when the user returns or when a long-lived runtime reaches a freshness boundary; it cannot wake a dormant host conversation by itself.
+
+AUTHORITY
+Canonical authority is GitHub Production main: releases/LATEST.json, engine/MANIFEST.json, releases/MIGRATIONS.json, engine/BOOTSTRAP.txt and required module paths. TinyURL/short-link bodies are transport only and may be cached. Never auto-load RC/Prod-Dev content. Never downgrade because an alias/cache is older than last-known-good Production.
+
+UPDATE POLICY
+Default consumer update_policy is AUTOMATIC when web access exists. No extra installer, beta channel or per-user code branch is created.
+Automatic checks occur:
+1. at every runtime/session startup before ordinary account/domain work;
+2. on `reload LWAI` / `reload yourself` before rebuilding working context;
+3. before schema-sensitive migration or recovery when canonical engine compatibility matters;
+4. in a long-lived runtime before consequential work when at least 6 hours have elapsed since the last successful canonical check.
+Do not fetch on every message. Trivial one-field updates inside the TTL do not require another engine check.
+
+WORKSPACE ENGINE METADATA
+When durable writable persistence exists, store only compact workspace-level engine metadata, never account facts:
+- installed_engine_version
+- last_successful_update_check
+- last_successful_engine_update
+- last_known_good_engine_version
+- update_policy
+- update_health
+- optional last_update_error_summary
+These fields are operational metadata. They are not account evidence, do not influence active_account_id, and do not justify a workspace schema bump by themselves. Session-only deployments keep equivalent metadata ephemerally in the current runtime when possible.
+
+AUTOMATIC UPDATE TRANSACTION
+When a freshness trigger fires and web is available:
+1. Snapshot current ENGINE identity and retain last-known-good references before changing anything.
+2. Fetch canonical releases/LATEST.json first.
+3. If canonical Production is not newer, record a successful check and continue the user's original action without update chatter.
+4. If newer, fetch/verify canonical LATEST, MANIFEST, MIGRATIONS and BOOTSTRAP identity; require Production channel, SANITIZED/NO-account-state flags, compatible engine API, a validated migration chain from installed version, compatible workspace-schema behavior and available module integrity.
+5. Determine changed mandatory modules from canonical MANIFEST; fetch only changed/required engine components plus task-relevant modules. Unchanged validated modules may remain loaded/cached.
+6. Apply only declared validated engine/workspace migrations. Engine-only transitions preserve LOCAL STATE. Schema transitions must preserve registry, immutable account_id, active_account_id, canonical account facts, history, Corrections, evidence metadata, private recovery/session state and provider references.
+7. Health-check the refreshed engine/module graph before making it active.
+8. Atomically adopt the verified newer engine from the runtime's point of view, update installed_engine_version/last_known_good_engine_version/update metadata when durable storage exists, then resume the user's original requested action under the new engine.
+
+SILENT NORMAL UX
+A successful no-op freshness check is silent. A successful automatic update should normally produce at most a compact one-line note when surfacing the version is useful; do not derail the user's requested task with release notes. The original user action remains pending across the update and must be completed after the update health check.
+
+FAILURE / ROLLBACK
+Any failed identity, channel, privacy, API, schema, migration, module-integrity, retrieval or post-update health check leaves last-known-good ENGINE active and LOCAL STATE untouched. Never partially activate a candidate release. Never rewrite account state to repair engine uncertainty. Record only a compact private update-health/error summary when durable metadata exists.
+If the failure does not block the user's requested work, continue safely on last-known-good and mention the degraded update only when materially relevant. If the installed engine is no longer compatible enough to perform the requested operation safely, fail closed and tell the user an engine-update problem needs review.
+
+LOCAL STATE BOUNDARY
+Automatic update may read workspace schema/version/provider capability metadata needed for compatibility. It must not publish or move identity, UID, screenname, alliance, server, screenshots, balances, Corrections, battle history, account-local state, Runtime/Audit Session rows, Checkpoint/Journal rows or provider-local IDs into GitHub.
+
+MANUAL BREAK-GLASS COMMAND
+`refresh engine` remains a permanent backwards-compatible public escape hatch. It bypasses TTL and immediately runs the same canonical update transaction while preserving LOCAL STATE. `check for LWAI updates` is an alias. Future releases must retain the exact literal `refresh engine` even though normal updating is automatic.
+
+NO BACKGROUND CLAIM
+Do not imply a daemon is running while the user is away. Without an explicit supported scheduler/automation that the user separately opts into, automatic means preflight on the next runtime interaction, reload, migration/recovery boundary or expired-TTL consequential action.
