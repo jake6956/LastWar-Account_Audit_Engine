@@ -1,6 +1,18 @@
 {
-  "manifest_version": "1.0",
-  "engine_compatibility": ">=2026-08-29.5",
-  "assets": [],
-  "notes": "No shared Gold Assets are production-qualified in GitHub yet. Add only sanitized, versioned, validated assets with stable public locations when required."
+  "manifest_version": "1.1",
+  "engine_compatibility": ">=2026-08-29.20",
+  "assets": [
+    {
+      "asset_id": "season-intelligence-registry",
+      "type": "knowledge_registry",
+      "version": "2026-08-29.20.1",
+      "path": "gold-assets/seasons/registry.json",
+      "status": "production-qualified",
+      "sanitized": true,
+      "account_state_included": false,
+      "refresh_policy": "first season-sensitive task per runtime; 24h TTL; force with refresh season knowledge",
+      "notes": "Indexes reusable season knowledge packs. Dynamic or consequential mechanics still require current due diligence."
+    }
+  ],
+  "notes": "Gold Assets are sanitized shared Production references and never include consumer account state."
 }
