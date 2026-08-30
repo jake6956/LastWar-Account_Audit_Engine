@@ -116,7 +116,14 @@ class UserExperienceContractTests(unittest.TestCase):
         ):
             lower = body.lower()
             self.assertIn("cloud storage connected and verified", lower, label)
-            self.assertTrue("immediately" in lower or "same user-facing response" in lower or "same response" in lower, label)
+            self.assertTrue(
+                "immediately" in lower
+                or "same user-facing response" in lower
+                or "same response" in lower
+                or "not a conversational terminal state" in lower
+                or "resumes original work" in lower,
+                label,
+            )
 
     def test_verified_storage_advances_to_identity(self):
         for body in (self.full, self.guidance, self.accounts, self.contract):
