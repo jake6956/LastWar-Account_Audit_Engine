@@ -5,67 +5,66 @@ Engine compatibility: unchanged
 
 ## Goal
 
-LWAI must remain centrally maintainable and evergreen without making a fresh ChatGPT session depend on direct access to GitHub's branch API. Public installation, live release discovery and trusted engine loading are separate layers:
+LWAI must remain centrally maintainable and evergreen without making a fresh ChatGPT session depend on direct GitHub network access. Public installation, live release discovery and trusted engine loading are separated cleanly:
 
 ```text
-Stage 0 — permanent first-party installer at https://lastwarai.com
-  -> server-side fetch live GitHub main
-  -> return resolved immutable commit SHA + exact bootstrap URL
-Stage 1 — engine/BOOTSTRAP.txt at that exact SHA
-  -> validate pinned release metadata + module graph
-Stage 2 — mandatory/on-demand modules at the same SHA
-  -> runtime behavior
+Stage 0 — https://lastwarai.com
+  -> Cloudflare resolves live GitHub main server-side
+  -> return immutable commit C + https://lastwarai.com/engine/C
+Pinned engine transport
+  -> Cloudflare fetches BOOTSTRAP_FULL.txt from exact GitHub commit C server-side
+  -> return complete sanitized engine to the client
+Runtime
+  -> continue account discovery/onboarding/recovery and normal LWAI work
 ```
 
-Stage 0 is deliberately tiny. Stage 1 contains orchestration only. Account onboarding, provider guidance, optimization logic and season/domain behavior belong to modules. `BOOTSTRAP_FULL.txt` is the complete emergency fallback and is not the normal load path.
+The user's ChatGPT session needs only LastWarAI.com during installation. GitHub remains the source repository and underlying Production authority, but branch resolution and exact-content retrieval happen server-side.
 
 ## Public installer
 
-Preferred public instruction:
+Preferred instruction:
 
 `Set up Last War optimization using the instructions at https://lastwarai.com`
 
-`https://lastwarai.com` is first-party discovery/live-resolution transport. It does not contain private state and does not replace GitHub as the underlying Production source.
+The root page also supports accidental full-page paste. In either URL mode or pasted-content mode, the assistant continues installation without asking the player to retrieve GitHub JSON, find a SHA, paste another prompt, or restart.
 
-The previously circulated `https://tinyurl.com/2yxf7f5x` remains a legacy compatibility alias only.
+The previously circulated TinyURL remains compatibility-only.
 
-## Server-side live ref resolution
+## Server-side live resolution
 
-Underlying canonical current-version endpoint:
+Underlying authority:
 
 `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`
 
-The LastWarAI.com Worker retrieves this endpoint server-side for each successful install request. A successful Stage-0 response supplies:
+Cloudflare retrieves the current `commit.sha` server-side. A successful root response supplies:
 
-- `RESOLUTION_STATUS: LIVE_GITHUB`
-- `RESOLVED_PRODUCTION_COMMIT: C`, where C is exactly 40 lowercase hex characters
-- `EXACT_BOOTSTRAP_URL`, whose path embeds the same C
-- `LIVE_REF_SOURCE`, identifying the GitHub main branch endpoint
+- `PASTED_CONTENT_MODE: CONTINUE_INSTALL`
+- `RESOLUTION_STATUS: LIVE_GITHUB_SERVER_SIDE`
+- `RESOLVED_PRODUCTION_COMMIT: C`
+- `ENGINE_URL: https://lastwarai.com/engine/C`
 
-The client validates those fields and loads the exact bootstrap directly. **A fresh client must not be required to call GitHub's branch API again before starting.** This removes a host/browser/network capability from the critical installation path while preserving immutable commit pinning.
+C must be exactly 40 lowercase hexadecimal characters. The client validates the format and fetches ENGINE_URL from LastWarAI.com. It must not be required to call GitHub directly during installation.
 
-If the first-party server-side resolver itself cannot establish a valid live SHA, it returns HTTP 503 rather than fabricating or guessing a commit. Existing compatible deployments retain their normal last-known-good ENGINE behavior.
+If Cloudflare cannot establish a valid live SHA, root fails closed with HTTP 503 and a plain-language retry instruction. Never invent or substitute a commit.
 
-## Direct resolver compatibility
+## Same-domain immutable engine transport
 
-Stage 1 and `release.resolver` retain direct live-GitHub resolution for updater/reload/freshness operations when the host genuinely has that capability. They may also accept a valid `RESOLVED_PRODUCTION_COMMIT` handed off by Stage 0. Both paths converge on the same immutable-commit validation rules.
+`GET /engine/C` accepts only a valid 40-hex SHA and fetches `engine/BOOTSTRAP_FULL.txt` from exact GitHub commit C server-side. Before returning it, the Worker sanity-checks the expected complete-engine header plus `SANITIZED: YES` and `ACCOUNT STATE INCLUDED: NO`.
 
-Search results, indexed GitHub HTML, README snapshots, mutable raw `main` bodies, aliases, redirects and model memory are never valid substitutes for a resolved SHA.
+The response contains a short first-party handoff declaring that Stage-0 live resolution is complete for this startup and that C is `production_commit_sha`, followed by the complete sanitized engine. The response includes `X-LWAI-Commit: C` and an immutable cache policy. No user/account state is ever proxied or stored.
 
-## Pin once
+## Trust model
 
-After establishing `production_commit_sha = C`, every candidate read in that transaction uses C: LATEST, MANIFEST, MIGRATIONS, BOOTSTRAP, required modules and fallback. Never mix revisions. Exact-SHA content is immutable, so cached exact-SHA content is safe.
+GitHub main remains underlying Production authority. LastWarAI.com is first-party live-resolution and transport infrastructure. Exact-SHA repository content remains immutable. Search results, cached README pages, mutable raw main, URL shorteners, redirects and model memory are not substitutes for C.
 
-## Cascading maintenance
+The first-party transport exists to remove host-specific GitHub accessibility from the end-user critical path, not to weaken pinning.
 
-`release.resolver` remains mandatory core and owns runtime freshness. `release.updater` calls it for startup/reload/TTL/manual checks. Stage 0 only removes direct branch-ref discovery from the initial client-side install path; it does not absorb account/provider/domain behavior.
+## Runtime/update compatibility
 
-The preferred public installer remains the stable first-party domain, so future internal GitHub/release implementation may evolve without changing the one-line public prompt.
+Existing runtime resolver/update behavior remains compatible. A Stage-0 handoff may satisfy the initial live-resolution requirement for that startup, so the engine must not redundantly block initial onboarding by immediately repeating the same GitHub branch lookup. Existing deployments still retain last-known-good ENGINE and LOCAL STATE on later resolver failures.
 
-## Loader budget
-
-Production keeps the 4 KiB Stage-1 budget. Moving live-ref discovery server-side is specifically intended to keep Stage 1 simple rather than adding more client orchestration.
+A later dedicated simplification release may make the same first-party transport the preferred runtime-update transport as well; that is not required to correct the fresh-install failure.
 
 ## State safety
 
-Resolution, installer-transport changes and engine replacement never alter LOCAL STATE except through a separately validated workspace-schema migration. Resolver failure cannot trigger account recreation, re-onboarding, deletion or migration guessing.
+Installer/resolver/transport changes never alter LOCAL STATE except through a separately validated workspace-schema migration. Transport failure cannot trigger account recreation, re-onboarding, deletion or migration guessing.
