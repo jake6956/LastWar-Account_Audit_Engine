@@ -20,7 +20,7 @@ A genuinely new user is asked an early plain-language question before identity/a
 
 > Before we build your account, would you like me to use private cloud storage so I can safely pick up where we left off in future chats? It’s recommended, but optional. Reply yes or no.
 
-If the answer is **no**, LWAI continues session-only.
+If the answer is **no**, LWAI continues session-only and immediately moves into account identity setup.
 
 If the answer is **yes**, LWAI detects storage providers/connectors that are actually available or installable and shows a short provider menu. The user explicitly chooses the provider. LWAI does **not** silently default to Google Drive.
 
@@ -30,7 +30,17 @@ After the user chooses a provider, LWAI gives concise authorization instructions
 
 A user saying `connected` is not accepted as proof. LWAI re-checks capability and verifies the private workspace before reporting `Cloud storage connected and verified.`
 
-If a session-only user later accepts a contextual persistence reminder—or says `connect storage`—LWAI runs the same provider chooser, authorization and verification flow again. It never jumps directly to Google Drive. Existing reminder limits remain: only when cloud materially benefits the current workflow, max once per runtime session, a seven-day cooldown when reliable cross-session metadata exists, and explicit suppression with `don't ask again`.
+That confirmation is **not** the end of setup. Production immediately continues the user journey in the same response: account identity -> private account registration -> strategic baseline -> first useful evidence capture. New users should never have to type `next`, ask what to do, or rerun the installer simply because a cloud connector succeeded.
+
+For new users, the compact identity block asks for screenname/commander name, server, alliance, optional nickname, and optional/private game UID. After that is validated, LWAI creates the immutable private `account_id`, activates the account, and immediately asks a short strategic baseline: HQ level, primary/default squad or squad of interest, and the user's main optimization goals. It then requests the first highest-value evidence—normally the main/default squad overview for a brand-new account—using clear screenshot instructions and a `reply done` boundary for multi-image batches.
+
+Every setup turn follows a **no-orphan-state** rule: it must end with a clear next action, an explicit WAITING_USER instruction such as `reply connected` / `reply done`, or a useful running-state landing. Technical success alone is not a conversational terminal state.
+
+When durable storage exists, LWAI can preserve compact onboarding progress. After context loss or reload it verifies what already succeeded and resumes from the first incomplete stage instead of repeating storage, workspace, or account creation.
+
+Existing users also get a deliberate landing instead of silent success: LWAI loads the recognizable account and resumes unfinished work or clearly invites the next objective. It does not push a valid existing account through first-run onboarding again.
+
+If a session-only user later accepts a contextual persistence reminder—or says `connect storage`—LWAI runs the same provider chooser, authorization and verification flow again. It never jumps directly to Google Drive. Existing reminder limits remain: only when cloud materially benefits the current workflow, max once per runtime session, a seven-day cooldown when reliable cross-session metadata exists, and explicit suppression with `don't ask again`. After a successful later connection, LWAI resumes the exact task the user was doing.
 
 ## Friendly bootstrap and update UX
 
@@ -44,6 +54,8 @@ The bootstrap source contains technical trust, integrity, compatibility, migrati
 - `Ready.`
 
 Fast/no-op work may be silent. URLs, module names, hashes, schema/API numbers, migration graphs, RC terminology and detailed traces are reserved for `audit yourself`, explicit developer/debug requests, or failure details required for recovery.
+
+Status lines never replace the actual interaction flow: when setup is incomplete, LWAI immediately supplies the next useful question or a precise wait instruction.
 
 ## What LWAI does
 
@@ -72,6 +84,7 @@ engine/BOOTSTRAP.txt
   -> releases/MIGRATIONS.json
      -> mandatory core/release modules
         -> core.operating (global evidence/provenance contract)
+        -> core.accounts + core.guidance (guided onboarding/resume)
         -> release.updater
      -> task-specific domain modules
         -> domain.season-intelligence
@@ -95,11 +108,13 @@ Production supports explicit workspace-schema migration for supported older depl
 
 These migrations are additive and idempotent. They preserve canonical account facts, immutable `account_id`, `active_account_id`, history, Corrections, evidence metadata and provider references. Domain modules that require schema `2.3` remain blocked until migration is verified. If no validated path exists, setup fails closed instead of guessing or re-onboarding the user.
 
+The `.21 -> .22` transition is engine-only. It changes guided interaction behavior and onboarding recovery, not the user's account schema or canonical account facts.
+
 ## Persistence model
 
 **GitHub Production contains:** sanitized runtime instructions/modules, provider-neutral schemas/adapters, release metadata/migrations, tests/documentation, and reusable non-user-specific reference assets.
 
-**User-local storage may contain:** account identity/game state, screenshots/evidence, balances/battle history, local corrections/preferences, audit/recovery state, optional runtime-session provenance, selected-provider metadata, and compact workspace-level engine-update metadata.
+**User-local storage may contain:** account identity/game state, screenshots/evidence, balances/battle history, local corrections/preferences, audit/recovery state, optional runtime-session provenance, selected-provider metadata, compact onboarding progress, and compact workspace-level engine-update metadata.
 
 Private account data and actual runtime-session/host-conversation references are never required in this public repository.
 
@@ -109,7 +124,7 @@ Persistence is capability-driven, not provider-name-driven. An adapter reports v
 
 Persistent deployments can manage multiple isolated accounts under a workspace registry. Each account receives immutable LWAI-generated `account_id`; screenname, server, alliance, nickname and optional game UID remain private.
 
-The runtime supports account switching, nondestructive archive/restore, migration-first startup, resumable audits and verify-before-replay checkpoints. Optional `runtime_session_id` provenance may be stored privately; a host conversation/session reference is optional and non-authoritative. It is never account identity, authentication, routing, recovery ordering or write deduplication.
+The runtime supports account switching, nondestructive archive/restore, migration-first startup, resumable audits, guided onboarding continuation and verify-before-replay checkpoints. Optional `runtime_session_id` provenance may be stored privately; a host conversation/session reference is optional and non-authoritative. It is never account identity, authentication, routing, recovery ordering or write deduplication.
 
 LWAI does not require game passwords, provider passwords, session tokens, cookies, OAuth codes or authentication captures for normal operation.
 
@@ -134,7 +149,7 @@ Season Gold Asset knowledge has its own lightweight freshness path: the first se
 
 ## Validation
 
-Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, explicit provider selection, provider permission coaching, Google Drive `Allow always` guidance, post-authorization capability verification, contextual persistence reminders, friendly bootstrap/update UX, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration, Season Intelligence module reachability, sanitized season packs, Gold Asset registration, season fallback parity, global anti-fabrication behavior, community-source quality, uncertainty disclosure, calculation provenance and separation of official mechanics from LWAI-derived strategy.
+Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, explicit provider selection, provider permission coaching, Google Drive `Allow always` guidance, post-authorization capability verification, **post-storage same-response continuation**, identity-to-baseline auto-advance, baseline-to-first-evidence auto-advance, no-orphan-state setup turns, onboarding recovery from the first incomplete verified stage, existing-user landing/resume behavior, contextual persistence reminders, friendly bootstrap/update UX, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration, Season Intelligence module reachability, sanitized season packs, Gold Asset registration, season fallback parity, global anti-fabrication behavior, community-source quality, uncertainty disclosure, calculation provenance and separation of official mechanics from LWAI-derived strategy.
 
 ## Production endpoints
 
@@ -152,7 +167,7 @@ Production changes use short-lived RC branches with sanitization checks, exact-h
 
 ## Current Production
 
-**Engine version:** `2026-08-29.21`
+**Engine version:** `2026-08-29.22`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
