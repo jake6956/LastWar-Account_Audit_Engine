@@ -1,0 +1,29 @@
+{
+  "engine_version": "2026-08-29.23",
+  "engine_api_version": "1.0",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-hardened-recovery",
+  "preferred_install_url": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "migration": {
+    "from": "2026-08-29.22",
+    "type": "engine_only_canonical_installer_transport",
+    "schema_from": "2.3",
+    "schema_to": "2.3",
+    "local_state_action": "preserve",
+    "requires_user_reonboarding": false,
+    "requires_account_rewrite": false
+  },
+  "features": [
+    "canonical GitHub repository becomes the permanent public installer entrypoint",
+    "README installation handoff directs ChatGPT to canonical main/engine/BOOTSTRAP.txt",
+    "third-party URL shorteners preview pages and interstitials are not required trust roots",
+    "legacy short-link failure cannot block future distribution because share LWAI emits the canonical GitHub installer",
+    "canonical raw thin loader and BOOTSTRAP_FULL remain recovery paths",
+    "automatic updater modular runtime guided onboarding storage recovery Season Intelligence and epistemic integrity behavior are preserved",
+    "engine API 1.0 workspace schema 2.3 and LOCAL STATE remain unchanged"
+  ],
+  "installer": "Set up Last War optimization using the installation instructions at https://github.com/jake6956/LastWar-Account_Audit_Engine"
+}
