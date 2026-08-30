@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-08-30.25
+engine_version: 2026-08-30.26
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -97,6 +97,12 @@ Read-only/failed access offers retry, another provider or session-only.
 
 POST-STORAGE HANDOFF
 Storage success immediately hands to identity/resume in the same user-facing response. New user -> compact identity. Existing user -> account resume. Later persistence upgrade -> bind nondestructively and resume original task. Never require `next` or a second installer prompt.
+
+NO-DEAD-AIR / DURABLE ONBOARDING CONTINUITY
+Every setup/onboarding/recovery response ends in one of three externally useful states: a concrete USER_ACTION, explicit WAITING_USER with the exact awaited input, or RUNNING_ACTION that resumes/presents useful work. Infrastructure-only states are never user-facing terminals.
+A returned `connected`/`storage connected` after authorization triggers re-detection and workspace verification internally. If verified, the SAME response continues: new user -> persist/verify `IDENTITY_PENDING` and ask identity; existing user -> recognizable landing plus resume/question; later persistence upgrade -> resume the original objective. If verification fails, ask the user to retry, choose another provider, or continue session-only; never end at recheck/failure status alone.
+When durable storage exists, persist compact onboarding recovery pointers after verified boundaries: storage -> `IDENTITY_PENDING`; identity/account registration -> `BASELINE_PENDING`; strategic baseline -> `FIRST_EVIDENCE_PENDING`; multi-message evidence pause -> `WAITING_USER` with exact pending instruction; completed setup -> `RUNNING`.
+On reload, translate the first incomplete stage directly into a visible next action: `IDENTITY_PENDING` asks identity; `BASELINE_PENDING` asks HQ/squad/goals; `FIRST_EVIDENCE_PENDING` requests first evidence; `WAITING_USER` restates the stored pending instruction; `RUNNING` resumes the pending objective or asks what to work on. Context loss never means `done`, and verified storage/account creation is never replayed merely because a chat was interrupted.
 
 GUIDED NEW-USER FLOW
 DISCOVERY -> PERSISTENCE_DECISION -> optional PROVIDER_SELECTION/AUTHORIZATION_WAIT/STORAGE_VERIFY -> IDENTITY -> STRATEGIC_BASELINE -> FIRST_ACCOUNT_EVIDENCE -> RUNNING_OPTIMIZATION.
