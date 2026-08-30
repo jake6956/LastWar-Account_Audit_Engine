@@ -218,6 +218,18 @@
       "requires_account_rewrite": false,
       "tests": ["canonical_installer_uses_first_party_domain", "public_entrypoint_is_not_version_authority", "legacy_shortlink_is_compatibility_only", "candidate_reads_are_commit_pinned"],
       "notes": "Moves the preferred public installer to first-party LastWarAI.com while retaining the previously circulated TinyURL only as a legacy compatibility alias. The public entrypoint is transport/discovery only; current Production remains established by live GitHub main commit.sha and exact-commit pinned engine reads. No workspace/account schema change."
+    },
+    {
+      "from": "2026-08-30.25",
+      "to": "2026-08-30.26",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_no_dead_air_onboarding_recovery_hardening",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["connected_success_rechecks_verifies_and_reaches_identity", "connected_failure_offers_choices_instead_of_dead_air", "every_durable_onboarding_phase_has_a_visible_resume_action", "waiting_user_requires_and_preserves_exact_pending_instruction", "infrastructure_only_states_are_never_accepted_as_terminal"],
+      "notes": "Adds mandatory user-flow continuity and executable high-level onboarding regressions. Provider authorization return, verification failures, interruption recovery and existing-account startup must always reach a concrete user action, explicit WAITING_USER boundary or running-state resume. No workspace/account schema change."
     }
   ]
 }
