@@ -62,8 +62,9 @@ LWAI separates shared engine behavior from private user state.
 - resource balances and battle history
 - local corrections and preferences
 - account-specific audit sessions and recovery state
+- optional runtime-session provenance used for private support/debug correlation
 
-Private account data is not required for the public repository and must not be committed here.
+Private account data and actual runtime-session/host-conversation references are not required for the public repository and must not be committed here.
 
 Durable storage is optional. Without a writable supported storage provider, LWAI can still operate within the active conversation and use portable snapshots/exports, but persistence and recovery are naturally limited by the host session.
 
@@ -73,11 +74,13 @@ Persistence is capability-driven, not provider-name-driven. An adapter reports w
 
 A provider is never treated as transaction-safe merely because it offers spreadsheets or cloud files. Recovery journals require atomic append, revision/CAS semantics, or immutable uniquely identified event records.
 
-## Multi-account and recovery
+## Multi-account, provenance and recovery
 
 Persistent deployments can manage multiple isolated accounts under a workspace registry. Each account receives an immutable LWAI-generated `account_id`; human-recognition metadata such as screenname, server, alliance, nickname and optional game UID remains private to the user's environment.
 
 The runtime supports migration-first startup, including legacy pre-registry discovery: an older single-account LWAI database can be registered in place before `active_account_id` is required, then normal account-scoped recovery begins. Current registry-backed deployments resolve their active account before recovery. Nondestructive archive/restore, account switching, resumable audit sessions and recovery checkpoints remain supported.
+
+When durable persistence exists, LWAI may generate its own private `runtime_session_id` for provenance. A host platform's conversation/session reference may also be stored when the host actually exposes one, but it is optional and non-authoritative. LWAI does not ask users to create ChatGPT shared links or retrieve conversation GUIDs for normal operation, and host references are never used as account identity, authentication, routing, recovery-ordering or write-deduplication keys.
 
 Recovery follows a verify-before-replay model so already committed writes are not duplicated after context loss.
 
@@ -91,7 +94,7 @@ If a module cannot be retrieved or validated, the runtime falls back to the last
 
 ## Validation
 
-Production CI performs both structural validation and executable behavioral regression tests. Structural gates verify release/version parity, dependency graph validity, module byte identity, privacy markers, loader boundaries, compatibility metadata and fallback completeness. A deterministic reference state machine separately exercises account isolation, archive/start-over behavior, migration preservation, legacy/current startup ordering, `WAITING_USER`, verify-before-replay, checkpoint-loss tolerance, append-only journal semantics and provider degradation.
+Production CI performs both structural validation and executable behavioral regression tests. Structural gates verify release/version parity, dependency graph validity, module byte identity, privacy markers, loader boundaries, compatibility metadata and fallback completeness. A deterministic reference state machine separately exercises account isolation, archive/start-over behavior, migration preservation, legacy/current startup ordering, runtime-session provenance isolation, `WAITING_USER`, verify-before-replay, checkpoint-loss tolerance, append-only journal semantics and provider degradation.
 
 ## Production endpoints
 
@@ -123,7 +126,7 @@ Production changes follow a staged release path with sanitization checks, candid
 
 ## Current Production
 
-**Engine version:** `2026-08-29.13`
+**Engine version:** `2026-08-29.14`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
