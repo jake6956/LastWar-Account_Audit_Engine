@@ -40,6 +40,7 @@ engine/BOOTSTRAP.txt
   -> engine/MANIFEST.json
   -> releases/MIGRATIONS.json
      -> mandatory core/release modules
+        -> release.updater
      -> task-specific domain modules
      -> capability-specific adapters
 
@@ -47,7 +48,7 @@ engine/BOOTSTRAP_FULL.txt
   -> complete standalone fallback
 ```
 
-The thin loader stays intentionally bounded and contains orchestration rather than game-domain playbooks. Mandatory core behavior loads first; domain modules load only when needed.
+The thin loader stays intentionally bounded and contains orchestration rather than game-domain playbooks. Mandatory core behavior loads first; domain modules load only when needed. `release.updater` is mandatory core and owns automatic consumer engine-update orchestration.
 
 ## Existing users and migration
 
@@ -81,7 +82,8 @@ Migration-capable core/release/storage components may explicitly support older v
 - balances and battle history;
 - local corrections/preferences;
 - account-specific audit/recovery state;
-- optional runtime-session provenance.
+- optional runtime-session provenance;
+- optional compact workspace-level engine-update metadata.
 
 Private account data and actual runtime-session/host-conversation references are never required in this public repository.
 
@@ -101,17 +103,28 @@ When durable persistence exists, LWAI may generate a private `runtime_session_id
 
 LWAI does not require game passwords, session tokens, cookies or authentication captures for normal operation.
 
-## Updates and self-healing
+## Automatic updates and self-healing
 
-Production updates are centrally published through GitHub. On every web-capable runtime/session startup, LWAI performs a lightweight check of canonical GitHub `releases/LATEST.json` before ordinary domain work. In a long-lived runtime, it checks again before consequential work once at least six hours have elapsed since the last successful canonical freshness check. It does not re-download every module on every message.
+Production updates are centrally published through GitHub and automatically pulled by web-capable deployments. `release.updater` performs a lightweight canonical `releases/LATEST.json` check:
 
-If a newer verified Production exists, LWAI preserves LOCAL STATE, validates canonical release/module/migration metadata and compatibility/integrity, applies only validated migrations, refreshes ENGINE and changed modules, then health-checks. It never auto-loads RC/Prod-Dev and never downgrades because an alias or cache is stale. `refresh engine` and `check for LWAI updates` force the same canonical path immediately.
+- on every runtime/session startup before ordinary account/domain work;
+- before `reload LWAI` / `reload yourself`;
+- before schema-sensitive migration/recovery when compatibility matters;
+- before consequential work in a long-lived runtime once at least six hours have elapsed since the last successful canonical check.
 
-If required engine content cannot be retrieved or validated, LWAI retains last-known-good compatible engine state or uses the complete `BOOTSTRAP_FULL.txt` fallback. Engine repair never overwrites private account state.
+If installed Production is current, the check is silent and unchanged modules are not re-downloaded. If a newer verified Production exists, LWAI preserves LOCAL STATE, validates canonical channel/privacy/API/schema/migration/integrity metadata, fetches changed required engine components, applies only validated migrations, health-checks, adopts the newer ENGINE, then resumes the user's original pending action under the new version.
+
+Durable workspaces may persist only compact private engine metadata such as installed version, last successful check/update, last-known-good version, update policy/health and an optional compact error summary. These values are not account evidence, do not control `active_account_id`, and do not change workspace schema `2.3`. Session-only deployments keep equivalent metadata ephemerally when possible.
+
+Failed update verification never partially activates a candidate. LWAI retains last-known-good compatible engine state or the complete `BOOTSTRAP_FULL.txt` fallback and leaves private account state untouched. It never auto-loads RC/Prod-Dev and never downgrades because an alias/cache is stale.
+
+Automatic updating does not imply a background daemon. A dormant ChatGPT conversation updates on the next user interaction unless the user separately opts into an actually available scheduler.
+
+`refresh engine` remains the permanent backwards-compatible manual escape hatch and bypasses freshness TTLs to force the same canonical update transaction. `check for LWAI updates` is an alias.
 
 ## Validation
 
-Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, benefit-triggered persistence reminders, canonical-version reporting, automatic engine freshness, account isolation, archive/start-over, migration preservation, legacy/current startup ordering, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration and stale-alias canonicalization.
+Production CI performs structural validation plus executable deterministic regressions. Gates cover release/version parity, module graph and byte integrity, privacy markers, loader boundaries, compatibility, first-run persistence choice, benefit-triggered persistence reminders, canonical-version reporting, automatic engine updating, permanent `refresh engine` compatibility, account isolation, archive/start-over, migration preservation, legacy/current startup ordering, runtime-session provenance, `WAITING_USER`, verify-before-replay, checkpoint loss, append-only journal semantics, provider degradation, historical workspace-schema migration and stale-alias canonicalization.
 
 ## Production endpoints
 
@@ -143,7 +156,7 @@ Production changes follow short-lived staged RC branches with sanitization check
 
 ## Current Production
 
-**Engine version:** `2026-08-29.17`
+**Engine version:** `2026-08-29.18`
 
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  

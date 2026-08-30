@@ -1,5 +1,18 @@
 # Production Changelog
 
+## 2026-08-29.18
+
+- Added mandatory `release.updater` as a dedicated automatic consumer engine-update module, keeping update orchestration separate from account/domain logic.
+- Web-capable LWAI now treats automatic updating as the normal path: check on every runtime/session startup, before reload, before schema-sensitive migration/recovery, and before consequential work after a six-hour freshness boundary.
+- A newer verified Production release is adopted only after canonical channel/privacy/API/schema/migration/integrity validation and a post-refresh health check; failed candidates never partially activate.
+- Automatic update preserves LOCAL STATE, last-known-good ENGINE, workspace/account isolation and the user's original pending action; after a successful update the original action resumes under the new engine.
+- Durable workspaces may store only compact private workspace-level engine metadata: installed version, last successful check/update, last-known-good version, update policy/health and an optional compact error summary. These fields are not account evidence or routing state and do not change workspace schema `2.3`.
+- Successful no-op update checks are silent and unchanged modules are not re-downloaded unnecessarily. Session-only deployments keep equivalent update metadata ephemerally when possible.
+- Explicitly retained `refresh engine` as the permanent backwards-compatible manual escape hatch; it bypasses TTL and runs the same canonical update transaction. `check for LWAI updates` remains an alias.
+- Explicitly prohibited claims of a background daemon: dormant conversations update on the user's next interaction unless the user separately opts into a genuinely available scheduler.
+- Added deterministic automatic-update regressions for trigger policy, verified adoption, original-action resume, last-known-good rollback, RC/invalid-candidate rejection, source unavailability, mandatory updater graph wiring and unchanged single-installer behavior.
+- Preserved engine API `1.0`, workspace schema `2.3`, the single TinyURL installer and all private user/account state.
+
 ## 2026-08-29.17
 
 - Made installer/update version reporting canonical-only: alias/cache version strings are diagnostic input and normal UX announces only the single verified GitHub Production version after canonical LATEST/BOOTSTRAP/MANIFEST verification.
