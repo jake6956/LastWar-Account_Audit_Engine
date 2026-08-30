@@ -6,9 +6,12 @@
   "sanitized": true,
   "account_state_included": false,
   "runtime_mode": "modular-hardened-recovery",
+  "bootstrap_protocol_version": "2.0",
+  "entrypoint_module": "release.bootstrap",
+  "module_selection": "manifest_activation_v1",
   "preferred_install_url": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
-  "preferred_install_instruction": "Set up Last War optimization. Open https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main directly, use its current commit SHA, then retrieve and follow engine/BOOTSTRAP.txt from that exact SHA. Never use search-index/cached main copies; if live SHA resolution fails, stop rather than guessing.",
-  "remote_install_mode": "stage0_live_ref_then_exact_commit_bootstrap",
+  "preferred_install_instruction": "Set up Last War optimization. Read the live GitHub main ref at https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main, use its current commit.sha, then load and follow engine/BOOTSTRAP.txt from that exact commit.",
+  "remote_install_mode": "stage0_live_ref_then_exact_commit_manifest_bootstrap",
   "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
   "live_ref_source": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
   "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
@@ -19,13 +22,13 @@
   "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
   "migration": {
     "from": "2026-08-29.23",
-    "type": "engine_only_live_ref_pinned_bootstrap",
+    "type": "engine_only_live_ref_pinned_manifest_dispatch",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds mandatory live Production resolver and exact-commit snapshot loading. Removes README/raw-main/search-cache from current-version authority. Refactors thin loader to Stage-1 orchestration only; onboarding/provider/domain behavior remains in modules."
+    "notes": "Adds live-ref exact-commit resolution plus generic required-module loading and manifest-driven optional module dispatch. Removes feature routing from Stage-1. Existing onboarding, persistence, account isolation, recovery, Season Intelligence and evidence behavior remain module-owned and unchanged."
   },
-  "notes": "Live-ref pinned bootstrap. Stage 0 resolves current GitHub main commit directly; Stage 1 and automatic updates read one immutable commit snapshot, making stale mutable-path caches non-authoritative."
+  "notes": "Live-ref pinned manifest cascade. Stage 0 resolves current GitHub main commit directly; Stage 1 loads every required manifest module generically; the mandatory dispatcher activates optional modules from manifest metadata. New Production capabilities integrate through MANIFEST registration without bootstrap edits."
 }
