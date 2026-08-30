@@ -46,6 +46,44 @@ class RuntimeBehaviorTests(unittest.TestCase):
         self.assertEqual(steps, ["load_registry", "resolve_active_account", "recovery_first", "migration_reconcile"])
         self.assertEqual(rt.active_account_id, "A")
 
+    def test_new_user_without_writable_storage_is_prompted_before_onboarding(self):
+        rt = RuntimeModel(); steps = rt.startup_from_storage(provider_capabilities=ProviderCapabilities(read=False, list=False))
+        self.assertEqual(steps, ["first_run_persistence_prompt_connect_or_session"])
+        self.assertEqual(rt.accounts, {}); self.assertIsNone(rt.active_account_id)
+        self.assertNotIn("new_account_guidance", steps)
+
+    def test_new_user_with_writable_storage_is_prompted_before_onboarding(self):
+        caps = ProviderCapabilities(read=True, list=True, write=True, create=True)
+        rt = RuntimeModel(); steps = rt.startup_from_storage(provider_capabilities=caps)
+        self.assertEqual(steps, ["first_run_persistence_prompt_cloud_or_session"])
+        self.assertEqual(rt.accounts, {}); self.assertNotIn("new_account_guidance", steps)
+
+    def test_new_user_can_explicitly_continue_session_only(self):
+        rt = RuntimeModel(); steps = rt.startup_from_storage(provider_capabilities=ProviderCapabilities(read=False, list=False), persistence_choice="continue session-only")
+        self.assertEqual(steps, ["first_run_persistence_choice", "session_only_acknowledged", "new_account_guidance"])
+        self.assertEqual(rt.accounts, {})
+
+    def test_new_user_cloud_choice_creates_workspace_before_onboarding(self):
+        caps = ProviderCapabilities(read=True, list=True, write=True, create=True, query=True)
+        rt = RuntimeModel(); steps = rt.startup_from_storage(provider_capabilities=caps, persistence_choice="use cloud storage")
+        self.assertEqual(steps, ["first_run_persistence_choice", "create_private_workspace", "verify_private_workspace", "new_account_guidance"])
+        self.assertLess(steps.index("verify_private_workspace"), steps.index("new_account_guidance"))
+
+    def test_storage_connected_requires_capability_recheck_before_onboarding(self):
+        rt = RuntimeModel(); steps = rt.startup_from_storage(provider_capabilities=ProviderCapabilities(read=False, list=False), persistence_choice="storage connected")
+        self.assertEqual(steps, ["recheck_storage_capabilities"])
+        self.assertNotIn("new_account_guidance", steps)
+
+    def test_unverified_cloud_choice_fails_closed(self):
+        rt = RuntimeModel()
+        with self.assertRaises(RuntimeError):
+            rt.startup_from_storage(provider_capabilities=ProviderCapabilities(read=True, write=False, create=False), persistence_choice="use cloud storage")
+        self.assertEqual(rt.accounts, {})
+
+    def test_existing_workspace_skips_first_run_persistence_prompt(self):
+        rt = RuntimeModel(); steps = rt.startup_from_storage(registry_accounts={"A": {"ore": 100}}, active_account_id="A", provider_capabilities=ProviderCapabilities(read=False, list=False))
+        self.assertEqual(steps, ["load_registry", "resolve_active_account", "recovery_first", "migration_reconcile"])
+
     def test_workspace_schema_21_to_23_preserves_state(self):
         rt = RuntimeModel(); rt.create_account("A"); rt.write_fact("ore", 100); rt.write_fact("correction", "keep me")
         facts_before = dict(rt.accounts["A"].facts); history_before = list(rt.accounts["A"].history); active_before = rt.active_account_id
@@ -145,10 +183,11 @@ class RuntimeBehaviorTests(unittest.TestCase):
 
     def test_provider_profiles_and_journal_safety(self):
         self.assertEqual(ProviderCapabilities(read=False).persistence_profile, "NONE"); self.assertEqual(ProviderCapabilities(read=True).persistence_profile, "READ_ONLY")
-        file_rw = ProviderCapabilities(read=True, write=True, create=True); self.assertEqual(file_rw.persistence_profile, "FILE_RW"); self.assertTrue(file_rw.can_authoritative_journal)
+        file_rw = ProviderCapabilities(read=True, write=True, create=True); self.assertEqual(file_rw.persistence_profile, "FILE_RW"); self.assertTrue(file_rw.can_authoritative_journal); self.assertTrue(file_rw.can_durable_persist)
         cas = ProviderCapabilities(read=True, write=True, create=True, compare_and_swap=True); self.assertEqual(cas.persistence_profile, "CAS_RW")
         transactional = ProviderCapabilities(read=True, write=True, create=True, query=True, atomic_append=True, compare_and_swap=True)
         self.assertEqual(transactional.persistence_profile, "TRANSACTIONAL_RW"); self.assertTrue(transactional.can_authoritative_journal)
+        self.assertFalse(ProviderCapabilities(read=True, write=False, create=False).can_durable_persist)
 
 
 if __name__ == "__main__":
