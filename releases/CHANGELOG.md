@@ -1,5 +1,41 @@
 # Production Changelog
 
+## 2026-08-29.21
+
+- Made evidence provenance and anti-fabrication mandatory global runtime behavior rather than a season-only safeguard.
+- Material Last War mechanics, numbers, costs, probabilities, formula inputs, event/store values and factual recommendation inputs must be supported by current direct game evidence, current official game/publisher material, credible maintained references, or validated current community evidence.
+- Community evidence now requires reasonable relevance and credibility, current applicability where mechanics can change, and independent corroboration or reproducible/transparent methodology when material.
+- Isolated anecdotes, unsupported spreadsheets, unattributed screenshots, stale guides, recycled claims, contradictory posts and low-quality reposts are explicitly treated as weak evidence rather than facts.
+- Uncertain, missing, contested, stale, surprising or consequential material facts must exhaust reasonably available official and reputable current community sources before being declared unvalidated.
+- If a material fact still cannot be validated, LWAI discloses that gap and does not invent precision; when a decision is still needed, it may provide a bounded recommendation from supported facts with calculations, assumptions, inference or heuristics clearly identified as LWAI-derived analysis.
+- Added calculation provenance rules separating sourced/observed inputs, derived arithmetic, assumptions and strategic interpretation; correct arithmetic does not legitimize unsupported inputs.
+- Explicitly separated official Last War mechanics from LWAI optimization recommendations; upgrade orders, hero priorities, gear targets, research paths, purchase choices and tactical heuristics are not presented as official recommendations unless an authoritative source explicitly endorses them.
+- Hardened Season Intelligence with stricter community-source quality and exhaust-then-disclose behavior, and added standalone fallback, public Operating Canon and deterministic CI regression parity.
+- Preserved engine API `1.0`, workspace schema `2.3`, LOCAL STATE, the single TinyURL installer and all public/private data boundaries.
+
+## 2026-08-29.20
+
+- Added on-demand `domain.season-intelligence` for season-aware due diligence without hard-coding volatile season lore into mandatory core.
+- Added a Production-qualified Gold Asset season registry, season-pack schema and sanitized Season 1/2/3 seed packs; missing/seed knowledge deliberately triggers current due diligence rather than invented mechanics.
+- Season-sensitive work now resolves current season and, when material, phase/week/unlocked subsystem before applying season mechanics.
+- Added live re-verification for missing, stale, contested, patch-sensitive, phase-sensitive, event/store-dynamic or consequential season mechanics.
+- Current direct in-game evidence supersedes stale shared season knowledge; affected recommendations self-heal rather than defending an older pack.
+- Added optional private Mechanics Registry observations for user-local evidence while prohibiting automatic publication of private/user-specific state into public GitHub Gold Assets.
+- Generic reusable season knowledge may be promoted only through deliberate sanitization, provenance review and protected Production change-control.
+- Added first-season-sensitive-task registry lookup, 24-hour season-knowledge freshness TTL and `refresh season knowledge` without altering LOCAL STATE.
+- Made `domain.season-stores-paid` depend on Season Intelligence and brought `BOOTSTRAP_FULL.txt`, loader orchestration and deterministic CI regressions into parity.
+- Preserved engine API `1.0`, workspace schema `2.3`, LOCAL STATE and the single public TinyURL installer.
+
+## 2026-08-29.19
+
+- Replaced implicit/default Google Drive onboarding with an early plain-language cloud-storage yes/no choice before new-account identity intake.
+- When cloud is accepted, LWAI detects only supported/available providers and requires explicit provider selection; it never silently defaults to Google Drive.
+- Added provider-specific authorization coaching, including Google Drive `Allow always` guidance only when that option is actually shown, while never requesting passwords, OAuth codes or tokens in chat.
+- A user saying `connected` is treated only as a trigger to re-check capabilities; LWAI verifies read/write/create capability and the isolated private workspace before claiming persistence is connected.
+- Later accepted persistence reminders rerun the same provider chooser/authorization/verification flow instead of jumping directly to a remembered provider.
+- Normal bootstrap/update UX became concise and nontechnical while URLs, hashes, schemas, module graphs and migration diagnostics remain available through audit/debug/failure paths.
+- Preserved automatic updates, last-known-good rollback, permanent `refresh engine`, engine API `1.0`, workspace schema `2.3`, LOCAL STATE and the single TinyURL installer.
+
 ## 2026-08-29.18
 
 - Added mandatory `release.updater` as a dedicated automatic consumer engine-update module, keeping update orchestration separate from account/domain logic.
@@ -101,7 +137,7 @@
 
 - Added mandatory `core.guidance` with dependencies on `core.operating`, `core.persistence`, and `core.accounts`.
 - Added migration-first startup: inspect accessible prior LWAI state before broad onboarding, preserve source/confidence/freshness, and ask only for missing, ambiguous, contradictory, or materially stale information.
-- Added adaptive guidance states (NEW, LEARNING, COMFORTABLE, EXPERT) while keeping privacy, evidence hierarchy, account isolation, and batch-boundary rules invariant.
+- Added adaptive guidance states (NEW, LEARNING,COMFORTABLE, EXPERT) while keeping privacy, evidence hierarchy, account isolation, and batch-boundary rules invariant.
 - Added explicit multi-upload completion boundaries: users are told what to send and to reply `done`; declared batches are not finalized early.
 - Added three evidence-equivalent ingestion modes: direct screenshot batches, supported DOCX/PDF screenshot bundles, and phone-friendly guided capture.
 - Added account-scoped resumable Audit Sessions with current step, requested/completed/pending/ambiguous items, ingestion mode, guidance level, timestamps, and status.
