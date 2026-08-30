@@ -1,0 +1,40 @@
+{
+  "engine_version": "2026-08-29.17",
+  "engine_api_version": "1.0",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-hardened-recovery",
+  "preferred_install_url": "https://tinyurl.com/2yxf7f5x",
+  "remote_install_mode": "user-authorized URL thin-loader bootstrap",
+  "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
+  "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
+  "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
+  "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
+  "migration": {
+    "from": "2026-08-29.16",
+    "type": "engine_only_freshness_and_contextual_persistence",
+    "schema_from": "2.3",
+    "schema_to": "2.3",
+    "local_state_action": "preserve",
+    "requires_user_reonboarding": false,
+    "requires_account_rewrite": false,
+    "notes": "Adds canonical-only version reporting, benefit-triggered persistence reminders and automatic canonical GitHub freshness checks without changing account/workspace schema."
+  },
+  "notes": "Freshness & Contextual Persistence release. Stale alias versions remain diagnostic only, session-only users are re-offered persistence only when it has a concrete benefit, and web-capable runtimes check canonical GitHub Production automatically.",
+  "features": [
+    "single verified canonical Production version announcement after install/update verification",
+    "stale alias/cache version strings retained only as diagnostic input",
+    "benefit-triggered persistence reminders for session-only users",
+    "one persistence reminder maximum per runtime session",
+    "seven-day reminder cooldown when reliable cross-session metadata is available",
+    "explicit do-not-ask-again suppression until persistence setup is reopened",
+    "automatic canonical LATEST check at every web-capable runtime/session startup",
+    "six-hour long-runtime freshness TTL before consequential work",
+    "only newer verified Production may auto-refresh ENGINE",
+    "engine-only refresh preserving all LOCAL STATE and workspace schema 2.3",
+    "executable freshness, reminder and canonical-version regression coverage"
+  ]
+}
