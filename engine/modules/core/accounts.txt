@@ -1,6 +1,6 @@
 LWAI MODULE — ACCOUNT REGISTRY & MULTI-ACCOUNT
 module_id: core.accounts
-module_version: 2026-08-29.10.1
+module_version: 2026-08-29.16.1
 load_class: mandatory_core
 state_scope: shared_engine+account_registry_rules
 SANITIZED: YES
@@ -41,6 +41,14 @@ Never pretend to retrieve an unrelated inaccessible prior conversation.
 EXISTING-ACCOUNT DISCOVERY
 Before Phase 1 new-account onboarding, when readable persistent LWAI storage exists, present existing active accounts and ask whether to resume one, create another account, or start a new clean account. Never silently choose when multiple plausible accounts exist. After fresh install/migration, briefly confirm even a single strongly matching account before resuming. If no registry exists but legacy LWAI state exists, run the single-account migration rather than forcing re-onboarding.
 
+FIRST-RUN PERSISTENCE GATE
+Only after migration-first discovery establishes that the user is genuinely new may new-account onboarding begin. Before collecting screenname/server/alliance/UID or other account-identifying state, apply core.persistence/core.guidance persistence choice:
+- verified writable provider available and no LWAI workspace: ask to create/use a private cloud workspace or explicitly continue session-only;
+- no verified writable provider: offer instructions to connect a supported provider in the host application and reply `storage connected`, or explicitly continue session-only;
+- existing valid LWAI workspace: skip this gate;
+- read-only provider: do not treat it as canonical persistence.
+No account_id/account database should be created until the persistence choice is explicit, because the chosen storage mode determines where that new private account state belongs. Choosing session-only is valid and must not block account creation in conversation/cache mode. Choosing cloud requires workspace creation/verification before identity intake.
+
 ARCHIVE / RESTORE
 Archive is nondestructive. Archived accounts retain immutable account_id, account database and history. Support `list archived accounts`, `restore account`, `unarchive <nickname>` and natural equivalents. Restore changes registry status back to usable/active without deleting or recreating the account. Permanent deletion is a separate explicit informed action.
 
@@ -58,7 +66,7 @@ IDENTITY SANITY CHECK
 Identity fields can drift. Periodically, and whenever evidence conflicts, ask the user to confirm screenname, alliance, server and optionally UID. Record the confirmation date/source. Update changed mutable fields in the same account and preserve history when continuity is supported. Do not create a new account merely because a mutable identity field changed. account_id remains stable.
 
 ONBOARDING FLOW
-After the HIGH-reasoning recommendation and optional persistence setup, run migration-first discovery before Phase 1. For a truly new account, request a compact identity block early: optional UID, screenname, server, alliance and optional nickname. In one sentence explain that these values keep the user's own account records identifiable and separate, especially when alts exist. Continue even if UID is declined. Existing users are validated with short strategic question groups rather than full re-onboarding.
+Recommend higher reasoning when available; run migration-first discovery; if genuinely new, complete the explicit first-run persistence choice before Phase 1. Then request a compact identity block: optional UID, screenname, server, alliance and optional nickname. In one sentence explain that these values keep the user's own account records identifiable and separate, especially when alts exist. Continue even if UID is declined. Existing users are validated with short strategic question groups rather than full re-onboarding.
 
 PROVIDER IMPLEMENTATION
 Structured providers should maintain one Workspace Registry plus one isolated account database/logical namespace per account when practical. File-storage providers should use a registry file plus separate account directories/files keyed by immutable account_id. Provider limitations must not collapse multiple accounts into one ambiguous mutable ledger. If safe independent writes cannot be guaranteed, do not claim full multi-account persistence support.
@@ -70,6 +78,9 @@ AUDIT SESSION ISOLATION
 Optional resumable Audit Sessions are account-scoped. Each session must carry account_id and may include session_id, audit_type/domain, requested/completed/pending/ambiguous items, current_step, timestamps, ingestion_mode, guidance_level, status and notes. Reload resolves active_account_id before resuming a session. A session from one account must never be resumed or mutated under another account.
 
 REGRESSION INVARIANTS
+- A genuinely new account is not created before persistence intent is explicit.
+- Session-only is a valid explicit choice and does not block use.
+- Existing valid persistent users are not redundantly prompted for cloud setup.
 - A terse update after switching to Alt cannot modify Main.
 - Reload resolves active_account_id, not chat recency.
 - UID/identity values never appear in sanitized shared Production artifacts.
