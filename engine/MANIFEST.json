@@ -175,7 +175,7 @@
       "release_min": "2026-08-29.8",
       "engine_api": {"min": "1.0", "max": "1.0"},
       "workspace_schema": {"min": "2.1", "max": "2.3"},
-      "integrity": {"algorithm": "git_blob_sha1", "digest": "98a284b757532cee0f18a5069ed7fbf489025c3f"}
+      "integrity": {"algorithm": "git_blob_sha1", "digest": "617e4364b7df361879ef8ed9bf9b75b832ba48c2"}
     }
   ]
 }
