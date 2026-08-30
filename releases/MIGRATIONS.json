@@ -224,12 +224,12 @@
       "to": "2026-08-30.26",
       "schema_from": "2.3",
       "schema_to": "2.3",
-      "type": "engine_only_no_dead_air_onboarding_recovery_hardening",
+      "type": "engine_only_user_experience_privacy_research_and_recovery_hardening",
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["connected_success_rechecks_verifies_and_reaches_identity", "connected_failure_offers_choices_instead_of_dead_air", "every_durable_onboarding_phase_has_a_visible_resume_action", "waiting_user_requires_and_preserves_exact_pending_instruction", "infrastructure_only_states_are_never_accepted_as_terminal"],
-      "notes": "Adds mandatory user-flow continuity and executable high-level onboarding regressions. Provider authorization return, verification failures, interruption recovery and existing-account startup must always reach a concrete user action, explicit WAITING_USER boundary or running-state resume. No workspace/account schema change."
+      "tests": ["connected_success_rechecks_verifies_and_reaches_identity", "connected_failure_offers_choices_instead_of_dead_air", "every_durable_onboarding_phase_has_a_visible_resume_action", "waiting_user_requires_and_preserves_exact_pending_instruction", "infrastructure_only_states_are_never_accepted_as_terminal", "public_release_is_sanitized_engine_only", "consumer_data_is_workspace_scoped_to_their_provider", "google_drive_is_preferred_but_never_silent_selection", "friendly_expert_experience_accepts_challenges_and_topic_changes", "research_sources_are_inputs_not_gospel"],
+      "notes": "Hardens no-dead-air onboarding/recovery, friendly-expert interaction, public/private data placement, preferred-but-explicit Google Drive selection with verified alternate providers, and current official/direct plus independently validated community research behavior. No workspace/account schema change."
     }
   ]
 }
