@@ -63,6 +63,14 @@ LWAI's application scope is explicitly **workspace-only**. It will not browse, r
 
 Authentication occurs in the provider/host UI. LWAI never asks users to paste passwords, OAuth codes, access/refresh tokens, cookies, or credentials into chat.
 
+## Personalized UX and preference notebooks
+
+Cloud-connected users can maintain a small private preference notebook so LWAI becomes easier to work with over time. Workspace preferences cover cross-account interaction choices such as verbosity, response shape, capture cadence and proactive next steps. Account preferences cover account-specific strategy such as optimization priorities or event-timing style. Session-only users get the same behavior ephemerally without a false promise of cross-chat persistence.
+
+File-oriented providers should use a human-readable `Preferences.md` (plus an account-local equivalent) when practical; structured providers may store equivalent records while still exposing a readable view on request. Explicit user preferences outrank tentative learned preferences and defaults. Consequential choices such as spending willingness, privacy/permissions, destructive actions or irreversible strategy are never inferred from behavior alone.
+
+Preferences can shape UX and choose among strategically valid options, but they never override current game evidence, privacy/security, account isolation, safety/recovery rules, or explicit current user intent. Private preferences and product-feedback notes remain only in that user's own LWAI workspace and are never automatically published to GitHub or sent to the maintainer.
+
 ## Knowledge and evidence policy
 
 LWAI uses current relevant information available through its research tools rather than relying on one site, one anecdote, or model memory. Evidence preference is:
@@ -125,7 +133,7 @@ The LastWarAI.com response is a transparent public configuration document. It:
 
 ## Release identity
 
-**Engine version:** `2026-08-30.31`  
+**Engine version:** `2026-08-31.32`  
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
 **Bootstrap protocol:** `2.0`  
