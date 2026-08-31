@@ -47,6 +47,8 @@ class InfrastructureBoundaryTests(unittest.TestCase):
         config = json.loads(raw)
         self.assertEqual(config["name"], WORKER_NAME)
         self.assertEqual(config["main"], "infrastructure/cloudflare-worker.js")
+        self.assertIs(config["workers_dev"], False)
+        self.assertIs(config["preview_urls"], False)
         self.assertIs(config["cache"]["enabled"], False)
         # Dashboard-managed Custom Domain/routes stay outside this file unless
         # deliberately migrated; do not accidentally rewrite routing topology.
@@ -61,6 +63,8 @@ class InfrastructureBoundaryTests(unittest.TestCase):
             "Workers Routes",
             "intentionally empty",
             "cache.enabled = false",
+            "workers_dev = false",
+            "preview_urls = false",
             "must be disabled",
             "one final purge",
             "not a per-release requirement",
