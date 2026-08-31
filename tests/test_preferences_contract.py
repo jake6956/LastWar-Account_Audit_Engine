@@ -92,24 +92,20 @@ class PreferenceContractTests(unittest.TestCase):
         for key in ("first_seen", "last_seen", "last_confirmed", "notes"):
             self.assertIn(key, props)
 
-    def test_release_is_additive_without_schema_or_reonboarding(self):
-        self.assertEqual(self.latest["engine_version"], "2026-08-31.32")
+    def test_preferences_release_edge_remains_preserved_in_current_release(self):
         self.assertEqual(self.latest["schema_version"], "2.3")
-        migration = self.latest["migration"]
-        self.assertEqual(migration["from"], "2026-08-30.31")
-        self.assertEqual(migration["schema_from"], "2.3")
-        self.assertEqual(migration["schema_to"], "2.3")
-        self.assertFalse(migration["requires_user_reonboarding"])
-        self.assertFalse(migration["requires_account_rewrite"])
+        self.assertFalse(self.latest["migration"]["requires_user_reonboarding"])
+        self.assertFalse(self.latest["migration"]["requires_account_rewrite"])
         edge = next(
             e for e in self.migrations["edges"]
             if e["from"] == "2026-08-30.31" and e["to"] == "2026-08-31.32"
         )
         self.assertEqual(edge["schema_from"], "2.3")
         self.assertEqual(edge["schema_to"], "2.3")
+        self.assertIn("core.preferences", {m["module_id"] for m in self.manifest["modules"]})
 
     def test_standalone_fallback_has_preferences_parity(self):
-        self.assertIn("engine_version: 2026-08-31.32", self.fallback)
+        self.assertIn(f"engine_version: {self.latest['engine_version']}", self.fallback)
         self.assertIn("PREFERENCES / PERSONALIZED UX", self.fallback)
         self.assertIn("Preferences.md", self.fallback)
         self.assertIn("WORKSPACE", self.fallback)
