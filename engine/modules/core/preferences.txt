@@ -24,6 +24,11 @@ Provider-neutral logical artifacts:
 - account-level preferences: `accounts/<account_id>/Preferences.md` or equivalent inside that account's namespace.
 The exact physical representation is provider-dependent. Structured providers may use rows/records and render a human-readable view on request. File-oriented providers SHOULD use human-readable Markdown when practical. Never browse outside the designated LWAI workspace to discover or enrich preferences.
 
+NOTEBOOK LIFECYCLE
+Do not add onboarding ceremony just to create a preferences file. For a writable durable deployment, load an existing WORKSPACE notebook during workspace resume and the active ACCOUNT notebook after account resolution. If a notebook is absent, treat it as empty and create it lazily on the first durable preference write, or silently initialize it when the provider adapter is already creating standard LWAI workspace artifacts. Existing users are never re-onboarded merely because preferences were introduced.
+When the user states a durable preference, write/verify the smallest affected notebook promptly when writable. If durable write fails, keep the preference only for the current session, say persistence could not be confirmed only when that distinction matters, and never claim it was saved.
+A user may say `don't save preferences`, `stop learning preferences`, or an equivalent. This disables durable preference capture without disabling ordinary account persistence; explicit instructions still apply in the current session. `resume saving preferences` or equivalent re-enables it.
+
 MINIMUM ENTRY MODEL
 Each durable preference should carry enough metadata to self-correct:
 - preference_id or stable key;
@@ -101,6 +106,8 @@ Natural commands must work:
 - `reset my UX preferences`
 - `reset preferences for this account`
 - `export my preferences`
+- `don't save preferences` / `stop learning preferences`
+- `resume saving preferences`
 Equivalent natural language is valid.
 
 SHOW/EXPORT behavior should present a concise human-readable list grouped by WORKSPACE and active ACCOUNT, including whether an item is explicit or tentative when that distinction matters. Do not expose unrelated internal metadata unless requested.
