@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/jake6956/LastWar-Account_Audit_Engine/schemas/preferences.schema.json",
+  "title": "LWAI Private Preferences Notebook",
+  "type": "object",
+  "required": [
+    "preferences"
+  ],
+  "properties": {
+    "scope": {
+      "enum": [
+        "WORKSPACE",
+        "ACCOUNT",
+        "SESSION"
+      ]
+    },
+    "account_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "preferences": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/preference"
+      }
+    }
+  },
+  "$defs": {
+    "preference": {
+      "type": "object",
+      "required": [
+        "key",
+        "scope",
+        "category",
+        "value",
+        "source_type",
+        "confidence",
+        "status"
+      ],
+      "properties": {
+        "preference_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "enum": [
+            "WORKSPACE",
+            "ACCOUNT",
+            "SESSION"
+          ]
+        },
+        "account_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {},
+        "source_type": {
+          "enum": [
+            "EXPLICIT_USER",
+            "REPEATED_BEHAVIOR",
+            "TENTATIVE_INFERENCE",
+            "IMPORTED_USER_ARTIFACT"
+          ]
+        },
+        "confidence": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ]
+        },
+        "status": {
+          "enum": [
+            "ACTIVE",
+            "TENTATIVE",
+            "SUPERSEDED",
+            "REVOKED"
+          ]
+        },
+        "first_seen": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "last_seen": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "last_confirmed": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "scope": {
+                "const": "ACCOUNT"
+              }
+            },
+            "required": [
+              "scope"
+            ]
+          },
+          "then": {
+            "properties": {
+              "account_id": {
+                "type": "string",
+                "minLength": 8
+              }
+            },
+            "required": [
+              "account_id"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
