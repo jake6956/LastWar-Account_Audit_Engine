@@ -242,6 +242,18 @@
       "requires_account_rewrite": false,
       "tests": ["research_sources_are_inputs_not_gospel", "manifest_loads_expert_continuity_module_mandatorily"],
       "notes": "Adds LastWarVault.com as a maintained community research input while preserving the existing evidence hierarchy, validation/corroboration duty, API 1.0, workspace schema 2.3 and all LOCAL STATE."
+    },
+    {
+      "from": "2026-08-30.27",
+      "to": "2026-08-30.31",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_recurring_event_timing_canon",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["vs_timing_module_is_registered_and_reachable", "current_2026_vp_pattern_and_stale_guide_guard", "hero_resources_default_to_day4", "upgrade_ore_is_not_held_for_current_vs_or_arms_race", "exact_points_require_current_account_evidence", "event_timing_is_not_more_important_than_account_value", "arms_race_requires_live_phase_check"],
+      "notes": "Adds evidence-guarded recurring Alliance Duel VS and Arms Race timing to resource optimization. Planned hero materials default to current Hero Day timing when practical, Upgrade Ore is not held merely for VS/Arms Race under current evidence, exact points require current account/event evidence, and urgent account value may override event timing. No workspace/account schema change."
     }
   ]
 }
