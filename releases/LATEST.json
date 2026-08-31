@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-31.33",
+  "engine_version": "2026-08-31.34",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -14,7 +14,7 @@
   "legacy_install_urls": [
     "https://tinyurl.com/2yxf7f5x"
   ],
-  "remote_install_mode": "first_party_entrypoint_then_live_ref_exact_commit_manifest_bootstrap",
+  "remote_install_mode": "first_party_single_response_exact_commit_full_configuration",
   "public_entrypoint_authority": false,
   "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
   "live_ref_source": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
@@ -23,16 +23,16 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "mutable_source_urls_are_authority": false,
-  "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
+  "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA",
   "migration": {
-    "from": "2026-08-31.32",
-    "type": "engine_only_freshness_buildings_and_store_value",
+    "from": "2026-08-31.33",
+    "type": "engine_only_onboarding_cache_and_instruction_hygiene",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Preserves all existing LOCAL STATE. Adds cross-domain monotonic/volatile freshness rules, prerequisite-aware building progression, research queue identity/timer separation, and account/price-aware event-store offer evaluation. New freshness metadata is optional and additive under existing workspace schema 2.3."
+    "notes": "Preserves all existing LOCAL STATE. Compacts first-run persistence/security wording without weakening the workspace boundary, records deterministic lwai-bootstrap cache configuration and release verification, makes current public docs match the single-response transport, and adds instruction-footprint telemetry."
   },
-  "notes": "Gameplay-model quality release. No Cloudflare Worker, installer sentence, provider authorization, account identity or workspace schema change. Engine API 1.0, workspace schema 2.3 and all existing LOCAL STATE are preserved."
+  "notes": "Maintenance/UX release. Engine API 1.0 and workspace schema 2.3 are unchanged; all existing LOCAL STATE is preserved. Installer sentence and Last War gameplay behavior are unchanged. Cloudflare Worker source remains transport-only; one-time deployment cache migration is required before OO-009 is closed."
 }
