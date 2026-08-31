@@ -44,7 +44,7 @@ class BootstrapResolutionContractTests(unittest.TestCase):
             self.assertIn("X-LWAI-Commit", body)
         self.assertIn("LAST WAR AI — PUBLIC CONFIGURATION", self.public_validator)
         self.assertIn("X-LWAI-Commit", self.public_validator)
-        self.assertIn("transparent complete configuration", self.public_validator)
+        self.assertIn("transparent complete uncached mutable configuration", self.public_validator)
         self.assertIn("The SAME request returns the complete sanitized LWAI configuration", self.worker)
         self.assertIn("BOOTSTRAP_FULL.txt", self.worker)
         self.assertIn("serveConfiguration", self.worker)
@@ -116,7 +116,9 @@ class BootstrapResolutionContractTests(unittest.TestCase):
             self.assertIn(token, combined)
         self.assertFalse(self.latest["mutable_source_urls_are_authority"])
         self.assertFalse(self.latest["public_entrypoint_authority"])
-        self.assertEqual(self.latest["candidate_read_policy"], "resolve live main SHA first; pin all candidate reads to that exact commit")
+        policy = self.latest["candidate_read_policy"].lower()
+        for token in ("lastwarai.com", "server-side", "exact-commit", "one response", "pin", "live main sha"):
+            self.assertIn(token, policy)
 
     def test_resolver_is_mandatory_shared_dependency(self):
         by_id = {m["module_id"]: m for m in self.manifest["modules"]}
