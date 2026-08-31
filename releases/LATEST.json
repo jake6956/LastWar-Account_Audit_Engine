@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-31.32",
+  "engine_version": "2026-08-31.33",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -25,14 +25,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
   "migration": {
-    "from": "2026-08-30.31",
-    "type": "engine_only_private_preferences_and_personalized_ux",
+    "from": "2026-08-31.32",
+    "type": "engine_only_freshness_buildings_and_store_value",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Preserves all existing LOCAL STATE and adds optional preference notebooks/records only when used. Adds mandatory user-owned preferences behavior with WORKSPACE, ACCOUNT and SESSION scopes; provider-neutral human-readable preference notebooks; conservative explicit-over-inferred learning; local tool-feedback capture; user inspect/change/revoke/reset controls; and strict evidence/privacy/safety/account-isolation dominance. Durable preference artifacts are additive optional LOCAL STATE under workspace schema 2.3."
+    "notes": "Preserves all existing LOCAL STATE. Adds cross-domain monotonic/volatile freshness rules, prerequisite-aware building progression, research queue identity/timer separation, and account/price-aware event-store offer evaluation. New freshness metadata is optional and additive under existing workspace schema 2.3."
   },
-  "notes": "Personalized UX only. No Cloudflare Worker, installer sentence, provider-authorization, account identity or workspace-schema-version change. Engine API 1.0, workspace schema 2.3 and all existing LOCAL STATE are preserved."
+  "notes": "Gameplay-model quality release. No Cloudflare Worker, installer sentence, provider authorization, account identity or workspace schema change. Engine API 1.0, workspace schema 2.3 and all existing LOCAL STATE are preserved."
 }
