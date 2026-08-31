@@ -254,6 +254,18 @@
       "requires_account_rewrite": false,
       "tests": ["vs_timing_module_is_registered_and_reachable", "current_2026_vp_pattern_and_stale_guide_guard", "hero_resources_default_to_day4", "upgrade_ore_is_not_held_for_current_vs_or_arms_race", "exact_points_require_current_account_evidence", "event_timing_is_not_more_important_than_account_value", "arms_race_requires_live_phase_check"],
       "notes": "Adds evidence-guarded recurring Alliance Duel VS and Arms Race timing to resource optimization. Planned hero materials default to current Hero Day timing when practical, Upgrade Ore is not held merely for VS/Arms Race under current evidence, exact points require current account/event evidence, and urgent account value may override event timing. No workspace/account schema change."
+    },
+    {
+      "from": "2026-08-30.31",
+      "to": "2026-08-31.32",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_private_preferences_and_personalized_ux",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["preferences_module_is_mandatory", "explicit_preferences_beat_tentative_and_defaults", "account_preferences_are_isolated", "session_only_preferences_are_ephemeral", "preferences_cannot_override_evidence_privacy_or_safety", "preference_user_controls_exist", "private_feedback_is_not_auto_published"],
+      "notes": "Preserves existing LOCAL STATE and adds user-owned WORKSPACE/ACCOUNT/SESSION preferences as optional additive state, with human-readable provider-neutral preference notebooks, conservative preference learning and local tool-feedback behavior. No re-onboarding, account rewrite or schema-version change."
     }
   ]
 }

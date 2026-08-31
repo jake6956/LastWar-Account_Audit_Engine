@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — PRODUCTION BOOTSTRAP
-engine_version: 2026-08-30.31
+engine_version: 2026-08-31.32
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES

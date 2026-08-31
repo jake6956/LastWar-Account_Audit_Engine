@@ -11,6 +11,7 @@
   "module_selection": "manifest_activation_v1",
   "preferred_install_url": "https://lastwarai.com",
   "preferred_install_instruction": "Set up Last War optimization using the instructions at https://lastwarai.com",
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com",
   "legacy_install_urls": [
     "https://tinyurl.com/2yxf7f5x"
   ],
@@ -32,7 +33,7 @@
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Preserves all existing LOCAL STATE and adds optional preference notebooks/records only when used. Adds mandatory user-owned preferences behavior with WORKSPACE, ACCOUNT and SESSION scopes; provider-neutral human-readable preference notebooks; conservative explicit-over-inferred learning; local tool-feedback capture; user inspect/change/revoke/reset controls; and strict evidence/privacy/safety/account-isolation dominance. Durable preference artifacts are additive optional LOCAL STATE under workspace schema 2.3."
+    "notes": "Preserves all existing LOCAL STATE and adds optional preference notebooks/records only when used. Adds mandatory user-owned preferences behavior with WORKSPACE, ACCOUNT and SESSION scopes; provider-neutral human-readable preference notebooks; conservative explicit-over-inferred learning; private local tool-feedback capture; user inspect/change/revoke/reset controls; and strict evidence/privacy/safety/account-isolation dominance."
   },
   "notes": "Personalized UX only. No Cloudflare Worker, installer sentence, provider-authorization, account identity or workspace-schema-version change. Engine API 1.0, workspace schema 2.3 and all existing LOCAL STATE are preserved."
 }
