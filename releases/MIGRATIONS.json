@@ -261,11 +261,11 @@
       "schema_from": "2.3",
       "schema_to": "2.3",
       "type": "engine_only_private_preferences_and_personalized_ux",
-      "local_state_action": "preserve_and_optionally_add_preferences",
+      "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
       "tests": ["preferences_module_is_mandatory", "explicit_preferences_beat_tentative_and_defaults", "account_preferences_are_isolated", "session_only_preferences_are_ephemeral", "preferences_cannot_override_evidence_privacy_or_safety", "preference_user_controls_exist", "private_feedback_is_not_auto_published"],
-      "notes": "Adds user-owned WORKSPACE/ACCOUNT/SESSION preferences, human-readable provider-neutral preference notebooks, conservative preference learning and local tool-feedback behavior. Preferences are additive optional LOCAL STATE within schema 2.3 and do not require re-onboarding or account rewrite."
+      "notes": "Preserves existing LOCAL STATE and adds user-owned WORKSPACE/ACCOUNT/SESSION preferences as optional additive state, with human-readable provider-neutral preference notebooks, conservative preference learning and local tool-feedback behavior. No re-onboarding, account rewrite or schema-version change."
     }
   ]
 }
