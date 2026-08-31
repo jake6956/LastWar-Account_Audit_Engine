@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-08-30.27
+engine_version: 2026-08-30.31
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -162,17 +162,26 @@ For missing/stale/contested/patch-sensitive/event/store-dynamic/consequential me
 MARGINAL ROI / RESOURCE LANES
 Optimize real combat effectiveness, not displayed power. Compare marginal combat value, cost/scarcity, breakpoint value, account-wide applicability, squad importance, meta relevance, opportunity cost and confidence. Maintain independent targets for Upgrade Ore, Skill Medals, EW shards, hero shards, research queues, Drone/components/chips, Decorations, Profession/global bonuses, season systems and volatile store/event currencies.
 
+VS / ALLIANCE DUEL & ARMS RACE TIMING
+Event timing optimizes WHEN to execute a good account upgrade; it does not turn a bad upgrade into a good one. Current maintained 2026 references support this Alliance Duel pattern, subject to current in-game verification: Day 1 Monday Radar Training 1 VP; Day 2 Tuesday Base Expansion / City Building 1 VP; Day 3 Wednesday Age of Science / Tech Research 1 VP; Day 4 Thursday Train Heroes / Hero Training 2 VP; Day 5 Friday Total Mobilization 3 VP; Day 6 Saturday Enemy Buster 4 VP; Sunday preparation/no normal VS scoring. Older guides may show 1/2/2/2/2/4; current direct game evidence outranks either public table.
+Day 1 commonly rewards radar, stamina, gathering, Drone resources/chip chests and can reward Hero EXP. Day 2 commonly rewards building progression/construction speedups plus qualifying trucks/tasks/survivor recruitment. Day 3 commonly rewards research, Research Speedups, Valor Badges and Drone Component chests. Day 4 commonly rewards Hero Shards, Hero EXP, Skill Medals, recruitment tickets and eligible Exclusive Weapon shards. Day 5 commonly rewards troop training/promotions and multiple speedup/progression categories. Day 6 centers on PvP kills plus current eligible healing/remaining-speedup/truck/task sources.
+Default timing for planned Skill Medals, Hero Shards, meaningful Hero EXP, recruitment tickets and eligible EW shards is Day 4 / Train Heroes when waiting is practical. Hero EXP can also score on Day 1 in current references, but normally preserve major discretionary EXP for the bundled Hero Day opportunity unless a deliberate Day-1 need is stronger. Training Speedups default to Day 5; Healing Speedups default to Day 6 when the current event panel rewards them. Construction/research/general speedups may have more than one scoring day, so choose based on account progression, personal chests, current alliance matchup and current VP value rather than blindly emptying inventory on the first eligible day.
+Current recurring-event evidence does not show Upgrade Ore / ordinary gear leveling as a VS or Arms Race scoring action. Do not hold Ore merely for VS or Arms Race; spend it when the best gear breakpoint is strategically ready. Reverify if the current event task panel changes.
+Before a large discretionary spend, check the current Arms Race phase when practical and double-dip when the same planned action scores both events. Do not assume one universal Arms Race phase schedule from public guides. Confirm the new VS day/task panel is visibly active before dumping saved resources after reset.
+Never promise a universal VS point total from a public table. Alliance Duel research and patches can change per-action scoring. For exact estimates prefer the user's current VS task panel/screenshot plus relevant Alliance Duel research/multiplier; show arithmetic from supported inputs and label assumptions.
+URGENCY OVERRIDE: event timing is not a hard prohibition. Spend off-day when an immediate battlefield, duel, boss, season milestone, expiring opportunity, queue efficiency or other material benefit outweighs the lost event score. State the tradeoff briefly. Do not optimize a player's account solely for weekly VS score.
+
 GEAR / UPGRADE ORE
-Treat gear as shared transferable pool plus preset assignments unless mechanics prove otherwise. Track type, level, promotions/stars/segments, Mythic state, effects, current assignment and next breakpoint/cost. Prefer meaningful breakpoints and concentrated offense/defense based on combat role over aesthetic equalization.
+Treat gear as shared transferable pool plus preset assignments unless mechanics prove otherwise. Track type, level, promotions/stars/segments, Mythic state, effects, current assignment and next breakpoint/cost. Prefer meaningful breakpoints and concentrated offense/defense based on combat role over aesthetic equalization. Current evidence shows no VS or Arms Race scoring for Upgrade Ore/ordinary gear leveling; do not hold Ore for those events unless current in-game evidence changes.
 
 SKILL MEDALS
-Treat medals as scarce. Rank by hero role, tactical/passive impact, multiplicative value, frontline survival, squad priority, level and cost. Give one current target, stop point and next target; bank leftovers rather than sprinkle.
+Treat medals as scarce. Rank by hero role, tactical/passive impact, multiplicative value, frontline survival, squad priority, level and cost. Give one current target, stop point and next target; bank leftovers rather than sprinkle. After selecting the right upgrade, default discretionary spending to VS Day 4 / Train Heroes when waiting is practical; urgent account value may override timing.
 
 EXCLUSIVE WEAPONS
-EW shards are scarce. Optimize milestone/breakpoint effects; avoid splitting universal shards when one superior breakpoint exists.
+EW shards are scarce. Optimize milestone/breakpoint effects; avoid splitting universal shards when one superior breakpoint exists. When current Hero Day rules reward eligible EW shards, default planned spending to Day 4 unless an urgent breakpoint is worth the event-score tradeoff.
 
 HERO SHARDS / STARS / WALL OF HONOR
-Track stars and WoH separately. Prioritize milestones that materially change skills/role/unlocks and concentrate WoH where actual use/milestones justify it.
+Track stars and WoH separately. Prioritize milestones that materially change skills/role/unlocks and concentrate WoH where actual use/milestones justify it. Default planned Hero Shard/star spending to VS Day 4 / Train Heroes when practical; do not use scarce shards on a weaker target merely to manufacture event points. Meaningful discretionary Hero EXP likewise defaults to Day 4 despite current Day-1 eligibility unless there is a deliberate stronger reason.
 
 PRESETS / FORMATION
 Keep default and specialist presets separate. Establish one orientation convention per account. Front/back role usually matters more than lateral placement; never silently reverse orientation.

@@ -1,0 +1,89 @@
+LWAI MODULE — ALLIANCE DUEL VS & ARMS RACE TIMING
+module_id: domain.events-vs-arms-race
+module_version: 2026-08-30.31.1
+load_class: domain_on_demand
+state_scope: shared_engine;active_account_reads
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+PURPOSE
+Add recurring-event timing to ordinary account optimization. A strategically correct upgrade can still be poorly timed if the same planned progression would earn meaningful Alliance Duel VS and/or Arms Race rewards by waiting briefly. Event timing is an optimization layer, not permission to make bad account upgrades for points.
+
+EVIDENCE / FRESHNESS
+Alliance Duel task categories, Victory Point weighting, later-game eligible systems, per-action score values and Arms Race phases can change with patches, unlocks, Alliance Duel research and server/account state. Current maintained 2026 references support the weekly pattern below, but current in-game event panels and direct screenshots outrank public guides. Reverify when the user asks for exact points, when a large/irreversible spend depends on the answer, or when current in-game evidence conflicts.
+
+CURRENT 2026 WEEKLY PATTERN
+Treat this as current context, not an immutable game constant:
+- Day 1 Monday — Radar Training — 1 VP.
+- Day 2 Tuesday — Base Expansion / City Building — 1 VP.
+- Day 3 Wednesday — Age of Science / Tech Research — 1 VP.
+- Day 4 Thursday — Train Heroes / Hero Training — 2 VP.
+- Day 5 Friday — Total Mobilization — 3 VP.
+- Day 6 Saturday — Enemy Buster — 4 VP.
+- Sunday — preparation; no normal Alliance Duel scoring day.
+Older guides may show 1/2/2/2/2/4. Do not silently use that older weighting when current 2026 evidence or the user's game shows the newer 1/1/1/2/3/4 pattern.
+
+DAY 1 — RADAR TRAINING
+Current categories commonly include Radar Tasks, stamina, gathering, Drone Combat Data, Drone Parts, Drone Skill Chip/Data Chip chests where unlocked, and Hero EXP.
+Prepare by stacking radar rewards and timing gathers when supported by the current event.
+Hero EXP can score on Day 1 in current references, but meaningful discretionary EXP spending normally belongs on Day 4 because Hero Day bundles EXP with the rest of hero progression. Use Day 1 EXP only for a deliberate scoring/progression reason.
+
+DAY 2 — BASE EXPANSION / CITY BUILDING
+Current categories commonly include Construction Speedups, building power gained, qualifying high-rarity trade trucks, Legendary Secret Tasks, and Survivor recruitment.
+Because current weighting is only 1 VP, do not automatically exhaust weeks of construction resources to increase an already-secure margin. Balance personal chest value, account progression, current matchup and the stronger Friday opportunity.
+
+DAY 3 — AGE OF SCIENCE / TECH RESEARCH
+Current categories commonly include Research Speedups, technology power gained, Valor Badge spending, Radar Tasks in some current versions, and Drone Component chests.
+Do not confuse Drone Component chests with Drone Skill Chip/Data Chip chests; current references assign those to different days.
+Use Valor Badge/research progression that the account actually needs. Align with a compatible Arms Race Tech Research phase when practical.
+
+DAY 4 — TRAIN HEROES / HERO TRAINING
+Current categories commonly include hero recruitment, Hero EXP, Hero Shards by rarity, Skill Medals, and eligible Exclusive Weapon shards.
+DEFAULT TIMING RULE: bank planned Skill Medal, Hero Shard, Hero EXP, recruitment-ticket and eligible Exclusive Weapon shard spending for Day 4 when waiting does not materially harm an urgent objective.
+Do not spend scarce shards/medals on an inferior or irrelevant hero merely to manufacture VS points. First choose the correct account upgrade, then time that same upgrade.
+
+DAY 5 — TOTAL MOBILIZATION
+Current categories commonly include troop training/promotions, Training Speedups, Construction Speedups/building power, Research Speedups/technology power, Radar activity, and eligible later-game progression systems.
+Current 2026 weighting makes Friday the highest-value noncombat VS day at 3 VP. Training resources normally belong here. Construction/research/general speedups left from earlier 1-VP days can be held for Friday when matchup, personal chests, Arms Race overlap and progression timing justify it.
+Use troop promotion/waterfall strategies only after validating the player's barracks/troop state and current scoring rules; do not recommend low-value troop churn blindly.
+
+DAY 6 — ENEMY BUSTER
+Current categories include PvP troop kills, with matched-rival troops commonly receiving a much better multiplier than unrelated qualifying targets, plus healing and several noncombat scoring sources such as remaining speedups, qualifying trucks and Legendary Secret Tasks.
+Scout before attacking; empty targets do not produce kill value. Coordinate and shield based on account/alliance strategy. Current direct event text controls exact rival multipliers and eligible noncombat actions.
+
+ARMS RACE DOUBLE-DIP
+Before a large discretionary spend that also has an Arms Race category, check the current Arms Race phase when practical. If the planned VS action can score in both events without harming the account objective, prefer the overlap.
+Do not assume one universal Arms Race phase schedule from public guides. Current in-game phase/timer is authoritative.
+
+RESET / ACTIVATION GUARD
+Do not dump saved resources merely because the server clock crossed reset. Confirm the new VS day/task panel is visibly active first. Some maintained community references describe a short post-reset non-scoring window; treat the visible event state, not a memorized minute count, as authority.
+
+EXACT-SCORE RULE
+Never promise a universal point total from a public points table. Alliance Duel research and game changes can alter per-action scoring. When the user asks `how many VS points will this spend make?`, prefer:
+1. current user screenshot/direct VS task panel;
+2. current account Alliance Duel research/multiplier where relevant;
+3. current official/in-game event text;
+4. corroborated current public references only as fallback.
+Show arithmetic from supported inputs and label assumptions.
+
+RESOURCE TIMING DEFAULTS
+- Upgrade Ore / ordinary gear leveling: current recurring-event evidence does not show VS or Arms Race scoring. Do not hold Ore merely for those events; spend when the gear breakpoint is strategically right. Reverify if current event tasks change.
+- Skill Medals: default Day 4.
+- Hero Shards: default Day 4.
+- Hero EXP: default Day 4 despite current Day-1 eligibility, unless there is a deliberate reason to score Day 1.
+- Recruitment tickets: default Day 4.
+- Eligible Exclusive Weapon shards: default Day 4.
+- Construction Speedups: Day 2 or Day 5 depending progression, matchup and reward opportunity.
+- Research Speedups / Valor Badges: Day 3; leftover/general opportunity may favor Day 5 where current rules permit.
+- Training Speedups: default Day 5.
+- Healing Speedups: default Day 6 when current rules reward them.
+- Radar/gathering/drone chip/component resources: use the current day-specific event panel; do not infer chip versus component timing from item names alone.
+
+URGENCY OVERRIDE
+Event timing never becomes a hard prohibition. Recommend an off-day spend when an immediate battlefield, duel, boss, season milestone, expiring unlock/opportunity, queue efficiency or other material benefit outweighs the lost event score. State the tradeoff briefly: `best upgrade now; waiting until <event> would add event points but costs <material downside>.`
+
+WEEKLY STRATEGY
+Alliance VP value, personal chests, league/tier rewards, current score margin and future-day reserves all matter. Do not optimize a player's account solely for weekly VS score. Preserve long-term combat/progression value and use event timing to extract extra rewards from upgrades the account should make anyway.
+
+SOURCE BASIS
+Current research should include current in-game/official evidence when available and maintained community references such as LastWarVault's 2026 Alliance Duel material and LastWarTutorial's VS/Arms Race timing guidance. Older community tables are historical context, not authority. Apply the global epistemic-integrity contract.
