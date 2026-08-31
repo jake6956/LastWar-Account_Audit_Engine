@@ -12,6 +12,8 @@ Applies to: the default Worker entrypoint serving `/`, `/install`, and `/config.
 
 The canonical Worker source is `infrastructure/cloudflare-worker.js`. The canonical deploy/cache configuration is `wrangler.jsonc`. Do not ask an operator to rediscover the Worker name or infer it from the zone route table.
 
+Dashboard-managed Custom Domain routing is intentionally preserved by omitting `route`/`routes` from Wrangler. Because Wrangler otherwise defaults to publishing the Worker on `workers.dev`, the canonical config must explicitly set `workers_dev = false` and `preview_urls = false`. Production should be exposed through the recorded custom domain, not an accidental public `*.workers.dev` alias or version-preview endpoint.
+
 ## Invariant
 
 The mutable LastWarAI.com configuration entrypoint is a gateway/router. It must execute for every request so it can resolve the current GitHub Production `main` SHA before selecting exact immutable engine content.
@@ -24,8 +26,11 @@ The Worker may continue caching exact-SHA GitHub `BOOTSTRAP_FULL.txt` subrequest
 
 - Worker service: `lwai-bootstrap`;
 - custom domain: `lastwarai.com`;
+- dashboard-managed Custom Domain retained; zone Workers Routes may remain empty;
+- `workers.dev` production alias disabled (`workers_dev = false`);
+- Worker Preview URLs disabled (`preview_urls = false`);
 - default Worker entrypoint: Workers Caching disabled;
-- `wrangler.jsonc`: `name = lwai-bootstrap`, `main = infrastructure/cloudflare-worker.js`, `cache.enabled = false`;
+- `wrangler.jsonc`: `name = lwai-bootstrap`, `main = infrastructure/cloudflare-worker.js`, `workers_dev = false`, `preview_urls = false`, `cache.enabled = false`;
 - mutable root/config/install responses: `Cache-Control: no-store, no-cache, must-revalidate, max-age=0` plus CDN/Surrogate no-store headers;
 - live GitHub branch-ref subrequest: uncached;
 - exact-SHA engine source subrequest: immutable long-lived cache permitted;
@@ -53,6 +58,6 @@ Normal engine/gameplay releases must not require Worker source edits, dashboard 
 
 `infrastructure/cloudflare-worker.js` contains transport/provenance/discovery behavior only. It must not absorb Last War gameplay logic, provider onboarding, account strategy, schema-specific user behavior, or current engine-version literals. Those belong to the centrally versioned engine/modules.
 
-`wrangler.jsonc` is deployment configuration, not gameplay behavior. Keep the worker identity and cache contract there; do not add provider/account/optimization policy.
+`wrangler.jsonc` is deployment configuration, not gameplay behavior. Keep the worker identity, custom-domain routing posture, and cache contract there; do not add provider/account/optimization policy.
 
 If the live Cloudflare account differs from this contract, the live deployment must be corrected before OO-009 can be marked Production.
