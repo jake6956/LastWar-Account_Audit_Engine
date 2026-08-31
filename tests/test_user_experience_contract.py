@@ -6,6 +6,14 @@ ROOT = Path(__file__).resolve().parents[1]
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 PUBLIC_URL = "https://lastwarai.com"
 LEGACY_URL = "https://tinyurl.com/2yxf7f5x"
+FIRST_RUN_PROMPT = (
+    "Would you like me to save your LWAI setup in your own cloud storage so I can pick up "
+    "where we left off in future chats? Recommended, but optional. Reply yes or no."
+)
+COMPACT_REASSURANCE = (
+    "LWAI will use only its dedicated Last War/LWAI workspace; everything else in your connected "
+    "storage is off-limits. Connect through the provider/ChatGPT UI, and never paste passwords or login codes here."
+)
 
 
 def read(path: str) -> str:
@@ -33,7 +41,7 @@ class UserExperienceContractTests(unittest.TestCase):
         self.assertIn("release.resolver", self.loader)
         self.assertIn("release.updater", self.loader)
         for forbidden in (
-            "Before we build your account",
+            "save your LWAI setup",
             "Google Drive",
             "Allow always",
             "screenname",
@@ -70,26 +78,35 @@ class UserExperienceContractTests(unittest.TestCase):
         self.assertIn("ask the user to paste another prompt", lower)
         self.assertIn(LIVE_REF, self.readme)
 
-    def test_first_run_cloud_question_lives_in_modules_not_loader(self):
-        question = "would you like me to use private cloud storage"
-        self.assertNotIn(question, self.loader.lower())
+    def test_first_run_cloud_question_is_compact_and_staged(self):
+        self.assertNotIn(FIRST_RUN_PROMPT, self.loader)
         for body in (self.full, self.guidance, self.persistence, self.contract):
-            self.assertIn(question, body.lower())
+            self.assertIn(FIRST_RUN_PROMPT, body)
+        for forbidden in ("OAuth", "cookies", "browse, read", "access/refresh tokens"):
+            self.assertNotIn(forbidden, FIRST_RUN_PROMPT)
+        self.assertIn("not a security briefing", self.persistence.lower())
+        self.assertIn("not a security briefing", self.guidance.lower())
 
     def test_cloud_yes_requires_explicit_provider_choice(self):
         combined = "\n".join((self.full, self.guidance, self.persistence, self.storage, self.bootstrap, self.contract)).lower()
         self.assertIn("provider", combined)
         self.assertTrue("never default to google drive" in combined or "never silently choose google drive" in combined)
 
+    def test_compact_reassurance_occurs_after_provider_selection(self):
+        for body in (self.full, self.guidance, self.storage, self.contract, self.storage_contract):
+            self.assertIn(COMPACT_REASSURANCE, body)
+        for body in (self.guidance, self.persistence, self.storage, self.contract, self.storage_contract):
+            lower = body.lower()
+            self.assertRegex(lower, r"after .*provider|only after .*provider")
+
     def test_google_drive_permission_coaching_includes_allow_always(self):
         for body in (self.full, self.guidance, self.storage, self.contract):
             self.assertIn("Allow always", body)
             self.assertIn("Google Drive", body)
 
-    def test_workspace_boundary_is_absolute_and_user_visible(self):
-        combined = "\n".join((self.full, self.storage, self.contract, self.storage_contract, self.readme))
+    def test_workspace_boundary_remains_absolute_internally(self):
+        combined = "\n".join((self.full, self.storage, self.storage_contract))
         self.assertIn("ABSOLUTE WORKSPACE BOUNDARY", self.storage)
-        self.assertIn("LWAI is explicitly restricted to its own Last War workspace", combined)
         self.assertIn("outside that workspace", combined)
         self.assertIn("other ChatGPT/app workspaces", combined)
         self.assertIn("broader connector", combined)
@@ -98,18 +115,18 @@ class UserExperienceContractTests(unittest.TestCase):
         self.assertIn("Workspace-only guardrail is active", self.storage)
 
     def test_workspace_boundary_prohibits_unrelated_storage_actions(self):
-        lower = "\n".join((self.storage, self.storage_contract, self.contract)).lower()
+        lower = "\n".join((self.storage, self.storage_contract)).lower()
         for verb in ("read", "list", "search", "inspect", "modify", "move", "rename", "delete"):
             self.assertIn(verb, lower)
         self.assertIn("outside", lower)
         self.assertIn("off-limits", lower)
         self.assertIn("do not perform provider-wide", lower)
 
-    def test_credentials_are_never_requested(self):
+    def test_credentials_are_never_requested_internally(self):
         combined = "\n".join((self.full, self.storage, self.contract, self.storage_contract)).lower()
         for token in ("password", "oauth", "token", "cookies", "credentials"):
             self.assertIn(token, combined)
-        self.assertTrue("never asks" in combined or "never request" in combined)
+        self.assertTrue("never asks" in combined or "never request" in combined or "never paste" in combined)
 
     def test_connected_is_recheck_trigger_not_proof(self):
         for body in (self.full, self.guidance, self.persistence, self.storage, self.contract):
