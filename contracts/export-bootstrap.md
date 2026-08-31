@@ -1,36 +1,39 @@
 # Export & Bootstrap Contract
 
-Version: 2026-08-30.25
+Version: 2026-08-31.34
 
 ## Purpose
-Define exactly what `export yourself` means, support one-line remote bootstrap installation, and make a fresh LWAI deployment turnkey while degrading gracefully when tools/connectors are unavailable.
+Define exactly what `export yourself` means, support one-line public installation, and keep fresh LWAI setup turnkey while degrading safely when tools/connectors are unavailable.
 
 ## Preferred end-user install
 The default public install experience is one line:
 
 `Set up Last War optimization using the instructions at https://lastwarai.com`
 
-`https://lastwarai.com` is the permanent first-party human-facing entrypoint. It serves a tiny sanitized Stage-0 locator. The locator is transport/discovery only and does not establish the current engine version.
+`https://lastwarai.com` is the permanent first-party public configuration endpoint. For a fresh install, Cloudflare resolves the live GitHub Production `main` commit server-side, retrieves `engine/BOOTSTRAP_FULL.txt` from that exact immutable commit, adapts only the already-completed generic Stage-0 discovery section, and returns the complete sanitized configuration in the same response.
 
-After retrieving the locator, the assistant resolves the live GitHub Production `main` branch ref at `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`, obtains its current `commit.sha`, then retrieves `engine/BOOTSTRAP.txt` and all trusted engine material from that exact immutable commit.
+The user's AI is not expected to fetch a second engine URL, retrieve GitHub JSON, locate a commit SHA, or assemble the modular runtime manually during normal first installation.
 
-The previously circulated `https://tinyurl.com/2yxf7f5x` is retained only as a legacy compatibility alias. New sharing must use LastWarAI.com. A third-party shortener, preview/interstitial, redirect, repository cache, raw mutable `main`, search index or model memory is never source/version authority.
+GitHub `main` remains the underlying Production source/version authority. The public response identifies the resolved commit and explicitly permits independent verification. The previously circulated `https://tinyurl.com/2yxf7f5x` is retained only as a legacy compatibility alias. New sharing uses LastWarAI.com. A third-party shortener, preview/interstitial, redirect, repository cache, mutable raw `main`, search index or model memory is never source/version authority.
 
-## Remote bootstrap contract
-When a user explicitly asks to set up/install/initialize Last War optimization using the public installer URL, that instruction authorizes retrieval and use of the public sanitized Stage-0 locator. The assistant should:
-1. fetch the first-party locator rather than asking the user to paste a larger bootstrap;
-2. read the live GitHub `main` branch ref and obtain a valid current commit SHA;
-3. fetch `engine/BOOTSTRAP.txt` from that exact SHA;
-4. confirm pinned release content self-identifies as sanitized LWAI Production and excludes account state;
-5. execute startup behavior rather than stopping at a documentation summary;
-6. keep all trusted reads in one startup/update transaction pinned to that same exact commit.
+## First-party installation contract
+When a user explicitly asks to set up/install/initialize LWAI using the public installer URL:
+1. retrieve LastWarAI.com rather than asking the user to paste a larger bootstrap;
+2. consume the returned complete transparent sanitized configuration;
+3. verify its declared Production/privacy identity and resolved GitHub commit when the host supports verification;
+4. execute startup behavior rather than stopping at a documentation summary;
+5. discover/resume supported existing LWAI state before genuine new-user onboarding.
 
-Fallback order:
-1. first-party `https://lastwarai.com` Stage-0 locator;
-2. canonical GitHub live-ref resolver when its coordinates are already known from trusted LWAI material;
-3. last-known-good compatible local engine/module state when available;
-4. exact-commit canonical GitHub `BOOTSTRAP_FULL.txt` after a live commit is resolved;
-5. manual full-bootstrap transfer only when remote retrieval is unavailable.
+The initial public response requires no second GitHub or engine fetch. Direct GitHub exact-commit resolution remains valid for runtime update/recovery, independent verification, and manual/direct modular operation.
+
+## Direct/modular and fallback order
+For direct/recovery operation when the first-party complete response is not available:
+1. resolve canonical GitHub live `main` to a valid commit SHA C;
+2. pin all candidate reads to C;
+3. use `engine/BOOTSTRAP.txt` for the <=4 KiB direct/modular Stage-1 loader and MANIFEST-driven modules;
+4. use exact-C `engine/BOOTSTRAP_FULL.txt` as the complete standalone fallback;
+5. use last-known-good compatible local ENGINE when current Production cannot be safely resolved;
+6. manual full-bootstrap transfer is the final no-remote-retrieval path.
 
 A supplied legacy alias/cache may be ignored if unavailable, stale, preview-gated or inconsistent. Never repair transport failure by changing user-local account state.
 
@@ -54,7 +57,9 @@ The command must:
 This exact command is part of the public compatibility surface. Release CI must fail if the thin loader, standalone fallback, release bootstrap module, or this contract loses it. The public one-line installer remains a separate stable bootstrap path and must not be multiplied merely to support updates.
 
 ## Mandatory bootstrap content
-The single-file engine export must contain: version/purpose; evidence hierarchy; state ledger; source-vs-derived separation; self-healing reconciliation; shared gear/preset model; independent resource lanes; marginal ROI; research dependencies; all domain playbooks; formation/orientation discipline; screenshot batching; empirical battle loop; phased onboarding; optional cloud persistence; cloud-neutral schema; reload/staleness; capability fallbacks; command vocabulary; health/regression tests; sanitization; upstream/local-state separation; provider adapters; optional Runtime Session provenance rules; Gold Assets rules; release/update behavior; remote-bootstrap behavior; limitations; fresh-start behavior.
+The single-file engine export must contain: version/purpose; evidence hierarchy; state ledger; source-vs-derived separation; self-healing reconciliation; shared gear/preset model; independent resource lanes; marginal ROI; research dependencies; all domain playbooks; formation/orientation discipline; screenshot batching; empirical battle loop; phased onboarding; optional cloud persistence; cloud-neutral schema; reload/staleness; capability fallbacks; command vocabulary; health/regression tests; sanitization; upstream/local-state separation; provider adapters; optional Runtime Session provenance rules; Gold Assets rules; release/update behavior; public-install behavior; limitations; fresh-start behavior.
+
+The standalone export must preserve the current UX contract: a genuinely new user gets one compact benefit-oriented persistence yes/no; if cloud is chosen, explicit provider selection precedes one compact workspace-only/no-password reassurance and provider authorization. The exhaustive internal workspace boundary remains authoritative but is not dumped into the initial choice.
 
 ## Runtime-session provenance export boundary
 Sanitized engine exports may define the generic `runtime_session_id` / optional `host_platform` / optional `host_session_ref` schema and rules, but must never contain an actual consumer Runtime Session row, actual host conversation/session reference, conversation URL, or private provenance mapping. Host references are private observability metadata only and are never required for installation, onboarding, account recovery or optimization.
@@ -68,7 +73,7 @@ Fallbacks:
 - no cloud -> chat + periodic exports;
 - read-only cloud -> reference only;
 - writable files without sheets -> JSON/CSV/Markdown/TXT;
-- no web -> remote URL installation cannot self-fetch; use manual standalone bootstrap and mark volatile mechanics UNVERIFIED;
+- no web -> use a manually supplied standalone bootstrap and mark volatile mechanics UNVERIFIED;
 - no automation -> manual/return-time preflight only;
 - no image understanding -> minimal transcription request.
 
@@ -82,10 +87,10 @@ For each update: parse supported facts -> compare canonical state -> update unam
 Persistent workspace is canonical when available; conversation is cache. `reload LWAI` reads operating instructions, account context/recovery state, Hot Cache, Corrections, State Health, relevant domain state and recent material Change Log entries, reconciles, then resumes. Consequential decisions trigger the smallest relevant preflight automatically. Optional host-session provenance never changes active-account selection or recovery ordering.
 
 ## Distribution privacy and provenance
-The first-party installer keeps the normal public prompt clean while still resolving to public GitHub Production. This is not anonymity. Public provenance must remain truthful and discoverable; never falsify source identity.
+The first-party installer keeps the normal public prompt clean while still identifying public GitHub provenance and the exact resolved Production commit. This is not anonymity. Public provenance must remain truthful and discoverable; never falsify source identity.
 
 ## Sanitization
 Remove player/account names, alliance/server identifiers, exact powers/inventories/current targets, personal spending history, diplomacy/politics, private screenshots, account-specific corrections, private cloud IDs/URLs, actual Runtime Session/host-session references, actual checkpoint/journal rows and auth details. Intentional public Production/Gold Asset/install endpoints and generic schema field names are allowed.
 
 ## Validation
-A bootstrap is healthy only if a complete novice can initialize from the LastWarAI.com one-line instruction when web access exists, or from the standalone bootstrap when it does not, decline cloud storage, and still receive phased onboarding and full advisory behavior. Remote distribution must verify the first-party locator, live-ref/exact-commit handoff, release identity/version parity with `releases/LATEST.json`, and independence from third-party shorteners. Release validation must also prove that `refresh engine` remains present with canonical-update/local-state-preservation semantics across both bootstrap forms and the release bootstrap module.
+A bootstrap is healthy only if a complete novice can initialize from the LastWarAI.com one-line instruction with one complete public configuration response, or from the standalone bootstrap when remote retrieval is unavailable, decline cloud storage, and still receive phased onboarding and full advisory behavior. Release validation must also prove immediate public SHA parity with canonical GitHub Production, compact staged persistence/security UX, stable `refresh engine` semantics, local-state preservation, and independence from third-party shorteners.

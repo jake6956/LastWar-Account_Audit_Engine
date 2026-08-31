@@ -1,5 +1,74 @@
 # Production Changelog
 
+## 2026-08-31.34
+
+- Compacted genuinely-new-user persistence onboarding into one benefit-oriented cloud-vs-session choice; the initial question no longer dumps provider internals, storage-action lists, OAuth/token/cookie terminology, or credential boilerplate.
+- Preserved the full workspace-only storage boundary internally and moved one short workspace/no-password reassurance to the correct point: after explicit cloud/provider selection and immediately before authorization.
+- Added deterministic UX regressions proving the compact first-run question and deferred reassurance while preserving explicit provider choice, capability verification, session-only continuation, and no-dead-air handoff.
+- Made current public architecture/deployment/quick-install/beta documentation describe the actual single-response LastWarAI.com transport instead of obsolete locator/TinyURL/multi-hop behavior.
+- Added measured instruction-footprint CI telemetry for Stage 1, mandatory modules, optional modules and `BOOTSTRAP_FULL`, including growth deltas and duplication counts; retained the existing hard 4 KiB Stage-1 orchestration boundary.
+- Added an executable infrastructure boundary keeping `infrastructure/cloudflare-worker.js` transport/provenance/discovery-only.
+- Recorded the actual Cloudflare service topology: Worker `lwai-bootstrap`, custom domain `lastwarai.com`, dashboard control surface Workers & Pages -> `lwai-bootstrap`; the zone-level Workers Routes table is not the deployment control surface.
+- Added source-controlled `wrangler.jsonc` for `lwai-bootstrap` with Workers Caching disabled (`cache.enabled=false`) while deliberately leaving custom-domain routing dashboard-managed.
+- Added a cache deployment/release contract: mutable configuration must execute the Worker every request; exact-SHA engine content may remain immutable-cached; one migration purge is required after disabling pre-Worker caching, but ordinary future releases must not require manual Worker edits or purges.
+- Strengthened public endpoint validation so stale LastWarAI.com content fails release verification rather than being accepted as eventual consistency.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE, account identity, installer sentence, and Last War gameplay behavior.
+
+## 2026-08-31.33
+
+- Added cross-domain state-freshness rules distinguishing invariant/correction, monotonic progression, and volatile state.
+- Queue identity and remaining-time observations now age independently; stale countdowns do not automatically invalidate durable research/construction identity.
+- Added minimum-evidence refresh behavior so LWAI asks only for the volatile/current facts the present decision actually needs instead of requesting broad repeat screenshots.
+- Added prerequisite-aware building progression that prioritizes HQ/system gates, next-HQ runway, account-wide/combat value, and only then filler/economy cleanup.
+- Added account-aware Black Market/event-store evaluation using live item/quantity/price/discount context, bottlenecks, breakpoints, unit price, reserve/carry-over evidence, and concise BUY/CONDITIONAL/SKIP output.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE, installer sentence, provider authorization and Cloudflare Worker source.
+
+## 2026-08-31.32
+
+- Added private user-owned preference notebooks with WORKSPACE, ACCOUNT, and SESSION scopes.
+- Explicit user preferences outrank tentative learned preferences and defaults; account preferences remain isolated by immutable `account_id`.
+- Preferences may shape verbosity, response shape, capture cadence, proactive behavior, terminology and strategically valid choices, but never override current evidence, privacy/security, account isolation, safety/recovery, or current explicit intent.
+- Consequential/sensitive preferences such as spending willingness, privacy/permissions, destructive actions and irreversible strategic commitments require explicit user direction.
+- Private tool/product feedback remains local and is never automatically published to GitHub or another user.
+- Preserved workspace schema `2.3`, existing LOCAL STATE, and no-re-onboarding/account-rewrite behavior.
+
+## 2026-08-30.31
+
+- Added evidence-guarded recurring Alliance Duel/VS and Arms Race timing to resource optimization.
+- Planned Skill Medals, Hero Shards, meaningful Hero EXP, recruitment tickets and eligible Exclusive Weapon shards default to Hero Day timing when practical; Upgrade Ore/ordinary gear leveling is not held merely for VS/Arms Race under current evidence.
+- Added urgency override so event timing never blocks an immediate battlefield, boss, season, queue or expiring progression need when the account value is stronger.
+- Exact VS point estimates require current in-game/account evidence rather than treating public guide values as universal.
+- Preserved Engine API `1.0`, workspace schema `2.3`, LOCAL STATE, installer behavior and provider behavior.
+
+## 2026-08-31.30 — transport hotfix
+
+- Added `/config.txt`, `/about` and `/sitemap.xml` public discovery surfaces while preserving crawler access for OAI-SearchBot, ChatGPT-User and general agents.
+- Strengthened mutable root/config response headers across browser/CDN/surrogate cache layers and added transport metadata including `X-LWAI-Commit`.
+- Added live validation of root/config/about/robots/sitemap against canonical GitHub Production.
+- No gameplay, onboarding, persistence, account, API or workspace-schema behavior changed.
+
+## 2026-08-30.29 — transport hotfix
+
+- Replaced the prior AI-command-style public wrapper with one transparent first-party configuration response after cross-model testing identified prompt-injection-like presentation.
+- LastWarAI.com resolves GitHub `main` server-side, retrieves exact-commit `BOOTSTRAP_FULL.txt`, adapts only the already-completed Stage-0 section, and returns the complete sanitized configuration in the same response.
+- Initial installation no longer requires a second GitHub or engine-URL request by the user's AI; independent provenance verification remains permitted.
+- Kept `/engine/<SHA>` as immutable backwards-compatible transport and explicitly allowed crawler access.
+- Preserved LOCAL STATE and all account/provider/schema/gameplay behavior.
+
+## 2026-08-30.28 — transport hotfix
+
+- Moved fresh-install live GitHub resolution and exact-commit engine retrieval server-side behind LastWarAI.com so clients without direct GitHub access can still install safely.
+- Added same-domain immutable `/engine/<SHA>` compatibility transport for complete sanitized `BOOTSTRAP_FULL.txt` snapshots.
+- Fresh installation fails closed rather than inventing a commit when live Production cannot be resolved.
+- Preserved LOCAL STATE and all account/provider/schema/gameplay behavior.
+
+## 2026-08-30.27
+
+- Added LastWarVault.com as a maintained community research input alongside existing direct/official evidence and independently validated community sources.
+- Preserved the evidence hierarchy: named community sources are research inputs, not automatic authority, and material claims remain subject to current applicability, corroboration and uncertainty disclosure.
+- Added an explicit product-simplicity constraint around one easy installer, one evergreen centrally maintained engine, silent compatible updates, expert guidance, and optional user-owned persistence.
+- Preserved Engine API `1.0`, workspace schema `2.3`, LOCAL STATE, onboarding/account/provider behavior and the first-party installer.
+
 ## 2026-08-30.26
 
 - Added mandatory `core.flow-continuity` to make the no-dead-air onboarding/recovery contract executable rather than prose-only.

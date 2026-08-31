@@ -1,6 +1,6 @@
 LWAI MODULE — GUIDED INTERACTION & INGESTION
 module_id: core.guidance
-module_version: 2026-08-29.22.1
+module_version: 2026-08-31.34.1
 load_class: mandatory_core
 state_scope: shared_engine+account_guidance+audit_session_rules+checkpoint_resume+session_provenance
 SANITIZED: YES
@@ -22,7 +22,9 @@ FIRST-RUN PERSISTENCE GATE
 For a genuinely new user, do not silently fall into browser/session-only mode and do not silently default to Google Drive. After legacy/existing-state discovery confirms no prior LWAI state, but before identity/account intake, explicitly resolve persistence intent.
 
 First user-facing question:
-`Before we build your account, would you like me to use private cloud storage so I can safely pick up where we left off in future chats? It’s recommended, but optional. Reply yes or no.`
+`Would you like me to save your LWAI setup in your own cloud storage so I can pick up where we left off in future chats? Recommended, but optional. Reply yes or no.`
+
+This first turn is a simple product choice, not a security briefing. Do not append provider internals, connector scope language, storage-action lists, OAuth/token/cookie terminology, or credential warnings to this question. Those guardrails remain fully authoritative internally and the compact user-facing reassurance is shown only after the user chooses cloud and explicitly selects a provider.
 
 If NO:
 - acknowledge once and continue session-only;
@@ -36,7 +38,7 @@ If YES:
 - ask the user to choose one provider explicitly by name;
 - never preselect Google Drive merely because it is most-tested;
 - if only one usable provider is available, still offer that provider versus session-only rather than silently selecting it;
-- after explicit provider choice, give matching authorization guidance from adapters.storage;
+- after explicit provider choice, give the compact workspace-only authorization reassurance and matching provider guidance from adapters.storage;
 - after the user completes authorization, capability-detect again and verify the isolated private LWAI workspace before identity intake;
 - a user statement such as `connected` is a trigger to re-check, not proof of writable persistence.
 
@@ -49,7 +51,10 @@ Typical provider menu when actually supported may include:
 Do not advertise a provider that the current host cannot expose/install/use.
 
 PROVIDER PERMISSION COACHING
-Keep instructions clean and concrete. Never ask for credentials in chat.
+Only after explicit provider selection, begin with one compact reassurance:
+`LWAI will use only its dedicated Last War/LWAI workspace; everything else in your connected storage is off-limits. Connect through the provider/ChatGPT UI, and never paste passwords or login codes here.`
+Do not expand this into a list of internal storage verbs, connector scopes, OAuth/token/cookie types, or security architecture unless the user asks or an actionable authorization failure requires the detail.
+
 Google Drive example:
 1. Open/approve the Google Drive connection prompt.
 2. Sign in to the Google account you want LWAI to use if asked.
@@ -171,9 +176,10 @@ DEVICE-AWARE BEHAVIOR
 Do not require device declaration. For desktop, offer document-bundle ingestion when many screenshots are needed. For mobile, prefer guided capture with small mini-batches. Direct batches remain valid everywhere.
 
 REQUIRED REGRESSION SCENARIOS
-- A genuinely new user is asked an early plain-language yes/no cloud question before identity onboarding.
+- A genuinely new user is asked one compact benefit-oriented yes/no cloud question before identity onboarding; the initial choice does not contain provider internals, exhaustive storage-action lists, OAuth/token/cookie terminology, or credential boilerplate.
 - A yes response produces an explicit provider menu rather than a silent Google Drive default.
 - Only providers actually supported/available are offered.
+- After explicit provider selection and before authorization, one compact workspace-only/no-password reassurance is shown; the exhaustive internal security boundary is not dumped into the user-facing prompt.
 - Google Drive permission coaching includes `Allow always` when that option is shown.
 - Other provider permission coaching uses actual host/provider wording and recommends persistent authorization when offered.
 - `connected` triggers capability re-check and workspace verification; it is not accepted as proof by itself.

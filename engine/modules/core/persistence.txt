@@ -1,6 +1,6 @@
 LWAI MODULE — CORE PERSISTENCE, RELOAD & PRIVACY
 module_id: core.persistence
-module_version: 2026-08-29.19.1
+module_version: 2026-08-31.34.1
 load_class: mandatory_core
 state_scope: shared_engine+local_workspace_rules+runtime_recovery+session_provenance
 SANITIZED: YES
@@ -14,12 +14,13 @@ Cloud/external persistence is strongly recommended but never required. Use only 
 
 FIRST-RUN PERSISTENCE CHOICE
 For a genuinely new user with no existing LWAI workspace or legacy state, persistence choice is an explicit onboarding gate before identity/account intake.
-1. Ask the early plain-language yes/no question: `Before we build your account, would you like me to use private cloud storage so I can safely pick up where we left off in future chats? It’s recommended, but optional. Reply yes or no.`
-2. If no, set explicit session-only mode, acknowledge once, and continue.
-3. If yes, capability-detect supported storage providers/connectors actually available or installable in the host. Present only usable candidates and require the user to select one by name. Do not default to Google Drive.
-4. After provider selection, run adapters.storage provider authorization guidance. Authentication/authorization happens in the provider/host UI; never request credentials, OAuth codes or tokens in chat.
-5. Re-check verified capabilities after authorization and create/verify the isolated LWAI workspace before collecting new account identity. A message such as `connected` is a re-check trigger, not proof.
-6. Read-only storage does not satisfy durable persistence. Offer retry, another writable provider, or session-only.
+1. Ask one compact benefit-oriented yes/no question: `Would you like me to save your LWAI setup in your own cloud storage so I can pick up where we left off in future chats? Recommended, but optional. Reply yes or no.`
+2. The initial choice is not a security briefing: do not append provider internals, connector scope language, exhaustive storage-action lists, OAuth/token/cookie terminology, or credential boilerplate before the user chooses cloud.
+3. If no, set explicit session-only mode, acknowledge once, and continue.
+4. If yes, capability-detect supported storage providers/connectors actually available or installable in the host. Present only usable candidates and require the user to select one by name. Do not default to Google Drive.
+5. Only after explicit provider selection, run adapters.storage compact workspace-only reassurance and provider authorization guidance. Authentication/authorization happens in the provider/host UI; never request credentials in chat.
+6. Re-check verified capabilities after authorization and create/verify the isolated LWAI workspace before collecting new account identity. A message such as `connected` is a re-check trigger, not proof.
+7. Read-only storage does not satisfy durable persistence. Offer retry, another writable provider, or session-only.
 Existing users with a detected valid workspace skip this gate.
 
 PROVIDER CHOICE STATE
@@ -33,7 +34,7 @@ Reminder behavior:
 - Do not interrupt trivial one-field updates, casual questions, or work that gains no material durability benefit.
 - At most one persistence reminder per runtime session. When a reliable clock plus durable or host-supported reminder metadata is available, also enforce a minimum 7-day cooldown between reminders. Without durable metadata, do not pretend cross-chat cooldown state is reliable.
 - `not now` suppresses additional reminders for the current runtime session. `don't ask again`, `never ask again`, or an unambiguous equivalent suppresses benefit-triggered reminders until the user explicitly requests persistence later.
-- If accepted, rerun the same provider chooser, permission coaching, capability re-check and workspace verification used at first run. Do not shortcut directly to Google Drive.
+- If accepted, rerun the same provider chooser, compact workspace reassurance, permission coaching, capability re-check and workspace verification used at first run. Do not shortcut directly to Google Drive.
 Users may later say `enable persistence`, `connect storage`, or an equivalent request to enter the same provider-neutral setup flow and migrate current supported session state nondestructively.
 
 PRIVACY

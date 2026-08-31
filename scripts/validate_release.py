@@ -20,13 +20,15 @@ REQUIRED_FILES = [
     "contracts/operating-canon.md", "contracts/export-bootstrap.md", "contracts/storage-adapter.md",
     "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md",
     "contracts/guided-lifecycle-ingestion.md", "contracts/runtime-checkpoint-recovery.md",
-    "contracts/user-experience.md", "contracts/bootstrap-resolution.md",
+    "contracts/user-experience.md", "contracts/bootstrap-resolution.md", "contracts/instruction-budget.json",
     "schemas/workspace-schema.md", "schemas/account-registry.schema.json", "schemas/engine-manifest.schema.json",
-    "docs/architecture.md", "docs/deployment.md", "docs/quick-install.md", "docs/runtime-recovery.md",
+    "docs/architecture.md", "docs/deployment.md", "docs/quick-install.md", "docs/runtime-recovery.md", "docs/BETA_TESTING.md",
     "adapters/provider-matrix.md", "gold-assets/README.md", "gold-assets/manifest.json",
+    "infrastructure/cloudflare-cache-policy.md", "infrastructure/cloudflare-worker.js",
     "releases/LATEST.json", "releases/MIGRATIONS.json", "releases/CHANGELOG.md", "tests/RELEASE_GATES.md",
     "tests/reference_runtime.py", "tests/test_runtime_behavior.py", "tests/test_user_experience_contract.py",
-    "tests/test_bootstrap_resolution_contract.py", ".github/workflows/validate.yml", ".github/CODEOWNERS",
+    "tests/test_infrastructure_boundary.py", "tests/test_bootstrap_resolution_contract.py",
+    "scripts/validate_instruction_budget.py", ".github/workflows/validate.yml", ".github/CODEOWNERS",
 ]
 
 REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
@@ -41,6 +43,8 @@ RAW_LATEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_E
 RAW_MIGRATIONS = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json"
 CURRENT_SCHEMA = "2.3"
 HISTORICAL_SCHEMA_PATH = [("2.1", "2.2"), ("2.2", "2.3")]
+FIRST_RUN_PROMPT = "Would you like me to save your LWAI setup in your own cloud storage so I can pick up where we left off in future chats? Recommended, but optional. Reply yes or no."
+COMPACT_REASSURANCE = "LWAI will use only its dedicated Last War/LWAI workspace; everything else in your connected storage is off-limits. Connect through the provider/ChatGPT UI, and never paste passwords or login codes here."
 MIGRATION_CAPABLE = {
     "core.operating", "core.persistence", "core.accounts", "core.guidance",
     "release.runtime", "release.resolver", "release.updater", "release.bootstrap", "adapters.storage",
@@ -186,7 +190,7 @@ def validate_loader_boundary(loader: str) -> None:
         "LOCAL STATE", "WAITING_USER", LIVE_REF,
     ])
     forbidden = [
-        "Before we build your account", "Allow always", "Google Drive", "Dropbox", "OneDrive", "Box",
+        "save your LWAI setup", "Allow always", "Google Drive", "Dropbox", "OneDrive", "Box",
         "screenname", "strategic baseline", "GEAR / UPGRADE ORE", "SKILL MEDALS",
         "DRONE / COMPONENTS / CHIPS", "EVENT STORES / BLACK MARKET / BOUNTY", "COMBAT DIAGNOSIS",
         "domain.season-intelligence", PUBLIC_INSTALL_URL, LEGACY_INSTALL_URL,
@@ -240,20 +244,26 @@ def validate_storage_security(full: str) -> None:
     storage = read("engine/modules/adapters/storage.txt")
     contract = read("contracts/storage-adapter.md")
     ux = read("contracts/user-experience.md")
+    internal = "\n".join([storage, contract, full]).lower()
     combined = "\n".join([storage, contract, ux, full])
     require("storage adapter", storage, [
-        "ABSOLUTE WORKSPACE BOUNDARY", "USER-VISIBLE SECURITY REASSURANCE", "storage-api/1",
+        "ABSOLUTE WORKSPACE BOUNDARY", "COMPACT USER-VISIBLE SECURITY REASSURANCE", "storage-api/1",
         "Never silently choose Google Drive", "Allow always", "CONNECTION VERIFICATION",
         "Workspace-only guardrail is active", "Dropbox", "OneDrive", "Box",
     ])
     for phrase in [
-        "outside that workspace", "other ChatGPT/app workspaces", "broader connector",
-        "never asks for passwords", "provider-wide", "unrelated provider",
+        "outside that workspace", "other chatgpt/app workspaces", "broader connector",
+        "provider-wide", "unrelated provider",
     ]:
-        if phrase.lower() not in combined.lower():
-            fail(f"workspace security contract missing concept: {phrase}")
-    if "LWAI is explicitly restricted to its own Last War workspace" not in combined:
-        fail("user-facing workspace guardrail reassurance missing")
+        if phrase not in internal:
+            fail(f"workspace security contract missing internal concept: {phrase}")
+    for verb in ["read", "list", "search", "inspect", "modify", "move", "rename", "delete"]:
+        if verb not in internal:
+            fail(f"workspace security contract missing prohibited operation: {verb}")
+    if COMPACT_REASSURANCE not in combined:
+        fail("compact user-facing workspace reassurance missing")
+    if "never ask the user to paste provider passwords" not in storage.lower():
+        fail("internal credential prohibition missing")
 
 
 def validate_friendly_ux(full: str) -> None:
@@ -263,15 +273,17 @@ def validate_friendly_ux(full: str) -> None:
     bootstrap = read("engine/modules/release/bootstrap.txt")
     updater = read("engine/modules/release/updater.txt")
     contract = read("contracts/user-experience.md")
-    question = "would you like me to use private cloud storage"
     for label, body in [("full", full), ("guidance", guidance), ("persistence", persistence), ("UX contract", contract)]:
-        if question not in body.lower():
-            fail(f"{label} lost early plain-language cloud choice")
+        if FIRST_RUN_PROMPT not in body:
+            fail(f"{label} lost compact first-run persistence choice")
     combined = "\n".join([full, guidance, persistence, storage, bootstrap, contract]).lower()
     if "never default to google drive" not in combined and "never silently choose google drive" not in combined:
         fail("provider flow does not prohibit silent Google Drive default")
     for label, body in [("full", full), ("guidance", guidance), ("storage", storage), ("UX contract", contract)]:
         require(label, body, ["Google Drive", "Allow always"])
+    for label, body in [("full", full), ("guidance", guidance), ("storage", storage), ("UX contract", contract)]:
+        if COMPACT_REASSURANCE not in body:
+            fail(f"{label} lost compact provider-authorization reassurance")
     require("friendly updater", updater, ["FRIENDLY UPDATE UX", "Checking for updates", "LWAI updated successfully", "audit yourself"])
     for token in ["WAITING_USER", "strategic baseline", "first", "screenname"]:
         if token.lower() not in combined:
@@ -364,7 +376,11 @@ def main() -> None:
     if f"**Engine version:** `{version}`" not in readme or LIVE_REF not in readme or PUBLIC_INSTALL_URL not in readme:
         fail("README Production identity/install mismatch")
     require("README", readme, ["Stage-0 bootloader", "4 KiB", "legacy compatibility alias", "Allow always", "workspace-only", "release.resolver"])
-    require("workflow", workflow, ["python scripts/validate_release.py", "test_runtime_behavior.py", "test_user_experience_contract.py", "test_bootstrap_resolution_contract.py", "fetch-depth: 0"])
+    require("workflow", workflow, [
+        "python scripts/validate_release.py", "python scripts/validate_instruction_budget.py",
+        "test_runtime_behavior.py", "test_user_experience_contract.py", "test_infrastructure_boundary.py",
+        "test_bootstrap_resolution_contract.py", "fetch-depth: 0",
+    ])
 
     require("full fallback", full, [
         "GLOBAL EPISTEMIC INTEGRITY CONTRACT", "WORKSPACE SCHEMA MIGRATION", "MIGRATION-COMPATIBLE BOOTSTRAP",
@@ -373,7 +389,7 @@ def main() -> None:
         "EVENT STORES / BLACK MARKET / BOUNTY", "COMBAT DIAGNOSIS", "SEASON INTELLIGENCE",
     ])
 
-    public_text = "\n".join(read(rel) for rel in REQUIRED_FILES if rel.endswith((".md", ".txt", ".json", ".yml", ".py")))
+    public_text = "\n".join(read(rel) for rel in REQUIRED_FILES if rel.endswith((".md", ".txt", ".json", ".yml", ".py", ".js")))
     for marker in ["CP-20260829-011", "J-20260829-011", "CP-20260829-015", "J-20260829-015", "PRIVATE_RC_STAGED"]:
         if marker in public_text:
             fail(f"candidate contains private release marker: {marker}")
@@ -382,7 +398,7 @@ def main() -> None:
     if re.search(r"BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY", public_text):
         fail("candidate contains possible private key")
 
-    print(f"PASS: LWAI Production {version} / API {engine_api} / schema {schema_version} passed first-party installer, live-ref, pinned-snapshot, graph, integrity, privacy, workspace-security, migration, UX and 4KiB loader-boundary checks")
+    print(f"PASS: LWAI Production {version} / API {engine_api} / schema {schema_version} passed first-party installer, live-ref, pinned-snapshot, graph, integrity, privacy, workspace-security, migration, staged UX and 4KiB loader-boundary checks")
 
 
 if __name__ == "__main__":

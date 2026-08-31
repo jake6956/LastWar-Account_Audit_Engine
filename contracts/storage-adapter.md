@@ -1,6 +1,6 @@
 # Storage Adapter Contract
 
-Version: 2026-08-30.26
+Version: 2026-08-31.34
 Capability API: `storage-api/1`
 
 LWAI maps one provider-neutral persistence model onto verified storage capabilities. Provider branding is never a substitute for capability discovery.
@@ -21,13 +21,15 @@ Provider authorization can be broader than the application's logical scope. Broa
 
 A user may explicitly upload or reference an external file in chat. That file may be consumed as explicit task input, but this does not authorize browsing its storage neighborhood or altering the external source in place.
 
-## Mandatory user reassurance
+## Compact user reassurance
 
-Before authorization LWAI must tell the user, in plain language, that it has explicit workspace-only guardrails. Wording may vary, but must preserve this meaning:
+The absolute workspace boundary above remains exhaustive and authoritative internally. It must not be dumped into the initial persistence yes/no choice.
 
-> LWAI is explicitly restricted to its own Last War workspace. I will not browse, read, change, move, delete, or use anything else in your connected storage. Even if the connector technically exposes broader access, everything outside the LWAI workspace is off-limits to this tool.
+Only after the user chooses cloud persistence and explicitly selects a provider, before authorization, LWAI gives one short reassurance preserving the essential user-facing meaning:
 
-Also state that authentication happens in the provider/ChatGPT UI and LWAI never asks for passwords, OAuth codes, tokens, cookies or similar credentials in chat.
+> LWAI will use only its dedicated Last War/LWAI workspace; everything else in your connected storage is off-limits. Connect through the provider/ChatGPT UI, and never paste passwords or login codes here.
+
+Do not expand this into a list of internal storage verbs, connector scopes, OAuth/token/cookie types, or security architecture unless the user asks or an actionable authorization failure requires the detail. The internal credential prohibition remains absolute: authentication happens in the provider/host UI and LWAI never requests passwords, OAuth codes, access/refresh tokens, cookies or equivalent credentials in chat.
 
 After successful verification, briefly confirm that the workspace-only guardrail is active. Describe this accurately as an application/runtime guardrail; do not claim provider-side ACL enforcement LWAI does not control.
 
@@ -58,9 +60,9 @@ Preference is not consent. The user must explicitly choose Google Drive or anoth
 
 A fully verified alternative provider is a supported persistence target, not a degraded fake option. Capability differences may change implementation details and recovery guarantees, but account isolation, workspace-only scope, privacy and no-dead-air handoff remain mandatory.
 
-Before opening authorization, show the workspace-only reassurance above.
+Before opening authorization, and only after explicit provider selection, show the compact workspace-only reassurance above once.
 
-For Google Drive, explain the guardrail, approve access needed for the LWAI workspace, and choose **`Allow always`** if ChatGPT offers it. For Dropbox, OneDrive/Microsoft 365, Box or another supported provider, use the actual host/provider wording and recommend an equivalent persistent authorization option only when truly shown. Never invent OAuth scope names or request credentials in chat.
+For Google Drive, approve access needed for the LWAI workspace and choose **`Allow always`** if ChatGPT offers it. For Dropbox, OneDrive/Microsoft 365, Box or another supported provider, use the actual host/provider wording and recommend an equivalent persistent authorization option only when truly shown. Never invent OAuth scope names or request credentials in chat.
 
 A user saying `connected` is a recheck trigger, not proof. Re-detect capability, locate/create only the LWAI workspace, perform a harmless workspace-local write/read when appropriate, and then confirm connection plus the active workspace-only guardrail. Successful verification immediately returns to the next user-visible onboarding/resume step; it may not end on connection status alone.
 
