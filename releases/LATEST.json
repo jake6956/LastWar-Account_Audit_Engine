@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-30.27",
+  "engine_version": "2026-08-30.31",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -25,14 +25,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
   "migration": {
-    "from": "2026-08-30.26",
-    "type": "engine_only_research_source_expansion",
+    "from": "2026-08-30.27",
+    "type": "engine_only_recurring_event_timing_canon",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds LastWarVault.com as a maintained community research input with the existing evidence hierarchy intact. Its guides, season references and calculators/planners may be used when relevant, while material claims remain subject to official/in-game validation, corroboration and uncertainty disclosure. Adds a concise README design constraint to keep the product centered on one easy installer, a simple modular evergreen engine, silent compatible updates and optional user-owned persistence."
+    "notes": "Adds current, evidence-guarded Alliance Duel VS and Arms Race timing to resource optimization. Registers a recurring-events module; times planned Skill Medals, Hero Shards, Hero EXP, recruitment tickets and eligible EW shards to Hero Day when practical; does not hold Upgrade Ore merely for VS/Arms Race; uses current in-game panels for exact scoring and supports urgency overrides."
   },
-  "notes": "Research-source expansion only; no account, provider, schema or onboarding behavior change. Engine API 1.0, workspace schema 2.3, LastWarAI.com transport and LOCAL STATE are preserved."
+  "notes": "Recurring-event optimization canon only. No account, provider, workspace-schema, onboarding or Cloudflare Worker change. Engine API 1.0, workspace schema 2.3 and LOCAL STATE are preserved."
 }
