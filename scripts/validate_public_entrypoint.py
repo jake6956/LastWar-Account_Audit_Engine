@@ -14,6 +14,7 @@ ROBOTS_URL = f"{PUBLIC_URL}/robots.txt"
 SITEMAP_URL = f"{PUBLIC_URL}/sitemap.xml"
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+MUTABLE_CACHE_HIT_STATES = {"HIT", "STALE", "UPDATING", "REVALIDATED"}
 
 
 def fail(message: str) -> None:
@@ -22,7 +23,7 @@ def fail(message: str) -> None:
 
 
 def fetch_text(url: str, accept: str = "text/plain,*/*;q=0.1") -> tuple[int, object, str]:
-    request = Request(url, headers={"User-Agent": "LWAI-Release-Validation/3.1", "Accept": accept})
+    request = Request(url, headers={"User-Agent": "LWAI-Release-Validation/3.2", "Accept": accept})
     try:
         with urlopen(request, timeout=20) as response:
             return getattr(response, "status", 200), response.headers, response.read(262144).decode("utf-8")
@@ -42,6 +43,12 @@ def require_mutable_freshness_headers(headers: object, label: str) -> None:
         fail(f"{label} Pragma must be no-cache")
     if headers.get("Expires", "") != "0":
         fail(f"{label} Expires must be 0")
+    cache_status = headers.get("CF-Cache-Status", "").strip().upper()
+    if cache_status in MUTABLE_CACHE_HIT_STATES:
+        fail(f"{label} mutable Worker response was served from cache: CF-Cache-Status={cache_status}")
+    age = headers.get("Age", "").strip()
+    if age.isdigit() and int(age) > 0:
+        fail(f"{label} mutable response unexpectedly carries cache Age={age}")
 
 
 def validate_configuration(url: str) -> tuple[str, str]:
@@ -105,7 +112,6 @@ def main() -> None:
     if sha != live_sha:
         fail(f"LastWarAI.com serves {sha}, but GitHub main is {live_sha}")
 
-    # Legacy exact-SHA engine URLs remain valid compatibility endpoints.
     engine_url = f"{PUBLIC_URL}/engine/{sha}"
     engine_status, engine_headers, engine_body = fetch_text(engine_url)
     if engine_status != 200:
@@ -151,15 +157,15 @@ def main() -> None:
         "Last War AI — Last War: Survival Account Optimization",
         "Set up Last War optimization using the instructions at https://lastwarai.com",
         CONFIG_URL,
-        f"https://github.com/jake6956/LastWar-Account_Audit_Engine",
+        "https://github.com/jake6956/LastWar-Account_Audit_Engine",
     ):
         if token not in about_body:
             fail(f"about page missing discovery token: {token}")
 
     print(
-        "PASS: LastWarAI.com serves one transparent complete configuration, "
-        "exposes a matching /config.txt alias, strong mutable no-cache headers, "
-        "crawler-friendly robots/sitemap/about discovery, and matches Production SHA "
+        "PASS: LastWarAI.com serves one transparent complete uncached mutable configuration, "
+        "exposes a matching /config.txt alias, strong mutable no-cache headers, crawler-friendly "
+        "discovery, and matches Production SHA "
         f"{sha}"
     )
 
