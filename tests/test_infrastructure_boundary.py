@@ -1,9 +1,11 @@
+import json
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_URL = "https://lastwarai.com"
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
+WORKER_NAME = "lwai-bootstrap"
 
 
 def text(path: str) -> str:
@@ -39,13 +41,31 @@ class InfrastructureBoundaryTests(unittest.TestCase):
         ):
             self.assertIn(token, worker)
 
-    def test_cloudflare_deployment_contract_disables_front_cache(self):
+    def test_wrangler_pins_real_worker_and_disables_front_cache(self):
+        raw = text("wrangler.jsonc")
+        config = json.loads(raw)
+        self.assertEqual(config["name"], WORKER_NAME)
+        self.assertEqual(config["main"], "infrastructure/cloudflare-worker.js")
+        self.assertIs(config["cache"]["enabled"], False)
+        # Dashboard-managed Custom Domain/routes stay outside this file unless
+        # deliberately migrated; do not accidentally rewrite routing topology.
+        self.assertNotIn("route", config)
+        self.assertNotIn("routes", config)
+
+    def test_cloudflare_deployment_contract_records_actual_topology(self):
         policy = text("infrastructure/cloudflare-cache-policy.md")
-        self.assertIn("cache.enabled = false", policy)
-        self.assertIn("must be disabled", policy)
-        self.assertIn("one final purge", policy)
-        self.assertIn("not a per-release requirement", policy)
-        self.assertIn("must not require Worker source edits", policy)
+        for token in (
+            WORKER_NAME,
+            "lastwarai.com",
+            "Workers Routes",
+            "intentionally empty",
+            "cache.enabled = false",
+            "must be disabled",
+            "one final purge",
+            "not a per-release requirement",
+            "must not require Worker source edits",
+        ):
+            self.assertIn(token, policy)
 
     def test_current_public_docs_describe_single_response_transport(self):
         for path in (
