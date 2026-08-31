@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-08-30.31",
+  "engine_version": "2026-08-31.32",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -25,14 +25,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
   "migration": {
-    "from": "2026-08-30.27",
-    "type": "engine_only_recurring_event_timing_canon",
+    "from": "2026-08-30.31",
+    "type": "engine_only_private_preferences_and_personalized_ux",
     "schema_from": "2.3",
     "schema_to": "2.3",
-    "local_state_action": "preserve",
+    "local_state_action": "preserve_and_optionally_add_preferences",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds current, evidence-guarded Alliance Duel VS and Arms Race timing to resource optimization. Registers a recurring-events module; times planned Skill Medals, Hero Shards, Hero EXP, recruitment tickets and eligible EW shards to Hero Day when practical; does not hold Upgrade Ore merely for VS/Arms Race; uses current in-game panels for exact scoring and supports urgency overrides."
+    "notes": "Adds mandatory user-owned preferences behavior with WORKSPACE, ACCOUNT and SESSION scopes; provider-neutral human-readable preference notebooks; conservative explicit-over-inferred learning; local tool-feedback capture; user inspect/change/revoke/reset controls; and strict evidence/privacy/safety/account-isolation dominance. Durable preference artifacts are additive optional LOCAL STATE under workspace schema 2.3."
   },
-  "notes": "Recurring-event optimization canon only. No account, provider, workspace-schema, onboarding or Cloudflare Worker change. Engine API 1.0, workspace schema 2.3 and LOCAL STATE are preserved."
+  "notes": "Personalized UX only. No Cloudflare Worker, installer sentence, provider-authorization, account identity or workspace-schema-version change. Engine API 1.0, workspace schema 2.3 and all existing LOCAL STATE are preserved."
 }
