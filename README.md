@@ -28,6 +28,7 @@ If cloud persistence is enabled, LWAI uses only its dedicated Last War/LWAI work
 
 GitHub `main` is the authoritative public Production source.
 
+- Live Production ref: `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`
 - Current release metadata: `releases/LATEST.json`
 - Bootstrap loader: `engine/BOOTSTRAP.txt`
 - Complete standalone configuration: `engine/BOOTSTRAP_FULL.txt`
