@@ -4,7 +4,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_URL = "https://lastwarai.com"
-LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 WORKER_NAME = "lwai-bootstrap"
 
 
@@ -15,7 +14,9 @@ def text(path: str) -> str:
 class InfrastructureBoundaryTests(unittest.TestCase):
     def test_worker_remains_transport_only(self):
         worker = text("infrastructure/cloudflare-worker.js")
-        self.assertIn(LIVE_REF, worker)
+        self.assertIn('const REPOSITORY = "jake6956/LastWar-Account_Audit_Engine"', worker)
+        self.assertIn("const LIVE_REF =", worker)
+        self.assertIn("/branches/main", worker)
         self.assertIn("BOOTSTRAP_FULL.txt", worker)
         self.assertIn("X-LWAI-Commit", worker)
         self.assertIn("cacheTtl: 0", worker)
