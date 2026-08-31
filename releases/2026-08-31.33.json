@@ -1,0 +1,39 @@
+{
+  "engine_version": "2026-08-31.33",
+  "engine_api_version": "1.0",
+  "schema_version": "2.3",
+  "channel": "Production",
+  "sanitized": true,
+  "account_state_included": false,
+  "runtime_mode": "modular-hardened-recovery",
+  "bootstrap_protocol_version": "2.0",
+  "entrypoint_module": "release.bootstrap",
+  "module_selection": "manifest_activation_v1",
+  "preferred_install_url": "https://lastwarai.com",
+  "preferred_install_instruction": "Set up Last War optimization using the instructions at https://lastwarai.com",
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com",
+  "legacy_install_urls": [
+    "https://tinyurl.com/2yxf7f5x"
+  ],
+  "remote_install_mode": "first_party_entrypoint_then_live_ref_exact_commit_manifest_bootstrap",
+  "public_entrypoint_authority": false,
+  "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
+  "live_ref_source": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
+  "github_bootstrap_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt",
+  "module_manifest_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json",
+  "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
+  "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
+  "mutable_source_urls_are_authority": false,
+  "candidate_read_policy": "resolve live main SHA first; pin all candidate reads to that exact commit",
+  "migration": {
+    "from": "2026-08-31.32",
+    "type": "engine_only_freshness_buildings_and_store_value",
+    "schema_from": "2.3",
+    "schema_to": "2.3",
+    "local_state_action": "preserve",
+    "requires_user_reonboarding": false,
+    "requires_account_rewrite": false,
+    "notes": "Preserves all existing LOCAL STATE. Adds cross-domain monotonic/volatile freshness rules, prerequisite-aware building progression, research queue identity/timer separation, and account/price-aware event-store offer evaluation. New freshness metadata is optional and additive under existing workspace schema 2.3."
+  },
+  "notes": "Gameplay-model quality release. No Cloudflare Worker, installer sentence, provider authorization, account identity or workspace schema change. Engine API 1.0, workspace schema 2.3 and all existing LOCAL STATE are preserved."
+}
