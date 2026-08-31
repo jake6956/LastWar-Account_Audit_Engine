@@ -151,7 +151,7 @@ The LastWarAI.com response is a transparent public configuration document. It:
 
 ## Release identity
 
-**Engine version:** `2026-08-31.33`  
+**Engine version:** `2026-08-31.34`  
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
 **Bootstrap protocol:** `2.0`  
