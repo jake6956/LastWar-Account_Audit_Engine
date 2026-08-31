@@ -5,11 +5,16 @@
 // - Cloudflare resolves current GitHub Production server-side.
 // - The SAME request returns the complete sanitized LWAI configuration.
 // - No second URL fetch is required by the user's AI.
+// - Search/discovery endpoints are explicit and the mutable root/config are never edge-cached.
 // - The public document is transparent about provenance, privacy, and verification.
 
 const REPOSITORY = "jake6956/LastWar-Account_Audit_Engine";
 const LIVE_REF = `https://api.github.com/repos/${REPOSITORY}/branches/main`;
 const RAW_BASE = `https://raw.githubusercontent.com/${REPOSITORY}`;
+const PUBLIC_ORIGIN = "https://lastwarai.com";
+const CONFIG_URL = `${PUBLIC_ORIGIN}/config.txt`;
+const ABOUT_URL = `${PUBLIC_ORIGIN}/about`;
+const SITEMAP_URL = `${PUBLIC_ORIGIN}/sitemap.xml`;
 
 const SHA_RE = /^[0-9a-f]{40}$/;
 
@@ -21,13 +26,68 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: ${SITEMAP_URL}
 `;
 
-function commonHeaders(cacheControl = "no-store, max-age=0") {
+const SITEMAP = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>${PUBLIC_ORIGIN}/</loc></url>
+  <url><loc>${ABOUT_URL}</loc></url>
+  <url><loc>${CONFIG_URL}</loc></url>
+</urlset>
+`;
+
+const ABOUT_HTML = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Last War AI — Last War: Survival Account Optimization</title>
+  <meta name="description" content="Last War AI is an independent, evidence-based Last War: Survival account optimization assistant with a public, versioned configuration.">
+  <link rel="canonical" href="${ABOUT_URL}">
+</head>
+<body>
+  <main>
+    <h1>Last War AI</h1>
+    <p>Last War AI is an independent Last War: Survival account optimization and analysis assistant.</p>
+    <p>To start, paste this sentence into your AI assistant:</p>
+    <pre>Set up Last War optimization using the instructions at https://lastwarai.com</pre>
+    <p>The current public configuration is sanitized and contains no player account state or credentials.</p>
+    <ul>
+      <li><a href="${PUBLIC_ORIGIN}/">Current public configuration</a></li>
+      <li><a href="${CONFIG_URL}">Plain-text configuration</a></li>
+      <li><a href="https://github.com/${REPOSITORY}">Public source repository</a></li>
+    </ul>
+  </main>
+</body>
+</html>
+`;
+
+function commonHeaders(
+  cacheControl = "no-store, max-age=0",
+  contentType = "text/plain; charset=utf-8"
+) {
   return {
-    "Content-Type": "text/plain; charset=utf-8",
+    "Content-Type": contentType,
     "Cache-Control": cacheControl,
     "X-Content-Type-Options": "nosniff"
+  };
+}
+
+function mutablePublicHeaders(contentType = "text/plain; charset=utf-8") {
+  return {
+    ...commonHeaders(
+      "no-store, no-cache, must-revalidate, max-age=0",
+      contentType
+    ),
+    "CDN-Cache-Control": "no-store",
+    "Cloudflare-CDN-Cache-Control": "no-store",
+    "Surrogate-Control": "no-store",
+    "Pragma": "no-cache",
+    "Expires": "0",
+    "Vary": "Accept, User-Agent",
+    "X-Robots-Tag": "index, follow"
   };
 }
 
@@ -35,7 +95,7 @@ async function resolveProductionSha() {
   const response = await fetch(LIVE_REF, {
     headers: {
       "Accept": "application/vnd.github+json",
-      "User-Agent": "LastWarAI/3.0"
+      "User-Agent": "LastWarAI/3.1"
     },
     cf: {
       cacheTtl: 0,
@@ -62,7 +122,7 @@ async function getEngine(sha) {
 
   const response = await fetch(source, {
     headers: {
-      "User-Agent": "LastWarAI/3.0"
+      "User-Agent": "LastWarAI/3.1"
     },
     cf: {
       cacheTtl: 31536000,
@@ -173,8 +233,11 @@ with the Production revision identified above.
     return new Response(header + engine, {
       status: 200,
       headers: {
-        ...commonHeaders("no-store, max-age=0"),
-        "X-LWAI-Commit": sha
+        ...mutablePublicHeaders(),
+        "X-LWAI-Commit": sha,
+        "X-LWAI-Transport-Version": "3.1",
+        "ETag": `\"lwai-${sha}\"`,
+        "Link": `<${PUBLIC_ORIGIN}>; rel=\"canonical\", <${CONFIG_URL}>; rel=\"alternate\"; type=\"text/plain\"`
       }
     });
   } catch (error) {
@@ -190,7 +253,7 @@ Please try again shortly.
 `,
       {
         status: 503,
-        headers: commonHeaders()
+        headers: mutablePublicHeaders()
       }
     );
   }
@@ -204,6 +267,26 @@ export default {
       return new Response(ROBOTS, {
         status: 200,
         headers: commonHeaders("public, max-age=3600")
+      });
+    }
+
+    if (url.pathname === "/sitemap.xml") {
+      return new Response(SITEMAP, {
+        status: 200,
+        headers: commonHeaders(
+          "public, max-age=3600",
+          "application/xml; charset=utf-8"
+        )
+      });
+    }
+
+    if (url.pathname === "/about") {
+      return new Response(ABOUT_HTML, {
+        status: 200,
+        headers: commonHeaders(
+          "public, max-age=3600",
+          "text/html; charset=utf-8"
+        )
       });
     }
 
@@ -221,7 +304,8 @@ export default {
           status: 200,
           headers: {
             ...commonHeaders("public, max-age=31536000, immutable"),
-            "X-LWAI-Commit": sha
+            "X-LWAI-Commit": sha,
+            "X-LWAI-Transport-Version": "3.1"
           }
         });
       } catch (error) {
@@ -235,7 +319,11 @@ export default {
       }
     }
 
-    if (url.pathname === "/" || url.pathname === "/install") {
+    if (
+      url.pathname === "/" ||
+      url.pathname === "/install" ||
+      url.pathname === "/config.txt"
+    ) {
       return serveConfiguration();
     }
 
