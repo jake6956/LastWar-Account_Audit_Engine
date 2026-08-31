@@ -94,6 +94,37 @@ class ProductInvariantTests(unittest.TestCase):
         self.assertIn("data_placement", mod["state_scope"])
         self.assertIn("core.flow-continuity", modules["release.bootstrap"]["dependencies"])
 
+    def test_state_freshness_avoids_redundant_recapture(self):
+        manifest = json.loads(text("engine/MANIFEST.json"))
+        modules = {m["module_id"]: m for m in manifest["modules"]}
+        self.assertTrue(modules["core.state-freshness"]["required"])
+        body = text("engine/modules/core/state-freshness.txt")
+        for token in ("INVARIANT / CORRECTION", "MONOTONIC", "VOLATILE", "queue_identity", "timer_freshness"):
+            self.assertIn(token, body)
+        self.assertIn("Do not ask for a new screenshot merely because time passed", body)
+        self.assertIn("Never invent an exact timestamp or ETA", body)
+
+    def test_building_progression_is_prerequisite_aware(self):
+        manifest = json.loads(text("engine/MANIFEST.json"))
+        modules = {m["module_id"]: m for m in manifest["modules"]}
+        mod = modules["domain.building-progression"]
+        self.assertFalse(mod["required"])
+        body = text("engine/modules/domains/building-progression.txt")
+        self.assertIn("immediate HQ", body)
+        self.assertIn("Do not recommend equalizing buildings", body)
+        self.assertIn("Mixed Barracks levels", body)
+        self.assertIn("do not idle builders", body)
+
+    def test_event_store_value_is_price_and_account_aware(self):
+        body = text("engine/modules/domains/season-stores-paid.txt")
+        self.assertIn("Current in-game screenshot", body)
+        self.assertIn("A good item can still be a bad offer", body)
+        self.assertIn("BUY", body)
+        self.assertIn("CONDITIONAL", body)
+        self.assertIn("SKIP", body)
+        self.assertIn("Do not invent a reserve amount", body)
+        self.assertIn("carry-over", body)
+
 
 if __name__ == "__main__":
     unittest.main()
