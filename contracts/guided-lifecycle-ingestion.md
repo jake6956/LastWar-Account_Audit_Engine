@@ -1,6 +1,6 @@
 # Guided Lifecycle & Ingestion Contract
 
-Version: 2026-08-29.17
+Version: 2026-08-31.34
 
 ## Purpose
 LWAI upgrades and audits must feel like continuation rather than reset. Existing accessible state is reused first; users are asked only for information that remains missing, ambiguous, contradictory or materially stale. Interaction should feel like a personable technician with a clipboard: clear about what comes next, patient with novices, concise with fluent users.
@@ -11,10 +11,16 @@ Before broad onboarding, inspect any readable Workspace Registry, active account
 ## First-run persistence choice
 Only after discovery establishes that the user is genuinely new may Phase 1 account intake begin. Persistence intent must be explicit before collecting account identity or creating a new account record.
 
-- If a verified writable supported provider is already exposed, recommend creating an isolated private LWAI workspace and ask the user to choose cloud persistence or session-only operation.
-- If no verified writable provider is exposed, explain briefly that session-only mode works but durable cross-chat recovery and persistent multi-account state are limited. Invite the user to connect a supported writable provider in the host application and reply `storage connected`, or explicitly continue session-only.
-- `storage connected` is not proof of capability. Re-detect provider read/write/create support before claiming persistence or creating the workspace.
-- If cloud persistence is chosen, create and verify the isolated private workspace before identity intake. If session-only is chosen, acknowledge the limitation once and proceed without immediately repeating the prompt.
+Ask one compact product-choice question:
+
+`Would you like me to save your LWAI setup in your own cloud storage so I can pick up where we left off in future chats? Recommended, but optional. Reply yes or no.`
+
+Do not front-load provider internals, connector scope language, exhaustive storage-action lists, OAuth/token/cookie terminology, or credential boilerplate into this initial choice.
+
+- If the user chooses session-only, acknowledge once and proceed directly to identity without immediately repeating the prompt.
+- If the user chooses cloud, detect providers actually available/installable, show only plausible writable candidates, and require an explicit provider choice. Google Drive may be shown first as Recommended when genuinely available, but is never silently selected.
+- Only after explicit provider selection, before authorization, show the compact workspace-only/no-password reassurance defined by the storage adapter, then use the actual host/provider authorization wording.
+- `connected` is not proof of capability. Re-detect provider read/write/create support before claiming persistence or creating/verifying the workspace.
 - Existing users with a valid workspace and supported legacy users skip this gate. Read-only/reference storage does not satisfy durable persistence.
 - Later `enable persistence` / `connect storage` requests may move supported session state into durable storage nondestructively; no account reset is implied.
 
@@ -25,7 +31,7 @@ Material triggers include a large or multi-batch audit likely to span conversati
 
 A reminder must name the concrete benefit in one short sentence and offer cloud setup or continued session-only operation. Do not interrupt trivial one-field updates, casual questions or workflows where persistence does not materially change the result. At most one reminder may be shown in a runtime session. When reliable cross-session reminder metadata and a clock are available, enforce a minimum seven-day cooldown. Without reliable durable metadata, do not claim that cross-chat cooldown state is preserved. `not now` suppresses further reminders in the current runtime session. `don't ask again`, `do not ask again`, `never ask again` or an unambiguous equivalent suppresses future benefit-triggered reminders until the user explicitly reopens persistence setup.
 
-If the user accepts a reminder, capability-detect again. Never infer that storage became writable merely because the user agreed. Create/verify the isolated workspace before migrating supported session state nondestructively.
+If the user accepts a reminder, capability-detect again, present the provider chooser, and reuse the same compact authorization reassurance. Never infer that storage became writable merely because the user agreed. Create/verify the isolated workspace before migrating supported session state nondestructively.
 
 ## Adaptive guidance
 Optional proficiency states are NEW, LEARNING, COMFORTABLE and EXPERT. Guidance may become less verbose as successful usage becomes fluent, but privacy, evidence hierarchy, account isolation and declared batch boundaries are invariant.
@@ -53,4 +59,4 @@ Archive is nondestructive and reversible. `list archived accounts`, `restore acc
 Identity, imported prior state, screenshots, Audit Session contents, Runtime Session/host references and provider-local paths remain private deployment state. Shared Production contains only generic rules/schemas. UID remains optional; normal operation never requests game passwords, session tokens/cookies, captured authentication files, ChatGPT credentials or shared-link creation.
 
 ## Release gates
-Production promotion requires: explicit genuinely-new-user persistence choice before identity onboarding; session-only remains valid; benefit-triggered reminders require a concrete durability benefit, are capped at one per runtime session, honor seven-day reliable-metadata cooldown and do-not-ask-again suppression; cloud persistence is capability-verified before use; existing valid workspaces bypass redundant first-run setup; core.guidance is mandatory and dependency-resolved; full fallback parity; migration-first reuse; missing/stale-only collection; explicit done-boundary behavior; direct/document/guided evidence parity; resumable account-scoped sessions; runtime-session provenance remains optional/non-authoritative; duplicate/missing/different host references cannot merge accounts or bypass active_account_id; safe auto-continuation; archive/restore identity preservation; terse expert-update compatibility; private-state denylist; and healthy one-line installer.
+Production promotion requires: compact genuinely-new-user persistence choice before identity onboarding; no security-manifesto content in that initial turn; explicit provider choice before the compact workspace-only authorization reassurance; session-only remains valid; benefit-triggered reminders require a concrete durability benefit, are capped at one per runtime session, honor seven-day reliable-metadata cooldown and do-not-ask-again suppression; cloud persistence is capability-verified before use; existing valid workspaces bypass redundant first-run setup; core.guidance is mandatory and dependency-resolved; full fallback parity; migration-first reuse; missing/stale-only collection; explicit done-boundary behavior; direct/document/guided evidence parity; resumable account-scoped sessions; runtime-session provenance remains optional/non-authoritative; duplicate/missing/different host references cannot merge accounts or bypass active_account_id; safe auto-continuation; archive/restore identity preservation; terse expert-update compatibility; private-state denylist; and healthy one-line installer.
