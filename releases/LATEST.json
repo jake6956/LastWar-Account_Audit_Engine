@@ -29,10 +29,10 @@
     "type": "engine_only_private_preferences_and_personalized_ux",
     "schema_from": "2.3",
     "schema_to": "2.3",
-    "local_state_action": "preserve_and_optionally_add_preferences",
+    "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds mandatory user-owned preferences behavior with WORKSPACE, ACCOUNT and SESSION scopes; provider-neutral human-readable preference notebooks; conservative explicit-over-inferred learning; local tool-feedback capture; user inspect/change/revoke/reset controls; and strict evidence/privacy/safety/account-isolation dominance. Durable preference artifacts are additive optional LOCAL STATE under workspace schema 2.3."
+    "notes": "Preserves all existing LOCAL STATE and adds optional preference notebooks/records only when used. Adds mandatory user-owned preferences behavior with WORKSPACE, ACCOUNT and SESSION scopes; provider-neutral human-readable preference notebooks; conservative explicit-over-inferred learning; local tool-feedback capture; user inspect/change/revoke/reset controls; and strict evidence/privacy/safety/account-isolation dominance. Durable preference artifacts are additive optional LOCAL STATE under workspace schema 2.3."
   },
   "notes": "Personalized UX only. No Cloudflare Worker, installer sentence, provider-authorization, account identity or workspace-schema-version change. Engine API 1.0, workspace schema 2.3 and all existing LOCAL STATE are preserved."
 }
