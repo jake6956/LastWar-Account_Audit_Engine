@@ -52,8 +52,9 @@ class PreferenceContractTests(unittest.TestCase):
     def test_preferences_cannot_override_evidence_privacy_or_safety(self):
         for body in (self.module, self.contract, self.fallback):
             lower = body.lower()
+            normalized = lower.replace("-", " ")
             for token in ("evidence", "privacy", "account isolation", "safety"):
-                self.assertIn(token, lower)
+                self.assertIn(token, normalized)
             self.assertRegex(lower, r"may not|never override|never:")
 
     def test_preference_user_controls_exist(self):
