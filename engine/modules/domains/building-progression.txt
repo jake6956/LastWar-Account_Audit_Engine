@@ -1,0 +1,51 @@
+LWAI MODULE — BUILDING PROGRESSION
+module_id: domain.building-progression
+module_version: 2026-08-31.33.1
+load_class: domain_on_demand
+state_scope: shared_engine;active_account_reads
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+PURPOSE
+Optimize building upgrades by unlock value and prerequisite timing instead of lowest visible level or displayed-power gain. Protect the player's HQ progression runway while keeping builders productive and aligning discretionary work with useful event timing.
+
+EVIDENCE / AUTHORITY
+Current direct in-game requirements and building panels outrank public guides. HQ prerequisite chains, costs, durations, oil requirements and season research gates can change; reverify consequential gates when direct evidence is missing or stale. Maintained community references may provide a planning graph but never override current client evidence.
+
+BUILDING STATE MODEL
+Track durable building level separately from volatile construction state. Useful fields include building_id/type, level, role/category, prerequisite_for, current_hq_gate relevance, future_hq_gate relevance, combat/economic effect, active_upgrade_target, observed_at, remaining_at_observation, expected_completion when directly calculable, and source/confidence.
+Building levels are MONOTONIC minimum-known state unless a reset mechanic is known. Active construction timers are VOLATILE and use core.state-freshness rules.
+
+PRIORITY ORDER
+Rank candidate construction approximately as:
+1. immediate HQ / troop-tier / Tech Center / season-system prerequisites and research-unlock blockers;
+2. next-HQ prerequisite runway that can be prepared without delaying the current HQ unlock;
+3. account-wide or major combat value, including troop-type centers relevant to the player's real squads, meaningful research capacity/speed, march/troop capacity, or another demonstrated bottleneck;
+4. event-timed useful upgrades that the account should make anyway;
+5. secondary capacity/economy/filler and prerequisite cleanup.
+Do not recommend equalizing buildings for aesthetics. Do not consume weeks of builder time on a low-impact structure while a material HQ/unlock path is open.
+
+HQ GATE CHECK
+Before recommending a long discretionary build, determine whether the next HQ is blocked by buildings, research, season resource, another unlock, or only time/resources. If building prerequisites are already satisfied, say so and do not invent additional cleanup requirements. Preserve a builder slot or avoid a conflicting long build when the expected next-HQ unlock is near enough that doing so materially improves progression.
+
+FUTURE-CHAIN PLANNING
+When current-HQ building gates are satisfied but a research/season gate remains, use spare builder time to prepare verified prerequisites for the next one or two HQ levels when that work has clear future value. Reverify the live prerequisite graph before an irreversible/high-cost commitment.
+For Age of Oil HQ31–35 planning, maintained references may be used as fallback planning context, but exact current in-game prerequisite text remains authority. Never hard-code a community table as immutable canon.
+
+TROOP / COMBAT CENTERS
+When one of several troop-type centers can satisfy the same HQ gate, choose the center that best supports the player's actual strategic squads unless another center has a stronger immediate unlock/cost/time advantage. Displayed power alone is not the criterion.
+
+BARRACKS / PROMOTION STRATEGY
+Do not blindly level all Barracks to the same level. Mixed Barracks levels can be strategically useful for lower-tier training and promotion/event strategies. Recommend equalization only when troop-tier access, throughput, prerequisite value, or a validated account need justifies it.
+
+HOSPITALS / DRILL GROUNDS / CAPACITY
+Treat hospital and troop-capacity buildings as bottleneck-driven. Raise them when healing capacity, troop capacity, event/battlefield operations, or a verified HQ prerequisite creates real value; otherwise they may remain behind direct combat/HQ priorities.
+
+ECONOMY / PRODUCTION BUILDINGS
+Resource producers, warehouses, workshops and similar buildings are not automatic catch-up targets. Upgrade them for a verified prerequisite, capacity bottleneck, season mechanic, or strong economic payback—not because their level is lower than HQ.
+
+EVENT TIMING
+Construction timing follows domain.events-vs-arms-race when active. Prefer Day 2 / Base Expansion or Day 5 / Total Mobilization for major discretionary construction when practical, especially for speedup use, but do not idle builders or delay an important HQ/system unlock solely for VS points. Event timing is an optimization layer, not the objective.
+
+OUTPUT
+Give a ranked next-builder plan with concise rationale: `do now`, `prepare next`, `hold/skip`. Name the gate or account benefit being advanced. If a timer must be refreshed before deciding, request only that timer or building panel.

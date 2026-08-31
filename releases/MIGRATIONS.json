@@ -266,6 +266,18 @@
       "requires_account_rewrite": false,
       "tests": ["preferences_module_is_mandatory", "explicit_preferences_beat_tentative_and_defaults", "account_preferences_are_isolated", "session_only_preferences_are_ephemeral", "preferences_cannot_override_evidence_privacy_or_safety", "preference_user_controls_exist", "private_feedback_is_not_auto_published"],
       "notes": "Preserves existing LOCAL STATE and adds user-owned WORKSPACE/ACCOUNT/SESSION preferences as optional additive state, with human-readable provider-neutral preference notebooks, conservative preference learning and local tool-feedback behavior. No re-onboarding, account rewrite or schema-version change."
+    },
+    {
+      "from": "2026-08-31.32",
+      "to": "2026-08-31.33",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_freshness_buildings_and_store_value",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["state_freshness_avoids_redundant_recapture", "building_progression_is_prerequisite_aware", "event_store_value_is_price_and_account_aware"],
+      "notes": "Adds cross-domain durable/volatile freshness handling, queue identity/timer separation, prerequisite-aware building progression and account-aware event-store price/reserve/carry-over logic. All existing LOCAL STATE, preferences and workspace schema 2.3 are preserved."
     }
   ]
 }

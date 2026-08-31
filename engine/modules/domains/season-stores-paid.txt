@@ -1,6 +1,6 @@
 LWAI MODULE — SEASON, STORES & PAID VALUE
 module_id: domain.season-stores-paid
-module_version: 2026-08-29.20.1
+module_version: 2026-08-31.33.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
@@ -13,13 +13,29 @@ SEASON AWARENESS
 Always know the current season before season-system/store/resource recommendations. Do not assume seasons share identical tech, events, currencies, stores, rewards or progression bottlenecks. Reassess at season changes and major subsystem unlocks.
 
 EVENT STORES / BLACK MARKET / BOUNTY
-Inventory, prices, limits and event currencies are volatile. Verify current values before consequential advice. Rank options for this account using permanent combat value, bottlenecks, scarcity, replaceability, breakpoint acceleration, limits and upcoming systems.
+Inventory, prices, limits and event currencies are VOLATILE. Current in-game screenshot/direct text is authority for the offer actually available now. Parse the live offer as item identity, quantity, price, discount/value marker, availability/limit and remaining event/refresh context when visible. Historical or public tables may identify normal/discount patterns but never prove the current roll.
+Rank each live offer for this account using permanent combat value, current bottlenecks, scarcity, replaceability, breakpoint acceleration, price efficiency, remaining currency, expected future earning opportunities, refresh supply and known currency carry-over/expiration rules.
+
+PRICE-TIER RULE
+A good item can still be a bad offer. Compare same-item variants by unit price when current/maintained evidence supports the comparison. Prefer genuinely discounted scarce permanent progression over full-price farmable resources. Do not label an offer `value` merely because the UI does.
+When the user presents repeated refreshes, learn only supported price patterns from direct rolls/current references; do not assume every future event preserves the same table.
+
+ACCOUNT-AWARE BUY / CONDITIONAL / SKIP
+For each roll, return concise `BUY`, `CONDITIONAL`, or `SKIP` decisions and the reason that changes the account outcome. Immediate account bottlenecks may raise the value of an otherwise ordinary material, but bottleneck relevance does not make a poor exchange rate automatically good.
+If a deterministic purchase crosses or materially approaches a verified combat/progression breakpoint, include that acceleration in the decision. If the account already has ample supply or the item is not actionable, discount its value.
+
+RESERVE / CARRY-OVER
+Before draining event currency, determine whether currency expires, carries over, or has a known future use. Maintain a reserve only when current evidence supports a reason: known prediction/challenge entry cost, high-value future refreshes, end-of-event uncertainty, or another verified threshold. Do not invent a reserve amount from habit.
+If currency carry-over is supported, treat `spend it before event end` as false unless a better verified reason exists. If carry-over/expiration cannot be validated, say so before consequential end-of-event dumping.
+
+REFRESH ECONOMICS
+When refreshes are free or use a cheap secondary currency, compare refresh cost against the expected opportunity to see materially better offers. Do not spend premium currency on refreshes blindly; use the current event's remaining refreshes, duration and known offer spread. Free items should generally be claimed when there is no hidden opportunity cost, but verify unusual choice/limit mechanics.
 
 PAID VALUE
 Treat spending comfort as an optimization parameter, not a moral issue. Willingness to spend does not make poor exchange rates good. Compare paid offers by scarcity-adjusted account impact and alternative acquisition paths.
 
 SPECIAL CURRENCY / HOARDING
-Recommend hoarding only when current evidence supports a known future bottleneck, threshold or conversion. Do not invent future event mechanics from stale memory.
+Recommend hoarding only when current evidence supports a known future bottleneck, threshold, carry-over advantage or conversion. Do not invent future event mechanics from stale memory.
 
 EXTERNAL KNOWLEDGE
 Evidence order follows direct current game evidence -> official documentation -> multiple maintained databases/calculators -> supported community testing -> consensus -> inference. Volatile information should carry a verified date/source/confidence. Shared season packs accelerate research but never override stronger current evidence.

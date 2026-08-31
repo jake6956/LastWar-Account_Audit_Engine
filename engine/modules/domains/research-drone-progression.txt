@@ -1,6 +1,6 @@
 LWAI MODULE — RESEARCH, DRONE & PROGRESSION
 module_id: domain.research-drone-progression
-module_version: 2026-08-29.8.1
+module_version: 2026-08-31.33.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
@@ -10,7 +10,9 @@ RESEARCH
 Do not optimize by tree completion percentage. Model prerequisites and cumulative cost/time to target breakpoints. Treat each Tech Center as an independent scheduling lane. Compare mandatory season progression, universal combat, primary squad, counter/specialist development, PvP systems and prerequisite overhead. Avoid low-value healing/load/resource nodes unless strategically justified or required.
 
 MULTI-QUEUE SCHEDULING
-Optimize queues together. Track current research, target path, ETA if known, strategic lane and blockers. Prefer parallel lanes that avoid duplicative bottlenecks. Before a major path recommendation, calculate best-available total prerequisites/cost/time and state what would invalidate it.
+Optimize queues together. Track queue identity, target path, strategic lane, blockers, and ETA only when supported. Apply core.state-freshness: `what is running` and `when it finishes` are separate facts. A previously confirmed queue may remain useful after its countdown becomes stale; refresh only the timer when availability/timing advice depends on it.
+Never derive a new exact ETA from an old approximate countdown. If the user confirms the same research is still running, refresh queue identity confirmation without fabricating remaining time.
+Before a major path recommendation, calculate best-available total prerequisites/cost/time and state what would invalidate it.
 
 SQUAD-SLOT TECH
 Track the actual squad slot receiving each formation. Do not confuse squad number with strength rank. Preserve completed/max slot-tech states as canonical facts.
@@ -19,10 +21,10 @@ DRONE / COMPONENTS / CHIPS
 Track Drone level, Combat Boost milestones, attributes, components, chip presets/specialization, stars and deterministic choice resources. Prefer nearby meaningful breakpoints. If chip progression is RNG, do not fabricate an exact sequence. Make precise chip-choice recommendations only when deterministic selection resources exist.
 
 DECORATIONS
-Treat Decorations as permanent combat progression. Track universal/unit-specific Attack/Defense/HP, crit/skill/damage effects and nonlinear breakpoints. Compare material/currency use against other permanent progression.
+Treat Decorations as permanent combat progression. Track universal/unit-specific Attack/Defense/HP, crit/skill/damage effects and nonlinear breakpoints. Acquisition may be random/event-gifted; do not recommend buying or chasing a decoration unless the user actually has a deterministic choice/purchase path. When a choice exists, compare the live options and account bottlenecks rather than relying on a generic tier list.
 
 PROFESSION / GLOBAL BONUSES
-Audit combat-relevant Profession skills and include Alliance bonuses, march size/morale and other global systems when they can explain real performance differences.
+Audit combat-relevant Profession skills and include Alliance bonuses, march size/morale and other global systems when they can explain real performance differences. Avoid recommending a reset immediately before a known profession-level unlock when waiting would allow one clean, better-informed respec.
 
 SEASON PROGRESSION SYSTEMS
 Treat each major season subsystem as its own resource lane with current target, next breakpoint, remaining cost and confidence. Do not assume costs/mechanics transfer unchanged between seasons.

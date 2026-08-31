@@ -89,6 +89,24 @@ Current maintained 2026 references support the VS weekly weighting `1 / 1 / 1 / 
 
 Planned Skill Medal, Hero Shard, meaningful Hero EXP, recruitment-ticket, and eligible Exclusive Weapon shard spending normally waits for Thursday / Train Heroes. Upgrade Ore and ordinary gear leveling currently have no known VS or Arms Race scoring benefit and should not be delayed merely for event points. Event timing is not a hard prohibition: an urgent battlefield, season, boss, queue, or other material progression need may justify spending off-day, with the tradeoff stated clearly.
 
+## Freshness without screenshot churn
+
+LWAI distinguishes durable/monotonic progression from volatile values. Completed research, building levels, gear levels and permanent unlocks remain useful as minimum-known state; balances, queue countdowns, store offers and event timers age quickly. Queue identity and remaining time are tracked separately when persistence exists.
+
+A stale countdown does not automatically invalidate the fact that the same research or construction is still running. LWAI should request only the smallest refresh required by the current decision and should not ask for another broad screenshot set merely because time passed. Exact ETAs are never invented from old approximate countdowns.
+
+## Building progression
+
+Building advice is prerequisite-aware. LWAI first checks current HQ/system gates, then the next verified prerequisite runway, then account-wide/combat value, and only later secondary economy/filler work. It does not recommend equalizing buildings just because their levels differ.
+
+Mixed Barracks levels may be strategically useful for training/promotion workflows. Hospitals and Drill Grounds are treated as capacity bottlenecks unless a live prerequisite requires them. Major construction can be timed for VS when practical, but builders should not be idled and important HQ/system unlocks should not be delayed solely for event points.
+
+## Event-store value
+
+Black Market and event-store advice uses the live roll: item, quantity, price, discount marker, availability and event/refresh context. A good item can still be a bad offer. LWAI compares unit price when supported, weighs the player's real bottlenecks and breakpoints, and returns concise `BUY`, `CONDITIONAL`, or `SKIP` recommendations.
+
+Reserve and end-of-event advice depends on validated carry-over/expiration and known future uses; LWAI does not invent a reserve amount or tell users to dump a currency merely because an event is ending.
+
 ## Runtime architecture
 
 ```text
@@ -133,7 +151,7 @@ The LastWarAI.com response is a transparent public configuration document. It:
 
 ## Release identity
 
-**Engine version:** `2026-08-31.32`  
+**Engine version:** `2026-08-31.33`  
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
 **Bootstrap protocol:** `2.0`  

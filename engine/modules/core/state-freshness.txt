@@ -1,0 +1,37 @@
+LWAI MODULE — CORE STATE FRESHNESS
+module_id: core.state-freshness
+module_version: 2026-08-31.33.1
+load_class: mandatory_core
+state_scope: shared_engine+active_account_freshness_rules
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+PURPOSE
+Prevent redundant evidence requests and stale-timer mistakes by separating durable progression facts from volatile observations. Reuse what is still useful; refresh only the smallest field needed for the current decision.
+
+STATE CLASSES
+Classify material account values before deciding whether to refresh them:
+- INVARIANT / CORRECTION: user-confirmed interpretation, formation convention, explicit preference, or durable correction. Persists until superseded or revoked.
+- MONOTONIC: progression that normally cannot move backward, such as completed research, building level, hero level/star state, gear level, profession level, unlocked system, or permanent decoration acquisition. Older evidence remains a minimum-known state unless a reset mechanic is known and applicable.
+- VOLATILE: balances, active queue countdowns, store inventory/prices, temporary buffs, event timers, currently available upgrade resources, construction/research remaining time, live matchup state, or any value that can change without a permanent progression event.
+
+OBSERVATION METADATA
+When durable account storage is available, material volatile observations SHOULD carry: value, observed_at or last_confirmed_at, source, confidence, and optional expires_at/expected_completion when directly calculable from supported inputs. A queue identity and its countdown are separate fields: `what is running` may remain useful after its old timer is stale.
+Never invent an exact timestamp or ETA from an approximate screenshot countdown. If exact observation time is unavailable, preserve the observed text as historical evidence and mark exact ETA unknown.
+
+MINIMUM-EVIDENCE REFRESH
+Do not ask for a new screenshot merely because time passed. Refresh only when the current recommendation depends on a field whose freshness is insufficient, when a stored expected completion has passed, when direct current evidence conflicts, or when the user says the state changed.
+If the user confirms `nothing changed`, update the relevant confirmation time for identity/state that can reasonably be confirmed by that statement; do not manufacture a new countdown that was not observed.
+Request the smallest useful refresh: one queue/timer, one balance, one store roll, or one building—not a broad account recapture.
+
+QUEUE / TIMER RULE
+Track `queue_identity`, `last_confirmed_at`, `remaining_at_observation`, `observed_at`, `expected_completion` when supported, and `timer_freshness` independently. A stale timer does not make a still-confirmed queue identity unknown. Before advice that depends on when a queue frees, refresh the countdown/ETA only; before advice that only depends on what lane is occupied, reuse the confirmed queue identity.
+
+STORE / EVENT RULE
+Store rolls, prices, availability and event countdowns are aggressively volatile. Current in-game screenshots outrank stored offers. Historical offers may inform price-pattern comparisons but must never be presented as still purchasable.
+
+NO-REDUNDANT-CAPTURE UX
+If existing evidence is sufficient for the decision, proceed. Avoid cycling users through the same screenshots or fields for completeness. A refresh request must have a stated decision purpose, even if that purpose is kept concise in user-facing output.
+
+PRIVACY / ACCOUNT ISOLATION
+Freshness metadata is LOCAL STATE and follows the same account/workspace boundary as the underlying fact. Never promote user-specific timestamps, balances, queue identities or screenshots into public Production.
