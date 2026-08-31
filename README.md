@@ -73,6 +73,14 @@ Maintained community projects such as **LastWarTutorial.com**, **cpt-hedge.com**
 
 Community material is not gospel. Material mechanics, numbers, costs, probabilities, event rules, expensive/irreversible choices, and contested claims should be independently checked against current official/in-game evidence when available and corroborated with other credible current sources. If a material claim cannot be validated to high confidence after reasonable due diligence, LWAI says so rather than manufacturing certainty.
 
+## Recurring event timing
+
+LWAI treats Alliance Duel VS and Arms Race timing as part of resource optimization. It first chooses the account upgrade that creates the best real value, then—when practical—times that same upgrade to the recurring event window that rewards it.
+
+Current maintained 2026 references support the VS weekly weighting `1 / 1 / 1 / 2 / 3 / 4` from Monday through Saturday, while older guides may still show `1 / 2 / 2 / 2 / 2 / 4`. The current in-game event panel always wins when these disagree. Exact per-action points are not treated as universal because Alliance Duel research and game changes can alter scoring.
+
+Planned Skill Medal, Hero Shard, meaningful Hero EXP, recruitment-ticket, and eligible Exclusive Weapon shard spending normally waits for Thursday / Train Heroes. Upgrade Ore and ordinary gear leveling currently have no known VS or Arms Race scoring benefit and should not be delayed merely for event points. Event timing is not a hard prohibition: an urgent battlefield, season, boss, queue, or other material progression need may justify spending off-day, with the tradeoff stated clearly.
+
 ## Runtime architecture
 
 ```text
@@ -117,7 +125,7 @@ The LastWarAI.com response is a transparent public configuration document. It:
 
 ## Release identity
 
-**Engine version:** `2026-08-30.27`  
+**Engine version:** `2026-08-30.31`  
 **Engine API:** `1.0`  
 **Workspace schema:** `2.3`  
 **Bootstrap protocol:** `2.0`  
