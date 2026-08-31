@@ -1,0 +1,27 @@
+{
+  "version": "2026-08-31.34",
+  "token_estimator": "ceil(utf8_bytes / 4); heuristic only, not a model tokenizer",
+  "budgets": {
+    "stage1_loader": {
+      "soft_bytes": 3584,
+      "hard_bytes": 4096
+    },
+    "bootstrap_full": {
+      "soft_bytes": 49152,
+      "hard_bytes": 65536
+    },
+    "mandatory_modules": {
+      "soft_bytes": 131072,
+      "hard_bytes": 163840
+    },
+    "optional_modules": {
+      "soft_bytes": 98304,
+      "hard_bytes": 131072
+    }
+  },
+  "duplication_soft_occurrences": {
+    "first_run_persistence_prompt": 4,
+    "compact_storage_reassurance": 5
+  },
+  "policy": "Stage-1 remains a hard 4 KiB orchestration boundary. Other limits are conservative maintainability guards, not claims about host context limits. Soft-budget growth warns; hard-budget overflow fails. Safety, privacy, evidence, recovery and account-isolation guarantees may not be removed merely to reduce size."
+}
