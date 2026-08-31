@@ -1,7 +1,7 @@
 # LWAI User Experience Contract
 
-**Version:** 2026-08-30.26  
-**Status:** Production contract
+**Version:** 2026-08-31.34  
+**Status:** Release-candidate contract
 
 ## Product experience
 
@@ -38,11 +38,11 @@ Technical success states such as provider authorized, capabilities rechecked, wo
 
 ## New-user journey
 
-Only after existing/legacy-state discovery proves the user is genuinely new, ask:
+Only after existing/legacy-state discovery proves the user is genuinely new, ask exactly one compact product-choice question before discussing provider security or authorization:
 
-`Before we build your account, would you like me to use private cloud storage so I can safely pick up where we left off in future chats? It’s recommended, but optional. Reply yes or no.`
+`Would you like me to save your LWAI setup in your own cloud storage so I can pick up where we left off in future chats? Recommended, but optional. Reply yes or no.`
 
-A no response selects session-only and immediately proceeds to identity. A yes response enters the provider chooser.
+Do not append provider internals, connector scope language, exhaustive storage-action lists, OAuth/token/cookie terminology, or credential boilerplate to this initial choice. A no response selects session-only and immediately proceeds to identity. A yes response enters the provider chooser.
 
 The logical journey is:
 
@@ -58,24 +58,21 @@ Also offer every other genuinely supported writable candidate. Typical options o
 
 If only one usable provider is available, offer that provider versus session-only instead of silently selecting it.
 
-## Mandatory workspace-security reassurance
+## Compact authorization reassurance
 
-Before any cloud authorization, tell the user plainly that LWAI has an explicit workspace-only guardrail. The response must convey that:
-- LWAI is restricted to its dedicated Last War/LWAI workspace;
-- it will not browse, read, list, search, inspect, summarize, modify, move, rename, delete, index, or use anything outside that workspace;
-- broader connector visibility does not grant LWAI permission to use unrelated provider content;
-- other ChatGPT/app workspaces and personal files are off-limits;
-- authentication happens in the provider/ChatGPT UI and LWAI never asks for passwords, OAuth codes, tokens, cookies, or credentials in chat.
+The full workspace-security contract remains exhaustive and authoritative internally. It must not become the initial persistence prompt.
 
-Recommended wording:
+Only after the player explicitly chooses a cloud provider, immediately before authorization, tell the user once in compact plain language:
 
-> LWAI is explicitly restricted to its own Last War workspace. I will not browse, read, change, move, delete, or use anything else in your connected storage. Even if the connector technically exposes broader access, everything outside the LWAI workspace is off-limits to this tool.
+> LWAI will use only its dedicated Last War/LWAI workspace; everything else in your connected storage is off-limits. Connect through the provider/ChatGPT UI, and never paste passwords or login codes here.
+
+Do not expand this into an exhaustive list of prohibited storage verbs, connector scope details, OAuth/token/cookie types, or internal security architecture unless the user asks or a concrete authorization failure requires the detail. The internal rules remain stricter than the compact copy: unrelated provider content is never in application scope, provider-wide exploration is prohibited, broader connector visibility is not consent, and authentication secrets are never requested in chat.
 
 This is an LWAI runtime/application guardrail. Do not falsely describe it as provider-side ACL enforcement unless such ACLs are actually configured.
 
 ## Authorization coaching
 
-After the security reassurance, authorization happens in the provider/host UI. Never request provider passwords, OAuth codes, access/refresh tokens, cookies, or credentials in chat.
+After the compact reassurance, authorization happens in the provider/host UI. Never request provider passwords, OAuth codes, access/refresh tokens, cookies, or credentials in chat.
 
 For Google Drive, tell the user to approve access needed for the LWAI workspace and choose **`Allow always`** if ChatGPT actually presents that option. For Dropbox, OneDrive/Microsoft 365, Box, or another provider, use the actual provider/host wording shown and recommend an equivalent persistent authorization option only when it is genuinely offered. Do not invent OAuth scope names or UI controls.
 
@@ -132,7 +129,7 @@ LWAI uses current available research rather than model memory alone when materia
 
 `current direct in-game evidence -> current official Last War/publisher material -> reputable maintained tools/databases/guides -> independently corroborated community testing/consensus -> clearly labeled LWAI calculation/inference`
 
-Maintained community projects such as **LastWarTutorial.com** and **cpt-hedge.com** are useful research sources. Reddit communities such as **r/LastWarMobileGame** are useful for observations, newly surfaced changes, and edge cases.
+Maintained community projects such as **LastWarTutorial.com**, **cpt-hedge.com**, and **LastWarVault.com** are useful research sources. Reddit communities such as **r/LastWarMobileGame** are useful for observations, newly surfaced changes, and edge cases.
 
 Community claims are not gospel. For material mechanics, numbers, costs, event rules, probabilities, irreversible/expensive choices, or contested claims, independently validate against current official/in-game evidence when available and corroborate with other credible current sources. If official material is silent, seek multiple independent current sources and compare them with direct user evidence when possible.
 
@@ -140,8 +137,8 @@ If a material claim cannot be validated to high confidence, say so when using it
 
 ## Later persistence reminders
 
-Session-only users may be reminded only when durable storage materially benefits the current workflow and cooldown/suppression rules permit it. Acceptance reruns the same provider chooser, workspace-security reassurance, authorization, and verification flow. Google Drive remains the recommended first choice when available, but explicit user selection is still required. After successful later setup, resume the exact prior task.
+Session-only users may be reminded only when durable storage materially benefits the current workflow and cooldown/suppression rules permit it. Acceptance reruns the same provider chooser, compact workspace-only reassurance, authorization, and verification flow. Google Drive remains the recommended first choice when available, but explicit user selection is still required. After successful later setup, resume the exact prior task.
 
 ## Current authority
 
-This contract describes current Production behavior. Historical release notes and changelogs record how LWAI arrived here; they are not layered runtime instructions and do not override this contract or the current exact-commit engine modules.
+This contract describes the .34 release-candidate behavior. Historical release notes and changelogs record how LWAI arrived here; they are not layered runtime instructions and do not override this contract or the current exact-commit engine modules.
