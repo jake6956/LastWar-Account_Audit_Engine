@@ -278,6 +278,18 @@
       "requires_account_rewrite": false,
       "tests": ["state_freshness_avoids_redundant_recapture", "building_progression_is_prerequisite_aware", "event_store_value_is_price_and_account_aware"],
       "notes": "Adds cross-domain durable/volatile freshness handling, queue identity/timer separation, prerequisite-aware building progression and account-aware event-store price/reserve/carry-over logic. All existing LOCAL STATE, preferences and workspace schema 2.3 are preserved."
+    },
+    {
+      "from": "2026-08-31.33",
+      "to": "2026-08-31.34",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_onboarding_cache_and_instruction_hygiene",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["first_run_persistence_choice_is_compact", "cloud_security_reassurance_is_deferred_until_provider_selection", "infrastructure_boundary_preserves_transport_only_worker", "instruction_budget_is_measured_and_bounded"],
+      "notes": "Compacts first-run persistence/security UX without weakening the internal workspace boundary, records deterministic lwai-bootstrap cache configuration and stale-edge verification, cleans current public transport docs, and adds instruction-footprint telemetry. All existing LOCAL STATE and workspace schema 2.3 are preserved."
     }
   ]
 }
