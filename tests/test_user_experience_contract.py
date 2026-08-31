@@ -32,6 +32,8 @@ class UserExperienceContractTests(unittest.TestCase):
         self.updater = read("engine/modules/release/updater.txt")
         self.contract = read("contracts/user-experience.md")
         self.storage_contract = read("contracts/storage-adapter.md")
+        self.bootstrap_contract = read("contracts/bootstrap-resolution.md")
+        self.quick_install = read("docs/quick-install.md")
         self.readme = read("README.md")
         self.latest = json.loads(read("releases/LATEST.json"))
 
@@ -55,11 +57,12 @@ class UserExperienceContractTests(unittest.TestCase):
         self.assertEqual(self.latest["preferred_install_url"], PUBLIC_URL)
         self.assertEqual(self.latest["live_ref_source"], LIVE_REF)
         self.assertFalse(self.latest["public_entrypoint_authority"])
-        for body in (self.full, self.bootstrap, self.readme):
+        for body in (self.full, self.bootstrap, self.bootstrap_contract, self.quick_install, self.readme):
             self.assertIn(PUBLIC_URL, body)
+        for body in (self.full, self.bootstrap, self.bootstrap_contract, self.readme):
             self.assertIn(LIVE_REF, body)
         self.assertIn(LIVE_REF, self.loader)
-        self.assertIn("Stage-0 bootloader", self.readme)
+        self.assertIn("Stage 0 — https://lastwarai.com", self.bootstrap_contract)
 
     def test_primary_installer_is_first_party_not_third_party_shortener(self):
         self.assertEqual(
@@ -69,14 +72,21 @@ class UserExperienceContractTests(unittest.TestCase):
         self.assertIn(LEGACY_URL, self.latest.get("legacy_install_urls", []))
         self.assertNotIn(LEGACY_URL, self.loader)
         self.assertNotIn(LEGACY_URL, self.full)
-        self.assertIn("legacy compatibility alias", self.readme.lower())
+        self.assertNotIn(LEGACY_URL, self.readme)
+        for body in (self.bootstrap, self.bootstrap_contract, self.quick_install):
+            lower = body.lower()
+            self.assertIn("legacy", lower)
+            self.assertIn("compatibility", lower)
 
     def test_legacy_repo_installer_handoff_executes_without_repaste(self):
-        lower = self.readme.lower()
-        self.assertIn("legacy repository-installer compatibility", lower)
-        self.assertIn("do not stop at the readme", lower)
-        self.assertIn("ask the user to paste another prompt", lower)
-        self.assertIn(LIVE_REF, self.readme)
+        lower = self.bootstrap.lower()
+        self.assertIn("legacy alias", lower)
+        self.assertIn("already-circulated installer", lower)
+        self.assertIn("compatibility-only", lower)
+        contract_lower = self.bootstrap_contract.lower()
+        self.assertIn("the user is not expected to retrieve github json", contract_lower)
+        self.assertIn("paste another url", contract_lower)
+        self.assertIn(LIVE_REF, self.bootstrap_contract)
 
     def test_first_run_cloud_question_is_compact_and_staged(self):
         self.assertNotIn(FIRST_RUN_PROMPT, self.loader)

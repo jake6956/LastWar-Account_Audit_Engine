@@ -373,9 +373,21 @@ def main() -> None:
     if archive.get("preferred_install_url") != PUBLIC_INSTALL_URL or archive.get("installer") != PUBLIC_INSTALL_INSTRUCTION:
         fail("versioned release manifest public installer mismatch")
 
-    if f"**Engine version:** `{version}`" not in readme or LIVE_REF not in readme or PUBLIC_INSTALL_URL not in readme:
-        fail("README Production identity/install mismatch")
-    require("README", readme, ["Stage-0 bootloader", "4 KiB", "legacy compatibility alias", "Allow always", "workspace-only", "release.resolver"])
+    require("README", readme, [
+        PUBLIC_INSTALL_INSTRUCTION,
+        LIVE_REF,
+        "releases/LATEST.json",
+        "Private player/account state does not belong in this repository.",
+    ])
+    if version in readme:
+        fail("README must not pin a mutable engine version; use releases/LATEST.json instead")
+    for token in [
+        LEGACY_INSTALL_URL, "Cloudflare", "4 KiB", "release.resolver", "Allow always",
+        "workers_dev", "preview_urls", "cache.enabled",
+    ]:
+        if token in readme:
+            fail(f"README leaked internal or stale-prone detail: {token}")
+
     require("workflow", workflow, [
         "python scripts/validate_release.py", "python scripts/validate_instruction_budget.py",
         "test_runtime_behavior.py", "test_user_experience_contract.py", "test_infrastructure_boundary.py",

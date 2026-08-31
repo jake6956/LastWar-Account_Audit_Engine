@@ -60,8 +60,7 @@ class ProductInvariantTests(unittest.TestCase):
     def test_research_sources_are_inputs_not_gospel(self):
         flow = text("engine/modules/core/flow-continuity.txt")
         fallback = text("engine/BOOTSTRAP_FULL.txt")
-        readme = text("README.md")
-        for body in (flow, fallback, readme):
+        for body in (flow, fallback):
             self.assertIn("LastWarTutorial.com", body)
             self.assertIn("cpt-hedge.com", body)
             self.assertIn("LastWarVault.com", body)

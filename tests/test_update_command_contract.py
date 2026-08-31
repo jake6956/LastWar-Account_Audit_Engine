@@ -53,11 +53,12 @@ class UpdateCommandContractTests(unittest.TestCase):
     def test_legacy_alias_is_compatibility_only(self):
         latest = json.loads(read("releases/LATEST.json"))
         self.assertIn(LEGACY_URL, latest["legacy_install_urls"])
-        for rel in ("README.md", "docs/quick-install.md", "engine/modules/release/bootstrap.txt"):
+        for rel in ("docs/quick-install.md", "contracts/bootstrap-resolution.md", "engine/modules/release/bootstrap.txt"):
             lower = read(rel).lower()
             self.assertIn("legacy", lower)
             self.assertIn("compatibility", lower)
         self.assertNotEqual(latest["preferred_install_url"], LEGACY_URL)
+        self.assertNotIn(LEGACY_URL, read("README.md"), "public README should not advertise the legacy alias")
 
 
 if __name__ == "__main__":
