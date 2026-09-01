@@ -13,10 +13,11 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout exact candidate head
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -29,4 +30,13 @@ jobs:
         run: python scripts/validate_release.py
       - name: Run runtime behavioral regressions
         working-directory: tests
-        run: python -m unittest -v test_runtime_behavior.py test_onboarding_no_dead_air.py test_private_failsafe_contract.py test_product_invariants.py test_update_command_contract.py test_auto_update_controller.py test_user_experience_contract.py test_infrastructure_boundary.py test_bootstrap_resolution_contract.py test_season_intelligence_contract.py test_epistemic_integrity_contract.py test_vs_timing_contract.py test_preferences_contract.py
+        run: python -m unittest -v test_runtime_behavior.py test_onboarding_no_dead_air.py test_private_failsafe_contract.py test_product_invariants.py test_update_command_contract.py test_auto_update_controller.py test_user_experience_contract.py test_infrastructure_boundary.py test_bootstrap_resolution_contract.py test_season_intelligence_contract.py test_epistemic_integrity_contract.py test_vs_timing_contract.py test_preferences_contract.py test_code_boss_optimizer_contract.py
+      - name: Preserve exact validated source snapshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: lwai-source-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            .
+            !.git/**
+          include-hidden-files: true
+          if-no-files-found: error

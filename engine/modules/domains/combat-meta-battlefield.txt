@@ -1,6 +1,6 @@
 LWAI MODULE — COMBAT, META & BATTLEFIELD
 module_id: domain.combat-meta-battlefield
-module_version: 2026-08-29.8.1
+module_version: 2026-09-01.35.2
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
@@ -12,8 +12,55 @@ When performance is poor, diagnose class counter, hero/skill maturity, EW, resea
 COUNTER / META MODEL
 Maintain an account-specific opponent model by meaningful power bands when evidence exists. Counter relationships matter, but do not blindly rebuild into the nominal counter class. Weigh existing hero maturity, tech, EW, gear, Drone/chips, resource cost and actual opponent distribution. Prefer observed matchups over generic tier lists.
 
+PVE DAMAGE-BOSS OPTIMIZER
+Wanted/Code Boss, Rampage Boss and special/seasonal damage bosses such as the current Crystal Boss are boss-specific PvE optimization problems, not ordinary PvP formation problems and not interchangeable with one another. First identify the exact boss/event variant and its current in-game rules, then optimize the active account against that ruleset. Never transfer a Code Boss lineup rule to Crystal/Rampage merely because all three are damage races.
+
+MECHANIC AUTHORITY VS OPTIMIZATION EVIDENCE
+Current in-game boss text, trait/weakness panels, Extra Bonus panels and battle restrictions are authority for what the mechanic does. Controlled same-account boss results are first-class evidence for which legal lineup/gear/chip configuration performs best on that account. Repeatable same-account measured damage may outrank theoretical lineup charts and generic guides for optimization while never rewriting the underlying mechanic. Comparable community anecdotes are valuable hypothesis generators when boss variant, bonuses and account conditions are similar; clustered/reproduced reports deserve more weight than isolated claims, but community anecdotes do not become universal mechanics.
+
+WANTED / CODE BOSS VARIANT
+Current maintained evidence identifies the recurring matching-type bonus as Code 39 -> Aircraft, Code 64 -> Missile, Code 87 -> Tank, with matching heroes receiving +50% damage. Treat current in-game boss text/direct evidence as authority if the mapping, bonus, fight duration or attempt rules ever differ. The matching-type bonus is a major input, not an automatic five-matching-hero mandate: a highly developed off-type carry or support can outperform an underbuilt matching hero after stars/levels, attack stats, skills/support multipliers, Exclusive Weapons, squad composition bonuses, squad-slot tech, Drone/chips and transferable offensive gear are considered.
+
+RAMPAGE BOSS VARIANT
+Rampage bosses have boss-specific traits/weaknesses and limited attempts. Current maintained evidence shows the recurring three-boss pattern rewarding Tank damage against one boss, Aircraft against another and Missile against another, with up to three attacks per boss; current in-game trait text is authority if the order, weakness or attempt rules differ. Optimize each boss separately rather than using one permanent Rampage lineup. If ranking/rewards aggregate damage across bosses, optimize the event-level total while respecting each boss's current weakness.
+
+CRYSTAL / SPECIAL BOSS VARIANT
+Crystal Boss is materially different from Wanted/Code Boss. Current 2026 maintained evidence indicates normal troop-counter mechanics are ignored; the current event grants an additional +30% Attack damage for deploying five heroes of the same troop type and can grant +20% allied damage per currently qualifying Defense Hero shown in the Extra Bonus panel. Qualifying heroes/bonus details are volatile and must be read from the current in-game panel before consequential advice. Current evidence also indicates most temporary combat buffs are disabled while Drone-chip damage effects remain relevant, and weekly damage progress is based on the best single hit rather than cumulative daily damage. Reverify these rules from current direct evidence when the event/season changes.
+
+Do not import the Wanted/Code 4+1 or all-out-attack pattern into Crystal Boss by habit. Start with the strongest account-specific five-of-one-type candidate that preserves the current same-type and qualifying-Defense-Hero bonuses, then test only substitutions whose supported personal/team contribution could realistically overcome the bonus being lost. Current community testing frequently reports normal mono-type squads outperforming Code-Boss-style hybrids, but that evidence is a candidate prior, not a substitute for the user's measured results.
+
+ACCOUNT-SPECIFIC CANDIDATE MODEL
+Before naming a best damage-boss lineup, reconcile the active account's current supported state for every plausible candidate: hero class/type, level, stars, relevant attack/stat lines when known, skill levels and actual PvE/team-buff effects, Exclusive Weapon level/milestones, current role/position constraints, squad/preset and squad-slot tech, Drone/chip set, Decorations/Profession/global bonuses when materially differentiating, and the shared transferable gear pool. Displayed hero or squad power is context only and must not substitute for these inputs.
+
+Build and compare candidates appropriate to the identified boss variant. For Wanted/Code this normally includes the strongest matching-type candidate, plausible hybrids and the user's current boss/default preset. For Crystal/special bosses, include the strongest rules-compliant mono-type lineup first, then only plausible hybrids/substitutions that have a supported reason to offset lost event bonuses. For Rampage, build per-weakness candidates for each current boss. Account for verified composition/squad bonuses and Drone-chip benefits gained or lost by mixing types. Evaluate supports by total team damage contribution, not personal damage alone. Do not invent a numeric damage formula when exact coefficients are unknown; use supported comparative inputs plus empirical attempts.
+
+BOSS GEAR REASSIGNMENT
+Gear is a shared transferable pool, not permanently owned by the hero currently wearing it. When the identified boss does negligible incoming damage and direct/current evidence confirms survival is not binding, prioritize the best offensive Guns and Data Chips on heroes expected to create the most total boss damage, including their buffs/skills. Armor/Radar/frontline-tanking value is then normally secondary unless a specific gear promotion/attribute affects offense. If the special boss can actually kill, debuff or disable heroes, model that survival mechanic instead of blindly using the Wanted Boss damage-only assumption. Tell the user exactly which pieces to move and remind them to restore ordinary presets afterward when relevant.
+
+BOSS POSITIONING
+Do not force defensive heroes into the front row merely because they are tanks. Position heroes only when a verified skill target, row-dependent buff, Drone-chip interaction, attack behavior or boss mechanic makes placement matter. Otherwise hero selection, event bonuses, skill interaction and offensive gear allocation dominate cosmetic frontline conventions.
+
+MINIMUM-EVIDENCE GATE
+If stored account state is current enough to distinguish candidates, proceed without broad recapture. If a missing/stale field could plausibly flip the recommendation—such as current boss identity/trait/Extra Bonus panel, star/skill/EW state for competing heroes, offensive gear availability, squad-slot tech or Drone chips—request only that smallest field/screen before claiming a definitive best lineup. Never fill an account-specific gap with a canned maxed-whale roster.
+
+BOSS OUTPUT CONTRACT
+For a damage-boss recommendation, give:
+- verified/assumed boss variant and the exact current bonus/weakness/restriction that matters;
+- recommended five heroes and positions only where position is material;
+- explicit offensive gear/chip moves from the shared pool when useful;
+- the account-specific reason each non-obvious choice beats its closest alternative;
+- strongest alternative lineup worth testing;
+- confidence and smallest missing evidence that could change the answer;
+- one controlled next-attempt test when useful.
+For threshold events, state the user's current best hit and next target when known, but do not promise that lineup changes alone can bridge a large account-stat gap.
+
+EMPIRICAL DAMAGE-BOSS LOOP
+Use repeated boss attempts as account-specific optimization evidence. Record boss variant/code/phase, current trait/bonus panel where relevant, lineup, meaningful positions, offensive gear, Drone/chips, relevant allowed buffs and total single-attempt damage. Change one high-value variable at a time when practical. Avoid overfitting a single crit/proc-heavy outlier; compare repeated attempts across available daily/event windows and use the central/repeatable result plus personal best as separate signals. Preserve successful configurations as LOCAL account evidence, not public universal truth.
+
+For optimization ranking: current direct mechanic rules define the legal/bonus landscape; repeatable controlled same-account results are the strongest lineup evidence; well-matched repeated community anecdotes can reorder candidate tests; generic tier lists/static lineup charts are last-resort priors. When empirical account results contradict theory, investigate the discrepancy rather than defending the theory.
+
 FORMATIONS
-Use one explicit orientation per account. Track front-left, front-right, back-left, back-center and back-right. Front/back role is generally more important than lateral placement; lateral choices are mechanics/matchup-sensitive unless strong evidence supports a stable default.
+Use one explicit orientation per account. Track front-left, front-right, back-left, back-center and back-right. Front/back role is generally more important than lateral placement in ordinary combat; lateral choices are mechanics/matchup-sensitive unless strong evidence supports a stable default. Damage-boss positioning follows the identified boss-specific rules rather than ordinary frontline-survival defaults.
 
 EMPIRICAL BATTLE LOOP
 When useful battle reports exist, record mode, attacker/defender, own preset, opponent class, powers, result, formation, first death, damage summary and notable enemy state. For major investments, record before-state -> investment -> predicted effect -> observed result. Prefer the account’s repeatable evidence over generic claims over time.
