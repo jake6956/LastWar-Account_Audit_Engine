@@ -7,7 +7,7 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   validate:
@@ -40,3 +40,35 @@ jobs:
             !.git/**
           include-hidden-files: true
           if-no-files-found: error
+      - name: One-time .35 changelog sync
+        if: github.event_name == 'pull_request'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('releases/CHANGELOG.md')
+          s = p.read_text(encoding='utf-8')
+          marker = '## 2026-09-01.35'
+          if marker not in s:
+              entry = '''## 2026-09-01.35
+
+- Added an account-specific PvE damage-boss optimizer covering Wanted/Code Boss, Rampage Boss, and special/seasonal bosses such as Crystal Boss instead of treating all boss damage modes as interchangeable PvP-style formation problems.
+- Added boss-specific routing and Season Intelligence activation for Crystal/seasonal boss requests, with current in-game trait/weakness/Extra Bonus panels remaining authoritative when event mechanics change.
+- Wanted/Code guidance now reconciles matching-type bonuses with the active account's actual hero maturity, skills/support effects, Exclusive Weapons, squad-slot tech, Drone/chips and transferable offensive gear before recommending mono-type or hybrid lineups.
+- Rampage guidance now optimizes each current boss separately against its current Tank/Aircraft/Missile weakness and can optimize aggregate event damage when rankings combine bosses.
+- Crystal guidance now models the current same-type and qualifying Defense Hero event bonuses, ignores normal troop-counter assumptions when the current event does, and does not import Code-Boss hybrid rules by habit.
+- Promoted controlled repeated same-account boss results to first-class lineup-optimization evidence while keeping community anecdotes as candidate hypotheses rather than universal mechanics; added one-variable testing and single-run outlier guards.
+- Added minimum-evidence behavior so materially missing boss/hero/gear/tech/Drone state triggers only the smallest targeted refresh rather than a canned maxed-account roster.
+- Added deterministic regression coverage and standalone fallback parity for the damage-boss optimizer.
+- Hardened release validation to check out and archive the exact PR head rather than GitHub's synthetic pull-request merge commit; validated source snapshots are retained as CI artifacts for Google-first release failsafe synchronization.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE, installer/provider behavior and Cloudflare transport behavior.
+
+'''
+              p.write_text(s.replace('# Production Changelog\n\n', '# Production Changelog\n\n' + entry, 1), encoding='utf-8')
+          PY
+          if ! git diff --quiet -- releases/CHANGELOG.md; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add releases/CHANGELOG.md
+            git commit -m "docs: add .35 production changelog"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
