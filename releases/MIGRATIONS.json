@@ -290,6 +290,18 @@
       "requires_account_rewrite": false,
       "tests": ["first_run_persistence_choice_is_compact", "cloud_security_reassurance_is_deferred_until_provider_selection", "infrastructure_boundary_preserves_transport_only_worker", "instruction_budget_is_measured_and_bounded"],
       "notes": "Compacts first-run persistence/security UX without weakening the internal workspace boundary, records deterministic lwai-bootstrap cache configuration and stale-edge verification, cleans current public transport docs, and adds instruction-footprint telemetry. All existing LOCAL STATE and workspace schema 2.3 are preserved."
+    },
+    {
+      "from": "2026-08-31.34",
+      "to": "2026-09-01.35",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_account_specific_pve_damage_boss_optimizer",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": ["damage_boss_intents_route_to_combat_module", "seasonal_boss_intents_also_activate_season_intelligence", "boss_variants_are_not_interchangeable", "crystal_has_its_own_bonus_model", "empirical_same_account_results_are_first_class_evidence"],
+      "notes": "Adds account-specific PvE damage-boss optimization for Wanted/Code, Rampage and special/seasonal bosses including Crystal Boss. Boss-specific mechanic panels remain authoritative; current hero/skill/EW/gear/tech/Drone state and controlled same-account attempts determine lineup optimization. LOCAL STATE and schema remain unchanged."
     }
   ]
 }
