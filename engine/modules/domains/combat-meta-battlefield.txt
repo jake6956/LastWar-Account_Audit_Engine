@@ -1,6 +1,6 @@
 LWAI MODULE — COMBAT, META & BATTLEFIELD
 module_id: domain.combat-meta-battlefield
-module_version: 2026-08-29.8.1
+module_version: 2026-09-01.35.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
@@ -12,8 +12,45 @@ When performance is poor, diagnose class counter, hero/skill maturity, EW, resea
 COUNTER / META MODEL
 Maintain an account-specific opponent model by meaningful power bands when evidence exists. Counter relationships matter, but do not blindly rebuild into the nominal counter class. Weigh existing hero maturity, tech, EW, gear, Drone/chips, resource cost and actual opponent distribution. Prefer observed matchups over generic tier lists.
 
+WANTED / CODE BOSS OPTIMIZER
+Wanted/Code Boss is a PvE damage-optimization problem, not a normal PvP formation problem. The objective is highest single-attempt damage over the current boss fight window. Current maintained evidence identifies the recurring matching-type bonus as Code 39 -> Aircraft, Code 64 -> Missile, Code 87 -> Tank, with matching heroes receiving +50% damage. Treat current in-game boss text/direct evidence as authority if the mapping, bonus, fight duration or attempt rules ever differ.
+
+Do not copy a generic community lineup and call it best for the active account. The matching-type bonus is a major input, not an automatic five-matching-hero mandate. A highly developed off-type carry or support can outperform an underbuilt matching hero once stars/levels, attack stats, skill levels, support multipliers, Exclusive Weapons, squad composition bonuses, squad-slot tech, Drone/chip effects and transferable gear are considered. Community lineups are candidate hypotheses only.
+
+ACCOUNT-SPECIFIC CANDIDATE MODEL
+Before naming a best boss lineup, reconcile the active account's current supported state for every plausible candidate: hero class/type, level, stars, relevant attack/stat lines when known, skill levels and actual PvE/team-buff effects, Exclusive Weapon level/milestones, current role/position constraints, squad/preset and squad-slot tech, Drone/chip set, Decorations/Profession/global bonuses when materially differentiating, and the shared gear pool. Displayed hero or squad power is context only and must not substitute for these inputs.
+
+Build and compare at minimum:
+1. the strongest plausible matching-type lineup;
+2. one or more plausible hybrid lineups using the account's strongest developed carries/supports;
+3. the user's current boss/default preset when known.
+Account for any verified composition/squad bonus or Drone-chip benefit that is gained or lost by mixing types. Evaluate support heroes by total team damage contribution, not merely their personal damage. Do not invent a numeric damage formula when exact coefficients are unknown; use supported comparative inputs plus empirical attempts.
+
+BOSS GEAR REASSIGNMENT
+Gear is a shared transferable pool, not permanently owned by the hero currently wearing it. For current Wanted Boss behavior, survival is normally not the binding constraint: the boss is a damage race and current evidence indicates incoming damage is negligible. Therefore prioritize the best offensive Guns and Data Chips on the heroes expected to create the most total boss damage, including the effect of their buffs/skills. Armor/Radar/frontline-tanking value is normally irrelevant to boss damage unless a specific gear promotion/attribute has an offensive effect or current direct evidence shows the boss mechanic changed. Do not preserve a PvP tank-frontline gear layout out of habit. Tell the user exactly which pieces to move and remind them to restore ordinary presets afterward when relevant.
+
+BOSS POSITIONING
+Do not force defensive heroes into the front row merely because they are tanks. Position heroes only when position changes a verified skill target, back-row/front-row buff, attack behavior or other damage mechanic. Otherwise lateral/front placement is secondary to hero selection, skill interaction and offensive gear allocation.
+
+MINIMUM-EVIDENCE GATE
+If the stored account model is current enough to distinguish the candidates, proceed without requesting broad screenshots. If a missing/stale field could plausibly flip the recommendation—such as star/skill/EW state for competing heroes, offensive gear availability, boss-relevant squad tech/Drone chips or an unknown current boss code—request only that smallest field/screen before claiming a definitive best lineup. Never fill an account-specific gap with a canned maxed-whale roster.
+
+BOSS OUTPUT CONTRACT
+For a Wanted/Code Boss recommendation, give:
+- verified/assumed boss code and matching-type bonus;
+- recommended five heroes and positions when position matters;
+- explicit offensive gear moves from the shared pool;
+- the main account-specific reason each non-obvious hero beats the closest alternative;
+- the strongest alternative lineup worth testing;
+- confidence and the smallest missing evidence that could change the answer, if any;
+- one controlled next-attempt test when useful.
+Keep the answer concise for experienced users but never hide a material assumption.
+
+EMPIRICAL CODE-BOSS LOOP
+Use the event's repeated attempts as account-specific evidence. Record boss code, lineup, meaningful positions, offensive gear assignment, relevant buffs/chips when known, total single-attempt damage and any material anomaly. Compare one high-value variable at a time when practical. The user's repeatable measured boss damage outranks generic tier lists and static lineup charts for that account. Preserve successful account-specific boss configurations as local evidence, not public universal truth.
+
 FORMATIONS
-Use one explicit orientation per account. Track front-left, front-right, back-left, back-center and back-right. Front/back role is generally more important than lateral placement; lateral choices are mechanics/matchup-sensitive unless strong evidence supports a stable default.
+Use one explicit orientation per account. Track front-left, front-right, back-left, back-center and back-right. Front/back role is generally more important than lateral placement in ordinary combat; lateral choices are mechanics/matchup-sensitive unless strong evidence supports a stable default. Wanted/Code Boss positioning follows the boss-specific rules above rather than ordinary frontline-survival defaults.
 
 EMPIRICAL BATTLE LOOP
 When useful battle reports exist, record mode, attacker/defender, own preset, opponent class, powers, result, formation, first death, damage summary and notable enemy state. For major investments, record before-state -> investment -> predicted effect -> observed result. Prefer the account’s repeatable evidence over generic claims over time.
