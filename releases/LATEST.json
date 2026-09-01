@@ -26,13 +26,13 @@
   "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA",
   "migration": {
     "from": "2026-08-31.34",
-    "type": "engine_only_account_specific_code_boss_optimizer",
+    "type": "engine_only_account_specific_pve_damage_boss_optimizer",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Preserves all existing LOCAL STATE. Adds account-specific Wanted/Code Boss routing and optimization that reconciles current heroes, stars/levels, skills, Exclusive Weapons, shared transferable gear, squad-slot tech, Drone/chips and empirical boss results before naming a best lineup."
+    "notes": "Preserves all existing LOCAL STATE. Adds account-specific PvE damage-boss routing and optimization for Wanted/Code, Rampage and special/seasonal bosses including Crystal Boss; reconciles current hero maturity, skills/EW, transferable gear, squad/tech, Drone/chips, boss-specific bonus rules and controlled empirical results before naming a best lineup."
   },
-  "notes": "Gameplay-guidance release focused on Wanted/Code Boss damage optimization. Engine API 1.0 and workspace schema 2.3 are unchanged; all existing LOCAL STATE is preserved. Installer, provider behavior and Cloudflare Worker behavior are unchanged."
+  "notes": "Gameplay-guidance release focused on account-specific PvE damage-boss optimization and controlled empirical refinement. Engine API 1.0 and workspace schema 2.3 are unchanged; all existing LOCAL STATE is preserved. Installer, provider behavior and Cloudflare Worker behavior are unchanged."
 }
