@@ -1,6 +1,6 @@
 LWAI MODULE — CORE STATE FRESHNESS
 module_id: core.state-freshness
-module_version: 2026-08-31.33.1
+module_version: 2026-09-09.36.1
 load_class: mandatory_core
 state_scope: shared_engine+active_account_freshness_rules
 SANITIZED: YES
@@ -23,6 +23,13 @@ MINIMUM-EVIDENCE REFRESH
 Do not ask for a new screenshot merely because time passed. Refresh only when the current recommendation depends on a field whose freshness is insufficient, when a stored expected completion has passed, when direct current evidence conflicts, or when the user says the state changed.
 If the user confirms `nothing changed`, update the relevant confirmation time for identity/state that can reasonably be confirmed by that statement; do not manufacture a new countdown that was not observed.
 Request the smallest useful refresh: one queue/timer, one balance, one store roll, or one building—not a broad account recapture.
+
+RECOMMENDATION PREFLIGHT / CONFLICT QUARANTINE
+For consequential recommendations, freshness is evaluated at decision time for only the inputs that can materially change the ranking. Current direct evidence outranks every older stored observation. MONOTONIC history may establish a minimum-known level, but it never overrides a newer reliable screenshot/direct observation of the same field; VOLATILE resource balances must be current enough for the proposed spend.
+
+When current direct evidence contradicts the active canonical value of a material input, mark the affected recommendation invalid/pending reconciliation rather than blending the two values or choosing the remembered one. Reconcile the field first, preserve superseded history, invalidate dependent targets, and recompute after the canonical write is verified when persistence is available. Do not treat the contradiction as a reason to refresh unrelated account state.
+
+A user challenge to a consequential answer, or a second request to confirm that answer, requires rechecking the material decision-state inputs rather than treating the prior recommendation as evidence. If one unresolved field could flip the ranking, ask for that field only.
 
 QUEUE / TIMER RULE
 Track `queue_identity`, `last_confirmed_at`, `remaining_at_observation`, `observed_at`, `expected_completion` when supported, and `timer_freshness` independently. A stale timer does not make a still-confirmed queue identity unknown. Before advice that depends on when a queue frees, refresh the countdown/ETA only; before advice that only depends on what lane is occupied, reuse the confirmed queue identity.
