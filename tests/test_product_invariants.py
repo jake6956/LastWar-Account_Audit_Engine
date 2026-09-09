@@ -53,7 +53,7 @@ class ProductInvariantTests(unittest.TestCase):
         fallback = text("engine/BOOTSTRAP_FULL.txt")
         for body in (flow, ux, fallback):
             self.assertRegex(body, r"(?i)friendly expert Last War technician|friendly expert technician")
-            self.assertRegex(body, r"(?i)challenge a recommendation")
+            self.assertRegex(body, r"(?i)(challenge strategy|challenge a recommendation|correctness challenge)")
             self.assertRegex(body, r"(?i)(different|unrelated|another) Last War question")
         self.assertIn("Do not force the user to complete onboarding before answering a legitimate Last War question", flow)
 
@@ -87,7 +87,7 @@ class ProductInvariantTests(unittest.TestCase):
         modules = {m["module_id"]: m for m in manifest["modules"]}
         mod = modules["core.flow-continuity"]
         self.assertTrue(mod["required"])
-        self.assertEqual(mod["module_version"], "2026-08-30.27.1")
+        self.assertEqual(mod["module_version"], "2026-09-09.36.1")
         self.assertIn("expert_experience", mod["state_scope"])
         self.assertIn("research_source_policy", mod["state_scope"])
         self.assertIn("data_placement", mod["state_scope"])

@@ -10,8 +10,20 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "add_if_supported": ["guidance_metadata", "account_scoped_audit_sessions"],
-      "preserve": ["workspace_registry", "active_account_id", "immutable_account_id", "canonical_account_state", "history", "corrections", "evidence_metadata", "provider_references"],
+      "add_if_supported": [
+        "guidance_metadata",
+        "account_scoped_audit_sessions"
+      ],
+      "preserve": [
+        "workspace_registry",
+        "active_account_id",
+        "immutable_account_id",
+        "canonical_account_state",
+        "history",
+        "corrections",
+        "evidence_metadata",
+        "provider_references"
+      ],
       "notes": "Introduced by 2026-08-29.10. Add optional guidance metadata and Audit Sessions only when absent/supported. Existing canonical state remains authoritative."
     },
     {
@@ -21,8 +33,21 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "add_if_supported": ["runtime_checkpoints", "append_only_runtime_journal"],
-      "preserve": ["workspace_registry", "active_account_id", "immutable_account_id", "canonical_account_state", "audit_sessions", "history", "corrections", "evidence_metadata", "provider_references"],
+      "add_if_supported": [
+        "runtime_checkpoints",
+        "append_only_runtime_journal"
+      ],
+      "preserve": [
+        "workspace_registry",
+        "active_account_id",
+        "immutable_account_id",
+        "canonical_account_state",
+        "audit_sessions",
+        "history",
+        "corrections",
+        "evidence_metadata",
+        "provider_references"
+      ],
       "notes": "Introduced by 2026-08-29.11. Add optional recovery metadata only when absent/supported. Missing optional recovery stores never invalidate canonical account facts."
     }
   ],
@@ -36,7 +61,10 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["workspace_schema_21_to_23_preserves_state", "workspace_schema_migration_is_idempotent"],
+      "tests": [
+        "workspace_schema_21_to_23_preserves_state",
+        "workspace_schema_migration_is_idempotent"
+      ],
       "notes": "Historical edge restored in 2026-08-29.15. Adds optional guidance metadata and Audit Sessions only."
     },
     {
@@ -48,7 +76,11 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["workspace_schema_21_to_23_preserves_state", "workspace_schema_migration_is_idempotent", "committed_checkpoint_not_replayed_during_schema_migration"],
+      "tests": [
+        "workspace_schema_21_to_23_preserves_state",
+        "workspace_schema_migration_is_idempotent",
+        "committed_checkpoint_not_replayed_during_schema_migration"
+      ],
       "notes": "Historical edge restored in 2026-08-29.15. Adds optional Runtime Checkpoints and append-only Runtime Journal only."
     },
     {
@@ -60,7 +92,13 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["active_account_routing_isolation", "legacy_migration_preserves_facts", "waiting_user_boundary_survives_reload", "verify_before_replay_does_not_duplicate_successful_write", "checkpoint_loss_cannot_destroy_canonical_facts"],
+      "tests": [
+        "active_account_routing_isolation",
+        "legacy_migration_preserves_facts",
+        "waiting_user_boundary_survives_reload",
+        "verify_before_replay_does_not_duplicate_successful_write",
+        "checkpoint_loss_cannot_destroy_canonical_facts"
+      ],
       "notes": "Hardens validation, manifest integrity, storage capability abstraction and loader boundaries without changing workspace/account schema."
     },
     {
@@ -72,7 +110,11 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["pre_registry_legacy_startup_registers_before_recovery", "current_registry_resolves_account_before_recovery", "legacy_migration_preserves_facts"],
+      "tests": [
+        "pre_registry_legacy_startup_registers_before_recovery",
+        "current_registry_resolves_account_before_recovery",
+        "legacy_migration_preserves_facts"
+      ],
       "notes": "Clarifies startup sequencing: current registry-backed deployments resolve active_account_id before recovery; legacy pre-registry deployments discover/register existing state first, establish account context, then run recovery."
     },
     {
@@ -84,7 +126,13 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["runtime_session_exists_without_host_reference", "duplicate_host_ref_does_not_merge_runtime_sessions", "distinct_host_refs_do_not_duplicate_account", "audit_session_is_account_scoped_and_links_provenance", "checkpoint_cannot_cross_active_account_even_with_matching_host_ref"],
+      "tests": [
+        "runtime_session_exists_without_host_reference",
+        "duplicate_host_ref_does_not_merge_runtime_sessions",
+        "distinct_host_refs_do_not_duplicate_account",
+        "audit_session_is_account_scoped_and_links_provenance",
+        "checkpoint_cannot_cross_active_account_even_with_matching_host_ref"
+      ],
       "notes": "Adds optional private runtime-session provenance. host_session_ref remains nullable/non-authoritative and cannot affect account identity, routing, recovery ordering, idempotency or canonical game evidence."
     },
     {
@@ -96,7 +144,15 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["workspace_schema_21_to_23_preserves_state", "workspace_schema_migration_is_idempotent", "workspace_schema_migration_failure_preserves_original", "migration_capable_modules_bootstrap_legacy_schema", "domain_modules_blocked_before_target_schema", "stale_alias_cannot_downgrade_canonical_production", "committed_checkpoint_not_replayed_during_schema_migration"],
+      "tests": [
+        "workspace_schema_21_to_23_preserves_state",
+        "workspace_schema_migration_is_idempotent",
+        "workspace_schema_migration_failure_preserves_original",
+        "migration_capable_modules_bootstrap_legacy_schema",
+        "domain_modules_blocked_before_target_schema",
+        "stale_alias_cannot_downgrade_canonical_production",
+        "committed_checkpoint_not_replayed_during_schema_migration"
+      ],
       "notes": "Restores validated historical workspace-schema edges and permits migration-capable core bootstrap from supported 2.1/2.2 workspaces before normal current-schema domain loading. Canonical GitHub identity overrides stale alias/cache content."
     },
     {
@@ -108,7 +164,14 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["new_user_without_writable_storage_is_prompted_before_onboarding", "new_user_with_writable_storage_is_prompted_before_onboarding", "new_user_can_explicitly_continue_session_only", "new_user_cloud_choice_creates_workspace_before_onboarding", "storage_connected_requires_capability_recheck_before_onboarding", "existing_workspace_skips_first_run_persistence_prompt"],
+      "tests": [
+        "new_user_without_writable_storage_is_prompted_before_onboarding",
+        "new_user_with_writable_storage_is_prompted_before_onboarding",
+        "new_user_can_explicitly_continue_session_only",
+        "new_user_cloud_choice_creates_workspace_before_onboarding",
+        "storage_connected_requires_capability_recheck_before_onboarding",
+        "existing_workspace_skips_first_run_persistence_prompt"
+      ],
       "notes": "Requires a genuinely new user to make an explicit persistence choice before identity/account onboarding. Existing workspace/legacy startup paths are unchanged and all local state is preserved."
     },
     {
@@ -120,7 +183,15 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["stale_alias_version_is_not_announced_as_active", "session_only_reminder_requires_material_benefit", "session_only_reminder_once_per_runtime_and_seven_day_cooldown", "session_only_do_not_ask_again_suppresses_future_reminders", "engine_freshness_checks_every_runtime_startup", "engine_freshness_rechecks_after_six_hours_not_before", "engine_freshness_adopts_only_newer_verified_production"],
+      "tests": [
+        "stale_alias_version_is_not_announced_as_active",
+        "session_only_reminder_requires_material_benefit",
+        "session_only_reminder_once_per_runtime_and_seven_day_cooldown",
+        "session_only_do_not_ask_again_suppresses_future_reminders",
+        "engine_freshness_checks_every_runtime_startup",
+        "engine_freshness_rechecks_after_six_hours_not_before",
+        "engine_freshness_adopts_only_newer_verified_production"
+      ],
       "notes": "Makes stale alias/cache version strings diagnostic-only, adds contextual cloud reminders for session-only users, and automatically checks canonical GitHub Production freshness at runtime startup plus a six-hour consequential-work TTL. Local account/workspace state remains unchanged."
     },
     {
@@ -132,7 +203,14 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["startup_reload_and_schema_sensitive_always_check_with_web", "consequential_work_rechecks_at_six_hours_not_before", "newer_verified_production_updates_and_resumes_original_action", "rc_or_invalid_candidate_never_replaces_last_known_good", "unavailable_update_source_preserves_engine", "release_updater_is_mandatory_and_bootstrap_depends_on_it"],
+      "tests": [
+        "startup_reload_and_schema_sensitive_always_check_with_web",
+        "consequential_work_rechecks_at_six_hours_not_before",
+        "newer_verified_production_updates_and_resumes_original_action",
+        "rc_or_invalid_candidate_never_replaces_last_known_good",
+        "unavailable_update_source_preserves_engine",
+        "release_updater_is_mandatory_and_bootstrap_depends_on_it"
+      ],
       "notes": "Adds mandatory release.updater, automatic consumer update transactions, optional workspace-level engine metadata, last-known-good rollback and original-action resume semantics. Workspace schema and canonical account state remain unchanged."
     },
     {
@@ -144,7 +222,14 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["first_run_starts_with_plain_language_cloud_question", "cloud_yes_requires_explicit_provider_choice", "google_drive_permission_coaching_includes_allow_always", "connected_is_recheck_trigger_not_proof", "later_persistence_acceptance_reruns_provider_flow", "normal_bootstrap_ux_is_friendly_not_diagnostic_dump"],
+      "tests": [
+        "first_run_starts_with_plain_language_cloud_question",
+        "cloud_yes_requires_explicit_provider_choice",
+        "google_drive_permission_coaching_includes_allow_always",
+        "connected_is_recheck_trigger_not_proof",
+        "later_persistence_acceptance_reruns_provider_flow",
+        "normal_bootstrap_ux_is_friendly_not_diagnostic_dump"
+      ],
       "notes": "Adds a provider-neutral early cloud yes/no choice, explicit supported-provider selection, provider-specific permission coaching and verified connection flow. Normal bootstrap/update output becomes concise and friendly. Automatic update, API 1.0, workspace schema 2.3 and all local account/workspace state are preserved."
     },
     {
@@ -156,7 +241,13 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["module_is_reachable_and_stores_depend_on_it", "module_enforces_due_diligence_and_self_healing", "public_registry_and_seed_packs_are_sanitized", "gold_assets_register_season_registry", "bootstrap_paths_expose_framework_without_core_bloat"],
+      "tests": [
+        "module_is_reachable_and_stores_depend_on_it",
+        "module_enforces_due_diligence_and_self_healing",
+        "public_registry_and_seed_packs_are_sanitized",
+        "gold_assets_register_season_registry",
+        "bootstrap_paths_expose_framework_without_core_bloat"
+      ],
       "notes": "Adds an on-demand Season Intelligence module and Production-qualified reusable season knowledge packs. Dynamic/consequential mechanics are reverified from current evidence; LOCAL STATE and workspace schema remain unchanged."
     },
     {
@@ -168,7 +259,14 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["global_core_prohibits_fabricated_material_claims", "source_quality_rejects_weak_stale_community_material", "uncertain_fact_must_exhaust_sources_then_disclose", "official_mechanics_are_separated_from_lwai_strategy", "season_intelligence_inherits_and_strengthens_contract", "standalone_fallback_has_global_integrity_parity"],
+      "tests": [
+        "global_core_prohibits_fabricated_material_claims",
+        "source_quality_rejects_weak_stale_community_material",
+        "uncertain_fact_must_exhaust_sources_then_disclose",
+        "official_mechanics_are_separated_from_lwai_strategy",
+        "season_intelligence_inherits_and_strengthens_contract",
+        "standalone_fallback_has_global_integrity_parity"
+      ],
       "notes": "Makes evidence provenance and anti-fabrication a mandatory global runtime contract. Community claims require relevance/credibility/corroboration; uncertain material facts exhaust reasonable sources before disclosure; calculations and strategy distinguish supported inputs from LWAI-derived inference. No workspace/account schema change."
     },
     {
@@ -180,7 +278,15 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["storage_success_is_not_terminal", "verified_storage_advances_to_identity", "identity_advances_to_strategic_baseline_without_next", "baseline_advances_to_first_evidence_capture", "setup_turns_have_no_orphan_state", "onboarding_recovery_resumes_first_incomplete_stage", "existing_user_gets_landing_or_resume"],
+      "tests": [
+        "storage_success_is_not_terminal",
+        "verified_storage_advances_to_identity",
+        "identity_advances_to_strategic_baseline_without_next",
+        "baseline_advances_to_first_evidence_capture",
+        "setup_turns_have_no_orphan_state",
+        "onboarding_recovery_resumes_first_incomplete_stage",
+        "existing_user_gets_landing_or_resume"
+      ],
       "notes": "Eliminates post-connector dead air by making setup a guided no-orphan-state flow. Verified storage or explicit session-only immediately advances to identity, strategic baseline and first useful evidence capture; existing users receive a recognizable landing/resume path; durable onboarding resumes from the first incomplete verified stage. No workspace/account schema change."
     },
     {
@@ -192,7 +298,12 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["canonical_installer_uses_github_repository", "primary_installer_does_not_require_third_party_shortener", "legacy_shortlink_failure_does_not_change_runtime_state", "existing_onboarding_and_updater_contracts_remain_intact"],
+      "tests": [
+        "canonical_installer_uses_github_repository",
+        "primary_installer_does_not_require_third_party_shortener",
+        "legacy_shortlink_failure_does_not_change_runtime_state",
+        "existing_onboarding_and_updater_contracts_remain_intact"
+      ],
       "notes": "Moves the permanent public installation entrypoint from a third-party TinyURL alias to the canonical GitHub repository README, which hands execution to main/engine/BOOTSTRAP.txt. No workspace/account/runtime behavior changes beyond installer transport; LOCAL STATE is preserved."
     },
     {
@@ -204,7 +315,14 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["stage0_installer_resolves_live_branch_ref", "resolver_is_mandatory_and_shared", "candidate_reads_are_commit_pinned", "mutable_cache_is_never_current_authority", "stage1_loader_is_under_4k_and_delegates_onboarding", "existing_onboarding_contracts_remain_in_modules"],
+      "tests": [
+        "stage0_installer_resolves_live_branch_ref",
+        "resolver_is_mandatory_and_shared",
+        "candidate_reads_are_commit_pinned",
+        "mutable_cache_is_never_current_authority",
+        "stage1_loader_is_under_4k_and_delegates_onboarding",
+        "existing_onboarding_contracts_remain_in_modules"
+      ],
       "notes": "Introduces a live GitHub branch-ref resolver and pins each bootstrap/update transaction to one immutable commit. Search/index/README/raw-main cache bodies can no longer determine current Production. Refactors Stage-1 loader into bounded orchestration only while preserving LOCAL STATE, API 1.0, schema 2.3 and existing account/onboarding/domain behavior."
     },
     {
@@ -216,7 +334,12 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["canonical_installer_uses_first_party_domain", "public_entrypoint_is_not_version_authority", "legacy_shortlink_is_compatibility_only", "candidate_reads_are_commit_pinned"],
+      "tests": [
+        "canonical_installer_uses_first_party_domain",
+        "public_entrypoint_is_not_version_authority",
+        "legacy_shortlink_is_compatibility_only",
+        "candidate_reads_are_commit_pinned"
+      ],
       "notes": "Moves the preferred public installer to first-party LastWarAI.com while retaining the previously circulated TinyURL only as a legacy compatibility alias. The public entrypoint is transport/discovery only; current Production remains established by live GitHub main commit.sha and exact-commit pinned engine reads. No workspace/account schema change."
     },
     {
@@ -228,7 +351,18 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["connected_success_rechecks_verifies_and_reaches_identity", "connected_failure_offers_choices_instead_of_dead_air", "every_durable_onboarding_phase_has_a_visible_resume_action", "waiting_user_requires_and_preserves_exact_pending_instruction", "infrastructure_only_states_are_never_accepted_as_terminal", "public_release_is_sanitized_engine_only", "consumer_data_is_workspace_scoped_to_their_provider", "google_drive_is_preferred_but_never_silent_selection", "friendly_expert_experience_accepts_challenges_and_topic_changes", "research_sources_are_inputs_not_gospel"],
+      "tests": [
+        "connected_success_rechecks_verifies_and_reaches_identity",
+        "connected_failure_offers_choices_instead_of_dead_air",
+        "every_durable_onboarding_phase_has_a_visible_resume_action",
+        "waiting_user_requires_and_preserves_exact_pending_instruction",
+        "infrastructure_only_states_are_never_accepted_as_terminal",
+        "public_release_is_sanitized_engine_only",
+        "consumer_data_is_workspace_scoped_to_their_provider",
+        "google_drive_is_preferred_but_never_silent_selection",
+        "friendly_expert_experience_accepts_challenges_and_topic_changes",
+        "research_sources_are_inputs_not_gospel"
+      ],
       "notes": "Hardens no-dead-air onboarding/recovery, friendly-expert interaction, public/private data placement, preferred-but-explicit Google Drive selection with verified alternate providers, and current official/direct plus independently validated community research behavior. No workspace/account schema change."
     },
     {
@@ -240,7 +374,10 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["research_sources_are_inputs_not_gospel", "manifest_loads_expert_continuity_module_mandatorily"],
+      "tests": [
+        "research_sources_are_inputs_not_gospel",
+        "manifest_loads_expert_continuity_module_mandatorily"
+      ],
       "notes": "Adds LastWarVault.com as a maintained community research input while preserving the existing evidence hierarchy, validation/corroboration duty, API 1.0, workspace schema 2.3 and all LOCAL STATE."
     },
     {
@@ -252,7 +389,15 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["vs_timing_module_is_registered_and_reachable", "current_2026_vp_pattern_and_stale_guide_guard", "hero_resources_default_to_day4", "upgrade_ore_is_not_held_for_current_vs_or_arms_race", "exact_points_require_current_account_evidence", "event_timing_is_not_more_important_than_account_value", "arms_race_requires_live_phase_check"],
+      "tests": [
+        "vs_timing_module_is_registered_and_reachable",
+        "current_2026_vp_pattern_and_stale_guide_guard",
+        "hero_resources_default_to_day4",
+        "upgrade_ore_is_not_held_for_current_vs_or_arms_race",
+        "exact_points_require_current_account_evidence",
+        "event_timing_is_not_more_important_than_account_value",
+        "arms_race_requires_live_phase_check"
+      ],
       "notes": "Adds evidence-guarded recurring Alliance Duel VS and Arms Race timing to resource optimization. Planned hero materials default to current Hero Day timing when practical, Upgrade Ore is not held merely for VS/Arms Race under current evidence, exact points require current account/event evidence, and urgent account value may override event timing. No workspace/account schema change."
     },
     {
@@ -264,7 +409,15 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["preferences_module_is_mandatory", "explicit_preferences_beat_tentative_and_defaults", "account_preferences_are_isolated", "session_only_preferences_are_ephemeral", "preferences_cannot_override_evidence_privacy_or_safety", "preference_user_controls_exist", "private_feedback_is_not_auto_published"],
+      "tests": [
+        "preferences_module_is_mandatory",
+        "explicit_preferences_beat_tentative_and_defaults",
+        "account_preferences_are_isolated",
+        "session_only_preferences_are_ephemeral",
+        "preferences_cannot_override_evidence_privacy_or_safety",
+        "preference_user_controls_exist",
+        "private_feedback_is_not_auto_published"
+      ],
       "notes": "Preserves existing LOCAL STATE and adds user-owned WORKSPACE/ACCOUNT/SESSION preferences as optional additive state, with human-readable provider-neutral preference notebooks, conservative preference learning and local tool-feedback behavior. No re-onboarding, account rewrite or schema-version change."
     },
     {
@@ -276,7 +429,11 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["state_freshness_avoids_redundant_recapture", "building_progression_is_prerequisite_aware", "event_store_value_is_price_and_account_aware"],
+      "tests": [
+        "state_freshness_avoids_redundant_recapture",
+        "building_progression_is_prerequisite_aware",
+        "event_store_value_is_price_and_account_aware"
+      ],
       "notes": "Adds cross-domain durable/volatile freshness handling, queue identity/timer separation, prerequisite-aware building progression and account-aware event-store price/reserve/carry-over logic. All existing LOCAL STATE, preferences and workspace schema 2.3 are preserved."
     },
     {
@@ -288,7 +445,12 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["first_run_persistence_choice_is_compact", "cloud_security_reassurance_is_deferred_until_provider_selection", "infrastructure_boundary_preserves_transport_only_worker", "instruction_budget_is_measured_and_bounded"],
+      "tests": [
+        "first_run_persistence_choice_is_compact",
+        "cloud_security_reassurance_is_deferred_until_provider_selection",
+        "infrastructure_boundary_preserves_transport_only_worker",
+        "instruction_budget_is_measured_and_bounded"
+      ],
       "notes": "Compacts first-run persistence/security UX without weakening the internal workspace boundary, records deterministic lwai-bootstrap cache configuration and stale-edge verification, cleans current public transport docs, and adds instruction-footprint telemetry. All existing LOCAL STATE and workspace schema 2.3 are preserved."
     },
     {
@@ -300,8 +462,33 @@
       "local_state_action": "preserve",
       "requires_user_reonboarding": false,
       "requires_account_rewrite": false,
-      "tests": ["damage_boss_intents_route_to_combat_module", "seasonal_boss_intents_also_activate_season_intelligence", "boss_variants_are_not_interchangeable", "crystal_has_its_own_bonus_model", "empirical_same_account_results_are_first_class_evidence"],
+      "tests": [
+        "damage_boss_intents_route_to_combat_module",
+        "seasonal_boss_intents_also_activate_season_intelligence",
+        "boss_variants_are_not_interchangeable",
+        "crystal_has_its_own_bonus_model",
+        "empirical_same_account_results_are_first_class_evidence"
+      ],
       "notes": "Adds account-specific PvE damage-boss optimization for Wanted/Code, Rampage and special/seasonal bosses including Crystal Boss. Boss-specific mechanic panels remain authoritative; current hero/skill/EW/gear/tech/Drone state and controlled same-account attempts determine lineup optimization. LOCAL STATE and schema remain unchanged."
+    },
+    {
+      "from": "2026-09-01.35",
+      "to": "2026-09-09.36",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_governance_consistency_and_proactive_recommendation_preflight",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_core_requires_proactive_consequential_recommendation_preflight",
+        "test_goal_first_contract_controls_every_recommendation",
+        "test_material_unknown_blocks_false_single_winner",
+        "test_canonical_governance_contract_exists",
+        "test_guidance_routes_every_recommendation_through_preflight",
+        "test_full_fallback_has_governance_parity"
+      ],
+      "notes": "Makes recommendation certainty proactive rather than user-triggered; user-stated goals govern ranking; material missing/stale/contradictory inputs that can flip the winner require smallest-evidence refresh or bounded alternatives; domain/fallback governance cannot weaken core invariants. LOCAL STATE/schema unchanged."
     }
   ]
 }

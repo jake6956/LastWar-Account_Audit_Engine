@@ -1,13 +1,13 @@
 LWAI MODULE — CORE STATE FRESHNESS
 module_id: core.state-freshness
-module_version: 2026-08-31.33.1
+module_version: 2026-09-09.36.2
 load_class: mandatory_core
 state_scope: shared_engine+active_account_freshness_rules
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
 PURPOSE
-Prevent redundant evidence requests and stale-timer mistakes by separating durable progression facts from volatile observations. Reuse what is still useful; refresh only the smallest field needed for the current decision.
+Prevent redundant evidence requests and stale-state mistakes by separating durable progression facts from volatile observations. Reuse what is still useful; proactively refresh the smallest material field before a recommendation when present evidence is insufficient to support the right decision.
 
 STATE CLASSES
 Classify material account values before deciding whether to refresh them:
@@ -20,9 +20,19 @@ When durable account storage is available, material volatile observations SHOULD
 Never invent an exact timestamp or ETA from an approximate screenshot countdown. If exact observation time is unavailable, preserve the observed text as historical evidence and mark exact ETA unknown.
 
 MINIMUM-EVIDENCE REFRESH
-Do not ask for a new screenshot merely because time passed. Refresh only when the current recommendation depends on a field whose freshness is insufficient, when a stored expected completion has passed, when direct current evidence conflicts, or when the user says the state changed.
+Do not ask for a new screenshot merely because time passed. Before producing a recommendation, identify the material inputs capable of changing its ranking. Refresh any such input whose freshness, completeness, account scope, or confidence is insufficient for the decision; do this proactively rather than waiting for the user to challenge the answer. If current evidence cannot distinguish one winner safely, request the smallest useful refresh or present only the alternatives that remain valid under the unresolved state, stating exactly what fact separates them. Do not guess a single winner.
 If the user confirms `nothing changed`, update the relevant confirmation time for identity/state that can reasonably be confirmed by that statement; do not manufacture a new countdown that was not observed.
 Request the smallest useful refresh: one queue/timer, one balance, one store roll, or one building—not a broad account recapture.
+
+RECOMMENDATION PREFLIGHT / CONFLICT QUARANTINE
+Recommendation preflight is mandatory before the recommendation is emitted, not a repair mechanism triggered by user doubt. For consequential recommendations, freshness is evaluated at decision time for only the inputs that can materially change the ranking. Current direct evidence outranks every older stored observation. MONOTONIC history may establish a minimum-known level, but it never overrides a newer reliable screenshot/direct observation of the same field; VOLATILE resource balances must be current enough for the proposed spend.
+
+When current direct evidence contradicts the active canonical value of a material input, mark the affected recommendation invalid/pending reconciliation rather than blending the two values or choosing the remembered one. Reconcile the field first, preserve superseded history, invalidate dependent targets, and recompute after the canonical write is verified when persistence is available.
+
+A user should not need to ask `are you sure?` to activate validation. If the user nevertheless challenges a consequential answer, treat that as evidence that preflight may have failed: recheck the complete material decision-state, correct any defect immediately, and record a regression/correction when appropriate. Never treat the prior recommendation as evidence.
+
+GOAL RELEVANCE
+Freshness is decision-relative and goal-relative. Before deciding which state is material, resolve the user's current stated objective from explicit current instruction and active explicit account/workspace strategic goals. A field is material when it can change the ranking for that objective. If the objective itself is missing or materially ambiguous, ask for it before optimizing. Do not silently optimize for displayed power, generic progression, event score, PvP, PvE, or any other substitute objective.
 
 QUEUE / TIMER RULE
 Track `queue_identity`, `last_confirmed_at`, `remaining_at_observation`, `observed_at`, `expected_completion` when supported, and `timer_freshness` independently. A stale timer does not make a still-confirmed queue identity unknown. Before advice that depends on when a queue frees, refresh the countdown/ETA only; before advice that only depends on what lane is occupied, reuse the confirmed queue identity.

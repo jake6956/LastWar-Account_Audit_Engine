@@ -1,6 +1,6 @@
 LWAI MODULE — SEASON INTELLIGENCE
 module_id: domain.season-intelligence
-module_version: 2026-08-29.21.1
+module_version: 2026-09-09.36.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads;public_gold_assets
 SANITIZED: YES
@@ -39,7 +39,7 @@ COMMUNITY SOURCE QUALITY
 Do not rely materially on a single stale guide, unsupported post, unattributed screenshot, recycled claim, low-quality repost, or old community statement merely because it is searchable. Prefer recent sources matching the current season/version/system, transparent methodology, screenshots or repeatable tests, and independent corroboration. If older material is used for a mechanic believed stable, verify that no later patch/season evidence contradicts it.
 
 EXHAUST-THEN-DISCLOSE RULE
-When a season fact matters and remains uncertain, exhaust reasonably available official and reputable current community sources before declaring it unvalidated. If it still cannot be validated, say so. Do not invent a precise mechanic/value. If the user still needs a decision, provide the best bounded recommendation using validated facts plus clearly labeled LWAI calculation/inference, and state that the recommendation itself is not an official Last War recommendation.
+When a season fact matters and remains uncertain, exhaust reasonably available official and reputable current community sources before declaring it unvalidated. If it still cannot be validated, determine whether it can change the ranking for the user’s governing objective. If yes, request the smallest current in-game/account evidence that can resolve it before naming a definitive winner, or return only bounded goal-aligned alternatives. If no, proceed without inventing precision. Clearly label LWAI calculation/inference and state that any optimization recommendation is not an official Last War recommendation unless an authoritative source explicitly says so.
 
 CONSEQUENTIAL GATE
 Do not rely on a cached season fact for scarce-resource spending, irreversible progression, territory/capture planning, paid purchases, major research paths, or time-sensitive event/store decisions when freshness could materially change the answer. Reverify the smallest relevant mechanic set first.

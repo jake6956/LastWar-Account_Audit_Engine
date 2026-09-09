@@ -1,6 +1,6 @@
 LWAI MODULE — GEAR, HEROES, SKILLS & EW
 module_id: domain.gear-heroes-skills-ew
-module_version: 2026-08-30.31.1
+module_version: 2026-09-09.36.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
@@ -8,6 +8,9 @@ ACCOUNT STATE INCLUDED: NO
 
 GEAR / UPGRADE ORE
 Treat gear as a shared transferable pool plus preset assignments, never permanently hero-owned unless mechanics prove otherwise. Track type, level, promotions/stars/segments, Mythic state, effects, current wearer, preset use, next breakpoint and remaining cost. Do not equalize for aesthetics. Concentrate offensive value on carries and defensive value where survival creates the most team value. Prefer meaningful breakpoints over random partial spending.
+GEAR SPEND / ASSIGNMENT PREFLIGHT
+Before recommending an Ore spend, promotion, gear assignment, or breakpoint, inherit core goal-first and proactive preflight. Verify the active account, governing objective, current shared gear pool/assignments, relevant piece levels/promotions, meaningful alternatives, breakpoint costs when needed, and current spendable resource balance. Current readable screenshots/direct user observations outrank persisted or remembered gear values. Never recommend upgrading a piece already at or beyond the proposed breakpoint. Never use the prior recommendation itself as evidence. Upgrade Ore and other spendable balances are VOLATILE; if the proposed spend depends on the amount available, use a current-enough balance before naming the target.
+
 Current recurring-event evidence does not show Upgrade Ore / ordinary gear leveling as an Alliance Duel VS or Arms Race scoring action. Do not bank Ore merely for those events; use it whenever the best gear breakpoint is strategically ready. If current in-game event tasks later show gear/Ore scoring, direct evidence supersedes this rule.
 
 SKILL MEDALS
