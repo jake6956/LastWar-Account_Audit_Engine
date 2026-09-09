@@ -34,5 +34,6 @@
     "requires_account_rewrite": false,
     "notes": "Preserves all LOCAL STATE. Makes user-stated goals authoritative for recommendation ranking, requires proactive decision-state validation before definitive advice, blocks false single-winner recommendations when material evidence is insufficient, strengthens research-before-guess and cross-module governance monotonicity, and adds regression gates preventing weaker domain/fallback wording from reintroducing prior failures."
   },
-  "notes": "Governance hotfix: goal-first optimization, proactive expert preflight, evidence sufficiency/no-false-winner rules, research-before-guess, cross-module monotonicity and consistency regressions. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
+  "notes": "Governance hotfix: goal-first optimization, proactive expert preflight, evidence sufficiency/no-false-winner rules, research-before-guess, cross-module monotonicity and consistency regressions. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved.",
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com"
 }
