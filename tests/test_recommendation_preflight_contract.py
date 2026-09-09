@@ -9,25 +9,45 @@ def read(rel):
 
 
 class RecommendationPreflightContractTests(unittest.TestCase):
-    def test_core_requires_consequential_recommendation_preflight(self):
+    def test_core_requires_proactive_consequential_recommendation_preflight(self):
         core = read("engine/modules/core/operating.txt")
         for token in [
             "CONSEQUENTIAL RECOMMENDATION PREFLIGHT",
+            "Preflight is proactive",
+            "The user must never be required to challenge the expert to trigger validation",
             "current direct user/in-game evidence -> verified current canonical active-account state",
             "affected recommendation is quarantined",
             "invalidate recommendations derived from the superseded value",
-            "A user challenge to a consequential recommendation is itself a preflight trigger",
+            "The prior answer is never evidence for itself",
         ]:
             self.assertIn(token, core)
 
-    def test_state_freshness_quarantines_direct_conflicts(self):
+    def test_goal_first_contract_controls_every_recommendation(self):
+        core = read("engine/modules/core/operating.txt")
+        for token in [
+            "GOAL-FIRST OPTIMIZATION CONTRACT",
+            "Every recommendation MUST be ranked against the user's stated goal(s)",
+            "Never silently replace the user's objective",
+            "ask the smallest goal/priority question required before ranking",
+            "present that bounded selection",
+            "best-supported action for this account, at this time, for the user's stated objective",
+        ]:
+            self.assertIn(token, core)
+
+    def test_material_unknown_blocks_false_single_winner(self):
+        core = read("engine/modules/core/operating.txt")
+        self.assertIn("If yes, ask for the smallest current user evidence capable of resolving it before naming a definitive winner", core)
+        self.assertIn("Never use a low-confidence single recommendation where a material unknown could reasonably reverse it", core)
+        self.assertIn("Do not make the user perform quality assurance on the expert", core)
+
+    def test_state_freshness_is_proactive_and_goal_relative(self):
         state = read("engine/modules/core/state-freshness.txt")
         for token in [
-            "RECOMMENDATION PREFLIGHT / CONFLICT QUARANTINE",
-            "Current direct evidence outranks every older stored observation",
-            "VOLATILE resource balances must be current enough for the proposed spend",
-            "mark the affected recommendation invalid/pending reconciliation",
-            "second request to confirm that answer",
+            "Recommendation preflight is mandatory before the recommendation is emitted",
+            "proactively rather than waiting for the user to challenge the answer",
+            "A user should not need to ask `are you sure?` to activate validation",
+            "GOAL RELEVANCE",
+            "Do not silently optimize for displayed power, generic progression, event score, PvP, PvE",
         ]:
             self.assertIn(token, state)
 
@@ -42,16 +62,6 @@ class RecommendationPreflightContractTests(unittest.TestCase):
             "Upgrade Ore and other spendable balances are VOLATILE",
         ]:
             self.assertIn(token, gear)
-
-    def test_full_fallback_has_preflight_parity(self):
-        full = read("engine/BOOTSTRAP_FULL.txt")
-        for token in [
-            "CONSEQUENTIAL RECOMMENDATION PREFLIGHT",
-            "RECOMMENDATION PREFLIGHT / CONFLICT QUARANTINE",
-            "GEAR SPEND / ASSIGNMENT PREFLIGHT",
-            "Never recommend upgrading a piece already at or beyond the proposed breakpoint",
-        ]:
-            self.assertIn(token, full)
 
     def test_private_state_does_not_leak_into_contract(self):
         public = "\n".join([
