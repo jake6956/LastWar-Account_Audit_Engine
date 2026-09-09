@@ -16,7 +16,7 @@ class RecommendationPreflightContractTests(unittest.TestCase):
             "Preflight is proactive",
             "The user must never be required to challenge the expert to trigger validation",
             "current direct user/in-game evidence -> verified current canonical active-account state",
-            "affected recommendation is quarantined",
+            "quarantine the affected recommendation",
             "invalidate recommendations derived from the superseded value",
             "The prior answer is never evidence for itself",
         ]:
@@ -38,7 +38,7 @@ class RecommendationPreflightContractTests(unittest.TestCase):
         core = read("engine/modules/core/operating.txt")
         self.assertIn("If yes, ask for the smallest current user evidence capable of resolving it before naming a definitive winner", core)
         self.assertIn("Never use a low-confidence single recommendation where a material unknown could reasonably reverse it", core)
-        self.assertIn("Do not make the user perform quality assurance on the expert", core)
+        self.assertIn("The user must never be required to challenge the expert to trigger validation", core)
 
     def test_state_freshness_is_proactive_and_goal_relative(self):
         state = read("engine/modules/core/state-freshness.txt")
