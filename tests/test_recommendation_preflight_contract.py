@@ -68,12 +68,30 @@ class RecommendationPreflightContractTests(unittest.TestCase):
         for token in [
             "PRESET / SHARED-POOL RECONCILIATION",
             "current preset or presets relevant to the user's objective",
-            "outranks an older hero-bound snapshot for that preset",
             "Never merge distinct preset assignments into one fictional permanently hero-owned loadout",
             "same transferable piece",
             "smallest resolving evidence",
         ]:
             self.assertIn(token, gear)
+
+    def test_transferable_piece_identity_is_distinct_from_current_holder_and_preset_use(self):
+        gear = read("engine/modules/domains/gear-heroes-skills-ew.txt")
+        for token in [
+            "PHYSICAL PIECE IDENTITY / HOLDER ATTRIBUTION",
+            "A transferable gear piece, its current holder, its use in a preset, and a proposed reassignment are four separate concepts",
+            "Verified canonical current-holder data outranks inferred ownership from preset context",
+            "Do not relabel the same physical piece as another hero's gear merely because a specialist preset uses it",
+            "state that move as a separate future action",
+            "do not imply the reassignment already exists",
+            "Preset observations never redefine physical-piece ownership by themselves",
+        ]:
+            self.assertIn(token, gear)
+
+    def test_current_holder_conflict_prefers_newer_verified_holder_without_erasing_preset_history(self):
+        gear = read("engine/modules/domains/gear-heroes-skills-ew.txt")
+        self.assertIn("newer verified holder evidence controls current attribution", gear)
+        self.assertIn("older preset observation remains historical preset context", gear)
+        self.assertIn("physical-piece identity, current holder, or current preset state is ambiguous", gear)
 
     def test_private_state_does_not_leak_into_contract(self):
         public = "\n".join([
