@@ -1,19 +1,22 @@
 LWAI MODULE — GEAR, HEROES, SKILLS & EW
 module_id: domain.gear-heroes-skills-ew
-module_version: 2026-09-15.38.1
+module_version: 2026-09-16.39.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
 ACCOUNT STATE INCLUDED: NO
 
 GEAR / UPGRADE ORE
-Treat gear as a shared transferable pool plus preset assignments, never permanently hero-owned unless mechanics prove otherwise. Track type, level, promotions/stars/segments, Mythic state, effects, current wearer, preset use, next breakpoint and remaining cost. Do not equalize for aesthetics. Concentrate offensive value on carries and defensive value where survival creates the most team value. Prefer meaningful breakpoints over random partial spending.
+Treat gear as a shared transferable pool plus preset assignments, never permanently hero-owned unless mechanics prove otherwise. Track physical piece identity, type, level, promotions/stars/segments, Mythic state, effects, current verified holder, preset use, next breakpoint and remaining cost. Do not equalize for aesthetics. Concentrate offensive value on carries and defensive value where survival creates the most team value. Prefer meaningful breakpoints over random partial spending.
 
 GEAR SPEND / ASSIGNMENT PREFLIGHT
-Before recommending an Ore spend, promotion, gear assignment, or breakpoint, inherit core goal-first and proactive preflight. Verify the active account, governing objective, current shared gear pool/assignments, relevant piece levels/promotions, meaningful alternatives, breakpoint costs when needed, and current spendable resource balance. Current readable screenshots/direct user observations outrank persisted or remembered gear values. Never recommend upgrading a piece already at or beyond the proposed breakpoint. Never use the prior recommendation itself as evidence. Upgrade Ore and other spendable balances are VOLATILE; if the proposed spend depends on the amount available, use a current-enough balance before naming the target.
+Before recommending an Ore spend, promotion, gear assignment, or breakpoint, inherit core goal-first and proactive preflight. Verify the active account, governing objective, current shared gear pool/assignments, relevant piece levels/promotions, meaningful alternatives, breakpoint costs when needed, and current spendable resource balance. Current readable screenshots/direct user observations outrank persisted or remembered gear values. Verified canonical current-holder data outranks inferred ownership from preset context. Never recommend upgrading a piece already at or beyond the proposed breakpoint. Never use the prior recommendation itself as evidence. Upgrade Ore and other spendable balances are VOLATILE; if the proposed spend depends on the amount available, use a current-enough balance before naming the target.
+
+PHYSICAL PIECE IDENTITY / HOLDER ATTRIBUTION
+A transferable gear piece, its current holder, its use in a preset, and a proposed reassignment are four separate concepts. Before naming a consequential gear target, identify the physical piece by stable attributes/breakpoint and name the current verified holder when known. Do not relabel the same physical piece as another hero's gear merely because a specialist preset uses it, previously used it, or could benefit from it. If recommending a move, state that move as a separate future action and do not imply the reassignment already exists. When current holder evidence conflicts with an older preset snapshot, the newer verified holder evidence controls current attribution while the older preset observation remains historical preset context.
 
 PRESET / SHARED-POOL RECONCILIATION
-Before consequential gear-spend advice, reconcile the current preset or presets relevant to the user's objective against the transferable shared gear pool. A current preset or lineup screenshot showing a piece's level or promotion outranks an older hero-bound snapshot for that preset. Never merge distinct preset assignments into one fictional permanently hero-owned loadout, and never assume an old wearer still owns the physical piece when presets can reassign gear. Preserve default and specialist presets separately while tracking which observations may refer to the same transferable piece. If assignment identity or current preset state is ambiguous and that ambiguity could change the best spend target, request the smallest resolving evidence or return bounded alternatives instead of naming a false single winner.
+Before consequential gear-spend advice, reconcile the current preset or presets relevant to the user's objective against the transferable shared gear pool. A current preset or lineup screenshot showing a piece's level or promotion can establish that preset observation, but it does not permanently rename or re-own the physical piece. Never merge distinct preset assignments into one fictional permanently hero-owned loadout, and never assume an old wearer still owns the physical piece when presets can reassign gear. Preserve default and specialist presets separately while tracking which observations may refer to the same transferable piece. If physical-piece identity, current holder, or current preset state is ambiguous and that ambiguity could change the best spend target, request the smallest resolving evidence or return bounded alternatives instead of naming a false single winner.
 
 Current recurring-event evidence does not show Upgrade Ore or ordinary gear leveling as an Alliance Duel VS or Arms Race scoring action. Do not bank Ore merely for those events; use it whenever the best gear breakpoint is strategically ready. If current in-game event tasks later show gear or Ore scoring, direct evidence supersedes this rule.
 
@@ -36,7 +39,7 @@ EVENT-TIMING HANDOFF
 For Alliance Duel VS, Arms Race, exact point estimates, construction/research/training timing, or questions about whether to spend now versus later, load and apply `domain.events-vs-arms-race`. Event timing optimizes WHEN to execute a good upgrade; it does not change WHICH upgrade is best without a real account-value reason.
 
 PRESETS
-Keep default and specialist presets separate. A gear reassignment for a specialist preset does not overwrite default-account gear state. Displayed power is context, not the optimization target.
+Keep default and specialist presets separate. A gear reassignment for a specialist preset does not overwrite default-account gear state. Preset observations never redefine physical-piece ownership by themselves. Displayed power is context, not the optimization target.
 
 SCREENSHOTS
 Read visible values directly; never invent unreadable values. Reconcile complete screenshot batches together.
