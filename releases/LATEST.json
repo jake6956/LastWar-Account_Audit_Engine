@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-09.36",
+  "engine_version": "2026-09-15.38",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -25,14 +25,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA",
   "migration": {
-    "from": "2026-09-01.35",
-    "type": "engine_only_governance_consistency_and_proactive_recommendation_preflight",
+    "from": "2026-09-09.36",
+    "type": "engine_only_consumer_authority_preset_gear_and_drone_stage_semantics",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Preserves all LOCAL STATE. Makes user-stated goals authoritative for recommendation ranking, requires proactive decision-state validation before definitive advice, blocks false single-winner recommendations when material evidence is insufficient, strengthens research-before-guess and cross-module governance monotonicity, and adds regression gates preventing weaker domain/fallback wording from reintroducing prior failures."
+    "notes": "Preserves all LOCAL STATE. Keeps public Production in consumer runtime authority, reconciles current preset/shared transferable gear before consequential gear spending, and distinguishes visible Drone stage cost from verified whole-level cost. No workspace or account schema change."
   },
-  "notes": "Governance hotfix: goal-first optimization, proactive expert preflight, evidence sufficiency/no-false-winner rules, research-before-guess, cross-module monotonicity and consistency regressions. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
+  "notes": "Consumer/maintainer authority separation plus preset-aware gear preflight and evidence-safe Drone multi-stage cost semantics. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
 }
