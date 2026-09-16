@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-15.38",
+  "engine_version": "2026-09-16.39",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -25,14 +25,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA",
   "migration": {
-    "from": "2026-09-09.36",
-    "type": "engine_only_consumer_authority_preset_gear_and_drone_stage_semantics",
+    "from": "2026-09-15.38",
+    "type": "engine_only_transferable_gear_identity_attribution_hardening",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Preserves all LOCAL STATE. Keeps public Production in consumer runtime authority, reconciles current preset/shared transferable gear before consequential gear spending, and distinguishes visible Drone stage cost from verified whole-level cost. No workspace or account schema change."
+    "notes": "Preserves all LOCAL STATE. Distinguishes physical transferable gear identity, current verified holder, preset use, and proposed reassignment so preset context cannot silently rename or re-own a physical piece. No workspace or account schema change."
   },
-  "notes": "Consumer/maintainer authority separation plus preset-aware gear preflight and evidence-safe Drone multi-stage cost semantics. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
+  "notes": "Transferable gear identity/current-holder attribution hardening. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
 }
