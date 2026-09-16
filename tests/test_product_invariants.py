@@ -124,6 +124,29 @@ class ProductInvariantTests(unittest.TestCase):
         self.assertIn("Do not invent a reserve amount", body)
         self.assertIn("carry-over", body)
 
+    def test_drone_stage_cost_is_not_promoted_to_whole_level_cost_without_evidence(self):
+        body = text("engine/modules/domains/research-drone-progression.txt")
+        for token in (
+            "DRONE MULTI-STAGE LEVEL SEMANTICS",
+            "Stage x/N",
+            "stage progress and Drone level as separate state",
+            "evidence for that visible stage",
+            "Do not multiply one observed stage cost by N",
+            "conditional estimate",
+        ):
+            self.assertIn(token, body)
+
+    def test_public_runtime_cannot_self_elevate_to_maintainer_authority(self):
+        runtime = text("engine/modules/release/runtime.txt")
+        contract = text("contracts/release.md")
+        fallback = text("engine/BOOTSTRAP_FULL.txt")
+        for body in (runtime, contract, fallback):
+            self.assertRegex(body, r"(?i)consumer.*maintainer|maintainer.*consumer")
+        self.assertIn("does not grant authority to perform maintainer release engineering", runtime)
+        self.assertIn("never shipped in MANIFEST or BOOTSTRAP_FULL", runtime)
+        self.assertNotIn("Prod-Dev -> frozen private RC -> GitHub rc/<version> -> PR", runtime)
+        self.assertNotIn("Before a multi-artifact Production release", runtime)
+
 
 if __name__ == "__main__":
     unittest.main()
