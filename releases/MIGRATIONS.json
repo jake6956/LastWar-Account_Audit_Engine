@@ -505,6 +505,21 @@
         "test_public_runtime_cannot_self_elevate_to_maintainer_authority"
       ],
       "notes": "Preserves all LOCAL STATE while separating public consumer runtime from private maintainer release authority, reconciling current preset/shared transferable gear before consequential spend advice, and treating visible multi-stage Drone costs as stage-local unless whole-level cost is independently verified. No workspace/account schema change."
+    },
+    {
+      "from": "2026-09-15.38",
+      "to": "2026-09-16.39",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_transferable_gear_identity_attribution_hardening",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_transferable_piece_identity_is_distinct_from_current_holder_and_preset_use",
+        "test_current_holder_conflict_prefers_newer_verified_holder_without_erasing_preset_history"
+      ],
+      "notes": "Preserves all LOCAL STATE while separating physical transferable gear identity, current verified holder, preset use and proposed reassignment. Current-holder evidence controls attribution; preset context cannot silently rename or re-own a physical piece. No workspace/account schema change."
     }
   ]
 }
