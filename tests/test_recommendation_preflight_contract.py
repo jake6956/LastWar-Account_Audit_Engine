@@ -63,6 +63,18 @@ class RecommendationPreflightContractTests(unittest.TestCase):
         ]:
             self.assertIn(token, gear)
 
+    def test_gear_spend_preflight_reconciles_current_preset_and_shared_pool(self):
+        gear = read("engine/modules/domains/gear-heroes-skills-ew.txt")
+        for token in [
+            "PRESET / SHARED-POOL RECONCILIATION",
+            "current preset or presets relevant to the user's objective",
+            "outranks an older hero-bound snapshot for that preset",
+            "Never merge distinct preset assignments into one fictional permanently hero-owned loadout",
+            "same transferable piece",
+            "smallest resolving evidence",
+        ]:
+            self.assertIn(token, gear)
+
     def test_private_state_does_not_leak_into_contract(self):
         public = "\n".join([
             read("engine/modules/core/operating.txt"),

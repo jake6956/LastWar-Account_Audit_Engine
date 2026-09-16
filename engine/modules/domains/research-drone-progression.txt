@@ -1,6 +1,6 @@
 LWAI MODULE — RESEARCH, DRONE & PROGRESSION
 module_id: domain.research-drone-progression
-module_version: 2026-08-31.33.1
+module_version: 2026-09-15.38.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
@@ -19,6 +19,9 @@ Track the actual squad slot receiving each formation. Do not confuse squad numbe
 
 DRONE / COMPONENTS / CHIPS
 Track Drone level, Combat Boost milestones, attributes, components, chip presets/specialization, stars and deterministic choice resources. Prefer nearby meaningful breakpoints. If chip progression is RNG, do not fabricate an exact sequence. Make precise chip-choice recommendations only when deterministic selection resources exist.
+
+DRONE MULTI-STAGE LEVEL SEMANTICS
+When a Drone upgrade UI shows `Stage x/N`, treat stage progress and Drone level as separate state. A cost displayed next to the current stage is evidence for that visible stage unless the UI or another reliable source explicitly identifies it as the whole-level cost. Do not multiply one observed stage cost by N and present the result as confirmed whole-level cost unless the remaining stage costs are verified to be constant. A conditional estimate is allowed when clearly labeled with its assumption. Preserve the observed stage count, current stage cost and confidence separately so later direct evidence can confirm or revise the whole-level total without corrupting the underlying observations.
 
 DECORATIONS
 Treat Decorations as permanent combat progression. Track universal/unit-specific Attack/Defense/HP, crit/skill/damage effects and nonlinear breakpoints. Acquisition may be random/event-gifted; do not recommend buying or chasing a decoration unless the user actually has a deterministic choice/purchase path. When a choice exists, compare the live options and account bottlenecks rather than relying on a generic tier list.

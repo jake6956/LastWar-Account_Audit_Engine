@@ -489,6 +489,22 @@
         "test_full_fallback_has_governance_parity"
       ],
       "notes": "Makes recommendation certainty proactive rather than user-triggered; user-stated goals govern ranking; material missing/stale/contradictory inputs that can flip the winner require smallest-evidence refresh or bounded alternatives; domain/fallback governance cannot weaken core invariants. LOCAL STATE/schema unchanged."
+    },
+    {
+      "from": "2026-09-09.36",
+      "to": "2026-09-15.38",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_consumer_authority_preset_gear_and_drone_stage_semantics",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_gear_spend_preflight_reconciles_current_preset_and_shared_pool",
+        "test_drone_stage_cost_is_not_promoted_to_whole_level_cost_without_evidence",
+        "test_public_runtime_cannot_self_elevate_to_maintainer_authority"
+      ],
+      "notes": "Preserves all LOCAL STATE while separating public consumer runtime from private maintainer release authority, reconciling current preset/shared transferable gear before consequential spend advice, and treating visible multi-stage Drone costs as stage-local unless whole-level cost is independently verified. No workspace/account schema change."
     }
   ]
 }

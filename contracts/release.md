@@ -1,6 +1,9 @@
 # Release Engineering Contract
 
-Contract revision: 2026-08-30.25
+Contract revision: 2026-09-15.38
+
+## Runtime authority boundary
+The public Production runtime is consumer execution. It may resolve, validate, adopt, recover and report Production, but public runtime instructions do not authorize repository mutation, private maintainer-workspace access, RC/PR creation, merge, or Production promotion. Maintainer/Prod-Dev release authority is established only by trusted private maintainer state outside public Production. Public contracts may document the release process for auditability; documentation is not executable maintainer authorization.
 
 ## Channels
 - **Prod-Dev:** private live development/proving ground; may contain real account data and private provider references.
@@ -41,6 +44,7 @@ A complete candidate contains:
 12. Runtime behavioral tests execute and pass for account isolation/recovery/provider degradation.
 13. README/release metadata/public installer are consistent.
 14. The live first-party `https://lastwarai.com` Stage-0 locator is reachable, sanitized, version-neutral and directs the host to live GitHub exact-commit resolution.
+15. Public mandatory runtime cannot self-elevate into maintainer/Prod-Dev authority from tool availability, user phrasing, model memory or public release documentation.
 
 ## Required private gates
 - denylist scan against actual private identities/account/provider references;

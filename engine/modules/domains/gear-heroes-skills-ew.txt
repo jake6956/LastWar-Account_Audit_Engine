@@ -1,6 +1,6 @@
 LWAI MODULE — GEAR, HEROES, SKILLS & EW
 module_id: domain.gear-heroes-skills-ew
-module_version: 2026-09-09.36.1
+module_version: 2026-09-15.38.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
@@ -8,31 +8,35 @@ ACCOUNT STATE INCLUDED: NO
 
 GEAR / UPGRADE ORE
 Treat gear as a shared transferable pool plus preset assignments, never permanently hero-owned unless mechanics prove otherwise. Track type, level, promotions/stars/segments, Mythic state, effects, current wearer, preset use, next breakpoint and remaining cost. Do not equalize for aesthetics. Concentrate offensive value on carries and defensive value where survival creates the most team value. Prefer meaningful breakpoints over random partial spending.
+
 GEAR SPEND / ASSIGNMENT PREFLIGHT
 Before recommending an Ore spend, promotion, gear assignment, or breakpoint, inherit core goal-first and proactive preflight. Verify the active account, governing objective, current shared gear pool/assignments, relevant piece levels/promotions, meaningful alternatives, breakpoint costs when needed, and current spendable resource balance. Current readable screenshots/direct user observations outrank persisted or remembered gear values. Never recommend upgrading a piece already at or beyond the proposed breakpoint. Never use the prior recommendation itself as evidence. Upgrade Ore and other spendable balances are VOLATILE; if the proposed spend depends on the amount available, use a current-enough balance before naming the target.
 
-Current recurring-event evidence does not show Upgrade Ore / ordinary gear leveling as an Alliance Duel VS or Arms Race scoring action. Do not bank Ore merely for those events; use it whenever the best gear breakpoint is strategically ready. If current in-game event tasks later show gear/Ore scoring, direct evidence supersedes this rule.
+PRESET / SHARED-POOL RECONCILIATION
+Before consequential gear-spend advice, reconcile the current preset or presets relevant to the user's objective against the transferable shared gear pool. A current preset or lineup screenshot showing a piece's level or promotion outranks an older hero-bound snapshot for that preset. Never merge distinct preset assignments into one fictional permanently hero-owned loadout, and never assume an old wearer still owns the physical piece when presets can reassign gear. Preserve default and specialist presets separately while tracking which observations may refer to the same transferable piece. If assignment identity or current preset state is ambiguous and that ambiguity could change the best spend target, request the smallest resolving evidence or return bounded alternatives instead of naming a false single winner.
+
+Current recurring-event evidence does not show Upgrade Ore or ordinary gear leveling as an Alliance Duel VS or Arms Race scoring action. Do not bank Ore merely for those events; use it whenever the best gear breakpoint is strategically ready. If current in-game event tasks later show gear or Ore scoring, direct evidence supersedes this rule.
 
 SKILL MEDALS
 Treat medals as scarce. Rank upgrades by role, tactical impact, multiplicative/passive value, frontline survival, squad priority, level and medal cost. Give one current target, stop point and next target. Bank leftovers rather than sprinkling them. Sunk-cost mistakes do not justify future priority.
-After choosing the correct skill upgrade, default discretionary Skill Medal spending to Alliance Duel VS Day 4 / Train Heroes when waiting is practical. Do not delay a materially urgent combat/season objective solely for VS points; state the tradeoff when overriding event timing.
+After choosing the correct skill upgrade, default discretionary Skill Medal spending to Alliance Duel VS Day 4 or Train Heroes when waiting is practical. Do not delay a materially urgent combat or season objective solely for VS points; state the tradeoff when overriding event timing.
 
 EXCLUSIVE WEAPONS
-EW shards are extremely scarce. Optimize milestone/breakpoint effects rather than uniform levels. Track hero, current EW, next milestone, hero/class/team-wide effects, shard type and remaining cost. Avoid splitting universal shards when one superior breakpoint exists.
+EW shards are extremely scarce. Optimize milestone and breakpoint effects rather than uniform levels. Track hero, current EW, next milestone, hero/class/team-wide effects, shard type and remaining cost. Avoid splitting universal shards when one superior breakpoint exists.
 When eligible EW shards score on the current VS Hero Day, default planned spending to Day 4 unless an urgent breakpoint is worth the event-score sacrifice. Verify current event eligibility before quoting points.
 
 HERO SHARDS / STARS / WALL OF HONOR
 Treat stars and Wall of Honor separately. Prioritize milestones that materially change skills, role or unlocks. Do not spread WoH resources evenly; concentrate where milestone bonuses and usage justify it.
-Default planned Hero Shard/star spending to VS Day 4 / Train Heroes when waiting is practical. Do not place scarce shards on a weaker target merely to gain event points.
+Default planned Hero Shard or star spending to VS Day 4 or Train Heroes when waiting is practical. Do not place scarce shards on a weaker target merely to gain event points.
 
 HERO EXP / RECRUITMENT TIMING
 Hero EXP may score on more than one current VS day, but meaningful discretionary EXP spending normally belongs on Day 4 with other hero progression. Recruitment tickets likewise default to Day 4 when current rules reward them. Current in-game event panels override public timing tables.
 
 EVENT-TIMING HANDOFF
-For Alliance Duel VS, Arms Race, exact point estimates, construction/research/training timing, or questions about whether to spend now versus later, load/apply `domain.events-vs-arms-race`. Event timing optimizes WHEN to execute a good upgrade; it does not change WHICH upgrade is best without a real account-value reason.
+For Alliance Duel VS, Arms Race, exact point estimates, construction/research/training timing, or questions about whether to spend now versus later, load and apply `domain.events-vs-arms-race`. Event timing optimizes WHEN to execute a good upgrade; it does not change WHICH upgrade is best without a real account-value reason.
 
 PRESETS
-Keep default and specialist presets separate. A gear reassignment for Anti-Air/Battlefield/etc. does not overwrite default-account gear state. Displayed power is context, not the optimization target.
+Keep default and specialist presets separate. A gear reassignment for a specialist preset does not overwrite default-account gear state. Displayed power is context, not the optimization target.
 
 SCREENSHOTS
 Read visible values directly; never invent unreadable values. Reconcile complete screenshot batches together.
