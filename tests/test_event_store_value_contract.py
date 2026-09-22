@@ -42,5 +42,20 @@ class EventStoreValueContractTests(unittest.TestCase):
         self.assertIn("poor exchange rate", lower)
         self.assertIn("breakpoint", lower)
 
+    def test_bounty_hunter_counters_are_not_conflated(self):
+        lower = self.stores.lower()
+        self.assertIn("voucher/ticket balance", lower)
+        self.assertIn("bullet inventory", lower)
+        self.assertIn("300/1000/1800/3000/5000", lower)
+        self.assertIn("not voucher-spend progress", lower)
+        self.assertIn("actual displayed voucher/ticket balance", lower)
+
+    def test_optional_spend_respects_user_preference(self):
+        lower = self.stores.lower()
+        self.assertIn("optional spend recommendation", lower)
+        self.assertIn("if the user says not to recommend purchases", lower)
+        self.assertIn("if the user directly asks what to buy", lower)
+        self.assertIn("recommend spending nothing", lower)
+
 if __name__ == "__main__":
     unittest.main()
