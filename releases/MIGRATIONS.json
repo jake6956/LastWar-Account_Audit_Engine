@@ -536,6 +536,20 @@
         "test_standalone_fallback_has_transaction_evidence_parity"
       ],
       "notes": "Preserves all LOCAL STATE while requiring current direct next-transaction evidence before authorizing irreversible/scarce-resource execution when summary state may hide intermediate stages, variable costs or step-local requirements. Gear promotion advice now requires the current Promote/Upgrade step when that hidden state can affect the recommendation."
+    },
+    {
+      "from": "2026-09-25.40",
+      "to": "2026-09-25.41",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_retired_shortener_cleanup",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_deprecated_shorteners_are_not_supported_installers"
+      ],
+      "notes": "Preserves all LOCAL STATE while removing the dead TinyURL compatibility alias from active Production metadata, bootstrap handoff, current docs and validation. Historical release artifacts retain historical references."
     }
   ]
 }
