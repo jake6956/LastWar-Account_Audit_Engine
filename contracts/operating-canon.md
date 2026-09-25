@@ -1,6 +1,6 @@
 # LWAI Operating Canon — Production
 
-Version: 2026-09-25.40
+Version: 2026-09-25.41
 
 ## Purpose
 Maintain a durable, self-healing Last War account optimization system. Conversation is the interface; durable state is canonical when available. A fresh deployment should be installable from one short first-party instruction and one transparent configuration response rather than requiring the user to assemble the engine.
@@ -44,7 +44,7 @@ Preferred public installation instruction:
 
 LastWarAI.com is the stable first-party public configuration endpoint. For a fresh install, Cloudflare resolves live GitHub Production `main` server-side, retrieves `engine/BOOTSTRAP_FULL.txt` from that exact immutable commit, adapts only the already-completed generic Stage-0 discovery section, and returns the complete sanitized configuration in the same response. The user's AI does not need to perform a second GitHub or engine-URL fetch to install LWAI.
 
-GitHub `main` remains the underlying current-version authority. The public response identifies the resolved commit and permits independent verification. The previously circulated `https://tinyurl.com/2yxf7f5x` is legacy compatibility only; normal `share LWAI` returns the LastWarAI.com instruction and no current runtime depends on the shortener.
+GitHub `main` remains the underlying current-version authority. The public response identifies the resolved commit and permits independent verification. Deprecated URL shorteners are unsupported; normal `share LWAI` returns the LastWarAI.com instruction.
 
 `engine/BOOTSTRAP.txt` remains the <=4 KiB direct/modular Stage-1 loader. `export yourself` remains the complete sanitized standalone engine.
 
