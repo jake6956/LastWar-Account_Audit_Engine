@@ -5,7 +5,6 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 PUBLIC_URL = "https://lastwarai.com"
-LEGACY_URL = "https://tinyurl.com/2yxf7f5x"
 
 
 def read(path: str) -> str:
@@ -31,7 +30,7 @@ class UpdateCommandContractTests(unittest.TestCase):
         installer = latest["preferred_install_instruction"]
         self.assertEqual(latest["preferred_install_url"], PUBLIC_URL)
         self.assertEqual(installer, f"Set up Last War optimization using the instructions at {PUBLIC_URL}")
-        self.assertIn(LEGACY_URL, latest.get("legacy_install_urls", []))
+        self.assertEqual(latest.get("legacy_install_urls", []), [])
         self.assertFalse(latest["public_entrypoint_authority"])
         self.assertEqual(latest["live_ref_source"], LIVE_REF)
 
@@ -48,17 +47,13 @@ class UpdateCommandContractTests(unittest.TestCase):
         loader = read("engine/BOOTSTRAP.txt")
         self.assertIn(LIVE_REF, loader)
         self.assertNotIn(installer, loader, "Stage-1 must not duplicate the public transport installer")
-        self.assertNotIn(LEGACY_URL, loader)
 
-    def test_legacy_alias_is_compatibility_only(self):
+    def test_deprecated_shorteners_are_retired(self):
         latest = json.loads(read("releases/LATEST.json"))
-        self.assertIn(LEGACY_URL, latest["legacy_install_urls"])
-        for rel in ("docs/quick-install.md", "contracts/bootstrap-resolution.md", "engine/modules/release/bootstrap.txt"):
-            lower = read(rel).lower()
-            self.assertIn("legacy", lower)
-            self.assertIn("compatibility", lower)
-        self.assertNotEqual(latest["preferred_install_url"], LEGACY_URL)
-        self.assertNotIn(LEGACY_URL, read("README.md"), "public README should not advertise the legacy alias")
+        self.assertEqual(latest.get("legacy_install_urls", []), [])
+        for rel in ("docs/quick-install.md", "contracts/bootstrap-resolution.md", "engine/modules/release/bootstrap.txt", "README.md"):
+            self.assertNotIn("tinyurl.com", read(rel).lower())
+        self.assertIn("Deprecated URL shorteners are unsupported", read("engine/modules/release/bootstrap.txt"))
 
 
 if __name__ == "__main__":
