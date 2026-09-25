@@ -8,7 +8,7 @@ Paste it into a fresh AI conversation. For best results, use a higher reasoning/
 
 `https://lastwarai.com` is the permanent first-party public installer/configuration endpoint. For a fresh install it resolves live GitHub Production server-side, retrieves the complete sanitized LWAI configuration from that exact immutable commit, and returns it in the same response.
 
-The previously circulated `https://tinyurl.com/2yxf7f5x` is legacy compatibility only. Do not use it for new sharing and never treat a shortener response as Production authority.
+Deprecated URL shorteners are unsupported. Use `https://lastwarai.com` for installation and sharing; never treat a shortener response as Production authority.
 
 ## What happens
 
