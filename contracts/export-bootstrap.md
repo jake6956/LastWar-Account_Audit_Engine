@@ -14,7 +14,7 @@ The default public install experience is one line:
 
 The user's AI is not expected to fetch a second engine URL, retrieve GitHub JSON, locate a commit SHA, or assemble the modular runtime manually during normal first installation.
 
-GitHub `main` remains the underlying Production source/version authority. The public response identifies the resolved commit and explicitly permits independent verification. The previously circulated `https://tinyurl.com/2yxf7f5x` is retained only as a legacy compatibility alias. New sharing uses LastWarAI.com. A third-party shortener, preview/interstitial, redirect, repository cache, mutable raw `main`, search index or model memory is never source/version authority.
+GitHub `main` remains the underlying Production source/version authority. The public response identifies the resolved commit and explicitly permits independent verification. New sharing uses LastWarAI.com. Deprecated third-party shorteners are unsupported; a shortener, preview/interstitial, redirect, repository cache, mutable raw `main`, search index or model memory is never source/version authority.
 
 ## First-party installation contract
 When a user explicitly asks to set up/install/initialize LWAI using the public installer URL:
