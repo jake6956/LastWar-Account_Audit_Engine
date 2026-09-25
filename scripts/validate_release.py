@@ -231,7 +231,7 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
     ])
     require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine"])
     require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "Deprecated URL shorteners are unsupported"])
-    require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, "Deprecated URL shorteners are not installer compatibility surfaces", "current-version authority"])
+    require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, "Deprecated URL shorteners are unsupported", "current-version authority"])
 
     for body, label in [(loader, "Stage-1"), (full, "full fallback"), (bootstrap, "release.bootstrap"), (contract, "bootstrap-resolution contract"), (quick, "quick install")]:
         if "tinyurl.com" in body.lower():
