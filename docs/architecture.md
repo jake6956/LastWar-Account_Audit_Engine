@@ -25,7 +25,7 @@ Preferred public instruction:
 
 LastWarAI.com is the stable first-party installation endpoint. For a fresh install, Cloudflare resolves the live GitHub Production `main` commit server-side, retrieves `engine/BOOTSTRAP_FULL.txt` from that exact immutable commit, adapts only the already-completed generic Stage-0 discovery section, and returns the complete sanitized configuration in the same response. The user's AI does not need a second GitHub or engine-URL request to install LWAI.
 
-The endpoint identifies the resolved commit and permits independent verification. GitHub `main` remains the underlying Production source/version authority. The previously circulated TinyURL remains a legacy compatibility alias only; it is not a normal install dependency or trust root.
+The endpoint identifies the resolved commit and permits independent verification. GitHub `main` remains the underlying Production source/version authority. Deprecated third-party shorteners are unsupported and are not install dependencies or trust roots.
 
 ## Production authority
 Underlying current-version authority begins at:
