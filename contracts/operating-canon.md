@@ -1,6 +1,6 @@
 # LWAI Operating Canon — Production
 
-Version: 2026-08-31.34
+Version: 2026-09-25.40
 
 ## Purpose
 Maintain a durable, self-healing Last War account optimization system. Conversation is the interface; durable state is canonical when available. A fresh deployment should be installable from one short first-party instruction and one transparent configuration response rather than requiring the user to assemble the engine.
