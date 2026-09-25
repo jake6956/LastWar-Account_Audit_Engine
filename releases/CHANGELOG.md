@@ -1,5 +1,13 @@
 # Production Changelog
 
+## 2026-09-25.41
+
+- Retired the dead TinyURL installer compatibility alias from active Production metadata, bootstrap handoff, current docs and acceptance tests.
+- LastWarAI.com is now the sole supported human-facing installation/share entrypoint; canonical GitHub live-ref/exact-commit resolution remains the underlying Production authority.
+- Historical release manifests/changelog entries retain old shortener references only as historical record; they are not current runtime behavior.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE, account state and provider behavior.
+
+
 ## 2026-09-25.40
 
 - Added a mandatory irreversible transaction-evidence gate before LWAI authorizes scarce/nonrecoverable spending, paid purchases, choice-chest bridging, or other progression actions whose exact next step may be hidden behind a summary screen.
