@@ -239,6 +239,21 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
     if PUBLIC_INSTALL_INSTRUCTION in loader:
         fail("Stage-1 duplicated public transport installer")
 
+    retired_shortener_surfaces = [
+        "engine/modules/release/bootstrap.txt",
+        "contracts/bootstrap-resolution.md",
+        "contracts/operating-canon.md",
+        "contracts/release.md",
+        "contracts/export-bootstrap.md",
+        "docs/quick-install.md",
+        "docs/architecture.md",
+        "docs/deployment.md",
+        "SECURITY.md",
+    ]
+    for rel in retired_shortener_surfaces:
+        if "tinyurl.com" in read(rel).lower():
+            fail(f"active Production surface still references retired TinyURL: {rel}")
+
 
 def validate_storage_security(full: str) -> None:
     storage = read("engine/modules/adapters/storage.txt")
