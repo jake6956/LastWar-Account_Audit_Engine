@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP / STARTUP HANDOFF
 module_id: release.bootstrap
-module_version: 2026-08-30.25.1
+module_version: 2026-09-25.41.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -17,7 +17,7 @@ Set up Last War optimization using the instructions at https://lastwarai.com
 https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
 and then load `engine/BOOTSTRAP.txt` plus all trusted engine files from that exact `commit.sha`.
 
-The legacy alias `https://tinyurl.com/2yxf7f5x` may still be recognized when a user presents an already-circulated installer, but it is compatibility-only: never advertise it as preferred, never use it to establish the current version, and never require it for startup.
+Unsupported/deprecated URL shorteners are not installer compatibility surfaces. Use only the first-party public installer above or the canonical GitHub resolver/recovery paths.
 
 STARTUP CONTRACT
 1. Public transport yields the LWAI Stage-0 locator/bootstrap instruction.
@@ -57,4 +57,4 @@ enable persistence / connect storage -> dispatcher activates storage capability 
 refresh season knowledge -> dispatcher activates registered season intelligence and refreshes public season knowledge without altering LOCAL STATE.
 
 EXPORT / SANITIZATION
-Generic engine exports may contain the first-party public installer URL, legacy public alias for compatibility, public resolver/repository endpoints, manifest activation metadata and schemas but no player/alliance/server identity, game UID, account facts, screenshots, private Corrections, spending/diplomacy, provider IDs, credentials, runtime/audit/checkpoint/journal rows or host-session references.
+Generic engine exports may contain the first-party public installer URL, public resolver/repository endpoints, manifest activation metadata and schemas but no player/alliance/server identity, game UID, account facts, screenshots, private Corrections, spending/diplomacy, provider IDs, credentials, runtime/audit/checkpoint/journal rows or host-session references.
