@@ -64,7 +64,7 @@ A complete candidate contains:
 3. Exact-commit Stage-1 loader: `engine/BOOTSTRAP.txt` at resolved commit C
 4. Exact-commit release metadata/module graph/migration graph at C
 5. Exact-commit `engine/BOOTSTRAP_FULL.txt` fallback at C
-6. Legacy compatibility alias: `https://tinyurl.com/2yxf7f5x` only when an already-circulated prompt presents it
+6. Deprecated third-party shorteners are unsupported; use only the first-party installer or canonical GitHub recovery paths
 
 The first-party domain and legacy alias are transport/discovery only. GitHub live `main` commit.sha establishes current Production; trusted candidate reads are pinned to that exact commit.
 

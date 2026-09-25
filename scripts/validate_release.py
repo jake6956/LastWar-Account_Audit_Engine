@@ -34,7 +34,6 @@ REQUIRED_FILES = [
 REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
 PUBLIC_INSTALL_URL = "https://lastwarai.com"
 PUBLIC_INSTALL_INSTRUCTION = f"Set up Last War optimization using the instructions at {PUBLIC_INSTALL_URL}"
-LEGACY_INSTALL_URL = "https://tinyurl.com/2yxf7f5x"
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 RAW_BOOT = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP.txt"
 RAW_MANIFEST = "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/MANIFEST.json"
@@ -193,7 +192,7 @@ def validate_loader_boundary(loader: str) -> None:
         "save your LWAI setup", "Allow always", "Google Drive", "Dropbox", "OneDrive", "Box",
         "screenname", "strategic baseline", "GEAR / UPGRADE ORE", "SKILL MEDALS",
         "DRONE / COMPONENTS / CHIPS", "EVENT STORES / BLACK MARKET / BOUNTY", "COMBAT DIAGNOSIS",
-        "domain.season-intelligence", PUBLIC_INSTALL_URL, LEGACY_INSTALL_URL,
+        "domain.season-intelligence", PUBLIC_INSTALL_URL,
     ]
     for token in forbidden:
         if token in loader:
@@ -211,8 +210,8 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
         fail("LATEST preferred_install_url is not first-party LastWarAI.com")
     if latest.get("preferred_install_instruction") != PUBLIC_INSTALL_INSTRUCTION:
         fail("LATEST preferred_install_instruction drifted from canonical first-party installer")
-    if LEGACY_INSTALL_URL not in (latest.get("legacy_install_urls") or []):
-        fail("LATEST lost legacy TinyURL compatibility alias")
+    if latest.get("legacy_install_urls") not in (None, []):
+        fail("LATEST must not advertise deprecated legacy installer aliases")
     if latest.get("public_entrypoint_authority") is not False:
         fail("public entrypoint must explicitly be non-authoritative for current version")
     if latest.get("live_ref_source") != LIVE_REF or latest.get("mutable_source_urls_are_authority") is not False:
@@ -231,13 +230,29 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
         "Fresh install with no live ref capability", "release.updater",
     ])
     require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine"])
-    require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "legacy compatibility"])
-    require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, LEGACY_INSTALL_URL, "compatibility-only", "current-version authority"])
+    require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "Deprecated URL shorteners are unsupported"])
+    require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, "Deprecated URL shorteners are unsupported", "current-version authority"])
 
-    if LEGACY_INSTALL_URL in loader or LEGACY_INSTALL_URL in full:
-        fail("legacy shortener leaked into Stage-1/full runtime instead of compatibility metadata/handoff only")
+    for body, label in [(loader, "Stage-1"), (full, "full fallback"), (bootstrap, "release.bootstrap"), (contract, "bootstrap-resolution contract"), (quick, "quick install")]:
+        if "tinyurl.com" in body.lower():
+            fail(f"{label} still references retired TinyURL compatibility")
     if PUBLIC_INSTALL_INSTRUCTION in loader:
         fail("Stage-1 duplicated public transport installer")
+
+    retired_shortener_surfaces = [
+        "engine/modules/release/bootstrap.txt",
+        "contracts/bootstrap-resolution.md",
+        "contracts/operating-canon.md",
+        "contracts/release.md",
+        "contracts/export-bootstrap.md",
+        "docs/quick-install.md",
+        "docs/architecture.md",
+        "docs/deployment.md",
+        "SECURITY.md",
+    ]
+    for rel in retired_shortener_surfaces:
+        if "tinyurl.com" in read(rel).lower():
+            fail(f"active Production surface still references retired TinyURL: {rel}")
 
 
 def validate_storage_security(full: str) -> None:
@@ -382,7 +397,7 @@ def main() -> None:
     if version in readme:
         fail("README must not pin a mutable engine version; use releases/LATEST.json instead")
     for token in [
-        LEGACY_INSTALL_URL, "Cloudflare", "4 KiB", "release.resolver", "Allow always",
+        "Cloudflare", "4 KiB", "release.resolver", "Allow always",
         "workers_dev", "preview_urls", "cache.enabled",
     ]:
         if token in readme:

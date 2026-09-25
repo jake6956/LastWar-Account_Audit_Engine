@@ -6,7 +6,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 PUBLIC_URL = "https://lastwarai.com"
-LEGACY_URL = "https://tinyurl.com/2yxf7f5x"
 
 
 def read(rel: str) -> str:
@@ -141,14 +140,12 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.assertIn("last-known-good ENGINE", self.resolver)
         self.assertRegex(self.resolver, re.compile(r"40-lowercase-hex"))
 
-    def test_legacy_shortener_is_compatibility_only(self):
-        self.assertIn(LEGACY_URL, self.latest.get("legacy_install_urls", []))
-        self.assertNotEqual(self.latest["preferred_install_url"], LEGACY_URL)
-        self.assertNotIn(LEGACY_URL, self.loader)
-        self.assertNotIn(LEGACY_URL, self.full)
-        lower = self.bootstrap.lower()
-        self.assertIn("legacy", lower)
-        self.assertIn("compatibility", lower)
+    def test_deprecated_shorteners_are_not_supported_installers(self):
+        self.assertEqual(self.latest.get("legacy_install_urls", []), [])
+        combined = "\n".join((self.loader, self.full, self.bootstrap, self.contract))
+        self.assertNotIn("tinyurl.com", combined.lower())
+        self.assertIn("Deprecated URL shorteners are unsupported", self.bootstrap)
+        self.assertEqual(self.latest["preferred_install_url"], PUBLIC_URL)
 
 
 if __name__ == "__main__":

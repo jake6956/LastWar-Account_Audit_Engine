@@ -7,7 +7,7 @@ Every public promotion is fail-closed.
 - `LATEST.json`, module manifest, loader and full fallback versions/API/schema agree;
 - manifests assert `sanitized=true` and `account_state_included=false`;
 - preferred public installer is the first-party `https://lastwarai.com` endpoint and the exact one-line instruction is synchronized across current docs/runtime metadata;
-- previously circulated `https://tinyurl.com/2yxf7f5x` is recorded only as a legacy compatibility alias and is not a runtime dependency/version authority;
+- deprecated URL shorteners are unsupported and absent from active runtime/current release metadata; historical release records may retain them only as history;
 - live first-party Stage-0 endpoint returns HTTP 200 plaintext, sanitized/version-neutral locator content, the canonical GitHub live-ref URL, `commit.sha`, and exact-commit `engine/BOOTSTRAP.txt` handoff;
 - public Stage-0 transport is explicitly non-authoritative for current version; current Production comes only from live GitHub `main` commit.sha;
 - module graph dependencies resolve, contain no cycles and required modules are marked required;
@@ -32,7 +32,7 @@ Every public promotion is fail-closed.
 4. Locator instructs the host to resolve `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main` and use current `commit.sha`.
 5. Stage-1 and all trusted release/module reads use one exact immutable commit.
 6. Stale/cached alias/README/raw-main content cannot override a newer live GitHub Production identity.
-7. Legacy TinyURL may remain usable for an already-circulated prompt, but new `share LWAI` output never returns it.
+7. Deprecated URL shorteners are unsupported; `share LWAI` returns only the LastWarAI.com installer.
 8. Public-entrypoint failure never mutates LOCAL STATE and existing compatible deployments can retain last-known-good ENGINE.
 
 ## Required private pre-promotion checks

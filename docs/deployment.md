@@ -14,7 +14,7 @@ The public URL is short, stable, first-party and independent of the underlying h
 
 GitHub `main` remains the underlying authoritative sanitized Production source. The LastWarAI.com response identifies the exact GitHub commit used and explicitly permits independent verification.
 
-The previously circulated `https://tinyurl.com/2yxf7f5x` is legacy compatibility only. It is not used for new sharing and is never current-version authority.
+Deprecated third-party shorteners are unsupported. LastWarAI.com is the supported public installer and GitHub live `main` remains current-version authority.
 
 ## Production authority
 Underlying current Production is resolved from:
@@ -92,7 +92,7 @@ Release validation must compare the public `X-LWAI-Commit` with live GitHub `mai
 
 `Set up Last War optimization using the instructions at https://lastwarai.com`
 
-Do not create beta/stable/alternate public installer paths. RC branches are maintainer-only and temporary. The legacy TinyURL is compatibility-only for already-circulated instructions.
+Do not create beta/stable/alternate public installer paths. RC branches are maintainer-only and temporary. Deprecated third-party shorteners are unsupported.
 
 ## Recovery
 - `reload LWAI`: automatic update preflight, then reconstruct from canonical engine metadata + workspace/account/schema/recovery state.

@@ -5,7 +5,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 LIVE_REF = "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main"
 PUBLIC_URL = "https://lastwarai.com"
-LEGACY_URL = "https://tinyurl.com/2yxf7f5x"
 FIRST_RUN_PROMPT = (
     "Would you like me to save your LWAI setup in your own cloud storage so I can pick up "
     "where we left off in future chats? Recommended, but optional. Reply yes or no."
@@ -69,20 +68,15 @@ class UserExperienceContractTests(unittest.TestCase):
             self.latest["preferred_install_instruction"],
             f"Set up Last War optimization using the instructions at {PUBLIC_URL}",
         )
-        self.assertIn(LEGACY_URL, self.latest.get("legacy_install_urls", []))
-        self.assertNotIn(LEGACY_URL, self.loader)
-        self.assertNotIn(LEGACY_URL, self.full)
-        self.assertNotIn(LEGACY_URL, self.readme)
-        for body in (self.bootstrap, self.bootstrap_contract, self.quick_install):
-            lower = body.lower()
-            self.assertIn("legacy", lower)
-            self.assertIn("compatibility", lower)
+        self.assertEqual(self.latest.get("legacy_install_urls", []), [])
+        for body in (self.loader, self.full, self.readme, self.bootstrap, self.bootstrap_contract, self.quick_install):
+            self.assertNotIn("tinyurl.com", body.lower())
+        self.assertIn("Deprecated URL shorteners are unsupported", self.bootstrap)
 
-    def test_legacy_repo_installer_handoff_executes_without_repaste(self):
+    def test_supported_installer_handoff_executes_without_repaste(self):
         lower = self.bootstrap.lower()
-        self.assertIn("legacy alias", lower)
-        self.assertIn("already-circulated installer", lower)
-        self.assertIn("compatibility-only", lower)
+        self.assertIn("lastwarai.com", lower)
+        self.assertIn("deprecated url shorteners are unsupported", lower)
         contract_lower = self.bootstrap_contract.lower()
         self.assertIn("the user is not expected to retrieve github json", contract_lower)
         self.assertIn("paste another url", contract_lower)

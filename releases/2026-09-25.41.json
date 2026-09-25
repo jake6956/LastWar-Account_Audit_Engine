@@ -32,5 +32,6 @@
     "requires_account_rewrite": false,
     "notes": "Preserves all LOCAL STATE. Retires the dead TinyURL compatibility alias from active Production metadata/runtime/docs/tests; LastWarAI.com remains the sole supported public installer. Historical release records remain unchanged."
   },
-  "notes": "Retires dead URL-shortener installer compatibility from active Production. LastWarAI.com is the sole supported public installer; Engine API 1.0, workspace schema 2.3 and all LOCAL STATE are preserved."
+  "notes": "Retires dead URL-shortener installer compatibility from active Production. LastWarAI.com is the sole supported public installer; Engine API 1.0, workspace schema 2.3 and all LOCAL STATE are preserved.",
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com"
 }

@@ -18,7 +18,7 @@ The preferred human-facing installer is the first-party `https://lastwarai.com` 
 
 Current Production is established by resolving live GitHub `main` at `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main`, obtaining its current `commit.sha`, and pinning trusted engine reads to that exact immutable commit.
 
-The previously circulated `https://tinyurl.com/2yxf7f5x` is legacy compatibility only. A third-party shortener, redirect/interstitial, search result, cached README, mutable raw `main` body or model memory is never an independent trust root.
+Deprecated third-party shorteners are unsupported. A shortener, redirect/interstitial, search result, cached README, mutable raw `main` body or model memory is never an independent trust root.
 
 The first-party domain keeps the normal public instruction short without pretending the source is anonymous. Resolving the locator exposes public GitHub provenance; do not falsify authorship/provenance.
 

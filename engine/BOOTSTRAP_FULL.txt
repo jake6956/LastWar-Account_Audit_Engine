@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-09-25.40
+engine_version: 2026-09-25.41
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
