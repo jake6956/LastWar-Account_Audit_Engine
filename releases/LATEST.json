@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-16.39",
+  "engine_version": "2026-09-25.40",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -25,14 +25,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA",
   "migration": {
-    "from": "2026-09-15.38",
-    "type": "engine_only_transferable_gear_identity_attribution_hardening",
+    "from": "2026-09-16.39",
+    "type": "engine_only_irreversible_transaction_evidence_gate",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Preserves all LOCAL STATE. Distinguishes physical transferable gear identity, current verified holder, preset use, and proposed reassignment so preset context cannot silently rename or re-own a physical piece. No workspace or account schema change."
+    "notes": "Preserves all LOCAL STATE. Adds a mandatory transaction-evidence gate for irreversible/scarce-resource recommendations and gear-specific next-step verification so summary icons or endpoint costs cannot authorize an unverified current spend. No workspace or account schema change."
   },
-  "notes": "Transferable gear identity/current-holder attribution hardening. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
+  "notes": "Irreversible transaction-evidence gating for scarce-resource advice, with exact gear Promote/Upgrade step verification. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
 }
