@@ -1,5 +1,16 @@
 # Production Changelog
 
+## 2026-09-25.40
+
+- Added a mandatory irreversible transaction-evidence gate before LWAI authorizes scarce/nonrecoverable spending, paid purchases, choice-chest bridging, or other progression actions whose exact next step may be hidden behind a summary screen.
+- Summary/inventory/lineup icons, remembered endpoint costs, historical screenshots and prior recommendations can no longer prove an executable next transaction when intermediate stages, variable costs or step-local requirements may exist.
+- Gear promotion advice now requires the current Promote/Upgrade step when stage semantics can affect the decision, including current segment, immediate result, Upgrade Ore cost, regular/Mythic blueprint requirements and current spendable balances.
+- LWAI must verify exact shortfalls and chest/conversion values before recommending choice chests or another scarce resource to bridge a gear spend.
+- Endpoint roadmaps remain available without the transaction screen only when clearly framed as planning rather than permission to execute an unverified step.
+- Added deterministic regressions and standalone-fallback parity for the new guardrail.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE and existing account/provider behavior.
+
+
 ## 2026-08-31.34
 
 - Compacted genuinely-new-user persistence onboarding into one benefit-oriented cloud-vs-session choice; the initial question no longer dumps provider internals, storage-action lists, OAuth/token/cookie terminology, or credential boilerplate.
