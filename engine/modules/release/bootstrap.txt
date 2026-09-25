@@ -17,7 +17,7 @@ Set up Last War optimization using the instructions at https://lastwarai.com
 https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
 and then load `engine/BOOTSTRAP.txt` plus all trusted engine files from that exact `commit.sha`.
 
-Unsupported/deprecated URL shorteners are not installer compatibility surfaces. Use only the first-party public installer above or the canonical GitHub resolver/recovery paths.
+Deprecated URL shorteners are unsupported and are not installer compatibility surfaces. Use only the first-party public installer above or the canonical GitHub resolver/recovery paths.
 
 STARTUP CONTRACT
 1. Public transport yields the LWAI Stage-0 locator/bootstrap instruction.
