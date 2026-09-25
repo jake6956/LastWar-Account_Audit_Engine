@@ -63,6 +63,44 @@ class RecommendationPreflightContractTests(unittest.TestCase):
         ]:
             self.assertIn(token, gear)
 
+    def test_irreversible_transaction_requires_exact_next_step_evidence(self):
+        governance = read("engine/modules/core/recommendation-governance.txt")
+        for token in [
+            "IRREVERSIBLE TRANSACTION-EVIDENCE GATE",
+            "summary-state evidence is not automatically sufficient to authorize the next click",
+            "actual executable transaction",
+            "exact next-step resource requirements",
+            "opening choice chests",
+            "smallest resolving transaction/confirmation screen",
+            "planning rather than permission to execute an unverified step",
+        ]:
+            self.assertIn(token, governance)
+
+    def test_gear_summary_icon_cannot_authorize_hidden_promotion_step(self):
+        gear = read("engine/modules/domains/gear-heroes-skills-ew.txt")
+        for token in [
+            "GEAR TRANSACTION-STEP EVIDENCE GATE",
+            "do not prove the internal promotion segment or exact next-step cost",
+            "current Promote/Upgrade screen",
+            "current promotion sub-stage/segment",
+            "exact Upgrade Ore cost",
+            "regular blueprint requirement",
+            "Mythic blueprint requirement",
+            "Do not infer that a visible 4-star item is one click from Mythic",
+            "exact current-step shortfall and chest/conversion value are verified",
+        ]:
+            self.assertIn(token, gear)
+
+    def test_standalone_fallback_has_transaction_evidence_parity(self):
+        full = read("engine/BOOTSTRAP_FULL.txt")
+        for token in [
+            "IRREVERSIBLE TRANSACTION-EVIDENCE GATE",
+            "GEAR TRANSACTION-STEP EVIDENCE GATE",
+            "current Promote/Upgrade screen",
+            "Do not infer that a visible 4-star item is one click from Mythic",
+        ]:
+            self.assertIn(token, full)
+
     def test_gear_spend_preflight_reconciles_current_preset_and_shared_pool(self):
         gear = read("engine/modules/domains/gear-heroes-skills-ew.txt")
         for token in [

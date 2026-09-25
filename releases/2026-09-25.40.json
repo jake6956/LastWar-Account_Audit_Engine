@@ -34,5 +34,6 @@
     "requires_account_rewrite": false,
     "notes": "Preserves all LOCAL STATE. Adds a mandatory transaction-evidence gate for irreversible/scarce-resource recommendations and gear-specific next-step verification so summary icons or endpoint costs cannot authorize an unverified current spend. No workspace or account schema change."
   },
-  "notes": "Irreversible transaction-evidence gating for scarce-resource advice, with exact gear Promote/Upgrade step verification. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
+  "notes": "Irreversible transaction-evidence gating for scarce-resource advice, with exact gear Promote/Upgrade step verification. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved.",
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com"
 }

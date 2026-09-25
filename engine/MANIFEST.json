@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-16.39",
+  "engine_version": "2026-09-25.40",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -35,7 +35,7 @@
     },
     {
       "module_id": "core.recommendation-governance",
-      "module_version": "2026-09-09.36.1",
+      "module_version": "2026-09-25.40.1",
       "path": "engine/modules/core/recommendation-governance.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -54,7 +54,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "6389abd8d57e1037fcbad49f3121960370586730"
+        "digest": "891872ae121d0d2dc747056a44ae2816a3671e9a"
       }
     },
     {
@@ -263,7 +263,7 @@
     },
     {
       "module_id": "domain.gear-heroes-skills-ew",
-      "module_version": "2026-09-16.39.1",
+      "module_version": "2026-09-25.40.1",
       "path": "engine/modules/domains/gear-heroes-skills-ew.txt",
       "load_class": "domain_on_demand",
       "dependencies": [
@@ -294,7 +294,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "dba0c195bf9e9e6d4c615137dd0aed8a1db648b8"
+        "digest": "99637a2b165556fc5a98e23033d6b2f4e63a1e57"
       }
     },
     {

@@ -1,6 +1,6 @@
 # LWAI Operating Canon — Production
 
-Version: 2026-08-31.34
+Version: 2026-09-25.40
 
 ## Purpose
 Maintain a durable, self-healing Last War account optimization system. Conversation is the interface; durable state is canonical when available. A fresh deployment should be installable from one short first-party instruction and one transparent configuration response rather than requiring the user to assemble the engine.
@@ -35,6 +35,7 @@ Maintain a durable, self-healing Last War account optimization system. Conversat
 6. No self-citation: prior recommendations are never evidence for themselves.
 7. Module monotonicity: domain modules may specialize core governance but may never weaken goal-first, evidence, privacy, account-isolation, recovery or certainty requirements. The stricter applicable requirement wins.
 8. Quality-control challenge: users may challenge strategy normally, but a correctness challenge to a definitive answer triggers full material-state revalidation and reusable regression capture when a defect is found.
+9. Irreversible transaction evidence: when the exact next spend/click can differ from a summary icon or endpoint because of hidden/intermediate stages, variable costs or step-local requirements, require current direct transaction evidence before authorizing execution; planning may remain conditional until verified.
 
 ## Public installation
 Preferred public installation instruction:

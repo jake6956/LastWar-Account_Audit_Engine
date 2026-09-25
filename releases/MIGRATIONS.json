@@ -520,6 +520,22 @@
         "test_current_holder_conflict_prefers_newer_verified_holder_without_erasing_preset_history"
       ],
       "notes": "Preserves all LOCAL STATE while separating physical transferable gear identity, current verified holder, preset use and proposed reassignment. Current-holder evidence controls attribution; preset context cannot silently rename or re-own a physical piece. No workspace/account schema change."
+    },
+    {
+      "from": "2026-09-16.39",
+      "to": "2026-09-25.40",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_irreversible_transaction_evidence_gate",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_irreversible_transaction_requires_exact_next_step_evidence",
+        "test_gear_summary_icon_cannot_authorize_hidden_promotion_step",
+        "test_standalone_fallback_has_transaction_evidence_parity"
+      ],
+      "notes": "Preserves all LOCAL STATE while requiring current direct next-transaction evidence before authorizing irreversible/scarce-resource execution when summary state may hide intermediate stages, variable costs or step-local requirements. Gear promotion advice now requires the current Promote/Upgrade step when that hidden state can affect the recommendation."
     }
   ]
 }
