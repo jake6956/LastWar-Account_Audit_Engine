@@ -1,6 +1,6 @@
 # LWAI Recommendation Governance Contract
 
-Version: 2026-09-09.36
+Version: 2026-09-25.40
 Status: Release-candidate invariant contract
 
 This contract is cross-cutting and fail-closed. Domain modules may specialize it but may not weaken it.
@@ -34,3 +34,6 @@ Strategic disagreement is normal collaboration. A correctness challenge to a def
 
 ## G-010 Output semantics
 `Decisive` means either a validated goal-aligned winner, a concise request for the smallest resolving evidence, or a bounded goal-aligned selection when no safe single winner is available. It never means forced certainty.
+
+## G-011 Irreversible transaction evidence
+When advice would authorize consuming scarce/nonrecoverable resources, opening choice chests to bridge a shortfall, spending paid currency/cash, or executing another irreversible progression transaction, verify the actual next transaction whenever summary state can hide intermediate stages, variable costs, or step-local requirements. Summary/inventory/lineup icons, remembered endpoint costs, historical screenshots and prior recommendations do not prove the next executable step. Require the smallest current transaction/confirmation screen needed to identify the current sub-stage, immediate next result, exact required resources, and current balances before saying to execute. Endpoint roadmaps may be given without that screen only when clearly labeled as planning rather than authorization to spend now.
