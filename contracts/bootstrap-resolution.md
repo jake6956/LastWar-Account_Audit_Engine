@@ -27,7 +27,7 @@ Preferred instruction:
 
 The sentence remains stable across releases. The user is not expected to retrieve GitHub JSON, find a SHA, paste another URL, upload BOOTSTRAP.txt, or perform other technical setup.
 
-The previously circulated TinyURL remains legacy compatibility only.
+Deprecated URL shorteners are unsupported. The supported public installer is LastWarAI.com.
 
 ## Server-side live resolution
 
