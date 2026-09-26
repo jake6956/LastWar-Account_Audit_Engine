@@ -9,6 +9,45 @@ def read(rel):
 
 
 class RecommendationPreflightContractTests(unittest.TestCase):
+    def test_confirmed_defects_are_auto_captured_without_second_user_instruction(self):
+        governance = read("engine/modules/core/recommendation-governance.txt")
+        operating = read("engine/modules/core/operating.txt")
+        for token in [
+            "AUTO DEFECT CAPTURE",
+            "without waiting for another instruction",
+            "Account-specific corrections belong in LOCAL account state/Corrections",
+            "Reusable/generalizable failures belong in the public engine",
+        ]:
+            self.assertIn(token, governance)
+        for token in [
+            "A confirmed LWAI miss automatically enters defect-capture handling",
+            "Do not wait for the user to separately request documentation or a code fix",
+            "If the defect is reusable across users",
+        ]:
+            self.assertIn(token, operating)
+
+    def test_tech_tree_terminal_topology_is_direct_evidence(self):
+        research = read("engine/modules/domains/research-drone-progression.txt")
+        for token in [
+            "TECH-TREE TOPOLOGY EVIDENCE",
+            "visible connector lines",
+            "no outgoing connector",
+            "terminal/bottom boundary",
+            "Never invent downstream unlocks beyond a visibly terminal node",
+            "cropped or structural continuation is ambiguous",
+        ]:
+            self.assertIn(token, research)
+
+    def test_standalone_fallback_has_auto_defect_and_topology_parity(self):
+        full = read("engine/BOOTSTRAP_FULL.txt")
+        for token in [
+            "AUTO DEFECT CAPTURE",
+            "without waiting for another instruction",
+            "TECH-TREE TOPOLOGY EVIDENCE",
+            "Never invent downstream unlocks beyond a visibly terminal node",
+        ]:
+            self.assertIn(token, full)
+
     def test_core_requires_proactive_consequential_recommendation_preflight(self):
         core = read("engine/modules/core/operating.txt")
         for token in [
