@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-25.41",
+  "engine_version": "2026-09-25.42",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -13,7 +13,7 @@
   "modules": [
     {
       "module_id": "core.operating",
-      "module_version": "2026-09-09.36.2",
+      "module_version": "2026-09-25.42.1",
       "path": "engine/modules/core/operating.txt",
       "load_class": "mandatory_core",
       "dependencies": [],
@@ -30,12 +30,12 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "8b7c43f4a871dc875039082877921c1ac13ae771"
+        "digest": "685b34797825b7baf1fe56c71369819e54d5baf9"
       }
     },
     {
       "module_id": "core.recommendation-governance",
-      "module_version": "2026-09-25.40.1",
+      "module_version": "2026-09-25.42.1",
       "path": "engine/modules/core/recommendation-governance.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -54,7 +54,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "891872ae121d0d2dc747056a44ae2816a3671e9a"
+        "digest": "6ade54b03c4ed2893346f2d3de1e80e96682e248"
       }
     },
     {
@@ -299,7 +299,7 @@
     },
     {
       "module_id": "domain.research-drone-progression",
-      "module_version": "2026-09-15.38.1",
+      "module_version": "2026-09-25.42.1",
       "path": "engine/modules/domains/research-drone-progression.txt",
       "load_class": "domain_on_demand",
       "dependencies": [
@@ -332,7 +332,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "af1116ef477e52dcbcda9c2570c94d96447a7842"
+        "digest": "ac668972d3e147f56df1099b7a433ec572d4783d"
       }
     },
     {
