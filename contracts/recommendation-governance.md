@@ -1,6 +1,6 @@
 # LWAI Recommendation Governance Contract
 
-Version: 2026-09-25.40
+Version: 2026-09-25.42
 Status: Release-candidate invariant contract
 
 This contract is cross-cutting and fail-closed. Domain modules may specialize it but may not weaken it.
@@ -37,3 +37,6 @@ Strategic disagreement is normal collaboration. A correctness challenge to a def
 
 ## G-011 Irreversible transaction evidence
 When advice would authorize consuming scarce/nonrecoverable resources, opening choice chests to bridge a shortfall, spending paid currency/cash, or executing another irreversible progression transaction, verify the actual next transaction whenever summary state can hide intermediate stages, variable costs, or step-local requirements. Summary/inventory/lineup icons, remembered endpoint costs, historical screenshots and prior recommendations do not prove the next executable step. Require the smallest current transaction/confirmation screen needed to identify the current sub-stage, immediate next result, exact required resources, and current balances before saying to execute. Endpoint roadmaps may be given without that screen only when clearly labeled as planning rather than authorization to spend now.
+
+## G-012 Automatic defect capture
+A confirmed LWAI correctness failure automatically triggers self-healing QA whether discovered by the user or by LWAI. Correct the answer, classify the failure, invalidate dependent advice, and preserve the correction without requiring a second user instruction. Account-specific defects belong in LOCAL Corrections/state; reusable/generalizable defects require a strengthened public engine rule and regression coverage through the normal versioned release path. Strategic disagreement alone is not a defect.

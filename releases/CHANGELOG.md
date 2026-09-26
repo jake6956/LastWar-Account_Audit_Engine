@@ -1,5 +1,15 @@
 # Production Changelog
 
+## 2026-09-25.42
+
+- Confirmed LWAI correctness failures now automatically enter defect-capture/self-healing handling; the user no longer needs to separately say `remember it`, `fix it`, or `code it`.
+- Account-specific misses remain private LOCAL Corrections/state; reusable/generalizable misses require a strengthened public engine rule plus regression coverage through the normal release path.
+- Added tech-tree topology evidence: visible connectors, branch joins and terminal boundaries are treated as structural evidence; LWAI must not invent downstream unlocks beyond a visibly terminal node.
+- Cropped/ambiguous tree continuation now triggers the smallest resolving tree screenshot request rather than speculation.
+- Added modular and standalone-fallback regressions for both behaviors.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE and existing account/provider behavior.
+
+
 ## 2026-09-25.41
 
 - Retired the dead TinyURL installer compatibility alias from active Production metadata, bootstrap handoff, current docs and acceptance tests.

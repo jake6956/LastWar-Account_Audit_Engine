@@ -32,5 +32,6 @@
     "requires_account_rewrite": false,
     "notes": "Preserves all LOCAL STATE. Confirmed LWAI correctness failures now auto-enter self-healing defect capture without requiring a second user instruction; reusable defects are regression-tested in the public engine. Adds direct tech-tree topology semantics so visibly terminal nodes are not given invented downstream unlocks."
   },
-  "notes": "Automatic defect capture plus tech-tree topology evidence. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
+  "notes": "Automatic defect capture plus tech-tree topology evidence. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved.",
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com"
 }

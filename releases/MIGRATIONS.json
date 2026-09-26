@@ -550,6 +550,23 @@
         "test_deprecated_shorteners_are_not_supported_installers"
       ],
       "notes": "Preserves all LOCAL STATE while removing the dead TinyURL compatibility alias from active Production metadata, bootstrap handoff, current docs and validation. Historical release artifacts retain historical references."
+    },
+    {
+      "from": "2026-09-25.41",
+      "to": "2026-09-25.42",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_auto_defect_capture_and_tech_topology",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_confirmed_defects_are_auto_captured_without_second_user_instruction",
+        "test_tech_tree_terminal_topology_is_direct_evidence",
+        "test_standalone_fallback_has_auto_defect_and_topology_parity",
+        "test_confirmed_defect_does_not_require_followup_fix_request"
+      ],
+      "notes": "Preserves all LOCAL STATE while making confirmed LWAI errors self-documenting/self-healing and treating visible tech-tree terminal topology as direct structural evidence."
     }
   ]
 }
