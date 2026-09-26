@@ -9,7 +9,7 @@ def read(rel):
 class GovernanceConsistencyTests(unittest.TestCase):
     def test_canonical_governance_contract_exists(self):
         c = read("contracts/recommendation-governance.md")
-        for token in ["G-001 Goal-first","G-002 Proactive validation","G-003 Evidence sufficiency","G-004 Research before guess","G-005 Decision procedure","G-006 No false winner","G-008 Governance monotonicity","G-010 Output semantics"]:
+        for token in ["G-001 Goal-first","G-002 Proactive validation","G-003 Evidence sufficiency","G-004 Research before guess","G-005 Decision procedure","G-006 No false winner","G-008 Governance monotonicity","G-010 Output semantics","G-012 Automatic defect capture"]:
             self.assertIn(token,c)
 
     def test_operating_surfaces_do_not_retain_legacy_uncertainty_escape_hatches(self):
@@ -48,6 +48,14 @@ class GovernanceConsistencyTests(unittest.TestCase):
         full = read("engine/BOOTSTRAP_FULL.txt")
         for token in ["RECOMMENDATION GOVERNANCE / PROACTIVE PREFLIGHT", "governing explicit objective", "The user never has to ask `are you sure?`", "release-blocking defect", "Never recommend upgrading a piece already at or beyond the proposed breakpoint"]:
             self.assertIn(token, full)
+
+    def test_confirmed_defect_does_not_require_followup_fix_request(self):
+        contract = read("contracts/recommendation-governance.md")
+        canon = read("contracts/operating-canon.md")
+        self.assertIn("G-012 Automatic defect capture", contract)
+        self.assertIn("without requiring a second user instruction", contract)
+        self.assertIn("Automatic defect capture", canon)
+        self.assertIn("the user does not need to separately ask for a fix", canon)
 
     def test_user_challenge_is_not_required_for_validation(self):
         ux = read("contracts/user-experience.md")
