@@ -20,7 +20,8 @@ Every public promotion is fail-closed.
 - thin Stage-1 loader is <= 4 KiB, orchestration-only, contains live-ref/exact-commit resolution and does not embed public-installer, provider/account onboarding or game-domain policy;
 - BOOTSTRAP_FULL contains complete current account/guidance/recovery/session/storage/integrity/migration/update and domain behavior;
 - storage adapter exposes `storage-api/1`, explicit capabilities, persistence profiles, absolute workspace isolation and concurrency-safe journal rules;
-- recommendation-governance contract is present and automated consistency tests prove goal-first optimization, proactive preflight, no-false-winner behavior, research-before-guess, irreversible transaction-evidence gating, module monotonicity and fallback parity;
+- recommendation-governance contract is present and automated consistency tests prove goal-first optimization, proactive preflight, no-false-winner behavior, research-before-guess, irreversible transaction-evidence gating, automatic confirmed-defect capture, module monotonicity and fallback parity;
+- research topology tests prove visibly terminal tech nodes cannot be given invented downstream unlocks and ambiguous/cropped continuation requests resolving evidence;
 - deterministic runtime tests execute for first-run persistence choice, contextual persistence reminders, canonical-version reporting, automatic engine freshness, account isolation, archive/start-over, legacy migration, current/legacy startup, workspace-schema migration, Audit Session isolation, Runtime Session provenance, `WAITING_USER`, verify-before-replay, checkpoint-loss tolerance, append-only journal, provider degradation and installer canonicalization;
 - README current Production identity matches release metadata and includes the first-party one-line installer;
 - generic credential/private-key leakage patterns and known private release markers are absent.
