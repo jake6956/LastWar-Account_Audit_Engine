@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-25.41",
+  "engine_version": "2026-09-25.42",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -23,14 +23,14 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA",
   "migration": {
-    "from": "2026-09-25.40",
-    "type": "engine_only_retired_shortener_cleanup",
+    "from": "2026-09-25.41",
+    "type": "engine_only_auto_defect_capture_and_tech_topology",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Preserves all LOCAL STATE. Retires the dead TinyURL compatibility alias from active Production metadata/runtime/docs/tests; LastWarAI.com remains the sole supported public installer. Historical release records remain unchanged."
+    "notes": "Preserves all LOCAL STATE. Confirmed LWAI correctness failures now auto-enter self-healing defect capture without requiring a second user instruction; reusable defects are regression-tested in the public engine. Adds direct tech-tree topology semantics so visibly terminal nodes are not given invented downstream unlocks."
   },
-  "notes": "Retires dead URL-shortener installer compatibility from active Production. LastWarAI.com is the sole supported public installer; Engine API 1.0, workspace schema 2.3 and all LOCAL STATE are preserved."
+  "notes": "Automatic defect capture plus tech-tree topology evidence. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved."
 }
