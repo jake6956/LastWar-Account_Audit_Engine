@@ -637,6 +637,22 @@
         "test_required_durable_account_fresh_runtime_matrix"
       ],
       "notes": "Adds only an opt-in same-origin modular transport source path. Default root/install/config remain the one-response BOOTSTRAP_FULL installer. No module behavior or workspace/account schema change; LOCAL STATE is preserved."
+    },
+    {
+      "from": "2026-09-28.46",
+      "to": "2026-09-28.48",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_compiled_single_response_and_preference_modularity",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_checked_in_fallback_is_exact_compiler_output",
+        "test_preference_resolution_shell_is_mandatory_and_learning_is_on_demand",
+        "test_goal_is_not_silently_overridden_by_generic_value"
+      ],
+      "notes": "Introduces deterministic compiled BOOTSTRAP_FULL ownership and an on-demand preference-learning companion while preserving the mandatory preference-resolution shell, Engine API 1.0, workspace schema 2.3, LOCAL STATE and supported one-response LastWarAI.com installation."
     }
   ]
 }
