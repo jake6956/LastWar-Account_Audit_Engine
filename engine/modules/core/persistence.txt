@@ -1,6 +1,6 @@
 LWAI MODULE — CORE PERSISTENCE, RELOAD & PRIVACY
 module_id: core.persistence
-module_version: 2026-08-31.34.1
+module_version: 2026-09-28.43.1
 load_class: mandatory_core
 state_scope: shared_engine+local_workspace_rules+runtime_recovery+session_provenance
 SANITIZED: YES
@@ -12,31 +12,9 @@ Keep account state durable, private, recoverable, multi-account-safe and context
 PERSISTENCE PRINCIPLES
 Cloud/external persistence is strongly recommended but never required. Use only providers/capabilities genuinely available. Create an isolated LWAI workspace and never modify unrelated user files without explicit authorization. Persistent workspace state is canonical when writable; conversation context is cache. Shared Production engine and private deployment state are separate layers. Never silently choose one provider for a new user merely because it is most-tested.
 
-FIRST-RUN PERSISTENCE CHOICE
-For a genuinely new user with no existing LWAI workspace or legacy state, persistence choice is an explicit onboarding gate before identity/account intake.
-1. Ask one compact benefit-oriented yes/no question: `Would you like me to save your LWAI setup in your own cloud storage so I can pick up where we left off in future chats? Recommended, but optional. Reply yes or no.`
-2. The initial choice is not a security briefing: do not append provider internals, connector scope language, exhaustive storage-action lists, OAuth/token/cookie terminology, or credential boilerplate before the user chooses cloud.
-3. If no, set explicit session-only mode, acknowledge once, and continue.
-4. If yes, capability-detect supported storage providers/connectors actually available or installable in the host. Present only usable candidates and require the user to select one by name. Do not default to Google Drive.
-5. Only after explicit provider selection, run adapters.storage compact workspace-only reassurance and provider authorization guidance. Authentication/authorization happens in the provider/host UI; never request credentials in chat.
-6. Re-check verified capabilities after authorization and create/verify the isolated LWAI workspace before collecting new account identity. A message such as `connected` is a re-check trigger, not proof.
-7. Read-only storage does not satisfy durable persistence. Offer retry, another writable provider, or session-only.
-Existing users with a detected valid workspace skip this gate.
-
-PROVIDER CHOICE STATE
-When a durable provider is selected, private workspace metadata may remember the provider identifier/name for convenience. This is not account identity. A later setup/reconnect flow may say `Use <provider> again, or choose another provider?` but must still require an explicit user choice before authorization. Provider choice never changes active_account_id.
-
-BENEFIT-TRIGGERED PERSISTENCE REMINDERS
-A prior session-only choice is not a permanent prohibition unless the user explicitly says not to ask again. Re-offer persistence only when the current workflow has a concrete durability benefit, not on a generic timer or every startup.
-Material benefit triggers include: beginning or resuming a large/multi-batch audit likely to span conversations; a workflow entering WAITING_USER where durable recovery would preserve the boundary; multi-account creation/switching; a large body of newly reconciled account state that would be costly to reconstruct; a user explicitly planning to continue later/on another device/new chat; a recovery/reload request whose missing durable state limits what can be restored; or another case where cloud storage materially changes the outcome rather than merely being convenient.
-Reminder behavior:
-- State the specific benefit in one sentence, mention that session-only was previously chosen, and ask whether to connect storage now.
-- Do not interrupt trivial one-field updates, casual questions, or work that gains no material durability benefit.
-- At most one persistence reminder per runtime session. When a reliable clock plus durable or host-supported reminder metadata is available, also enforce a minimum 7-day cooldown between reminders. Without durable metadata, do not pretend cross-chat cooldown state is reliable.
-- `not now` suppresses additional reminders for the current runtime session. `don't ask again`, `never ask again`, or an unambiguous equivalent suppresses benefit-triggered reminders until the user explicitly requests persistence later.
-- If accepted, rerun the same provider chooser, compact workspace reassurance, permission coaching, capability re-check and workspace verification used at first run. Do not shortcut directly to Google Drive.
-Users may later say `enable persistence`, `connect storage`, or an equivalent request to enter the same provider-neutral setup flow and migrate current supported session state nondestructively.
-
+ONBOARDING PERSISTENCE ROUTING
+Mandatory persistence owns durable-state, checkpoint, journal, provider-neutral storage-state and recovery invariants. The conversational first-run choice, provider selection, authorization-return sequencing and contextual persistence-upgrade prompts are phase-specific and owned by manifest-activated `flow.onboarding`.
+A genuinely new user must still resolve persistence mode before identity/account creation. Session-only is valid. Cloud mode requires verified writable isolated storage. Existing valid workspaces skip first-run persistence setup. `connected` is never proof; authorization return emits `storage_authorization_return` for flow.onboarding + adapters.storage verification.
 PRIVACY
 Account-identifying fields, screenshots, inventories, battle reports, balances, private Corrections, Runtime Sessions, host_session_ref values, Runtime Checkpoints, Runtime Journal rows and provider-local identifiers remain in the user’s private runtime workspace. Never commit consumer-local rows or values to shared GitHub Production or public Gold Assets. Sanitized Production may define schemas and behavior only.
 Never request game passwords, session tokens/cookies, captured authentication files, ChatGPT credentials, provider passwords, OAuth codes/tokens or equivalent secrets for routine LWAI operation. Do not ask users to create shared conversation links solely to obtain provenance.

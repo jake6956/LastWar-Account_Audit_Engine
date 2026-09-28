@@ -14,6 +14,7 @@ REQUIRED_FILES = [
     "engine/BOOTSTRAP.txt", "engine/BOOTSTRAP_FULL.txt", "engine/MANIFEST.json",
     "engine/modules/core/operating.txt", "engine/modules/core/persistence.txt",
     "engine/modules/core/accounts.txt", "engine/modules/core/guidance.txt",
+    "engine/modules/flows/onboarding.txt",
     "engine/modules/release/runtime.txt", "engine/modules/release/resolver.txt",
     "engine/modules/release/updater.txt", "engine/modules/release/bootstrap.txt",
     "engine/modules/adapters/storage.txt",
@@ -284,19 +285,21 @@ def validate_storage_security(full: str) -> None:
 def validate_friendly_ux(full: str) -> None:
     guidance = read("engine/modules/core/guidance.txt")
     persistence = read("engine/modules/core/persistence.txt")
+    onboarding = read("engine/modules/flows/onboarding.txt")
     storage = read("engine/modules/adapters/storage.txt")
     bootstrap = read("engine/modules/release/bootstrap.txt")
     updater = read("engine/modules/release/updater.txt")
     contract = read("contracts/user-experience.md")
-    for label, body in [("full", full), ("guidance", guidance), ("persistence", persistence), ("UX contract", contract)]:
+    for label, body in [("full", full), ("onboarding", onboarding), ("UX contract", contract)]:
         if FIRST_RUN_PROMPT not in body:
             fail(f"{label} lost compact first-run persistence choice")
-    combined = "\n".join([full, guidance, persistence, storage, bootstrap, contract]).lower()
+    combined = "\n".join([full, guidance, persistence, onboarding, storage, bootstrap, contract]).lower()
     if "never default to google drive" not in combined and "never silently choose google drive" not in combined:
         fail("provider flow does not prohibit silent Google Drive default")
-    for label, body in [("full", full), ("guidance", guidance), ("storage", storage), ("UX contract", contract)]:
+    for label, body in [("full", full), ("storage", storage), ("UX contract", contract)]:
         require(label, body, ["Google Drive", "Allow always"])
-    for label, body in [("full", full), ("guidance", guidance), ("storage", storage), ("UX contract", contract)]:
+    require("onboarding flow", onboarding, ["flow.onboarding", "onboarding_required", "adapters.storage", "storage_authorization_return"])
+    for label, body in [("full", full), ("storage", storage), ("UX contract", contract)]:
         if COMPACT_REASSURANCE not in body:
             fail(f"{label} lost compact provider-authorization reassurance")
     require("friendly updater", updater, ["FRIENDLY UPDATE UX", "Checking for updates", "LWAI updated successfully", "audit yourself"])

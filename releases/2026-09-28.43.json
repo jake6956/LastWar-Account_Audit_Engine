@@ -32,5 +32,6 @@
     "requires_account_rewrite": false,
     "notes": "Preserves all LOCAL STATE while moving phase-specific new-user/persistence workflow out of always-loaded mandatory core into manifest-activated flow.onboarding. Mandatory account/persistence/guidance/continuity invariants remain loaded; adapters.storage remains the provider-mechanics owner. No gameplay, workspace/account schema, Stage-1 or Cloudflare transport behavior changes."
   },
-  "notes": "Conservative mandatory-core modularization for onboarding/persistence workflow. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved; current single-response LastWarAI.com fallback semantics preserved."
+  "notes": "Conservative mandatory-core modularization for onboarding/persistence workflow. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved; current single-response LastWarAI.com fallback semantics preserved.",
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com"
 }

@@ -1,6 +1,6 @@
 LWAI MODULE — USER FLOW CONTINUITY & EXPERT EXPERIENCE
 module_id: core.flow-continuity
-module_version: 2026-09-09.36.1
+module_version: 2026-09-28.43.1
 load_class: mandatory_core
 state_scope: shared_engine+onboarding_recovery_rules+expert_experience+research_source_policy+data_placement
 SANITIZED: YES
@@ -47,28 +47,9 @@ Every user-facing LWAI turn that is part of setup/onboarding/recovery must end i
 3. RUNNING_ACTION — setup is complete and LWAI either resumes the user's pending objective, presents the first actionable recommendation, or asks what to work on next.
 A technical state such as connector authorized, capabilities rechecked, workspace found, workspace verified, account loaded, account created, migration completed, update completed or `Ready.` is never sufficient by itself.
 
-STORAGE AUTHORIZATION RETURN
-`connected`, `storage connected`, `done` after provider authorization, or an equivalent return message is an internal recheck trigger, never a terminal response.
-On return:
-- re-detect provider capabilities;
-- locate/create only the dedicated LWAI workspace;
-- verify required read/write/create behavior inside that workspace;
-- if verification succeeds, persist/verify persistence state and immediately continue in the SAME user-facing response:
-  - genuine new user -> set/verify onboarding stage `IDENTITY_PENDING` and ask the compact identity block;
-  - existing user -> resolve account/recovery state and give a recognizable landing plus resume/question;
-  - later persistence upgrade -> bind nondestructively and resume the original pending objective.
-- if verification fails, do not stop after reporting failure. Ask the user to retry, choose another available provider, or continue session-only.
-Never return only `recheck_storage_capabilities`, `Cloud storage connected and verified.`, or an equivalent status line.
-
-DURABLE ONBOARDING STAGES
-When durable storage exists, persist compact onboarding stage after each verified boundary:
-- storage verified -> `IDENTITY_PENDING`;
-- identity/account registration verified -> `BASELINE_PENDING`;
-- strategic baseline verified -> `FIRST_EVIDENCE_PENDING`;
-- multi-message evidence request -> `WAITING_USER` with exact pending input such as `reply done`;
-- first required evidence validated and setup complete -> `RUNNING`.
-These are recovery pointers, not duplicate account facts. Durable artifacts remain authoritative.
-
+ONBOARDING CONTINUITY ROUTING
+The universal NO-DEAD-AIR INVARIANT remains mandatory here. Phase-specific storage-authorization return and durable onboarding-stage sequencing are owned by manifest-activated `flow.onboarding`.
+A return such as `connected` must emit `storage_authorization_return`; successful verification must continue in the same user-facing response, and infrastructure-only status is never terminal. Existing-user continuity and failure-continuity rules below remain mandatory.
 INTERRUPTION / RELOAD HANDOFF
 After engine freshness and recovery-first verification, translate the first incomplete durable onboarding stage into an immediate user-facing action:
 - `IDENTITY_PENDING` -> ask screenname/commander name, server, alliance, optional nickname, optional/private UID;

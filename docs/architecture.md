@@ -46,7 +46,7 @@ Search/index results, redirects, README snapshots, mutable raw `main`, public al
 ## Thin loader boundary
 `engine/BOOTSTRAP.txt` remains intentionally orchestration-only and bounded by CI at 4 KiB for direct GitHub/modular operation and recovery paths. It contains live-ref resolution, pinned-snapshot validation, mandatory-module loading, local-state preservation, update/recovery handoff and fallback. It does not carry provider onboarding or Last War domain playbooks.
 
-Domain logic lives in `engine/modules/domains/*`. Mandatory shared behavior lives in `engine/modules/core/*` and release modules. `BOOTSTRAP_FULL.txt` is the complete sanitized standalone/recovery runtime and the source used by LastWarAI.com's single-response initial-install transport.
+Domain logic lives in `engine/modules/domains/*`. Mandatory shared behavior lives in `engine/modules/core/*` and release modules. Phase-specific workflows that are not universally needed live in `engine/modules/flows/*` and activate through MANIFEST intents/system events; provider mechanics remain in adapters. `BOOTSTRAP_FULL.txt` is the complete sanitized standalone/recovery runtime and the source used by LastWarAI.com's single-response initial-install transport.
 
 ## Manifest, compatibility and integrity
 `engine/MANIFEST.json` is both dependency graph and compatibility/integrity contract. It declares Production engine/schema/API identity; load classes/dependencies; shared vs local state scope; required/optional status; API/schema ranges; activation metadata; and exact Git blob byte identity for each module.

@@ -1,5 +1,16 @@
 # Production Changelog
 
+## 2026-09-28.43
+
+- Moved phase-specific new-user onboarding and persistence-upgrade sequencing out of always-loaded mandatory core into manifest-activated `flow.onboarding`.
+- Mandatory `core.guidance`, `core.persistence`, `core.accounts` and `core.flow-continuity` retain universal account/state/privacy/recovery/no-dead-air invariants plus explicit dispatcher hooks; provider mechanics remain owned by `adapters.storage`.
+- Added manifest system-event routing for `onboarding_required`, `onboarding_resume`, `storage_authorization_return` and `persistence_upgrade_opportunity`, with explicit persistence/connect-storage intents.
+- Reduced mandatory-module footprint from 125,974 B in .42 to about 106 KiB while preserving the 4 KiB Stage-1 boundary. Tightened the mandatory-core soft budget to 112,640 B to retain future headroom.
+- Kept `BOOTSTRAP_FULL` as the current single-response standalone/fallback runtime for this release; fallback transport redesign is intentionally out of scope.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE, account identity, gameplay behavior, LastWarAI.com authority and Cloudflare transport behavior.
+- Issue #67 / private backlog OO-017. Promotion requires exact-head CI plus private exact-candidate recovery verification.
+
+
 ## 2026-09-25.42
 
 - Confirmed LWAI correctness failures now automatically enter defect-capture/self-healing handling; the user no longer needs to separately say `remember it`, `fix it`, or `code it`.

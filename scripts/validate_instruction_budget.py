@@ -117,6 +117,7 @@ def check_duplication(config: dict) -> None:
         "engine/BOOTSTRAP_FULL.txt",
         "engine/modules/core/guidance.txt",
         "engine/modules/core/persistence.txt",
+        "engine/modules/flows/onboarding.txt",
         "engine/modules/adapters/storage.txt",
         "contracts/user-experience.md",
         "contracts/storage-adapter.md",

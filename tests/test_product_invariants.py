@@ -73,25 +73,32 @@ class ProductInvariantTests(unittest.TestCase):
 
     def test_no_dead_air_contract_still_dominates_setup(self):
         flow = text("engine/modules/core/flow-continuity.txt")
+        onboarding = text("engine/modules/flows/onboarding.txt")
         fallback = text("engine/BOOTSTRAP_FULL.txt")
-        for body in (flow, fallback):
+        for body in ("\n".join((flow, onboarding)), fallback):
             self.assertIn("USER_ACTION", body)
             self.assertIn("WAITING_USER", body)
             self.assertIn("RUNNING", body)
             self.assertIn("connected", body)
             self.assertIn("same user-facing response", body.lower())
-        self.assertNotIn("connected is sufficient proof", flow.lower())
+        self.assertNotIn("connected is sufficient proof", "\n".join((flow, onboarding)).lower())
 
     def test_manifest_loads_expert_continuity_module_mandatorily(self):
         manifest = json.loads(text("engine/MANIFEST.json"))
         modules = {m["module_id"]: m for m in manifest["modules"]}
         mod = modules["core.flow-continuity"]
         self.assertTrue(mod["required"])
-        self.assertEqual(mod["module_version"], "2026-09-09.36.1")
+        self.assertEqual(mod["module_version"], "2026-09-28.43.1")
         self.assertIn("expert_experience", mod["state_scope"])
         self.assertIn("research_source_policy", mod["state_scope"])
         self.assertIn("data_placement", mod["state_scope"])
         self.assertIn("core.flow-continuity", modules["release.bootstrap"]["dependencies"])
+        onboarding = modules["flow.onboarding"]
+        self.assertFalse(onboarding["required"])
+        self.assertEqual(onboarding["load_class"], "capability_on_demand")
+        self.assertIn("onboarding_required", onboarding["activation"]["system_events"])
+        self.assertIn("storage_authorization_return", onboarding["activation"]["system_events"])
+        self.assertIn("adapters.storage", onboarding["dependencies"])
 
     def test_state_freshness_avoids_redundant_recapture(self):
         manifest = json.loads(text("engine/MANIFEST.json"))

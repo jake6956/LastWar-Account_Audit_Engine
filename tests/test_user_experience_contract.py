@@ -24,6 +24,7 @@ class UserExperienceContractTests(unittest.TestCase):
         self.loader = read("engine/BOOTSTRAP.txt")
         self.full = read("engine/BOOTSTRAP_FULL.txt")
         self.guidance = read("engine/modules/core/guidance.txt")
+        self.onboarding = read("engine/modules/flows/onboarding.txt")
         self.accounts = read("engine/modules/core/accounts.txt")
         self.persistence = read("engine/modules/core/persistence.txt")
         self.storage = read("engine/modules/adapters/storage.txt")
@@ -84,29 +85,29 @@ class UserExperienceContractTests(unittest.TestCase):
 
     def test_first_run_cloud_question_is_compact_and_staged(self):
         self.assertNotIn(FIRST_RUN_PROMPT, self.loader)
-        for body in (self.full, self.guidance, self.persistence, self.contract):
+        for body in (self.full, self.onboarding, self.contract):
             self.assertIn(FIRST_RUN_PROMPT, body)
         for forbidden in ("OAuth", "cookies", "browse, read", "access/refresh tokens"):
             self.assertNotIn(forbidden, FIRST_RUN_PROMPT)
-        self.assertIn("not a security briefing", self.persistence.lower())
-        self.assertIn("not a security briefing", self.guidance.lower())
+        self.assertIn("not a security briefing", self.onboarding.lower())
 
     def test_cloud_yes_requires_explicit_provider_choice(self):
-        combined = "\n".join((self.full, self.guidance, self.persistence, self.storage, self.bootstrap, self.contract)).lower()
+        combined = "\n".join((self.full, self.onboarding, self.storage, self.bootstrap, self.contract)).lower()
         self.assertIn("provider", combined)
         self.assertTrue("never default to google drive" in combined or "never silently choose google drive" in combined)
 
     def test_compact_reassurance_occurs_after_provider_selection(self):
-        for body in (self.full, self.guidance, self.storage, self.contract, self.storage_contract):
+        for body in (self.full, self.storage, self.contract, self.storage_contract):
             self.assertIn(COMPACT_REASSURANCE, body)
-        for body in (self.guidance, self.persistence, self.storage, self.contract, self.storage_contract):
+        for body in (self.onboarding, self.storage, self.contract, self.storage_contract):
             lower = body.lower()
             self.assertRegex(lower, r"after .*provider|only after .*provider")
 
     def test_google_drive_permission_coaching_includes_allow_always(self):
-        for body in (self.full, self.guidance, self.storage, self.contract):
+        for body in (self.full, self.storage, self.contract):
             self.assertIn("Allow always", body)
             self.assertIn("Google Drive", body)
+        self.assertIn("adapters.storage", self.onboarding)
 
     def test_workspace_boundary_remains_absolute_internally(self):
         combined = "\n".join((self.full, self.storage, self.storage_contract))
@@ -133,7 +134,7 @@ class UserExperienceContractTests(unittest.TestCase):
         self.assertTrue("never asks" in combined or "never request" in combined or "never paste" in combined)
 
     def test_connected_is_recheck_trigger_not_proof(self):
-        for body in (self.full, self.guidance, self.persistence, self.storage, self.contract):
+        for body in (self.full, self.onboarding, self.storage, self.contract):
             lower = body.lower()
             self.assertIn("connected", lower)
             self.assertTrue("re-check" in lower or "recheck" in lower or "capabilit" in lower)
@@ -142,7 +143,7 @@ class UserExperienceContractTests(unittest.TestCase):
     def test_storage_success_is_not_terminal(self):
         for label, body in (
             ("full", self.full),
-            ("guidance", self.guidance),
+            ("onboarding", self.onboarding),
             ("storage", self.storage),
             ("bootstrap", self.bootstrap),
             ("UX contract", self.contract),
@@ -159,7 +160,7 @@ class UserExperienceContractTests(unittest.TestCase):
             )
 
     def test_verified_storage_advances_to_identity(self):
-        for body in (self.full, self.guidance, self.accounts, self.contract):
+        for body in (self.full, self.onboarding, self.contract):
             lower = body.lower()
             self.assertIn("screenname", lower)
             self.assertIn("server", lower)
@@ -167,7 +168,7 @@ class UserExperienceContractTests(unittest.TestCase):
             self.assertIn("uid", lower)
 
     def test_identity_advances_to_baseline_and_evidence_without_next(self):
-        for body in (self.full, self.guidance, self.accounts, self.contract):
+        for body in (self.full, self.onboarding, self.contract):
             lower = body.lower()
             self.assertIn("hq", lower)
             self.assertIn("baseline", lower)
@@ -175,13 +176,13 @@ class UserExperienceContractTests(unittest.TestCase):
             self.assertIn("next", lower)
 
     def test_multi_upload_done_boundary_and_waiting_user_survive(self):
-        for body in (self.full, self.guidance, self.contract):
+        for body in (self.full, self.guidance, self.onboarding, self.contract):
             lower = body.lower()
             self.assertIn("waiting_user", lower)
             self.assertIn("done", lower)
 
     def test_existing_user_gets_landing_or_resume(self):
-        for body in (self.full, self.guidance, self.accounts, self.contract):
+        for body in (self.full, self.onboarding, self.accounts, self.contract):
             lower = body.lower()
             self.assertTrue("landing" in lower or "loaded" in lower)
             self.assertTrue("resume" in lower or "unfinished" in lower)
