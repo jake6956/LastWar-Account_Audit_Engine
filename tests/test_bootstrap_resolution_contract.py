@@ -152,7 +152,7 @@ class BootstrapResolutionContractTests(unittest.TestCase):
             "LOCAL STATE",
         ):
             self.assertIn(token, combined)
-        self.assertIn("not proof", combined.lower())
+        self.assertIn("not current-version authority", combined.lower())
         self.assertIn("public transport", self.recovery_contract.lower())
         self.assertIn("unchanged", self.recovery_contract.lower())
         self.assertIn("BOOTSTRAP_FULL", self.recovery_contract)
