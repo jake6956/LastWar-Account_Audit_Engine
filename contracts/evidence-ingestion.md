@@ -9,6 +9,8 @@ The governing invariant is:
 
 **Task relevance must never determine persistence relevance.**
 
+Transaction shorthand: **observe -> persist -> reconcile -> verify**.
+
 A screenshot opened to answer one question may expose several clear supported account facts. The response may focus on the user's question, but the durable ingestion pass must independently harvest every supported fact that belongs to the active account.
 
 ## Trigger
