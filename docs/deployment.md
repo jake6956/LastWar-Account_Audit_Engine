@@ -87,6 +87,24 @@ Exact-SHA engine retrieval may remain cached because commit-addressed source is 
 
 Release validation must compare the public `X-LWAI-Commit` with live GitHub `main` immediately after promotion. A stale public edge fails the release gate rather than being accepted as eventual consistency.
 
+## Phase-2 opt-in modular Worker deployment
+This is a maintainer-only compatibility test. It does not change the player install prompt.
+
+Before deploying an RC Worker:
+1. freeze one exact RC head H and require PR CI to pass on H;
+2. record the current last-known-good Worker source/Production commit for rollback;
+3. deploy `infrastructure/cloudflare-worker.js` from exact H to the existing `lwai-bootstrap` Worker service;
+4. preserve the recorded Custom Domain, `workers_dev=false`, `preview_urls=false`, and `cache.enabled=false`; do not create a new public hostname or route;
+5. while GitHub `main` is still the prior Production, run `python scripts/validate_live_modular_entrypoint.py`;
+6. run fresh-host tests against `https://lastwarai.com/modular`, including durable-account load -> multi-fact evidence commit -> fresh runtime recovery;
+7. if any default root/config behavior changes or modular validation fails, redeploy the recorded last-known-good Worker source before proceeding;
+8. only after live opt-in evidence passes may the exact RC head be merged;
+9. after merge/main CI, rerun the live modular validator against the new Production SHA.
+
+The opt-in Worker resolves whichever commit GitHub `main` currently identifies. Deploying the RC Worker before merge therefore exercises the new transport code against last-known-good Production without changing engine authority. Default root/install/config continue using BOOTSTRAP_FULL.
+
+Do not call the opt-in path Production-ready merely because source CI is green. Live edge validation and host evidence are separate release gates.
+
 ## Sharing LWAI
 `share LWAI`, `give me the install prompt`, and equivalents return:
 
