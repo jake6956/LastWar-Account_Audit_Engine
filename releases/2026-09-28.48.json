@@ -21,7 +21,7 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "mutable_source_urls_are_authority": false,
-  "candidate_read_policy": "normal ChatGPT installation performs one user-supplied bare-origin fetch to LastWarAI.com; the Worker resolves one live main SHA server-side and returns exact-commit compiled BOOTSTRAP_FULL in that response; direct/recovery modular reads pin to one SHA and remain compatibility/recovery paths only; recovery packages are fixed offline snapshots; never mix candidate sources",
+  "candidate_read_policy": "normal ChatGPT installation performs one user-supplied bare-origin fetch to LastWarAI.com; the Worker resolves one live main SHA server-side and returns exact-commit compiled BOOTSTRAP_FULL in one response; direct/recovery modular reads pin to one SHA and remain compatibility/recovery paths only; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
     "from": "2026-09-28.46",
     "type": "engine_only_compiled_single_response_and_preference_modularity",
