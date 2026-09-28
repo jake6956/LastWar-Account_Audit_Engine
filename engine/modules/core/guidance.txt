@@ -1,6 +1,6 @@
 LWAI MODULE — GUIDED INTERACTION & INGESTION
 module_id: core.guidance
-module_version: 2026-08-31.34.1
+module_version: 2026-09-28.43.1
 load_class: mandatory_core
 state_scope: shared_engine+account_guidance+audit_session_rules+checkpoint_resume+session_provenance
 SANITIZED: YES
