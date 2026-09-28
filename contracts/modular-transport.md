@@ -1,102 +1,72 @@
-# Opt-In Modular Public Transport Contract
+# Modular Transport Compatibility Contract
 
-Version: 2026-09-28.46
+Version: 2026-09-28.48
 
 ## Purpose
-Define the non-default Phase-2 transport experiment for LastWarAI.com without changing the supported root/install/config installer.
+Document the retained non-default modular/recovery transport and the supported ChatGPT bootstrap boundary. Multi-request modular transport remains useful for direct/recovery-capable hosts and diagnostics, but it is not the supported fresh-install path for ChatGPT.
 
-Production .46 is a compatibility-evidence release candidate, not authorization for default cutover.
+## Supported default installer
+The supported ChatGPT installer is one fetch of the user-supplied bare origin:
 
-## Default installer remains unchanged
-The following mutable public endpoints remain the supported default and continue returning the complete exact-commit BOOTSTRAP_FULL configuration in one response:
-- `/`
-- `/install`
-- `/config.txt`
+`https://lastwarai.com`
 
-The opt-in modular path is not linked from About, sitemap, install instructions or other default discovery surfaces in .46.
+The Worker resolves canonical GitHub Production `main` server-side to exact commit C and returns the complete exact-C compiled `engine/BOOTSTRAP_FULL.txt` configuration in the same response. `/`, `/install`, and `/config.txt` remain the supported default one-response transport.
 
-## Opt-in modular bootstrap
-`GET /modular` and `GET /modular/config.txt`:
-1. resolve canonical GitHub Production `main` server-side to exact 40-hex commit C;
-2. retrieve `engine/BOOTSTRAP.txt` from exact C;
-3. sanity-check Stage-1 Production/sanitization/modular identity;
-4. return a transparent wrapper plus Stage-1 in the same response;
-5. declare:
-   - `RESOLVED_PRODUCTION_COMMIT: C`
-   - `FIRST_PARTY_SNAPSHOT_BASE: https://lastwarai.com/snapshot/C/`
-6. return `X-LWAI-Commit: C`, `X-LWAI-Snapshot-Base`, and transport version `3.2-modular-optin`;
-7. use mutable no-store headers and `X-Robots-Tag: noindex, nofollow`.
+The public response is transport, not version authority. GitHub live `main` commit.sha remains current Production authority.
 
-Failure to resolve C or validate Stage-1 returns 503 and never falls back to guessed/cached mutable source.
+## ChatGPT host evidence
+Fresh-host testing established this retrieval model for the supported ChatGPT path:
+- an initial user-supplied bare LastWarAI origin is retrievable;
+- path variants and query-string variants are not reliably retrievable through the same fresh-web path;
+- a page-provided second network hop is not reliably retrievable, including a second valid bare LastWarAI hostname.
 
-## Exact-SHA same-origin snapshot
-`GET /snapshot/C/<runtime-path>` is immutable transport for one validated 40-hex C.
+Therefore supported ChatGPT bootstrap is treated as a one-fetch host. Do not require a second URL, GitHub connector, search substitution, query transport, path transport, or hostname chaining for normal installation.
 
-Allowed runtime paths only:
-- `engine/BOOTSTRAP.txt`
-- `engine/BOOTSTRAP_FULL.txt` during transition
-- `engine/MANIFEST.json`
-- `engine/modules/**/*.txt`
-- `releases/LATEST.json`
-- `releases/MIGRATIONS.json`
-- versioned `releases/YYYY-MM-DD.NN.json`
-- `schemas/engine-manifest.schema.json`
+Default modular cutover is closed for the supported ChatGPT host unless host retrieval capabilities materially change and are deliberately revalidated.
 
-Arbitrary repository browsing is forbidden. Empty segments, dot segments, traversal, backslashes, nulls, disallowed extensions/paths and invalid SHA shapes fail closed.
+## Retained compatibility endpoints
+The existing non-default compatibility surfaces may remain available:
+- `GET /modular`
+- `GET /modular/config.txt`
+- `GET /snapshot/C/<runtime-path>`
 
-Snapshot responses:
-- fetch only `raw.githubusercontent.com/<repo>/C/<runtime-path>`;
-- never resolve mutable main;
-- carry `X-LWAI-Commit: C` and `X-LWAI-Snapshot-Path`;
-- use immutable one-year caching;
-- are `noindex, nofollow`.
+They are not normal install dependencies and are absent from default install discovery.
+
+`/modular` may resolve live Production C, return Stage-1 and declare:
+- `RESOLVED_PRODUCTION_COMMIT: C`
+- `FIRST_PARTY_SNAPSHOT_BASE: https://lastwarai.com/snapshot/C/`
+
+`/snapshot/C/<runtime-path>` remains exact-SHA/immutable transport for allowlisted sanitized runtime files only. Arbitrary repository browsing, invalid SHA shapes, traversal, dot segments, backslashes/nulls, and disallowed paths fail closed.
 
 ## Pin-once / no-mix
-The modular wrapper supplies C once. Stage-1 uses that C and the supplied same-origin snapshot base for candidate reads.
-
-One startup/update transaction must use one C. Do not mix:
+Any direct/modular/recovery transaction uses one C. Never mix:
 - two snapshot SHAs;
-- snapshot bytes and a different GitHub candidate SHA;
-- mutable root/config bytes as modular candidate files.
+- snapshot bytes with a different GitHub candidate SHA;
+- mutable root/config bytes as modular candidate files;
+- recovery-package bytes with network candidate bytes.
 
-Existing release.resolver/update no-mix, integrity, migration and last-known-good rules remain authoritative.
+Existing resolver/updater integrity, migration, and last-known-good rules remain authoritative.
 
 ## Failure behavior
-A missing/disallowed/corrupt required file causes modular startup to fail closed according to Stage-1/runtime recovery rules. Transport failure never mutates LOCAL STATE, recreates accounts or downgrades verified state.
+Compatibility transport failure never mutates LOCAL STATE, recreates accounts, forces re-onboarding, downgrades verified state, or authorizes guessed current Production. Use last-known-good compatible ENGINE or validated recovery material when available.
 
-The normal one-response installer remains available as compatibility fallback while the experiment is opt-in.
+The supported one-response root remains independent of compatibility-route failure.
 
-## Fresh-host compatibility matrix
-Default cutover remains blocked until fresh-host evidence covers at minimum:
+## Durable-state regression
+Transport architecture changes must continue proving that durable account state survives runtime loss:
+1. load an existing durable account;
+2. ingest a multi-fact screenshot/direct-evidence batch;
+3. verify the durability-first transaction COMMITTED across canonical state/history/cache/health metadata;
+4. start a fresh runtime/session;
+5. load the same durable account;
+6. confirm the new facts survive without redundant capture.
 
-### Host retrieval profiles
-- same-origin-only host: LastWarAI.com available; direct GitHub/raw access unavailable;
-- normal web host: LastWarAI.com and GitHub available;
-- partial retrieval: Stage-1 succeeds but one required snapshot module fails;
-- stale/incorrect attempt: a different candidate SHA is presented after C is pinned;
-- no modular support: host can still consume the unchanged one-response default installer.
+This regression protects persistence semantics even though supported ChatGPT fresh install is single-response.
 
-### Required account continuity scenario
-For every host proposed for default support:
-1. start from the opt-in modular endpoint;
-2. load an existing durable LWAI account;
-3. ingest a screenshot/direct evidence batch containing multiple supported facts;
-4. verify the durability-first transaction COMMITTED across canonical state/history/cache/health/update metadata;
-5. start a fresh runtime/session;
-6. load the same durable account;
-7. confirm the newly ingested facts survive without redundant evidence capture.
+## Compiled single-response architecture
+Canonical behavior remains modular in GitHub. The supported ChatGPT artifact is generated deterministically from owned compact standalone capsules plus MANIFEST identity. `engine/BOOTSTRAP_FULL.txt` is compiler output, not a second hand-authored runtime.
 
-### Required failure scenario
-After durable account load, simulate modular required-file failure. The host must retain last-known-good ENGINE and LOCAL STATE and must not trigger re-onboarding/account recreation.
-
-## Promotion boundary
-CI/source tests may promote an additive opt-in endpoint only when live default transport remains unchanged.
-
-Default root/install/config cutover requires a later separate release after:
-- opt-in endpoint is actually deployed;
-- current Production SHA parity is verified live;
-- fresh-host matrix evidence is recorded for supported hosts;
-- rollback to the last one-response Production is proven.
+CI must regenerate the artifact and fail on any byte mismatch. A source-module change must update the standalone ownership fingerprint so its compact projection is explicitly reviewed.
 
 ## Privacy
-The Worker remains transport-only. It contains no account state, gameplay rules, provider data or schema-specific user behavior. Snapshot transport exposes sanitized public Production runtime files only.
+All public transport artifacts are sanitized ENGINE only. They contain no player/account state, private provider references, credentials, screenshots, or maintainer-private state.
