@@ -107,6 +107,11 @@ class InfrastructureBoundaryTests(unittest.TestCase):
         self.assertIn('url.pathname === "/config.txt"', worker)
         self.assertIn("getEngine(sha)", worker)
 
+        # Root may expose one explicit opt-in handoff for ChatGPT, but does not execute modular by default.
+        self.assertIn("MODULAR COMPATIBILITY HANDOFF", worker)
+        self.assertIn("MODULAR_COMPATIBILITY_ENTRY", worker)
+        self.assertIn("If and only if the user's current instruction explicitly requests modular transport/testing", worker)
+
     def test_beta_doc_never_advertises_legacy_shortener(self):
         beta = text("docs/BETA_TESTING.md")
         self.assertNotIn("tinyurl.com/2yxf7f5x", beta)
