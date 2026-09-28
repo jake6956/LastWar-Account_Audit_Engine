@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "engine_version": "2026-09-28.48",
+  "engine_version": "2026-09-28.49",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "output": "engine/BOOTSTRAP_FULL.txt",
@@ -21,7 +21,7 @@
     "core.guidance": "29bde99dedd188e765aeb07ef52dad9ff83d3d6d",
     "core.flow-continuity": "9b3b1a7a8b73244f1d535e9a30dea6e19c9e294d",
     "domain.events-vs-arms-race": "a83a7029c1eae7935e9e059a0642fbc3ffec1862",
-    "domain.gear-heroes-skills-ew": "99637a2b165556fc5a98e23033d6b2f4e63a1e57",
+    "domain.gear-heroes-skills-ew": "e315e49d65154d61322675def45f5bc5978bd61c",
     "domain.research-drone-progression": "ac668972d3e147f56df1099b7a433ec572d4783d",
     "domain.building-progression": "f4aa38963267f5deb4ae25f1f98b67c7d04b555c",
     "domain.combat-meta-battlefield": "3efd7126b72443c08f7259addb1adcc92ea428bc",

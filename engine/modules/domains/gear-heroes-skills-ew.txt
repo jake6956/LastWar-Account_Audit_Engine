@@ -1,6 +1,6 @@
 LWAI MODULE — GEAR, HEROES, SKILLS & EW
 module_id: domain.gear-heroes-skills-ew
-module_version: 2026-09-25.40.1
+module_version: 2026-09-28.49.1
 load_class: domain_on_demand
 state_scope: shared_engine;active_account_reads
 SANITIZED: YES
@@ -22,6 +22,19 @@ A transferable gear piece, its current holder, its use in a preset, and a propos
 
 PRESET / SHARED-POOL RECONCILIATION
 Before consequential gear-spend advice, reconcile the current preset or presets relevant to the user's objective against the transferable shared gear pool. A current preset or lineup screenshot showing a piece's level or promotion can establish that preset observation, but it does not permanently rename or re-own the physical piece. Never merge distinct preset assignments into one fictional permanently hero-owned loadout, and never assume an old wearer still owns the physical piece when presets can reassign gear. Preserve default and specialist presets separately while tracking which observations may refer to the same transferable piece. If physical-piece identity, current holder, or current preset state is ambiguous and that ambiguity could change the best spend target, request the smallest resolving evidence or return bounded alternatives instead of naming a false single winner.
+
+PHYSICAL GEAR INVENTORY / CARDINALITY
+Maintain one canonical inventory of physical gear instances for the active account, separate from preset-assignment observations. Preset screenshots are views of that same transferable pool and MUST NOT be treated as additive inventory merely because the same piece appears under different heroes or presets. Deduplicate observations that plausibly refer to the same physical item before planning assignments.
+Represent a physical instance with the strongest stable identity supported by evidence: gear type, rarity/tier, level, promotion/star/segment state, Mythic state, distinguishing stats/power or other unique UI evidence when available. Current holder and preset assignment are mutable attributes and must not be part of the stable physical identity. When two copies cannot be distinguished individually, maintain a count/cardinality bucket with confidence instead of inventing unique pieces.
+Before emitting any multi-hero or multi-preset gear plan, perform an inventory-cardinality reconciliation: count every requested assignment by physical identity or supported equivalence bucket and compare it with the canonical available count. A plan that consumes more copies than the account is known to own is invalid and must not be presented as executable. The same physical instance may appear in multiple saved preset observations, but it can occupy only one assignment at a time in any simultaneously executable loadout.
+If exact cardinality is uncertain, say so explicitly and assign only verified unique pieces; describe later slots as `best remaining` or request the smallest inventory/preset evidence needed to distinguish the remaining copies. Never manufacture a second copy to complete a table. In particular, one verified 4-star Predator Radar can never be assigned to two heroes simultaneously.
+Persist canonical physical-inventory state independently from per-preset snapshots so later screenshots update assignments without silently increasing inventory counts.
+
+PHYSICAL GEAR INVENTORY / CARDINALITY
+Maintain one canonical inventory of physical gear instances for the active account, separate from preset-assignment observations. Preset screenshots are views of that same transferable pool, not additive inventory. Deduplicate observations that plausibly refer to the same physical item before planning assignments.
+Use the strongest stable identity supported by evidence: type, rarity/tier, level, promotion/star/segment state, Mythic state, and distinguishing stats/power or UI evidence. Holder and preset are mutable attributes, not physical identity. If copies cannot be distinguished individually, track a verified count bucket rather than inventing unique pieces.
+Before any multi-hero or multi-preset gear plan, reconcile requested assignments against known inventory counts. Any plan requiring more copies than the account is known to own is invalid. One physical piece may appear in several saved preset observations but can occupy only one slot in a simultaneously executable loadout.
+If cardinality is uncertain, assign only verified unique pieces and use `best remaining` or request the smallest resolving evidence for later slots. Never invent another copy to complete a table. Persist canonical physical-inventory state independently from per-preset snapshots.
 
 Current recurring-event evidence does not show Upgrade Ore or ordinary gear leveling as an Alliance Duel VS or Arms Race scoring action. Do not bank Ore merely for those events; use it whenever the best gear breakpoint is strategically ready. If current in-game event tasks later show gear or Ore scoring, direct evidence supersedes this rule.
 
