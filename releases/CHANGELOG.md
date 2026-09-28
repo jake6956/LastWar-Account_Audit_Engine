@@ -1,5 +1,16 @@
 # Production Changelog
 
+## 2026-09-28.48
+
+- Replaced hand-maintained standalone-fallback ownership with deterministic compilation from seven owned compact capsules plus MANIFEST identity; CI regenerates `engine/BOOTSTRAP_FULL.txt` and rejects any byte drift.
+- Compacted the supported one-response fallback from 62,811 B in .46 to 48,229 B while preserving the tested runtime contract, restoring roughly 14.6 KiB of hard-budget headroom.
+- Split `core.preferences` into a small mandatory preference-resolution/application shell and new capability-on-demand `core.preference-learning` companion for notebook lifecycle, learning/capture, durable mutation, preference management, correction/revocation, export/reset and recovery.
+- Reduced mandatory module footprint from 109,264 B to 103,013 B while keeping preference application universal; the learning companion activates only for preference capture/management/persistence work.
+- Recorded the supported ChatGPT transport conclusion: normal installation is one user-supplied bare-origin fetch of `https://lastwarai.com`; path/query/second-hop multi-request bootstrap is not a supported default transport. Existing modular/snapshot routes remain compatibility/recovery-only.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE, account identity, durability-first ingestion, provider/gameplay behavior, and the exact public installer sentence.
+- Migration from .46 is engine-only and requires no re-onboarding or account rewrite.
+
+
 ## 2026-09-28.46
 
 - Added a non-default LastWarAI.com modular transport experiment at `/modular` and `/modular/config.txt`.
