@@ -141,7 +141,11 @@ class Account:
     account_id: str
     status: str = "ACTIVE"
     facts: dict[str, Any] = field(default_factory=dict)
+    fact_metadata: dict[str, dict[str, Any]] = field(default_factory=dict)
     history: list[tuple[str, Any, Any]] = field(default_factory=list)
+    hot_cache: dict[str, Any] = field(default_factory=dict)
+    state_health: dict[str, dict[str, Any]] = field(default_factory=dict)
+    last_updated: str | None = None
     audit_session: dict[str, Any] | None = None
 
 
@@ -193,6 +197,8 @@ class RuntimeModel:
         self.persistence_reminders_suppressed = False
         self._persistence_reminded_sessions: set[str] = set()
         self.persistence_last_reminder_day: int | None = None
+        self.workspace_last_updated: str | None = None
+        self._ingestion_counter = 0
 
     @property
     def journal(self) -> tuple[JournalEvent, ...]:
@@ -368,6 +374,175 @@ class RuntimeModel:
         old = account.facts.get(key)
         account.facts[key] = value
         account.history.append((key, old, value))
+
+    def ingest_direct_evidence(
+        self,
+        observations: list[dict[str, Any]],
+        *,
+        observed_at: str,
+        source: str = "direct",
+        task_keys: set[str] | None = None,
+        fail_after: str | None = None,
+    ) -> dict[str, Any]:
+        """Harvest every clear supported fact; task relevance never filters persistence."""
+        if self.active_account_id is None:
+            raise RuntimeError("active_account_id must resolve before evidence ingestion")
+        account = self.accounts[self.active_account_id]
+        accepted: list[dict[str, Any]] = []
+        skipped: list[str] = []
+        for raw in observations:
+            key = raw.get("key")
+            if not raw.get("supported", True) or raw.get("ambiguous", False) or raw.get("decorative", False) or not key:
+                skipped.append(key or "<ambiguous>")
+                continue
+            value = raw.get("value")
+            prior_meta = account.fact_metadata.get(key, {})
+            if (
+                account.facts.get(key) == value
+                and prior_meta.get("observed_at") == observed_at
+                and prior_meta.get("source") == source
+                and prior_meta.get("confidence") == raw.get("confidence", "HIGH")
+            ):
+                skipped.append(key)
+                continue
+            accepted.append({
+                "key": key,
+                "value": value,
+                "state_class": raw.get("state_class", "MONOTONIC"),
+                "confidence": raw.get("confidence", "HIGH"),
+            })
+
+        # task_keys affects answer focus only, never the durable fact set.
+        _ = task_keys
+        if not accepted:
+            return {"committed": True, "persisted_keys": [], "skipped_keys": skipped, "checkpoint_id": None}
+
+        durable = self.persistence_mode == "DURABLE"
+        checkpoint = None
+        surfaces = ["canonical", "history", "hot_cache", "state_health", "metadata", "verify"]
+        if durable:
+            self._ingestion_counter += 1
+            checkpoint = self.create_checkpoint(
+                f"INGEST-{self._ingestion_counter}",
+                scope="ACCOUNT",
+                account_id=self.active_account_id,
+                objective="direct evidence durable commit",
+                pending_actions=list(surfaces),
+            )
+            self.append_journal(checkpoint.checkpoint_id, "INTENT", "persist direct evidence transaction", verified=True)
+
+        def record_surface(surface: str) -> None:
+            if checkpoint is not None:
+                checkpoint.completed_actions.append(surface)
+                checkpoint.pending_actions = [x for x in surfaces if x not in checkpoint.completed_actions]
+                self.append_journal(checkpoint.checkpoint_id, "WRITE_SUCCESS", surface, verified=False)
+
+        def fail(surface: str) -> None:
+            if fail_after != surface:
+                return
+            if checkpoint is not None:
+                checkpoint.status = "RECOVERY_REQUIRED"
+                checkpoint.pending_actions = [x for x in surfaces if x not in checkpoint.completed_actions]
+                self.append_journal(checkpoint.checkpoint_id, "WRITE_FAILURE", surface, verified=False)
+            raise RuntimeError(f"simulated evidence transaction failure after {surface}")
+
+        old_values = {item["key"]: account.facts.get(item["key"]) for item in accepted}
+        for item in accepted:
+            key = item["key"]
+            account.facts[key] = item["value"]
+            account.fact_metadata[key] = {
+                "state_class": item["state_class"],
+                "observed_at": observed_at,
+                "source": source,
+                "confidence": item["confidence"],
+            }
+        record_surface("canonical")
+        fail("canonical")
+
+        for item in accepted:
+            key = item["key"]
+            if old_values[key] != item["value"]:
+                account.history.append((key, old_values[key], item["value"]))
+        record_surface("history")
+        fail("history")
+
+        for item in accepted:
+            account.hot_cache[item["key"]] = item["value"]
+        record_surface("hot_cache")
+        fail("hot_cache")
+
+        for item in accepted:
+            account.state_health[item["key"]] = {
+                "health_status": "CURRENT",
+                "last_checked": observed_at,
+                "source": source,
+            }
+        record_surface("state_health")
+        fail("state_health")
+
+        account.last_updated = observed_at
+        self.workspace_last_updated = observed_at
+        record_surface("metadata")
+        fail("metadata")
+
+        coherent = all(
+            account.facts[item["key"]] == item["value"]
+            and account.hot_cache.get(item["key"]) == item["value"]
+            and account.state_health.get(item["key"], {}).get("health_status") == "CURRENT"
+            and account.fact_metadata.get(item["key"], {}).get("observed_at") == observed_at
+            for item in accepted
+        )
+        if not coherent or fail_after == "verify":
+            if checkpoint is not None:
+                checkpoint.status = "RECOVERY_REQUIRED"
+                checkpoint.pending_actions = ["verify"]
+                self.append_journal(checkpoint.checkpoint_id, "VERIFY", "direct evidence transaction", verified=False)
+            raise RuntimeError("direct evidence durable verification failed")
+
+        if checkpoint is not None:
+            checkpoint.completed_actions.append("verify")
+            checkpoint.pending_actions = []
+            checkpoint.last_safe_point = "verified evidence commit"
+            checkpoint.status = "COMMITTED"
+            self.append_journal(checkpoint.checkpoint_id, "VERIFY", "direct evidence transaction", verified=True, safe_point_after=checkpoint.last_safe_point)
+            self.append_journal(checkpoint.checkpoint_id, "COMMIT", "direct evidence transaction", verified=True, safe_point_after=checkpoint.last_safe_point)
+
+        return {
+            "committed": True,
+            "persisted_keys": [item["key"] for item in accepted],
+            "skipped_keys": skipped,
+            "checkpoint_id": checkpoint.checkpoint_id if checkpoint else None,
+        }
+
+    def durable_account_snapshot(self, account_id: str | None = None) -> dict[str, Any]:
+        account_id = account_id or self.active_account_id
+        if account_id is None or account_id not in self.accounts:
+            raise RuntimeError("account snapshot requires a valid account")
+        account = self.accounts[account_id]
+        return {
+            "account_id": account.account_id,
+            "status": account.status,
+            "facts": deepcopy(account.facts),
+            "fact_metadata": deepcopy(account.fact_metadata),
+            "history": deepcopy(account.history),
+            "hot_cache": deepcopy(account.hot_cache),
+            "state_health": deepcopy(account.state_health),
+            "last_updated": account.last_updated,
+            "workspace_last_updated": self.workspace_last_updated,
+        }
+
+    def load_durable_account_snapshot(self, snapshot: dict[str, Any], *, activate: bool = True) -> Account:
+        account = self.create_account(snapshot["account_id"], activate=activate)
+        account.status = snapshot.get("status", "ACTIVE")
+        account.facts = deepcopy(snapshot.get("facts", {}))
+        account.fact_metadata = deepcopy(snapshot.get("fact_metadata", {}))
+        account.history = deepcopy(snapshot.get("history", []))
+        account.hot_cache = deepcopy(snapshot.get("hot_cache", {}))
+        account.state_health = deepcopy(snapshot.get("state_health", {}))
+        account.last_updated = snapshot.get("last_updated")
+        self.workspace_last_updated = snapshot.get("workspace_last_updated")
+        self.persistence_mode = "DURABLE"
+        return account
 
     def start_over(self, new_account_id: str) -> Account:
         if self.active_account_id is not None:
