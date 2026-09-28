@@ -48,6 +48,11 @@ Search/index results, redirects, README snapshots, mutable raw `main`, public al
 
 Domain logic lives in `engine/modules/domains/*`. Mandatory shared behavior lives in `engine/modules/core/*` and release modules. Phase-specific workflows that are not universally needed live in `engine/modules/flows/*` and activate through MANIFEST intents/system events; provider mechanics remain in adapters. `BOOTSTRAP_FULL.txt` is the complete sanitized standalone/recovery runtime and the source used by LastWarAI.com's single-response initial-install transport.
 
+## Recovery package plane
+Production .44 adds a deterministic sanitized multi-file recovery package around the existing Stage-1 kernel; it does not add another bootstrap implementation. The package carries exact LATEST/MANIFEST/MIGRATIONS, every manifest module, runtime schemas/contracts/assets, RECOVERY_MANIFEST and SHA256SUMS. Package recovery is a fixed exact-commit snapshot with degraded freshness until canonical live GitHub can be checked. One recovery transaction is package-only: package and network candidate bytes are never mixed.
+
+The .44 public transport is intentionally unchanged: LastWarAI.com still returns BOOTSTRAP_FULL in one response. The package proves modular offline recovery first; a later separately gated release may switch normal installation to Stage-1 after cross-host compatibility evidence.
+
 ## Manifest, compatibility and integrity
 `engine/MANIFEST.json` is both dependency graph and compatibility/integrity contract. It declares Production engine/schema/API identity; load classes/dependencies; shared vs local state scope; required/optional status; API/schema ranges; activation metadata; and exact Git blob byte identity for each module.
 
@@ -81,6 +86,7 @@ Production CI has four layers:
 - **public-entrypoint validation** checks that LastWarAI.com returns one transparent complete sanitized configuration, exposes the resolved SHA, matches live GitHub Production, and is not serving a stale mutable response;
 - **release-tree validation** checks identity/version/API/schema parity, module DAG, module byte integrity, migration graph, privacy markers, 4 KiB loader boundary and fallback completeness;
 - **instruction-budget validation** reports Stage-1, mandatory-core, optional-module and complete-fallback growth against explicit budgets;
+- **recovery-package validation** builds the same exact candidate twice for determinism, validates checksums/module integrity/privacy/no-mix structure, proves a modular package works without BOOTSTRAP_FULL, and rejects tampering;
 - **deterministic runtime regressions** execute account isolation, archive/start-over, migration preservation, Audit Session isolation, `WAITING_USER`, verify-before-replay, checkpoint-loss tolerance, append-only journal exposure, provider degradation, UX staging and infrastructure-boundary behavior.
 
 ## Public cache boundary
