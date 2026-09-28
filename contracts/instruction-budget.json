@@ -11,7 +11,7 @@
       "hard_bytes": 65536
     },
     "mandatory_modules": {
-      "soft_bytes": 131072,
+      "soft_bytes": 112640,
       "hard_bytes": 163840
     },
     "optional_modules": {
@@ -23,5 +23,5 @@
     "first_run_persistence_prompt": 4,
     "compact_storage_reassurance": 5
   },
-  "policy": "Stage-1 remains a hard 4 KiB orchestration boundary. Other limits are conservative maintainability guards, not claims about host context limits. Soft-budget growth warns; hard-budget overflow fails. Safety, privacy, evidence, recovery and account-isolation guarantees may not be removed merely to reduce size."
+  "policy": "Stage-1 remains a hard 4 KiB orchestration boundary. Mandatory-core soft budget is tightened after OO-017 modularization to preserve headroom; phase-specific workflow should prefer manifest activation. Other limits remain conservative maintainability guards, not claims about host context limits. Soft-budget growth warns; hard-budget overflow fails. Safety, privacy, evidence, recovery and account-isolation guarantees may not be removed merely to reduce size."
 }
