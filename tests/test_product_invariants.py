@@ -131,6 +131,20 @@ class ProductInvariantTests(unittest.TestCase):
         self.assertIn("Do not invent a reserve amount", body)
         self.assertIn("carry-over", body)
 
+    def test_shared_gear_cardinality_prevents_double_allocation(self):
+        module = text("engine/modules/domains/gear-heroes-skills-ew.txt")
+        fallback = text("engine/BOOTSTRAP_FULL.txt")
+        for body in (module, fallback):
+            for token in (
+                "one canonical inventory of physical gear",
+                "more copies than",
+                "best remaining",
+                "simultaneously executable loadout",
+            ):
+                self.assertIn(token, body)
+        self.assertIn("not additive inventory", module)
+        self.assertIn("holder and preset are mutable attributes, not physical identity", module)
+
     def test_drone_stage_cost_is_not_promoted_to_whole_level_cost_without_evidence(self):
         body = text("engine/modules/domains/research-drone-progression.txt")
         for token in (
