@@ -1,6 +1,6 @@
 # Bootstrap Resolution Contract
 
-Transport revision: 2026-09-28.46-optin-modular
+Transport revision: 2026-09-28.47-chatgpt-linked-modular
 Engine compatibility: unchanged
 
 ## Goal
@@ -64,13 +64,14 @@ Production .46 may expose a non-default `/modular` endpoint for compatibility te
 
 The opt-in Worker resolves live Production C server-side, retrieves exact-C `engine/BOOTSTRAP.txt`, and returns Stage-1 plus:
 - `RESOLVED_PRODUCTION_COMMIT: C`;
-- `FIRST_PARTY_SNAPSHOT_BASE: https://lastwarai.com/snapshot/C/`.
+- `FIRST_PARTY_SNAPSHOT_BASE: https://lastwarai.com/snapshot/C/`;
+- `FIRST_PARTY_RESOURCE_INDEX: https://lastwarai.com/modular`.
 
 Stage-1 candidate reads may then use the exact-C same-origin snapshot base instead of direct GitHub/raw retrieval. The snapshot path accepts only a strict runtime allowlist and carries the requested commit/path in response headers. It never resolves mutable main and is immutable/cacheable because C is explicit.
 
-The opt-in endpoint is `noindex, nofollow`, is absent from About/sitemap/default install instructions, and is not authorization for default cutover. Failure preserves LOCAL STATE and falls back through normal last-known-good/default installer behavior; never splice snapshot files from different SHAs or mix snapshot bytes with a different network candidate.
+The opt-in endpoint is `noindex, follow`, is absent from About/sitemap/default install instructions, and is not authorization for default cutover. `/modular` exposes exact-C hyperlinks for every manifest module plus release/manifest/schema/fallback resources; ChatGPT should follow those page-provided links rather than synthesize deep snapshot URLs. Failure preserves LOCAL STATE and falls back through normal last-known-good/default installer behavior; never splice snapshot files from different SHAs or mix linked resources with a different network candidate.
 
-Default cutover remains a later separately gated release after live deployment and fresh-host compatibility evidence, including durable account load -> multi-fact evidence commit -> fresh runtime recovery.
+Default cutover remains a later separately gated release after live deployment and fresh ChatGPT compatibility evidence, including linked-resource bootstrap plus durable account load -> multi-fact evidence commit -> fresh runtime recovery.
 
 ## Compatibility endpoint
 
