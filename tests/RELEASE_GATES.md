@@ -19,6 +19,7 @@ Every public promotion is fail-closed.
 - migration graph contains the required previous-Production edge and historical workspace-schema edges `2.1 -> 2.2 -> 2.3`;
 - thin Stage-1 loader is <= 4 KiB, orchestration-only, contains live-ref/exact-commit resolution and does not embed public-installer, provider/account onboarding or game-domain policy;
 - BOOTSTRAP_FULL contains complete current account/guidance/recovery/session/storage/integrity/migration/update and domain behavior;
+- `scripts/build_bootstrap_full.py --check` reproduces checked-in BOOTSTRAP_FULL byte-for-byte from `engine/standalone/plan.json` and owned capsules; direct hand edits are not accepted;
 - storage adapter exposes `storage-api/1`, explicit capabilities, persistence profiles, absolute workspace isolation and concurrency-safe journal rules;
 - recommendation-governance contract is present and automated consistency tests prove goal-first optimization, proactive preflight, no-false-winner behavior, research-before-guess, irreversible transaction-evidence gating, automatic confirmed-defect capture, module monotonicity and fallback parity;
 - research topology tests prove visibly terminal tech nodes cannot be given invented downstream unlocks and ambiguous/cropped continuation requests resolving evidence;
@@ -28,14 +29,14 @@ Every public promotion is fail-closed.
 
 ## Installer acceptance tests
 1. Fresh user prompt is exactly `Set up Last War optimization using the instructions at https://lastwarai.com`.
-2. `https://lastwarai.com`, `/install` and `/config.txt` remain the supported default one-response BOOTSTRAP_FULL transport until an explicitly promoted cutover release.
+2. Supported ChatGPT installation is one user-supplied bare-origin fetch of `https://lastwarai.com`; root/install/config return the complete compiled BOOTSTRAP_FULL in one response.
 3. Root/config expose current `X-LWAI-Commit`, sanitized/no-account-state identity, strong mutable no-cache headers and exact live-GitHub Production parity.
 4. Stage-1 and all trusted release/module reads use one exact immutable commit; stale/cached alias/README/raw-main content cannot override newer live GitHub Production.
 5. Deprecated URL shorteners are unsupported; `share LWAI` returns only the LastWarAI.com installer.
 6. Public-entrypoint failure never mutates LOCAL STATE and existing compatible deployments can retain last-known-good ENGINE.
-7. During .46 compatibility testing, `/modular` is opt-in/noindex, resolves C server-side, returns Stage-1 plus `FIRST_PARTY_SNAPSHOT_BASE`, and does not alter root/install/config.
+7. Existing `/modular` and exact-SHA snapshot surfaces are compatibility/recovery-only, non-default, and absent from normal install discovery.
 8. `/snapshot/C/<runtime-path>` accepts only exact 40-hex C plus allowlisted runtime paths, is immutable, rejects traversal/disallowed paths before raw retrieval, and never resolves mutable main.
-9. Default modular cutover remains blocked until live deployment plus fresh-host evidence passes, including durable account load -> multi-fact screenshot commit -> fresh runtime recovery.
+9. Default modular cutover is closed for the supported ChatGPT host unless host retrieval capabilities materially change and are deliberately revalidated.
 
 ## Required private pre-promotion checks
 - private-identifier/account/provider-reference denylist scan across exact candidate patch/tree;
@@ -90,7 +91,7 @@ Required checks:
 - no account/private maintainer state appears in the package;
 - the exact validated RC package is mirrored privately before merge and the actual Production package is archived after merge.
 
-Production .44 does not change the LastWarAI.com root/install/config payload. Public transport cutover is a later separately gated release.
+Production .48 keeps LastWarAI.com root/install/config as the supported one-response ChatGPT transport. Multi-request modular transport is compatibility/recovery-only.
 
 
 ## Durability-first evidence-ingestion gate
@@ -105,14 +106,24 @@ Every candidate that changes account ingestion/persistence must prove:
 - standalone fallback preserves equivalent behavior.
 
 
-## Opt-in modular transport gate
-Before any release containing Phase-2 Worker changes:
+## Compatibility modular transport gate
+Before any release that changes compatibility Worker routing:
 - actual Worker source is executed under mocked upstreams in CI;
 - root/install/config one-response behavior is proven unchanged;
-- /modular resolves exactly one live Production SHA and returns only Stage-1 plus same-origin exact-SHA snapshot base;
-- /snapshot rejects arbitrary repository browsing, traversal, invalid SHA shapes and disallowed paths before upstream retrieval;
-- exact-SHA snapshot responses are immutable and carry auditable commit/path headers;
+- /modular resolves exactly one live Production SHA and snapshot transport remains exact-SHA/allowlisted;
+- /snapshot rejects arbitrary repository browsing, traversal, invalid SHA shapes and disallowed paths before raw retrieval;
+- exact-SHA snapshot responses are immutable and auditable;
 - invalid live-ref or Stage-1 sanity fails closed;
-- /modular remains absent from About/sitemap/default install discovery;
-- .45 durability continuity is tested across a fresh runtime;
-- a green CI candidate is not sufficient for default cutover: live opt-in deployment and supported-host compatibility evidence are separate gates.
+- compatibility routes remain absent from default install discovery;
+- compatibility-route failure cannot mutate LOCAL STATE or affect the supported one-response root;
+- no release may describe these routes as the supported ChatGPT default without new host evidence and an explicit architecture change.
+
+## Compiled single-response gate
+Every candidate using the generated fallback must prove:
+- `engine/standalone/plan.json` covers every MANIFEST module through explicit capsule ownership;
+- source-module Git blob fingerprints match MANIFEST exactly;
+- `scripts/build_bootstrap_full.py --check` reproduces checked-in `engine/BOOTSTRAP_FULL.txt` byte-for-byte;
+- compiler output preserves current engine/API/privacy identity and all standalone behavioral regressions;
+- direct edits to BOOTSTRAP_FULL without corresponding compiler-input changes fail validation;
+- fallback and mandatory-module budgets remain within policy;
+- preference resolution remains mandatory while preference learning/management may activate on demand without losing existing preference application.
