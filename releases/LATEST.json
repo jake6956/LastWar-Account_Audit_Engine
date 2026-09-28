@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.48",
+  "engine_version": "2026-09-28.49",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -23,16 +23,16 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal ChatGPT installation performs one user-supplied bare-origin fetch to LastWarAI.com; the Worker resolves one live main SHA server-side and returns exact-commit compiled BOOTSTRAP_FULL in one response; direct/recovery modular reads pin to one SHA and remain compatibility/recovery paths only; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
-    "from": "2026-09-28.46",
-    "type": "engine_only_compiled_single_response_and_preference_modularity",
+    "from": "2026-09-28.48",
+    "type": "engine_only_physical_gear_cardinality",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Makes BOOTSTRAP_FULL a deterministic compiler output from owned standalone capsules and splits preference resolution from on-demand preference learning. Supported ChatGPT installation remains the one-response LastWarAI.com root. No account-state, workspace-schema, provider, gameplay, or Worker transport change."
+    "notes": "Adds explicit canonical physical-gear inventory/cardinality reconciliation across presets so the same transferable piece cannot be double-allocated. No workspace schema, account rewrite, provider, transport, or Cloudflare change."
   },
-  "notes": "OO-018 architecture consolidation: modular canonical source now deterministically compiles the supported one-response root artifact. The standalone fallback is materially smaller while preserving tested behavior, and preference-learning mechanics move out of always-loaded mandatory core. Fresh ChatGPT evidence established a one-fetch bootstrap constraint, so multi-request modular transport is retained only for compatibility/recovery and is not a default-cutover candidate.",
+  "notes": "OO-021 correctness release: preset screenshots are reconciled as views of one transferable physical gear pool; multi-hero/multi-preset plans must pass inventory-cardinality validation and uncertain counts use verified pieces plus bounded 'best remaining' guidance rather than invented duplicates.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",
