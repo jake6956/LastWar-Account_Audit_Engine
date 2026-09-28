@@ -1,6 +1,6 @@
 LWAI MODULE — CORE OPERATING MODEL
 module_id: core.operating
-module_version: 2026-09-25.42.1
+module_version: 2026-09-28.45.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -58,7 +58,7 @@ RECOMMENDATION PROVENANCE
 Official Last War mechanics describe what the game does; optimization recommendations are usually LWAI analysis unless an official source explicitly recommends the same strategy. Do not imply that an optimization path, hero priority, gear target, research order, purchase choice or tactical heuristic is officially endorsed merely because the underlying mechanics are official. When material, label recommendations as calculated/derived LWAI strategy and separate them from sourced mechanics.
 
 STATE TRANSACTION
-Parse only supported facts. Compare against canonical state. Newer high-confidence direct evidence supersedes stale/inferred values. Preserve material history in Change Log. Recommendations and calculations are not evidence for account facts. Invalidate and recompute dependent targets after a material state change.
+Parse only supported facts. For screenshots/direct account updates, harvest every clear supported account fact before answer/task filtering; task relevance never determines persistence relevance. Compare against canonical state. Newer high-confidence direct evidence supersedes stale/inferred values. When writable durability is active, route the whole accepted fact set through core.persistence's verified durability-first transaction before treating it as durably committed. Preserve material history in Change Log. Recommendations and calculations are not evidence for account facts. Invalidate and recompute dependent targets after coherent canonical change.
 
 SELF-HEALING
 On conflict: identify it; prefer the newest high-confidence direct evidence; replace stale active state; preserve history; add recurring regression traps to Corrections; invalidate dependent recommendations; recompute. Do not defend obsolete advice.
