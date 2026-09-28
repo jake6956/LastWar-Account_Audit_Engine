@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-25.42",
+  "engine_version": "2026-09-28.43",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -59,7 +59,7 @@
     },
     {
       "module_id": "core.persistence",
-      "module_version": "2026-08-31.34.1",
+      "module_version": "2026-09-28.43.1",
       "path": "engine/modules/core/persistence.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -78,12 +78,12 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "28fbabe47d518a12b21cbc30a17fead996b1bfdc"
+        "digest": "41938bf3bcffde799f3066ab5838b29674b9c8bd"
       }
     },
     {
       "module_id": "core.accounts",
-      "module_version": "2026-08-29.22.1",
+      "module_version": "2026-09-28.43.1",
       "path": "engine/modules/core/accounts.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -103,7 +103,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "0868dcd282944693b8b45a82d1966f508e2ffc36"
+        "digest": "ff6c7b88e0de2e1fe4d4adbf6ec1f26395238191"
       }
     },
     {
@@ -159,7 +159,7 @@
     },
     {
       "module_id": "core.guidance",
-      "module_version": "2026-08-31.34.1",
+      "module_version": "2026-09-28.43.1",
       "path": "engine/modules/core/guidance.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -180,12 +180,12 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "48249ee9343d5cee96b9b1f8fa8128ddc41022b2"
+        "digest": "1204fd0b2e84cb47ffbc8a23952265214f63adf8"
       }
     },
     {
       "module_id": "core.flow-continuity",
-      "module_version": "2026-09-09.36.1",
+      "module_version": "2026-09-28.43.1",
       "path": "engine/modules/core/flow-continuity.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -206,7 +206,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "96838095b8658a97ed4a49a9a066d7ae1587fcb8"
+        "digest": "3f5f8550aa9fcb7932d2a31593429802fc9ebb0b"
       }
     },
     {
@@ -521,6 +521,50 @@
       }
     },
     {
+      "module_id": "flow.onboarding",
+      "module_version": "2026-09-28.43.1",
+      "path": "engine/modules/flows/onboarding.txt",
+      "load_class": "capability_on_demand",
+      "dependencies": [
+        "core.operating",
+        "core.persistence",
+        "core.accounts",
+        "core.guidance",
+        "core.flow-continuity",
+        "adapters.storage"
+      ],
+      "state_scope": "shared_engine+onboarding_flow+persistence_upgrade+onboarding_recovery",
+      "required": false,
+      "activation": {
+        "intents": [
+          "enable persistence",
+          "connect storage",
+          "set up storage",
+          "new account",
+          "onboarding"
+        ],
+        "system_events": [
+          "onboarding_required",
+          "onboarding_resume",
+          "storage_authorization_return",
+          "persistence_upgrade_opportunity"
+        ]
+      },
+      "release_min": "2026-09-28.43",
+      "engine_api": {
+        "min": "1.0",
+        "max": "1.0"
+      },
+      "workspace_schema": {
+        "min": "2.1",
+        "max": "2.3"
+      },
+      "integrity": {
+        "algorithm": "git_blob_sha1",
+        "digest": "df9df33061e0ebe4c025df37abc363b7b3904bc6"
+      }
+    },
+    {
       "module_id": "adapters.storage",
       "module_version": "2026-08-31.34.1",
       "path": "engine/modules/adapters/storage.txt",
@@ -660,7 +704,7 @@
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-09-25.41.1",
+      "module_version": "2026-09-28.43.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -687,7 +731,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "f66d3f9332dcd7427b6e2f2cac120b33b7b6079d"
+        "digest": "fced10445b583b75f0344ede14e0159a93008d17"
       }
     }
   ]
