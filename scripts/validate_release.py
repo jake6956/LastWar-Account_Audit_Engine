@@ -237,7 +237,7 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
     require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine", "RECOVERY-SNAPSHOT HANDOFF"])
     require("recovery package", read("contracts/recovery-package.md"), ["deterministic", "RECOVERY_MANIFEST.json", "SHA256SUMS", "One recovery transaction uses one source only", "LOCAL STATE"])
     require("evidence ingestion", read("contracts/evidence-ingestion.md"), ["Task relevance must never determine persistence relevance", "RECOVERY_REQUIRED", "verification-read", "active_account_id", "shared GitHub Production"])
-    require("modular transport", read("contracts/modular-transport.md"), ["Default installer remains unchanged", "ChatGPT user-initiated navigation", "page-provided links", "Default cutover remains blocked", "FIRST_PARTY_RESOURCE_INDEX", "LOCAL STATE"])
+    require("modular transport", read("contracts/modular-transport.md"), ["Default installer remains unchanged", "root-provided modular handoff", "page-provided links", "Default cutover remains blocked", "FIRST_PARTY_RESOURCE_INDEX", "LOCAL STATE"])
     require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "Deprecated URL shorteners are unsupported"])
     require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, "Deprecated URL shorteners are unsupported", "current-version authority"])
 
