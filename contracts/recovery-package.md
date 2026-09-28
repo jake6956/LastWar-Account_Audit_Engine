@@ -99,9 +99,9 @@ Missing or inconsistent standalone compiler provenance invalidates deterministic
 - `refresh engine`: remain the live canonical Production update escape hatch and is not replaced by package recovery.
 
 ## Transport boundary
-The recovery package is independent of the supported ChatGPT first-install transport. Normal ChatGPT installation remains one response from the user-supplied bare `https://lastwarai.com` origin.
+The recovery package is independent of the supported ChatGPT public transport. Normal public transport continues serving the generated `BOOTSTRAP_FULL` runtime in one response from the user-supplied bare `https://lastwarai.com` origin.
 
-Existing direct/modular compatibility routes may use Stage-1 and exact-commit modules when host capabilities support them, but package recovery never depends on a second network hop and never authorizes a default modular cutover.
+Existing direct/modular compatibility routes may use Stage-1 and exact-commit modules when host capabilities support them, but package recovery never depends on a second network hop. There is no public transport cutover to modular or multi-request loading in this release.
 
 ## Privacy
 The package is sanitized public ENGINE/build provenance only. It must not contain player/account identity, UIDs, screenshots, balances, battles, Corrections, provider IDs, auth material, private release checkpoints, maintainer-private records or consumer Runtime Session rows.
