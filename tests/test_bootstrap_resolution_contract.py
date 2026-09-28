@@ -20,6 +20,7 @@ class BootstrapResolutionContractTests(unittest.TestCase):
         self.updater = read("engine/modules/release/updater.txt")
         self.bootstrap = read("engine/modules/release/bootstrap.txt")
         self.contract = read("contracts/bootstrap-resolution.md")
+        self.recovery_contract = read("contracts/recovery-package.md")
         self.worker = read("infrastructure/cloudflare-worker.js")
         self.locator = read("infrastructure/public-bootstrap-locator.txt")
         self.public_validator = read("scripts/validate_public_entrypoint.py")
@@ -136,9 +137,27 @@ class BootstrapResolutionContractTests(unittest.TestCase):
 
     def test_stage1_direct_resolution_still_fails_closed_without_live_ref(self):
         self.assertIn("Fresh install with no live ref capability", self.resolver)
-        self.assertRegex(self.loader, re.compile(r"stop(?:s)? rather than guessing"))
+        self.assertIn("Fresh install without live SHA stops unless a validated recovery package supplies fixed C", self.loader)
+        self.assertIn("Never decide current Production from", self.loader)
         self.assertIn("last-known-good ENGINE", self.resolver)
         self.assertRegex(self.resolver, re.compile(r"40-lowercase-hex"))
+
+    def test_recovery_package_is_fixed_snapshot_and_never_mixed_with_network_candidate(self):
+        combined = "\n".join((self.loader, self.resolver, self.updater, self.bootstrap, self.contract, self.recovery_contract))
+        for token in (
+            "RECOVERY_PACKAGE",
+            "RECOVERY_SNAPSHOT",
+            "SHA256SUMS",
+            "RECOVERY_MANIFEST",
+            "Never mix",
+            "LOCAL STATE",
+        ):
+            self.assertIn(token, combined)
+        self.assertIn("not current-version authority", combined.lower())
+        self.assertIn("public transport", self.recovery_contract.lower())
+        self.assertIn("continues serving", self.recovery_contract.lower())
+        self.assertIn("no public transport cutover", self.recovery_contract.lower())
+        self.assertIn("BOOTSTRAP_FULL", self.recovery_contract)
 
     def test_deprecated_shorteners_are_not_supported_installers(self):
         self.assertEqual(self.latest.get("legacy_install_urls", []), [])

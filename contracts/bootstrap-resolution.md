@@ -90,6 +90,14 @@ GitHub main remains underlying Production authority. LastWarAI.com is first-part
 
 The first-party transport exists to remove host-specific GitHub accessibility from the end-user critical path, not to weaken pinning or verification.
 
+## Recovery-package compatibility
+
+Production .44 introduces a deterministic sanitized multi-file recovery package without changing the public Stage-0 response. A validated package carries exact Stage-1, LATEST, MANIFEST, MIGRATIONS, every manifest module, runtime schemas/contracts/assets, RECOVERY_MANIFEST and SHA256SUMS.
+
+When live ref resolution is unavailable, explicit manual/offline recovery may use the package `source_commit_sha` as one fixed snapshot C. This does not establish newest live Production. Package recovery sets degraded/recovery-snapshot freshness, reads the entire transaction from package bytes, preserves LOCAL STATE, and runs the canonical live resolver when network capability returns. Package and network candidate bytes must never be mixed in one transaction.
+
+During .44 the package may include BOOTSTRAP_FULL as a compatibility file, but validation must also prove the modular package is structurally complete without it. LastWarAI.com root/install/config continues to serve the existing complete single-response BOOTSTRAP_FULL transport in this release.
+
 ## Runtime/update compatibility
 
 Existing runtime resolver/update behavior remains compatible. Existing deployments retain last-known-good ENGINE and LOCAL STATE on later resolver failures. `refresh engine` continues to use the canonical resolver/update transaction.

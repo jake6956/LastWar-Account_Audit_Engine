@@ -1,5 +1,16 @@
 # Production Changelog
 
+## 2026-09-28.44
+
+- Added a deterministic sanitized multi-file recovery package built from one exact candidate/Production SHA, with `RECOVERY_MANIFEST.json`, `SHA256SUMS`, exact LATEST/MANIFEST/MIGRATIONS, every manifest module, runtime schemas/contracts/assets, and normalized ZIP metadata.
+- Added package validation for identity, checksums, module Git-blob integrity, privacy boundaries, exact inventory and tamper detection; CI also proves identical source/options produce byte-identical packages.
+- Added explicit offline `RECOVERY_SNAPSHOT` semantics: a validated package may restore one fixed exact-commit engine snapshot when live GitHub resolution is unavailable, but it never claims to be newest live Production and never mixes package bytes with network candidate bytes.
+- Added tests proving the modular recovery package remains structurally complete without `BOOTSTRAP_FULL`; the legacy fallback is included by default in .44 only as compatibility during transition.
+- Preserved the current LastWarAI.com root/install/config single-response `BOOTSTRAP_FULL` transport unchanged. Public modular-install cutover is intentionally deferred to a separate release after host compatibility evidence.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE, account/provider behavior and Last War gameplay behavior.
+- Issue #69 / private backlog OO-018 phase 1. Promotion requires exact-head CI plus private exact-candidate source and recovery-package verification.
+
+
 ## 2026-09-28.43
 
 - Moved phase-specific new-user onboarding and persistence-upgrade sequencing out of always-loaded mandatory core into manifest-activated `flow.onboarding`.

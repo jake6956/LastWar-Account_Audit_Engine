@@ -22,14 +22,18 @@ REQUIRED_FILES = [
     "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md",
     "contracts/guided-lifecycle-ingestion.md", "contracts/runtime-checkpoint-recovery.md",
     "contracts/user-experience.md", "contracts/bootstrap-resolution.md", "contracts/instruction-budget.json",
+    "contracts/recovery-package.md",
     "schemas/workspace-schema.md", "schemas/account-registry.schema.json", "schemas/engine-manifest.schema.json",
+    "schemas/recovery-package.schema.json",
     "docs/architecture.md", "docs/deployment.md", "docs/quick-install.md", "docs/runtime-recovery.md", "docs/BETA_TESTING.md",
     "adapters/provider-matrix.md", "gold-assets/README.md", "gold-assets/manifest.json",
     "infrastructure/cloudflare-cache-policy.md", "infrastructure/cloudflare-worker.js",
     "releases/LATEST.json", "releases/MIGRATIONS.json", "releases/CHANGELOG.md", "tests/RELEASE_GATES.md",
     "tests/reference_runtime.py", "tests/test_runtime_behavior.py", "tests/test_user_experience_contract.py",
     "tests/test_infrastructure_boundary.py", "tests/test_bootstrap_resolution_contract.py",
-    "scripts/validate_instruction_budget.py", ".github/workflows/validate.yml", ".github/CODEOWNERS",
+    "tests/test_recovery_package_contract.py",
+    "scripts/validate_instruction_budget.py", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py",
+    ".github/workflows/validate.yml", ".github/CODEOWNERS",
 ]
 
 REPO = "https://github.com/jake6956/LastWar-Account_Audit_Engine"
@@ -230,7 +234,8 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
         "40-lowercase-hex", "Do not fabricate a SHA", "cached raw `main` files",
         "Fresh install with no live ref capability", "release.updater",
     ])
-    require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine"])
+    require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine", "RECOVERY-SNAPSHOT HANDOFF"])
+    require("recovery package", read("contracts/recovery-package.md"), ["deterministic", "RECOVERY_MANIFEST.json", "SHA256SUMS", "One recovery transaction uses one source only", "LOCAL STATE"])
     require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "Deprecated URL shorteners are unsupported"])
     require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, "Deprecated URL shorteners are unsupported", "current-version authority"])
 
@@ -353,6 +358,25 @@ def main() -> None:
         if latest.get(key) != expected:
             fail(f"LATEST {key} invalid")
 
+    recovery = latest.get("recovery_package") or {}
+    expected_recovery = {
+        "format_version": "1.0",
+        "builder": "scripts/build_recovery_package.py",
+        "validator": "scripts/validate_recovery_package.py",
+        "primary_bootstrap": "engine/BOOTSTRAP.txt",
+        "legacy_fallback_included_by_default": True,
+        "public_transport_cutover": False,
+        "sanitized": True,
+        "account_state_included": False,
+    }
+    for key, expected in expected_recovery.items():
+        if recovery.get(key) != expected:
+            fail(f"LATEST recovery_package {key} invalid")
+
+    recovery_schema = read_json("schemas/recovery-package.schema.json")
+    if recovery_schema.get("title") != "LWAI Recovery Package Manifest":
+        fail("recovery-package schema identity invalid")
+
     validate_loader_boundary(loader)
     validate_resolution_contract(latest, loader, full, readme)
     validate_storage_security(full)
@@ -409,7 +433,8 @@ def main() -> None:
     require("workflow", workflow, [
         "python scripts/validate_release.py", "python scripts/validate_instruction_budget.py",
         "test_runtime_behavior.py", "test_user_experience_contract.py", "test_infrastructure_boundary.py",
-        "test_bootstrap_resolution_contract.py", "fetch-depth: 0",
+        "test_bootstrap_resolution_contract.py", "test_recovery_package_contract.py",
+        "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "fetch-depth: 0",
     ])
 
     require("full fallback", full, [

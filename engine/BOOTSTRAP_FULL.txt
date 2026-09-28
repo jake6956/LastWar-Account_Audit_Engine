@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-09-28.43
+engine_version: 2026-09-28.44
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -27,6 +27,9 @@ Validate pinned releases/LATEST.json and engine/MANIFEST.json: Production channe
 
 MODULE INTEGRITY
 MANIFEST entries use integrity.git_blob_sha1. When the host can reproduce Git blob identity, compare exact bytes. Otherwise exact commit pin + module_id/module_version is the available trust boundary; do not falsely claim cryptographic verification.
+
+RECOVERY PACKAGE MODE
+A validated sanitized multi-file recovery package may establish one fixed offline snapshot C from RECOVERY_MANIFEST + SHA256SUMS when live resolution is unavailable. Require matching package/LATEST/MANIFEST identity, all required modules and available integrity. Read the entire recovery transaction from package bytes only; never mix package and network candidate files. Package C is recovery identity, not proof of newest live Production. Preserve LOCAL STATE and mark freshness RECOVERY_SNAPSHOT until the normal live resolver succeeds.
 
 AUTOMATIC UPDATE CONTROLLER
 Default web-capable policy is AUTOMATIC. Resolve live Production through the same resolver at runtime/session startup, reload, schema-sensitive migration/recovery, and before consequential work after >=6h since last successful live check. Do not check every trivial message.
@@ -309,7 +312,7 @@ audit my account -> active-account audit.
 share LWAI -> `Set up Last War optimization using the instructions at https://lastwarai.com`.
 export yourself / export LWAI -> this sanitized fallback.
 export my account snapshot -> private active-account snapshot.
-export full recovery package -> sanitized engine + separate private state artifacts + manifest.
+export full recovery package -> deterministic sanitized multi-file modular recovery package with RECOVERY_MANIFEST + SHA256SUMS, plus separate private state artifacts when requested/available.
 `refresh engine` -> force live resolver + pinned ENGINE update preserving LOCAL STATE.
 check for LWAI updates -> alias for `refresh engine`.
 refresh season knowledge -> force current-season public knowledge freshness without altering LOCAL STATE.

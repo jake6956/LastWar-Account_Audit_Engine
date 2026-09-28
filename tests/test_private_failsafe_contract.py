@@ -17,6 +17,8 @@ class PrivateFailsafeMirrorContractTests(unittest.TestCase):
             "Pre-promotion mirror failure: do not promote",
             "WAITING_USER",
             "RECOVERY_REQUIRED",
+            "deterministic sanitized multi-file recovery package",
+            "RECOVERY_MANIFEST + SHA256SUMS",
         ):
             self.assertIn(token, body)
 

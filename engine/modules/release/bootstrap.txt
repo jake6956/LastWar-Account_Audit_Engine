@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP / STARTUP HANDOFF
 module_id: release.bootstrap
-module_version: 2026-09-28.43.1
+module_version: 2026-09-28.44.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -21,8 +21,8 @@ Deprecated URL shorteners are unsupported and are not installer compatibility su
 
 STARTUP CONTRACT
 1. Public transport yields the LWAI Stage-0 locator/bootstrap instruction.
-2. `release.resolver` establishes verified `production_commit_sha` C from live GitHub `main` and one pinned Production snapshot.
-3. If initial bootstrap content came through any mutable public transport, re-read Stage-1 from exact C before trusting release identity.
+2. `release.resolver` establishes live C; validated offline package mode may supply fixed C with RECOVERY_SNAPSHOT.
+3. Use one source only—exact-C network or package—and never mix. Mutable public bootstrap still re-reads Stage-1 from exact live C before trust.
 4. Stage-1 loads every MANIFEST module with `required:true` in dependency order.
 5. `release.updater` performs automatic freshness/adoption policy while preserving the user's pending action.
 6. `release.dispatcher` selects non-required modules from MANIFEST activation metadata and recursively loads dependencies. New functionality enters through manifest registration; no Stage-1/bootstrap feature-list edit is required.
@@ -37,7 +37,7 @@ Follow the pinned MIGRATIONS graph. Migration-capable required modules may span 
 
 FAILURE
 Public-entrypoint failure is a transport failure, not permission to guess current Production. If trusted LWAI material already provides the canonical GitHub live-ref coordinates, use that direct resolver path. Existing compatible installations remain on last-known-good ENGINE/LOCAL STATE when current Production cannot be safely resolved.
-Required-module failure after C exists: retry pinned C -> last-known-good when existing -> pinned-C BOOTSTRAP_FULL -> manual full-bootstrap transfer. Never fall backward to cached mutable `main` content or treat a public alias as authority.
+Required-module failure after live C: retry pinned C -> last-known-good -> pinned-C BOOTSTRAP_FULL during transition -> manual recovery. Package mode loads its fixed snapshot atomically or rejects it; never splice sources or fall back to mutable `main`/alias authority.
 Relevant optional-module failure must not be replaced by invented behavior; continue only when the degraded capability is safe and disclose material limitation.
 
 FRIENDLY UX
@@ -52,7 +52,7 @@ audit my account -> active-account audit.
 share LWAI -> exact `https://lastwarai.com` installer above.
 export yourself / export LWAI -> sanitized self-contained BOOTSTRAP_FULL.
 export my account snapshot -> private active-account state only.
-export full recovery package -> sanitized engine + separate private state artifacts + manifest.
+export full recovery package -> deterministic sanitized multi-file engine recovery package (RECOVERY_MANIFEST + SHA256SUMS + modular runtime) plus separate private account-state artifacts when requested/available.
 enable persistence / connect storage -> dispatcher activates `flow.onboarding` plus storage capability handling; verified setup migrates nondestructively and resumes original work.
 refresh season knowledge -> dispatcher activates registered season intelligence and refreshes public season knowledge without altering LOCAL STATE.
 
