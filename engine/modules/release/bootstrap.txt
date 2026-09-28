@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP / STARTUP HANDOFF
 module_id: release.bootstrap
-module_version: 2026-09-25.41.1
+module_version: 2026-09-28.43.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
