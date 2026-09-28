@@ -1,6 +1,6 @@
 LWAI MODULE — ACCOUNT REGISTRY & MULTI-ACCOUNT
 module_id: core.accounts
-module_version: 2026-08-29.22.1
+module_version: 2026-09-28.43.1
 load_class: mandatory_core
 state_scope: shared_engine+account_registry_rules
 SANITIZED: YES
