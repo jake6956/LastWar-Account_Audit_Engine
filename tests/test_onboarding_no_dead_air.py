@@ -77,22 +77,27 @@ class OnboardingNoDeadAirTests(unittest.TestCase):
         for terminal in INFRASTRUCTURE_ONLY_TERMINALS:
             self.assertFalse(terminal_is_user_visible_action([terminal]), terminal)
 
-    def test_production_continuity_module_contains_required_hard_guards(self):
-        body = (ROOT / "engine/modules/core/flow-continuity.txt").read_text(encoding="utf-8")
+    def test_production_continuity_and_onboarding_modules_split_without_losing_guards(self):
+        continuity = (ROOT / "engine/modules/core/flow-continuity.txt").read_text(encoding="utf-8")
+        onboarding = (ROOT / "engine/modules/flows/onboarding.txt").read_text(encoding="utf-8")
         for token in (
             "NO-DEAD-AIR INVARIANT",
-            "STORAGE AUTHORIZATION RETURN",
-            "DURABLE ONBOARDING STAGES",
             "INTERRUPTION / RELOAD HANDOFF",
             "EXISTING USER CONTINUITY",
             "FAILURE CONTINUITY",
+            "WAITING_USER",
+        ):
+            self.assertIn(token, continuity)
+        for token in (
+            "STORAGE AUTHORIZATION RETURN",
+            "DURABLE ONBOARDING STAGES / RECOVERY",
             "IDENTITY_PENDING",
             "BASELINE_PENDING",
             "FIRST_EVIDENCE_PENDING",
             "WAITING_USER",
             "Never return only `recheck_storage_capabilities`",
         ):
-            self.assertIn(token, body)
+            self.assertIn(token, onboarding)
 
 
 if __name__ == "__main__":
