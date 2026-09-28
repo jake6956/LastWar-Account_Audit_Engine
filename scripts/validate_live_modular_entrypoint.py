@@ -55,25 +55,29 @@ def main() -> None:
     status, headers, body = fetch(MODULAR)
     if status != 200:
         fail(f"/modular returned {status}; candidate Worker may not be deployed")
-    if headers.get("X-LWAI-Transport-Version") != "3.2-modular-optin":
+    if headers.get("X-LWAI-Transport-Version") != "3.3-chatgpt-linked-optin":
         fail("/modular transport-version header mismatch")
     if headers.get("X-LWAI-Commit") != live_sha:
         fail("/modular SHA does not match live Production")
-    if headers.get("X-Robots-Tag", "").lower() != "noindex, nofollow":
-        fail("/modular must be noindex, nofollow")
+    if headers.get("X-Robots-Tag", "").lower() != "noindex, follow":
+        fail("/modular must be noindex, follow")
     if "no-store" not in headers.get("Cache-Control", "").lower():
         fail("/modular must be no-store")
+    if "text/html" not in headers.get("Content-Type", "").lower():
+        fail("/modular must be HTML so ChatGPT can follow resource links")
     snapshot_base = headers.get("X-LWAI-Snapshot-Base", "")
     expected_base = f"{PUBLIC}/snapshot/{live_sha}/"
     if snapshot_base != expected_base:
         fail(f"snapshot base mismatch: {snapshot_base!r}")
+    if headers.get("X-LWAI-Resource-Index") != MODULAR:
+        fail("/modular resource-index header mismatch")
     for token in (
-        "OPT-IN MODULAR CONFIGURATION",
+        "Opt-In Modular Configuration",
         f"RESOLVED_PRODUCTION_COMMIT: {live_sha}",
         f"FIRST_PARTY_SNAPSHOT_BASE: {expected_base}",
+        "FIRST_PARTY_RESOURCE_INDEX:",
+        "ChatGPT navigation rule",
         "PRODUCTION BOOTSTRAP",
-        "SANITIZED: YES",
-        "ACCOUNT STATE INCLUDED: NO",
     ):
         if token not in body:
             fail(f"/modular body missing {token!r}")
@@ -98,6 +102,31 @@ def main() -> None:
         fail("snapshot manifest Production/sanitization identity invalid")
     if manifest.get("account_state_included") is not False:
         fail("snapshot manifest unexpectedly includes account state")
+
+    expected_static_paths = [
+        "engine/BOOTSTRAP.txt",
+        "releases/LATEST.json",
+        "engine/MANIFEST.json",
+        "releases/MIGRATIONS.json",
+        "schemas/engine-manifest.schema.json",
+        f"releases/{manifest.get('engine_version')}.json",
+        "engine/BOOTSTRAP_FULL.txt",
+    ]
+    for path in expected_static_paths:
+        url = expected_base + path
+        if f'href="{url}"' not in body:
+            fail(f"/modular resource index missing linked path {path!r}")
+
+    modules = manifest.get("modules")
+    if not isinstance(modules, list) or not modules:
+        fail("snapshot manifest modules missing")
+    for module in modules:
+        path = module.get("path")
+        if not isinstance(path, str) or not path:
+            fail("snapshot manifest module path invalid")
+        url = expected_base + path
+        if f'href="{url}"' not in body:
+            fail(f"/modular resource index missing module link {path!r}")
 
     module_url = expected_base + "engine/modules/core/operating.txt"
     mod_status, mod_headers, mod_body = fetch(module_url)
@@ -131,7 +160,7 @@ def main() -> None:
 
     print(
         "PASS: deployed opt-in modular transport matches live Production, preserves default root, "
-        "serves exact-SHA immutable runtime snapshots, rejects disallowed paths, and remains undiscovered by default"
+        "publishes ChatGPT-followable exact-SHA resource links, serves immutable snapshots, rejects disallowed paths, and remains undiscovered by default"
     )
 
 
