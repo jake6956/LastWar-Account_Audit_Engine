@@ -11,7 +11,8 @@ class ModularTransportCompatibilityTests(unittest.TestCase):
         worker = (ROOT / "infrastructure/cloudflare-worker.js").read_text(encoding="utf-8")
         for token in (
             'url.pathname === "/modular"',
-            "/snapshot/",
+            "SNAPSHOT_BASE_URL",
+            "snapshotMatch",
             "3.2-modular-optin",
             "FIRST_PARTY_SNAPSHOT_BASE",
             "noindex, nofollow",
@@ -28,7 +29,7 @@ class ModularTransportCompatibilityTests(unittest.TestCase):
             "partial retrieval",
             "fresh runtime/session",
             "LOCAL STATE",
-            "default cutover remains blocked",
+            "Default cutover remains blocked",
         ):
             self.assertIn(token, contract)
 
