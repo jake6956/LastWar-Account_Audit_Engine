@@ -1,6 +1,6 @@
 LWAI MODULE — PREFERENCE LEARNING & NOTEBOOK
 module_id: core.preference-learning
-module_version: 2026-09-28.46.1
+module_version: 2026-09-28.48.1
 load_class: capability_on_demand
 state_scope: preference_learning+workspace_preference_notebook+account_preference_notebook+local_tool_feedback
 SANITIZED: YES
