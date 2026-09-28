@@ -7,6 +7,7 @@
 - Changed the user-supplied modular page from `noindex, nofollow` to `noindex, follow`: it remains absent from About/sitemap/default install discovery while allowing ChatGPT to follow the exact resources exposed by the page.
 - Added `FIRST_PARTY_RESOURCE_INDEX` and transport version `3.3-chatgpt-linked-optin`. ChatGPT is instructed to follow page-provided exact-C links rather than synthesize or substitute URLs/search/GitHub connector results.
 - `/modular/config.txt` remains a plain-text compatibility alias exposing the same exact-C resource links.
+- Added an explicit `MODULAR_COMPATIBILITY_ENTRY` handoff to the normal root response for ChatGPT hosts that can retrieve `https://lastwarai.com` but reject `/modular` as an initial user-supplied deep URL. The handoff is valid only when the user's current request explicitly asks for modular transport/testing; otherwise BOOTSTRAP_FULL remains the normal root execution.
 - Default `/`, `/install` and `/config.txt` remain the supported BOOTSTRAP_FULL installer; this release is still not a default cutover.
 - Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE, all 22 module records/digests, gameplay/provider behavior and durability-first ingestion remain unchanged.
 - A second real fresh ChatGPT test is required before any future default-cutover release.
