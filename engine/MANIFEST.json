@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.46",
+  "engine_version": "2026-09-28.48",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -134,7 +134,7 @@
     },
     {
       "module_id": "core.preferences",
-      "module_version": "2026-09-28.46.2",
+      "module_version": "2026-09-28.48.1",
       "path": "engine/modules/core/preferences.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -154,12 +154,12 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "f007dd36200b3d0a7ae9f909eabfbadd5ce5de3f"
+        "digest": "10fc41284a302328cbc3031d5fbffb8d8030ea65"
       }
     },
     {
       "module_id": "core.preference-learning",
-      "module_version": "2026-09-28.46.1",
+      "module_version": "2026-09-28.48.1",
       "path": "engine/modules/core/preference-learning.txt",
       "load_class": "capability_on_demand",
       "dependencies": [
@@ -187,7 +187,7 @@
           "preference_management_requested"
         ]
       },
-      "release_min": "2026-09-28.46",
+      "release_min": "2026-09-28.48",
       "engine_api": {
         "min": "1.0",
         "max": "1.0"
@@ -198,7 +198,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "c6bc32a604a5da4586176bf583aba302995752d7"
+        "digest": "4e7124ed58a80229321e62c30a5413151f141e48"
       }
     },
     {
