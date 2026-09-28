@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.46",
+  "engine_version": "2026-09-28.48",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -12,7 +12,7 @@
   "preferred_install_url": "https://lastwarai.com",
   "preferred_install_instruction": "Set up Last War optimization using the instructions at https://lastwarai.com",
   "legacy_install_urls": [],
-  "remote_install_mode": "first_party_single_response_exact_commit_full_configuration",
+  "remote_install_mode": "first_party_single_response_exact_commit_compiled_configuration",
   "public_entrypoint_authority": false,
   "github_repository": "https://github.com/jake6956/LastWar-Account_Audit_Engine",
   "live_ref_source": "https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main",
@@ -21,18 +21,18 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "mutable_source_urls_are_authority": false,
-  "candidate_read_policy": "normal LastWarAI.com install still resolves one live main SHA server-side and returns exact-commit BOOTSTRAP_FULL in one response; opt-in /modular resolves that live main SHA and uses same-origin exact-SHA /snapshot reads; direct modular reads pin to one SHA; recovery packages are fixed offline snapshots; never mix candidate sources",
+  "candidate_read_policy": "normal ChatGPT installation performs one user-supplied bare-origin fetch to LastWarAI.com; the Worker resolves one live main SHA server-side and returns exact-commit compiled BOOTSTRAP_FULL in that response; direct/recovery modular reads pin to one SHA and remain compatibility/recovery paths only; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
-    "from": "2026-09-28.45",
-    "type": "transport_only_optin_same_origin_modular_path",
+    "from": "2026-09-28.46",
+    "type": "engine_only_compiled_single_response_and_preference_modularity",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds a non-default same-origin modular transport experiment at /modular plus immutable allowlisted /snapshot/<SHA>/<runtime-path> proxying. Root/install/config remain the supported one-response BOOTSTRAP_FULL installer. No module behavior, account state, schema or gameplay changes."
+    "notes": "Makes BOOTSTRAP_FULL a deterministic compiler output from owned standalone capsules and splits preference resolution from on-demand preference learning. Supported ChatGPT installation remains the one-response LastWarAI.com root. No account-state, workspace-schema, provider, gameplay, or Worker transport change."
   },
-  "notes": "OO-018 phase 2 compatibility candidate: additive opt-in modular LastWarAI.com transport with exact-SHA same-origin runtime snapshots and CI/mock host validation. Default root/install/config transport remains unchanged; live deployment and fresh-host evidence are required before any future cutover.",
+  "notes": "OO-018 architecture consolidation: modular canonical source now deterministically compiles the supported one-response root artifact. The standalone fallback is materially smaller while preserving tested behavior, and preference-learning mechanics move out of always-loaded mandatory core. Fresh ChatGPT evidence established a one-fetch bootstrap constraint, so multi-request modular transport is retained only for compatibility/recovery and is not a default-cutover candidate.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",
@@ -44,15 +44,27 @@
     "account_state_included": false
   },
   "modular_transport": {
-    "phase": "opt_in_compatibility",
+    "phase": "compatibility_only_not_default_candidate",
     "opt_in_url": "https://lastwarai.com/modular",
     "opt_in_alias": "https://lastwarai.com/modular/config.txt",
     "snapshot_url_template": "https://lastwarai.com/snapshot/{commit}/{runtime_path}",
     "transport_version": "3.2-modular-optin",
     "default_cutover": false,
     "discoverable_by_default": false,
-    "live_deployment_required": true,
-    "fresh_host_evidence_required": true,
-    "last_known_good_version": "2026-09-28.45"
+    "live_deployment_required": false,
+    "fresh_host_evidence_required": false,
+    "supported_default_transport": "single_response_root",
+    "chatgpt_host_constraint": "one_initial_user_supplied_bare_origin_fetch",
+    "last_known_good_version": "2026-09-28.46"
+  },
+  "compiled_single_response": {
+    "plan": "engine/standalone/plan.json",
+    "builder": "scripts/build_bootstrap_full.py",
+    "output": "engine/BOOTSTRAP_FULL.txt",
+    "deterministic": true,
+    "generated_artifact": true,
+    "direct_edits_forbidden": true,
+    "supported_chatgpt_transport": "https://lastwarai.com",
+    "host_model": "single_initial_user_supplied_bare_origin_fetch"
   }
 }
