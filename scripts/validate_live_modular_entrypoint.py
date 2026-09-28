@@ -51,6 +51,14 @@ def main() -> None:
         fail("default root SHA does not match live Production")
     if "COMPLETE PRODUCTION FALLBACK" not in root_body:
         fail("default root no longer contains complete fallback")
+    if "MODULAR COMPATIBILITY HANDOFF" not in root_body:
+        fail("default root missing modular compatibility handoff")
+    if f"MODULAR_COMPATIBILITY_ENTRY: {MODULAR}" not in root_body:
+        fail("default root missing exact modular compatibility entry")
+    if "If and only if the user's current instruction explicitly requests modular transport/testing" not in root_body:
+        fail("default root modular handoff is not explicitly opt-in")
+    if f"<{MODULAR}>; rel=\"alternate\"; type=\"text/html\"" not in (root_headers.get("Link") or ""):
+        fail("default root Link header missing modular alternate")
 
     status, headers, body = fetch(MODULAR)
     if status != 200:
