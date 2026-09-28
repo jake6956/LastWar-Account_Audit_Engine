@@ -42,8 +42,9 @@ The Worker may continue caching exact-SHA GitHub `BOOTSTRAP_FULL.txt` subrequest
 Production .46 may add a non-default `/modular` endpoint and immutable `/snapshot/<SHA>/<runtime-path>` exact-commit proxy without changing the supported default installer.
 
 - `/modular` is mutable and MUST use the same no-store/no-cache posture as root/config because it resolves live GitHub Production server-side on each request.
-- `/modular` MUST be `noindex, nofollow` and must not be linked from the default About page, sitemap or public install prompt during the experiment.
+- `/modular` MUST be `noindex, follow`: absent from default About/sitemap/public install discovery, but allowed to expose exact-C links that ChatGPT may follow after the user explicitly supplies the modular URL.
 - `/snapshot/<SHA>/<runtime-path>` is immutable only after validating a 40-lowercase-hex SHA and a strict runtime-file allowlist. Exact-SHA snapshot responses may use one-year immutable caching.
+- `/modular` MUST generate its resource index from exact-C LATEST + MANIFEST and link all manifest modules plus required release/schema/fallback artifacts; linked resources remain exact-SHA snapshot URLs.
 - Snapshot transport MUST NOT expose arbitrary repository browsing and MUST reject traversal, dot segments, backslashes/nulls and disallowed paths before raw retrieval.
 - Snapshot responses MUST carry the exact requested commit and path in response headers so host-side pin/no-mix checks can be audited.
 - The root/install/config path continues serving BOOTSTRAP_FULL in one response until a later separately gated cutover release.
