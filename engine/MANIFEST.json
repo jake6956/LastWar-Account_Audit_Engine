@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.43",
+  "engine_version": "2026-09-28.44",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -631,7 +631,7 @@
     },
     {
       "module_id": "release.resolver",
-      "module_version": "2026-08-30.24.1",
+      "module_version": "2026-09-28.44.1",
       "path": "engine/modules/release/resolver.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -650,7 +650,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "0ba0f6c75f20ff2141804e6b28999c0dfdf78eb5"
+        "digest": "f1b444c2c101b089e581dd2bf5e89861cda8e098"
       }
     },
     {
@@ -679,7 +679,7 @@
     },
     {
       "module_id": "release.updater",
-      "module_version": "2026-08-30.24.1",
+      "module_version": "2026-09-28.44.1",
       "path": "engine/modules/release/updater.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -699,12 +699,12 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "b21ed5b5e1f29337b19f2c34ba3f1115d5437eb3"
+        "digest": "7d0ce249745d61b1bb8c61b737b6f83fcef99e92"
       }
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-09-28.43.1",
+      "module_version": "2026-09-28.44.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -731,7 +731,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "f914f4218734765217085223836a2ac6bf546daf"
+        "digest": "fa5dbb7d81501c9b74f13077fc3305e2d70a7de2"
       }
     }
   ]
