@@ -1,6 +1,6 @@
 LWAI MODULE — CORE STATE FRESHNESS
 module_id: core.state-freshness
-module_version: 2026-09-09.36.2
+module_version: 2026-09-28.45.1
 load_class: mandatory_core
 state_scope: shared_engine+active_account_freshness_rules
 SANITIZED: YES
@@ -16,6 +16,7 @@ Classify material account values before deciding whether to refresh them:
 - VOLATILE: balances, active queue countdowns, store inventory/prices, temporary buffs, event timers, currently available upgrade resources, construction/research remaining time, live matchup state, or any value that can change without a permanent progression event.
 
 OBSERVATION METADATA
+Freshness class controls retention/reuse semantics, not whether a clear supported direct observation is persisted. Task relevance likewise never filters the durable ingestion set.
 When durable account storage is available, material volatile observations SHOULD carry: value, observed_at or last_confirmed_at, source, confidence, and optional expires_at/expected_completion when directly calculable from supported inputs. A queue identity and its countdown are separate fields: `what is running` may remain useful after its old timer is stale.
 Never invent an exact timestamp or ETA from an approximate screenshot countdown. If exact observation time is unavailable, preserve the observed text as historical evidence and mark exact ETA unknown.
 

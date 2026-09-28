@@ -1,5 +1,16 @@
 # Production Changelog
 
+## 2026-09-28.45
+
+- Made screenshots, direct account updates and completed evidence batches durability-first account-state transactions when verified writable persistence is active.
+- Added the invariant that task relevance never determines persistence relevance: every clear supported account fact is harvested before answer/task filtering.
+- Added coherent durable commit semantics across canonical domain facts, material Change Log/history, Hot Cache, State Health/freshness and applicable account/workspace update metadata, followed by verification read before COMMITTED.
+- Partial multi-surface write or verification failure remains incomplete/RECOVERY_REQUIRED rather than being treated as a successful durable commit; recovery preserves verified writes and resumes from the first unverified surface.
+- Added monotonic/volatile/ambiguous evidence semantics and regressions for multi-fact screenshots, stale monotonic supersession, volatile freshness metadata, ambiguity, partial failure, fresh-runtime survival and account isolation.
+- Preserved Engine API `1.0`, workspace schema `2.3`, all existing LOCAL STATE, .44 deterministic recovery-package architecture and the current LastWarAI.com single-response BOOTSTRAP_FULL transport.
+- Issue #71 / private backlog OO-019. OO-018 phase 2 remains parked behind this correctness release.
+
+
 ## 2026-09-28.44
 
 - Added a deterministic sanitized multi-file recovery package built from one exact candidate/Production SHA, with `RECOVERY_MANIFEST.json`, `SHA256SUMS`, exact LATEST/MANIFEST/MIGRATIONS, every manifest module, runtime schemas/contracts/assets, and normalized ZIP metadata.

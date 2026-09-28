@@ -90,3 +90,15 @@ Required checks:
 - the exact validated RC package is mirrored privately before merge and the actual Production package is archived after merge.
 
 Production .44 does not change the LastWarAI.com root/install/config payload. Public transport cutover is a later separately gated release.
+
+
+## Durability-first evidence-ingestion gate
+Every candidate that changes account ingestion/persistence must prove:
+- task relevance never filters the persistence set for clear supported direct evidence;
+- canonical facts, material history, Hot Cache, State Health/freshness and update metadata reconcile coherently;
+- verification precedes COMMITTED;
+- partial multi-surface failure remains RECOVERY_REQUIRED/incomplete;
+- successful evidence survives a fresh runtime without redundant recapture;
+- ambiguous observations are not assigned invented labels;
+- active-account isolation and sanitized distribution boundaries remain intact;
+- standalone fallback preserves equivalent behavior.
