@@ -15,8 +15,8 @@ https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main
 Prefer a GitHub-native connector/API; otherwise use direct branch-API retrieval or real `git ls-remote` when available. Require a live 40-hex commit SHA. Never decide current Production from search/index results, README snapshots, mutable raw `main`, URL shorteners, or model memory.
 Fresh install with no live SHA stops rather than guessing unless a validated recovery package supplies one fixed recovery snapshot. Existing installs keep last-known-good ENGINE and LOCAL STATE.
 
-VERIFIED PACKAGE RECOVERY
-A package whose `RECOVERY_MANIFEST.json` + `SHA256SUMS` validate may supply `RECOVERY_PACKAGE_COMMIT` = fixed C for explicit offline/manual recovery. Require matching package/LATEST/MANIFEST identity, all required modules and available integrity; read the whole recovery transaction from the package only. This snapshot is recovery state, not proof of current Production: mark freshness RECOVERY_SNAPSHOT and run the normal live resolver when capability returns. Validation failure stops. Never mix package bytes with network candidate bytes.
+PACKAGE RECOVERY
+For explicit offline/manual recovery, validated `RECOVERY_MANIFEST` + `SHA256SUMS` may supply fixed C. Require matching LATEST/MANIFEST identity, required modules and available integrity; read only package bytes. It is not proof of current Production: set RECOVERY_SNAPSHOT and run the live resolver when available. Failure stops; never mix package/network candidate bytes.
 
 PINNED SNAPSHOT
 Let C = resolved Production commit. Read `releases/LATEST.json`, `engine/MANIFEST.json`, `releases/MIGRATIONS.json`, required modules and fallback only at C. Never mix commits. Require matching Production identity/API/schema and `sanitized=true` / `account_state_included=false`; reject RC/Prod-Dev.
