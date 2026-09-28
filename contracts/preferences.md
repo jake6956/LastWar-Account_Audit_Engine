@@ -13,6 +13,11 @@ Three preference scopes exist:
 
 Durable WORKSPACE/ACCOUNT preferences exist only in the user's selected personal provider and dedicated LWAI workspace. Session-only deployments must not claim cross-chat persistence.
 
+## Runtime module boundary
+`core.preferences` is the mandatory resolution shell: scope, precedence, safe application, existing-state load, privacy/safety dominance and routing of preference actions. It must remain available during every normal runtime.
+
+`core.preference-learning` is capability-on-demand. It owns notebook lifecycle, learning/capture, durable mutation, user preference-management commands, correction/revocation, export/reset and preference-write recovery. The shell may apply already-loaded preferences even when the companion is unavailable; the companion activates for preference-management intents or registered preference-capture/persistence events. Companion failure may degrade new preference persistence but must not corrupt canonical account/game state or prevent current explicit instructions from applying.
+
 ## Human-readable notebook
 Provider-neutral logical artifacts are:
 - workspace `Preferences.md` or equivalent;
