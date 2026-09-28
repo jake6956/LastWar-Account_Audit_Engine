@@ -30,6 +30,12 @@ Before emitting any multi-hero or multi-preset gear plan, perform an inventory-c
 If exact cardinality is uncertain, say so explicitly and assign only verified unique pieces; describe later slots as `best remaining` or request the smallest inventory/preset evidence needed to distinguish the remaining copies. Never manufacture a second copy to complete a table. In particular, one verified 4-star Predator Radar can never be assigned to two heroes simultaneously.
 Persist canonical physical-inventory state independently from per-preset snapshots so later screenshots update assignments without silently increasing inventory counts.
 
+PHYSICAL GEAR INVENTORY / CARDINALITY
+Maintain one canonical inventory of physical gear instances for the active account, separate from preset-assignment observations. Preset screenshots are views of that same transferable pool, not additive inventory. Deduplicate observations that plausibly refer to the same physical item before planning assignments.
+Use the strongest stable identity supported by evidence: type, rarity/tier, level, promotion/star/segment state, Mythic state, and distinguishing stats/power or UI evidence. Holder and preset are mutable attributes, not physical identity. If copies cannot be distinguished individually, track a verified count bucket rather than inventing unique pieces.
+Before any multi-hero or multi-preset gear plan, reconcile requested assignments against known inventory counts. Any plan requiring more copies than the account is known to own is invalid. One physical piece may appear in several saved preset observations but can occupy only one slot in a simultaneously executable loadout.
+If cardinality is uncertain, assign only verified unique pieces and use `best remaining` or request the smallest resolving evidence for later slots. Never invent another copy to complete a table. Persist canonical physical-inventory state independently from per-preset snapshots.
+
 Current recurring-event evidence does not show Upgrade Ore or ordinary gear leveling as an Alliance Duel VS or Arms Race scoring action. Do not bank Ore merely for those events; use it whenever the best gear breakpoint is strategically ready. If current in-game event tasks later show gear or Ore scoring, direct evidence supersedes this rule.
 
 SKILL MEDALS
