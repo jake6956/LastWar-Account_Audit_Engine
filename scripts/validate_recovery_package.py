@@ -14,10 +14,10 @@ HEX40 = re.compile(r"^[0-9a-f]{40}$")
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 CREDENTIAL = re.compile(r"\b(?:ghp|github_pat|sk)-[A-Za-z0-9_\-]{12,}\b", re.I)
 PRIVATE_MARKERS = (
-    "PRIVATE_RC_STAGED",
-    "BEGIN RSA PRIVATE KEY",
-    "BEGIN EC PRIVATE KEY",
-    "BEGIN OPENSSH PRIVATE KEY",
+    "PRIVATE_" + "RC_STAGED",
+    "BEGIN " + "RSA PRIVATE KEY",
+    "BEGIN " + "EC PRIVATE KEY",
+    "BEGIN " + "OPENSSH PRIVATE KEY",
 )
 
 
