@@ -601,6 +601,26 @@
         "test_recovery_package_is_fixed_snapshot_and_never_mixed_with_network_candidate"
       ],
       "notes": "Adds a deterministic sanitized modular recovery package and explicit RECOVERY_SNAPSHOT/no-mix behavior. The public one-response installer remains BOOTSTRAP_FULL in this release. Engine API 1.0, workspace schema 2.3 and all LOCAL STATE are preserved."
+    },
+    {
+      "from": "2026-09-28.44",
+      "to": "2026-09-28.45",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_durability_first_evidence_ingestion",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_multifact_screenshot_persists_all_supported_facts_not_only_task_fact",
+        "test_newer_direct_monotonic_fact_supersedes_stale_durable_value",
+        "test_volatile_observation_persists_freshness_metadata",
+        "test_ambiguous_or_unsupported_observation_is_not_invented",
+        "test_partial_write_failure_is_recovery_required_not_committed",
+        "test_successful_transaction_survives_fresh_runtime",
+        "test_ingestion_preserves_active_account_isolation"
+      ],
+      "notes": "Strengthens direct evidence ingestion without changing workspace schema. Existing LOCAL STATE remains authoritative; future evidence commits gain task-independent harvesting plus verification-before-commit and recoverable multi-surface coherence."
     }
   ]
 }
