@@ -1,5 +1,24 @@
 # Production Changelog
 
+## 2026-09-28.50
+
+- Separated gear rarity/tier classification from promotion progress in screenshot interpretation.
+- Red gear-card background is Mythic/M6 evidence; orange background is Legendary even with four or five gold promotion marks.
+- Gold pips, stars, and segments represent promotion state only and never establish Mythic rarity by themselves.
+- Unclear or obscured card background yields uncertain rarity instead of a pip-based guess.
+- Mixed screenshots classify each physical piece independently before swaps, upgrades, or assignments.
+- Added executable fallback-parity regression coverage.
+- Preserved Engine API `1.0`, workspace schema `2.3`, LOCAL STATE, provider behavior, installer transport, and Worker behavior.
+
+## 2026-09-28.49
+
+- Added canonical physical-gear inventory/cardinality reconciliation across presets.
+- Preset screenshots are views of one transferable gear pool, not additive inventory.
+- Multi-hero and multi-preset loadouts must reconcile requested assignments against verified inventory counts.
+- Indistinguishable copies use verified count buckets; uncertain remaining slots use bounded `best remaining` guidance or targeted evidence instead of invented duplicates.
+- Updated the compiled fallback contract and added an executable double-allocation regression.
+- Preserved Engine API `1.0`, workspace schema `2.3`, LOCAL STATE, provider behavior, installer transport, and Worker behavior.
+
 ## 2026-09-28.48
 
 - Replaced hand-maintained standalone-fallback ownership with deterministic compilation from seven owned compact capsules plus MANIFEST identity; CI regenerates `engine/BOOTSTRAP_FULL.txt` and rejects any byte drift.
