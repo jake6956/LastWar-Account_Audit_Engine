@@ -235,7 +235,7 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
         "Fresh install with no live ref capability", "release.updater",
     ])
     require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine", "RECOVERY-SNAPSHOT HANDOFF"])
-    require("recovery package", read("contracts/recovery-package.md"), ["deterministic", "RECOVERY_MANIFEST.json", "SHA256SUMS", "Never mix package", "LOCAL STATE"])
+    require("recovery package", read("contracts/recovery-package.md"), ["deterministic", "RECOVERY_MANIFEST.json", "SHA256SUMS", "One recovery transaction uses one source only", "LOCAL STATE"])
     require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "Deprecated URL shorteners are unsupported"])
     require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, "Deprecated URL shorteners are unsupported", "current-version authority"])
 
