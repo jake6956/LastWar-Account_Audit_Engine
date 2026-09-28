@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.49",
+  "engine_version": "2026-09-28.50",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -23,16 +23,16 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal ChatGPT installation performs one user-supplied bare-origin fetch to LastWarAI.com; the Worker resolves one live main SHA server-side and returns exact-commit compiled BOOTSTRAP_FULL in one response; direct/recovery modular reads pin to one SHA and remain compatibility/recovery paths only; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
-    "from": "2026-09-28.48",
-    "type": "engine_only_physical_gear_cardinality",
+    "from": "2026-09-28.49",
+    "type": "engine_only_gear_screenshot_rarity",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds explicit canonical physical-gear inventory/cardinality reconciliation across presets so the same transferable piece cannot be double-allocated. No workspace schema, account rewrite, provider, transport, or Cloudflare change."
+    "notes": "Separates visual gear rarity/tier classification from promotion progress. Red gear-card background is Mythic/M6 evidence; orange is Legendary; gold pips/stars/segments never establish rarity by themselves. No schema, provider, transport, or Worker change."
   },
-  "notes": "OO-021 correctness release: preset screenshots are reconciled as views of one transferable physical gear pool; multi-hero/multi-preset plans must pass inventory-cardinality validation and uncertain counts use verified pieces plus bounded 'best remaining' guidance rather than invented duplicates.",
+  "notes": "OO-020 correctness release: screenshot gear rarity is classified from the readable gear-card background independently from promotion marks; unclear backgrounds remain uncertain rather than being guessed from pips.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",
