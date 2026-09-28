@@ -88,7 +88,7 @@ class ProductInvariantTests(unittest.TestCase):
         modules = {m["module_id"]: m for m in manifest["modules"]}
         mod = modules["core.flow-continuity"]
         self.assertTrue(mod["required"])
-        self.assertEqual(mod["module_version"], "2026-09-09.36.1")
+        self.assertEqual(mod["module_version"], "2026-09-28.43.1")
         self.assertIn("expert_experience", mod["state_scope"])
         self.assertIn("research_source_policy", mod["state_scope"])
         self.assertIn("data_placement", mod["state_scope"])
