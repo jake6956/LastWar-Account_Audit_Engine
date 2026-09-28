@@ -13,7 +13,7 @@ The following mutable public endpoints remain the supported default and continue
 - `/install`
 - `/config.txt`
 
-The opt-in modular path is not linked from About, sitemap, install instructions or other default discovery surfaces in .46.
+The opt-in modular path remains absent from About, sitemap and normal install instructions. The already-retrievable root response may expose one explicit `MODULAR_COMPATIBILITY_ENTRY: https://lastwarai.com/modular`, but only as an opt-in handoff when the user's current instruction explicitly requests modular transport/testing. Normal root execution remains BOOTSTRAP_FULL.
 
 ## Opt-in modular bootstrap
 `GET /modular`:
@@ -31,15 +31,17 @@ The opt-in modular path is not linked from About, sitemap, install instructions 
 Failure to resolve C or validate Stage-1 returns 503 and never falls back to guessed/cached mutable source.
 
 ## ChatGPT navigation rule
-A fresh ChatGPT session may be able to open a user-supplied LastWarAI.com page while refusing arbitrary synthesized deep URLs. Therefore `/modular` itself is the authoritative navigation surface for the opt-in transport.
+A fresh ChatGPT session may reliably retrieve the LastWarAI.com root while rejecting `/modular` when that deep path is supplied directly. Therefore the root response is the stable bootstrap entry and may hand off to `/modular` through one explicit page-provided compatibility link. `/modular` then becomes the authoritative exact-C navigation surface for the opt-in transaction.
 
 ChatGPT MUST:
+- start from the retrievable root when the modular path cannot be opened directly;
+- when the user explicitly asked for modular transport/testing, follow the exact root-provided `MODULAR_COMPATIBILITY_ENTRY` before executing the fallback;
 - follow exact-C resource hyperlinks exposed by `/modular`;
 - prefer those page-provided links over constructing equivalent snapshot URLs;
 - keep all candidate reads on the one C declared by the page;
 - never substitute search/index results or a GitHub connector merely because an unlinked deep URL is unavailable.
 
-The page remains absent from sitemap/About/default install instructions. `noindex, follow` means user-initiated navigation is allowed without making the experiment discoverable by default.
+`/modular` remains absent from sitemap/About/default install instructions. `noindex, follow` means link-following is allowed after explicit user intent. The root handoff is visible only as a compatibility instruction inside the default configuration and must not activate modular transport unless the user's current request explicitly asks for it.
 ## Exact-SHA same-origin snapshot
 `GET /snapshot/C/<runtime-path>` is immutable transport for one validated 40-hex C.
 
@@ -81,7 +83,7 @@ The normal one-response installer remains available as compatibility fallback wh
 Default cutover remains blocked until ChatGPT fresh-host evidence covers at minimum:
 
 ### Host retrieval profiles
-- ChatGPT user-initiated navigation: `/modular` is opened from the user's prompt and exact-C resources are followed from page-provided links;
+- ChatGPT root-to-modular navigation: root is opened from the user's prompt, the explicit `MODULAR_COMPATIBILITY_ENTRY` is followed only when modular testing/use was requested, and exact-C resources are then followed from `/modular` page-provided links;
 - ChatGPT without GitHub connector: LastWarAI.com resource links alone must be sufficient;
 - partial retrieval: Stage-1 succeeds but one required snapshot module fails;
 - stale/incorrect attempt: a different candidate SHA is presented after C is pinned;
@@ -89,7 +91,7 @@ Default cutover remains blocked until ChatGPT fresh-host evidence covers at mini
 
 ### Required account continuity scenario
 For every host proposed for default support:
-1. start from the opt-in modular endpoint;
+1. start from `https://lastwarai.com`, explicitly request modular transport/testing, and follow the root-provided modular handoff;
 2. load an existing durable LWAI account;
 3. ingest a screenshot/direct evidence batch containing multiple supported facts;
 4. verify the durability-first transaction COMMITTED across canonical state/history/cache/health/update metadata;
