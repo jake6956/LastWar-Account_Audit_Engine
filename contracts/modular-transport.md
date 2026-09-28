@@ -1,6 +1,6 @@
 # Opt-In Modular Public Transport Contract
 
-Version: 2026-09-28.46
+Version: 2026-09-28.47
 
 ## Purpose
 Define the non-default Phase-2 transport experiment for LastWarAI.com without changing the supported root/install/config installer.
@@ -16,19 +16,30 @@ The following mutable public endpoints remain the supported default and continue
 The opt-in modular path is not linked from About, sitemap, install instructions or other default discovery surfaces in .46.
 
 ## Opt-in modular bootstrap
-`GET /modular` and `GET /modular/config.txt`:
+`GET /modular`:
 1. resolve canonical GitHub Production `main` server-side to exact 40-hex commit C;
-2. retrieve `engine/BOOTSTRAP.txt` from exact C;
-3. sanity-check Stage-1 Production/sanitization/modular identity;
-4. return a transparent wrapper plus Stage-1 in the same response;
-5. declare:
-   - `RESOLVED_PRODUCTION_COMMIT: C`
-   - `FIRST_PARTY_SNAPSHOT_BASE: https://lastwarai.com/snapshot/C/`
-6. return `X-LWAI-Commit: C`, `X-LWAI-Snapshot-Base`, and transport version `3.2-modular-optin`;
-7. use mutable no-store headers and `X-Robots-Tag: noindex, nofollow`.
+2. retrieve exact-C `engine/BOOTSTRAP.txt`, `releases/LATEST.json`, and `engine/MANIFEST.json`;
+3. validate matching Production/API/schema/sanitization identity;
+4. return a small HTML bootstrap page containing Stage-1 plus a navigable exact-C resource index;
+5. expose clickable links for Stage-1, LATEST, MANIFEST, MIGRATIONS, manifest schema, current versioned release, fallback and every manifest module (required and optional);
+6. declare `RESOLVED_PRODUCTION_COMMIT`, `FIRST_PARTY_SNAPSHOT_BASE`, and `FIRST_PARTY_RESOURCE_INDEX`;
+7. return `X-LWAI-Commit`, snapshot/index headers and transport version `3.3-chatgpt-linked-optin`;
+8. use mutable no-store headers and `X-Robots-Tag: noindex, follow` so the user-supplied page is not searchable but ChatGPT may follow the exact links it exposes.
+
+`GET /modular/config.txt` remains a plain-text compatibility alias exposing the same exact-C resource links.
 
 Failure to resolve C or validate Stage-1 returns 503 and never falls back to guessed/cached mutable source.
 
+## ChatGPT navigation rule
+A fresh ChatGPT session may be able to open a user-supplied LastWarAI.com page while refusing arbitrary synthesized deep URLs. Therefore `/modular` itself is the authoritative navigation surface for the opt-in transport.
+
+ChatGPT MUST:
+- follow exact-C resource hyperlinks exposed by `/modular`;
+- prefer those page-provided links over constructing equivalent snapshot URLs;
+- keep all candidate reads on the one C declared by the page;
+- never substitute search/index results or a GitHub connector merely because an unlinked deep URL is unavailable.
+
+The page remains absent from sitemap/About/default install instructions. `noindex, follow` means user-initiated navigation is allowed without making the experiment discoverable by default.
 ## Exact-SHA same-origin snapshot
 `GET /snapshot/C/<runtime-path>` is immutable transport for one validated 40-hex C.
 
@@ -67,11 +78,11 @@ A missing/disallowed/corrupt required file causes modular startup to fail closed
 The normal one-response installer remains available as compatibility fallback while the experiment is opt-in.
 
 ## Fresh-host compatibility matrix
-Default cutover remains blocked until fresh-host evidence covers at minimum:
+Default cutover remains blocked until ChatGPT fresh-host evidence covers at minimum:
 
 ### Host retrieval profiles
-- same-origin-only host: LastWarAI.com available; direct GitHub/raw access unavailable;
-- normal web host: LastWarAI.com and GitHub available;
+- ChatGPT user-initiated navigation: `/modular` is opened from the user's prompt and exact-C resources are followed from page-provided links;
+- ChatGPT without GitHub connector: LastWarAI.com resource links alone must be sufficient;
 - partial retrieval: Stage-1 succeeds but one required snapshot module fails;
 - stale/incorrect attempt: a different candidate SHA is presented after C is pinned;
 - no modular support: host can still consume the unchanged one-response default installer.
