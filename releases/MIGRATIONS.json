@@ -621,6 +621,22 @@
         "test_ingestion_preserves_active_account_isolation"
       ],
       "notes": "Strengthens direct evidence ingestion without changing workspace schema. Existing LOCAL STATE remains authoritative; future evidence commits gain task-independent harvesting plus verification-before-commit and recoverable multi-surface coherence."
+    },
+    {
+      "from": "2026-09-28.45",
+      "to": "2026-09-28.46",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "transport_only_optin_same_origin_modular_path",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_worker_exposes_optin_without_replacing_default_routes",
+        "test_contract_blocks_default_cutover_without_fresh_host_evidence",
+        "test_required_durable_account_fresh_runtime_matrix"
+      ],
+      "notes": "Adds only an opt-in same-origin modular transport source path. Default root/install/config remain the one-response BOOTSTRAP_FULL installer. No module behavior or workspace/account schema change; LOCAL STATE is preserved."
     }
   ]
 }
