@@ -45,4 +45,4 @@ For Google Drive, choose `Allow always` only when ChatGPT actually offers it.
 
 ## Recovery
 
-`engine/BOOTSTRAP.txt` remains the small direct/modular Stage-1 loader. `engine/BOOTSTRAP_FULL.txt` remains the complete sanitized standalone/recovery runtime and is also the source used by the single-response first-install transport. Private account snapshots remain separate from the public engine.
+`engine/BOOTSTRAP.txt` remains the small direct/modular Stage-1 loader for recovery/compatible hosts. `engine/BOOTSTRAP_FULL.txt` is the complete sanitized standalone runtime used by the supported one-response first-install transport and is generated deterministically from the standalone plan/capsules plus MANIFEST identity. Private account snapshots remain separate from the public engine.
