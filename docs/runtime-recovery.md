@@ -15,6 +15,14 @@ Production 2026-08-29.11 adds durable workflow recovery without turning the conv
 
 Use event-driven checkpoints for multi-artifact changes, migrations, account switches with pending work, `WAITING_USER` upload boundaries, meaningful audit/import phases, release promotion, tool blockers, or any operation where blind replay could duplicate/overwrite durable state. Atomic routine account updates do not need a separate checkpoint.
 
+## Engine package recovery
+
+A deterministic sanitized LWAI recovery package can restore the modular ENGINE when live remote retrieval is unavailable. Validate `RECOVERY_MANIFEST.json`, `SHA256SUMS`, LATEST/MANIFEST identity, required module presence and available module integrity before activation. Treat the package `source_commit_sha` as one fixed recovery snapshot, not proof of newest live Production.
+
+A package recovery transaction is source-isolated: all candidate engine bytes come from the package. Never splice package files with network files. Preserve LOCAL STATE. When live GitHub capability returns, the ordinary resolver/update path checks canonical Production and may atomically adopt a newer verified ENGINE.
+
+During the .44 transition the recovery package may include `engine/BOOTSTRAP_FULL.txt` for compatibility, but the modular package must validate and reconstruct required runtime behavior without depending on that file.
+
 ## Recovery procedure
 
 1. Load mandatory core and Workspace Registry.
