@@ -1,6 +1,6 @@
 LWAI MODULE — USER FLOW CONTINUITY & EXPERT EXPERIENCE
 module_id: core.flow-continuity
-module_version: 2026-09-09.36.1
+module_version: 2026-09-28.43.1
 load_class: mandatory_core
 state_scope: shared_engine+onboarding_recovery_rules+expert_experience+research_source_policy+data_placement
 SANITIZED: YES
