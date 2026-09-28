@@ -33,6 +33,15 @@ RUNTIME_CONTRACTS = [
 STATIC_RUNTIME = [
     "engine/BOOTSTRAP.txt",
     "engine/MANIFEST.json",
+    "engine/standalone/plan.json",
+    "engine/standalone/01-release-bootstrap.txt",
+    "engine/standalone/02-governance-preferences.txt",
+    "engine/standalone/03-state-storage-onboarding.txt",
+    "engine/standalone/04-season-events.txt",
+    "engine/standalone/05-progression-economy.txt",
+    "engine/standalone/06-combat.txt",
+    "engine/standalone/07-routing-startup.txt",
+    "scripts/build_bootstrap_full.py",
     "releases/LATEST.json",
     "releases/MIGRATIONS.json",
     "schemas/account-registry.schema.json",
@@ -70,7 +79,13 @@ def role_for(path: str, module_paths: set[str]) -> str:
     if path == "engine/BOOTSTRAP.txt":
         return "bootstrap"
     if path == "engine/BOOTSTRAP_FULL.txt":
-        return "legacy_fallback"
+        return "compiled_fallback"
+    if path == "engine/standalone/plan.json":
+        return "compiled_fallback_plan"
+    if path.startswith("engine/standalone/"):
+        return "compiled_fallback_capsule"
+    if path == "scripts/build_bootstrap_full.py":
+        return "compiled_fallback_builder"
     if path == "engine/MANIFEST.json":
         return "module_manifest"
     if path == "releases/LATEST.json":
@@ -111,13 +126,15 @@ ACCOUNT STATE INCLUDED: NO
 
 PURPOSE
 This is a fixed, exact-commit modular recovery snapshot. It is not proof that this is the newest live Production while offline.
+It also carries the exact standalone compiler plan, owned compact capsules, and compiler script needed to reconstruct the generated one-response BOOTSTRAP_FULL artifact from this snapshot.
 
 RECOVERY
 1. Validate SHA256SUMS and RECOVERY_MANIFEST.json before loading engine instructions.
 2. Use engine/BOOTSTRAP.txt as the recovery kernel.
 3. Treat source commit {source_commit} as snapshot C and load all MANIFEST-required modules from this package only.
-4. Never mix package bytes with network bytes in the same recovery transaction.
-5. Keep private account/workspace state separate and preserve LOCAL STATE.
+4. The standalone compiler inputs in engine/standalone plus scripts/build_bootstrap_full.py are build provenance for the generated one-response artifact; they are not a second engine authority.
+5. Never mix package bytes with network bytes in the same recovery transaction.
+6. Keep private account/workspace state separate and preserve LOCAL STATE.
 6. When live GitHub access becomes available, run the normal resolver/update path to check current Production.
 
 {legacy_line}
