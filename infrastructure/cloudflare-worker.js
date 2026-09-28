@@ -17,6 +17,7 @@ const MODULAR_URL = `${PUBLIC_ORIGIN}/modular`;
 const SNAPSHOT_BASE_URL = `${PUBLIC_ORIGIN}/snapshot`;
 const ABOUT_URL = `${PUBLIC_ORIGIN}/about`;
 const SITEMAP_URL = `${PUBLIC_ORIGIN}/sitemap.xml`;
+const MODULAR_TRANSPORT_VERSION = "3.3-chatgpt-linked-optin";
 
 const SHA_RE = /^[0-9a-f]{40}$/;
 
@@ -202,6 +203,170 @@ async function getStage1(sha) {
   return stage1;
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
+function exactSnapshotUrl(sha, path) {
+  const encoded = path
+    .split("/")
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+  return `${SNAPSHOT_BASE_URL}/${sha}/${encoded}`;
+}
+
+async function getModularIndex(sha) {
+  const [stage1, latestText, manifestText] = await Promise.all([
+    getStage1(sha),
+    getExactRuntimeFile(sha, "releases/LATEST.json"),
+    getExactRuntimeFile(sha, "engine/MANIFEST.json")
+  ]);
+
+  let latest;
+  let manifest;
+  try {
+    latest = JSON.parse(latestText);
+    manifest = JSON.parse(manifestText);
+  } catch {
+    throw new Error("Modular release metadata is not valid JSON");
+  }
+
+  for (const doc of [latest, manifest]) {
+    if (
+      doc?.channel !== "Production" ||
+      doc?.sanitized !== true ||
+      doc?.account_state_included !== false
+    ) {
+      throw new Error("Modular release identity invalid");
+    }
+  }
+
+  if (
+    typeof latest.engine_version !== "string" ||
+    latest.engine_version !== manifest.engine_version ||
+    latest.engine_api_version !== manifest.engine_api_version ||
+    latest.schema_version !== manifest.schema_version ||
+    !Array.isArray(manifest.modules)
+  ) {
+    throw new Error("Modular release metadata mismatch");
+  }
+
+  for (const module of manifest.modules) {
+    if (
+      typeof module?.module_id !== "string" ||
+      typeof module?.path !== "string" ||
+      !isAllowedSnapshotPath(module.path)
+    ) {
+      throw new Error("Manifest contains invalid modular resource path");
+    }
+  }
+
+  return { stage1, latest, manifest };
+}
+
+function modularResourceRows(sha, latest, manifest) {
+  const base = [
+    ["Stage-1 bootstrap", "engine/BOOTSTRAP.txt", "bootstrap"],
+    ["Current exact-C release metadata", "releases/LATEST.json", "release"],
+    ["Module manifest", "engine/MANIFEST.json", "manifest"],
+    ["Migration graph", "releases/MIGRATIONS.json", "migration"],
+    ["Manifest schema", "schemas/engine-manifest.schema.json", "schema"],
+    ["Versioned release record", `releases/${latest.engine_version}.json`, "release"],
+    ["Complete fallback / rollback", "engine/BOOTSTRAP_FULL.txt", "fallback"]
+  ];
+
+  const modules = manifest.modules.map((module) => [
+    `${module.required ? "Required" : "Optional"} module: ${module.module_id}`,
+    module.path,
+    module.required ? "required-module" : "optional-module",
+    module.integrity?.digest || ""
+  ]);
+
+  return [...base, ...modules].map(([label, path, kind, digest = ""]) => ({
+    label,
+    path,
+    kind,
+    digest,
+    url: exactSnapshotUrl(sha, path)
+  }));
+}
+
+function renderModularHtml(sha, stage1, latest, manifest) {
+  const snapshotBase = `${SNAPSHOT_BASE_URL}/${sha}/`;
+  const rows = modularResourceRows(sha, latest, manifest);
+  const links = rows.map((row) => {
+    const digest = row.digest
+      ? ` <small>git blob: <code>${escapeHtml(row.digest)}</code></small>`
+      : "";
+    return `<li data-lwai-kind="${escapeHtml(row.kind)}" data-lwai-path="${escapeHtml(row.path)}"><a href="${escapeHtml(row.url)}">${escapeHtml(row.label)}</a> — <code>${escapeHtml(row.path)}</code>${digest}</li>`;
+  }).join("\n");
+
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,follow">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Last War AI — Opt-In Modular Configuration</title>
+</head>
+<body>
+<main>
+<h1>Last War AI — Opt-In Modular Configuration</h1>
+<p><strong>Experimental / non-default transport.</strong> The normal LastWarAI.com installer is unchanged.</p>
+<p>Resolved Production commit: <code>${escapeHtml(sha)}</code></p>
+<p><code>RESOLVED_PRODUCTION_COMMIT: ${escapeHtml(sha)}</code><br>
+<code>FIRST_PARTY_SNAPSHOT_BASE: ${escapeHtml(snapshotBase)}</code><br>
+<code>FIRST_PARTY_RESOURCE_INDEX: ${escapeHtml(MODULAR_URL)}</code></p>
+
+<h2>ChatGPT navigation rule</h2>
+<p>Use the clickable exact-commit resource links on this page. Do <strong>not</strong> synthesize, rewrite, search for, or substitute snapshot URLs. Keep the whole bootstrap/update transaction on commit <code>${escapeHtml(sha)}</code>. Never mix commits or substitute GitHub/search results for a resource that is linked here.</p>
+
+<h2>Exact-C runtime resources</h2>
+<ol id="lwai-resource-index">
+${links}
+</ol>
+
+<h2>Stage-1 bootstrap</h2>
+<pre id="lwai-stage1">${escapeHtml(stage1)}</pre>
+</main>
+</body>
+</html>`;
+}
+
+function renderModularText(sha, stage1, latest, manifest) {
+  const snapshotBase = `${SNAPSHOT_BASE_URL}/${sha}/`;
+  const rows = modularResourceRows(sha, latest, manifest);
+  const index = rows.map((row) => `RESOURCE_LINK: ${row.path} = ${row.url}`).join("\n");
+
+  return `LAST WAR AI — OPT-IN MODULAR CONFIGURATION
+
+STATUS: EXPERIMENTAL / NON-DEFAULT TRANSPORT
+
+Resolved Production commit:
+${sha}
+
+RESOLVED_PRODUCTION_COMMIT: ${sha}
+FIRST_PARTY_SNAPSHOT_BASE: ${snapshotBase}
+FIRST_PARTY_RESOURCE_INDEX: ${MODULAR_URL}
+
+CHATGPT NAVIGATION RULE
+Prefer the exact-C resource links exposed by FIRST_PARTY_RESOURCE_INDEX. Do not synthesize or substitute resource URLs. Never mix commits or use search/index results as candidate bytes.
+
+${index}
+
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+--- BEGIN LWAI STAGE-1 ---
+
+${stage1}`;
+}
+
 async function getEngine(sha) {
   const source = `${RAW_BASE}/${sha}/engine/BOOTSTRAP_FULL.txt`;
 
@@ -263,52 +428,26 @@ ENGINE API / COMPATIBILITY`;
   );
 }
 
-async function serveModularConfiguration() {
+async function serveModularConfiguration(asHtml = true) {
   try {
     const sha = await resolveProductionSha();
-    const stage1 = await getStage1(sha);
+    const { stage1, latest, manifest } = await getModularIndex(sha);
     const snapshotBase = `${SNAPSHOT_BASE_URL}/${sha}/`;
+    const body = asHtml
+      ? renderModularHtml(sha, stage1, latest, manifest)
+      : renderModularText(sha, stage1, latest, manifest);
 
-    const header = `LAST WAR AI — OPT-IN MODULAR CONFIGURATION
-
-STATUS: EXPERIMENTAL / NON-DEFAULT TRANSPORT
-
-This endpoint is an opt-in compatibility experiment. It does not replace
-the normal LastWarAI.com root, /install, or /config.txt installer.
-
-Resolved Production commit:
-${sha}
-
-RESOLVED_PRODUCTION_COMMIT: ${sha}
-FIRST_PARTY_SNAPSHOT_BASE: ${snapshotBase}
-
-Use the resolved commit above as C. For every exact-C repository-relative
-runtime file requested by Stage-1, retrieve FIRST_PARTY_SNAPSHOT_BASE plus
-that repository-relative path. Keep the whole startup/update transaction
-on the same C. Never mix snapshot paths or network candidate bytes from
-different commits.
-
-If this modular transport cannot complete safely, do not improvise or
-rewrite LOCAL STATE. Use last-known-good when available or return to the
-normal LastWarAI.com one-response installer.
-
-SANITIZED: YES
-ACCOUNT STATE INCLUDED: NO
-
---- BEGIN LWAI STAGE-1 ---
-
-`;
-
-    return new Response(header + stage1, {
+    return new Response(body, {
       status: 200,
       headers: {
-        ...mutablePublicHeaders(),
-        "X-Robots-Tag": "noindex, nofollow",
+        ...mutablePublicHeaders(asHtml ? "text/html; charset=utf-8" : "text/plain; charset=utf-8"),
+        "X-Robots-Tag": "noindex, follow",
         "X-LWAI-Commit": sha,
-        "X-LWAI-Transport-Version": "3.2-modular-optin",
+        "X-LWAI-Transport-Version": MODULAR_TRANSPORT_VERSION,
         "X-LWAI-Snapshot-Base": snapshotBase,
+        "X-LWAI-Resource-Index": MODULAR_URL,
         "ETag": `"lwai-modular-${sha}"`,
-        "Link": `<${PUBLIC_ORIGIN}>; rel="canonical"`
+        "Link": `<${exactSnapshotUrl(sha, "engine/MANIFEST.json")}>; rel="manifest", <${exactSnapshotUrl(sha, "releases/LATEST.json")}>; rel="alternate"; type="application/json"`
       }
     });
   } catch (error) {
@@ -324,7 +463,7 @@ The normal LastWarAI.com installer remains the supported default.
         status: 503,
         headers: {
           ...mutablePublicHeaders(),
-          "X-Robots-Tag": "noindex, nofollow"
+          "X-Robots-Tag": "noindex, follow"
         }
       }
     );
@@ -474,8 +613,12 @@ export default {
       });
     }
 
-    if (url.pathname === "/modular" || url.pathname === "/modular/config.txt") {
-      return serveModularConfiguration();
+    if (url.pathname === "/modular") {
+      return serveModularConfiguration(true);
+    }
+
+    if (url.pathname === "/modular/config.txt") {
+      return serveModularConfiguration(false);
     }
 
     const snapshotMatch = url.pathname.match(/^\/snapshot\/([0-9a-f]{40})\/(.+)$/);
