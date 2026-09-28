@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.46",
+  "engine_version": "2026-09-28.47",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -21,18 +21,18 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "mutable_source_urls_are_authority": false,
-  "candidate_read_policy": "normal LastWarAI.com install still resolves one live main SHA server-side and returns exact-commit BOOTSTRAP_FULL in one response; opt-in /modular resolves that live main SHA and uses same-origin exact-SHA /snapshot reads; direct modular reads pin to one SHA; recovery packages are fixed offline snapshots; never mix candidate sources",
+  "candidate_read_policy": "normal LastWarAI.com install still resolves one live main SHA server-side and returns exact-commit BOOTSTRAP_FULL in one response; opt-in /modular resolves that live main SHA and exposes page-provided exact-SHA resource links for release/manifest/schema/fallback/modules; ChatGPT follows those links instead of synthesizing deep URLs; direct modular reads remain pinned to one SHA; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
-    "from": "2026-09-28.45",
-    "type": "transport_only_optin_same_origin_modular_path",
+    "from": "2026-09-28.46",
+    "type": "transport_only_chatgpt_linked_resource_index",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds a non-default same-origin modular transport experiment at /modular plus immutable allowlisted /snapshot/<SHA>/<runtime-path> proxying. Root/install/config remain the supported one-response BOOTSTRAP_FULL installer. No module behavior, account state, schema or gameplay changes."
+    "notes": "Adapts only the opt-in modular transport for ChatGPT by rendering a noindex-but-followable exact-SHA resource index containing links for all runtime artifacts. Root/install/config remain the supported BOOTSTRAP_FULL installer. No module behavior, account state, schema or gameplay changes."
   },
-  "notes": "OO-018 phase 2 compatibility candidate: additive opt-in modular LastWarAI.com transport with exact-SHA same-origin runtime snapshots and CI/mock host validation. Default root/install/config transport remains unchanged; live deployment and fresh-host evidence are required before any future cutover.",
+  "notes": "OO-018 phase 2B compatibility candidate for ChatGPT. /modular now provides an HTML exact-C resource index so ChatGPT can follow page-provided runtime links instead of synthesizing deep snapshot URLs. Default root/install/config transport remains unchanged; a fresh ChatGPT retest is required before any future default cutover.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",
@@ -44,15 +44,19 @@
     "account_state_included": false
   },
   "modular_transport": {
-    "phase": "opt_in_compatibility",
+    "phase": "chatgpt_linked_compatibility",
+    "supported_host": "ChatGPT",
     "opt_in_url": "https://lastwarai.com/modular",
     "opt_in_alias": "https://lastwarai.com/modular/config.txt",
+    "resource_index_url": "https://lastwarai.com/modular",
     "snapshot_url_template": "https://lastwarai.com/snapshot/{commit}/{runtime_path}",
-    "transport_version": "3.2-modular-optin",
+    "transport_version": "3.3-chatgpt-linked-optin",
+    "navigation_mode": "page_provided_exact_sha_links",
+    "robots_policy": "noindex, follow",
     "default_cutover": false,
     "discoverable_by_default": false,
     "live_deployment_required": true,
     "fresh_host_evidence_required": true,
-    "last_known_good_version": "2026-09-28.45"
+    "last_known_good_version": "2026-09-28.46"
   }
 }
