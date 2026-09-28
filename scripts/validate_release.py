@@ -237,7 +237,7 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
     require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine", "RECOVERY-SNAPSHOT HANDOFF"])
     require("recovery package", read("contracts/recovery-package.md"), ["deterministic", "RECOVERY_MANIFEST.json", "SHA256SUMS", "One recovery transaction uses one source only", "LOCAL STATE"])
     require("evidence ingestion", read("contracts/evidence-ingestion.md"), ["Task relevance must never determine persistence relevance", "RECOVERY_REQUIRED", "verification-read", "active_account_id", "shared GitHub Production"])
-    require("modular transport", read("contracts/modular-transport.md"), ["Default installer remains unchanged", "same-origin-only host", "Default cutover remains blocked", "FIRST_PARTY_SNAPSHOT_BASE", "LOCAL STATE"])
+    require("modular transport", read("contracts/modular-transport.md"), ["Default installer remains unchanged", "ChatGPT user-initiated navigation", "page-provided links", "Default cutover remains blocked", "FIRST_PARTY_RESOURCE_INDEX", "LOCAL STATE"])
     require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "Deprecated URL shorteners are unsupported"])
     require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, "Deprecated URL shorteners are unsupported", "current-version authority"])
 
@@ -381,16 +381,20 @@ def main() -> None:
 
     modular_transport = latest.get("modular_transport") or {}
     expected_modular_transport = {
-        "phase": "opt_in_compatibility",
+        "phase": "chatgpt_linked_compatibility",
+        "supported_host": "ChatGPT",
         "opt_in_url": "https://lastwarai.com/modular",
         "opt_in_alias": "https://lastwarai.com/modular/config.txt",
+        "resource_index_url": "https://lastwarai.com/modular",
         "snapshot_url_template": "https://lastwarai.com/snapshot/{commit}/{runtime_path}",
-        "transport_version": "3.2-modular-optin",
+        "transport_version": "3.3-chatgpt-linked-optin",
+        "navigation_mode": "page_provided_exact_sha_links",
+        "robots_policy": "noindex, follow",
         "default_cutover": False,
         "discoverable_by_default": False,
         "live_deployment_required": True,
         "fresh_host_evidence_required": True,
-        "last_known_good_version": "2026-09-28.45",
+        "last_known_good_version": "2026-09-28.46",
     }
     for key, expected in expected_modular_transport.items():
         if modular_transport.get(key) != expected:
