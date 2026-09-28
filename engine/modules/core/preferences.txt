@@ -1,6 +1,6 @@
 LWAI MODULE — PREFERENCE RESOLUTION CORE
 module_id: core.preferences
-module_version: 2026-09-28.46.2
+module_version: 2026-09-28.48.1
 load_class: mandatory_core
 state_scope: shared_engine+preference_resolution+workspace_preferences+account_preferences+session_preferences
 SANITIZED: YES
