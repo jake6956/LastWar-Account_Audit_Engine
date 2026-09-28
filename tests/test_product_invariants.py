@@ -131,6 +131,22 @@ class ProductInvariantTests(unittest.TestCase):
         self.assertIn("Do not invent a reserve amount", body)
         self.assertIn("carry-over", body)
 
+    def test_gear_screenshot_rarity_uses_background_not_promotion_pips(self):
+        module = text("engine/modules/domains/gear-heroes-skills-ew.txt").lower()
+        fallback = text("engine/BOOTSTRAP_FULL.txt").lower()
+        for body in (module, fallback):
+            for token in (
+                "promotion progress",
+                "rarity uncertain",
+                "classify each physical piece independently",
+            ):
+                self.assertIn(token, body)
+        self.assertIn("a red card background is direct evidence of mythic / m6 rarity", module)
+        self.assertIn("must not by themselves be used to infer mythic rarity", module)
+        self.assertIn("an orange lv40 item remains legendary even with four or five gold promotion marks", module)
+        self.assertIn("red gear-card background establishes mythic/m6 rarity", fallback)
+        self.assertIn("orange background establishes legendary rarity even with four or five gold promotion marks", fallback)
+
     def test_shared_gear_cardinality_prevents_double_allocation(self):
         module = text("engine/modules/domains/gear-heroes-skills-ew.txt")
         fallback = text("engine/BOOTSTRAP_FULL.txt")
