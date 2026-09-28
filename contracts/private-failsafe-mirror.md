@@ -1,6 +1,6 @@
 # Private Failsafe Mirror Contract
 
-Version: 2026-08-30.26
+Version: 2026-09-28.44
 
 ## Purpose
 Keep the maintainer-controlled private Google Drive LWAI file set usable as the private Prod-Dev workspace and independent recovery/failsafe copy without making private storage a public runtime trust root or exposing private account data.
@@ -22,6 +22,7 @@ Before opening/merging a Production release candidate, synchronize the private L
 
 At minimum the candidate failsafe set must contain current, mutually consistent copies of:
 - complete sanitized standalone fallback / Portable Instruction Set;
+- deterministic sanitized multi-file recovery package for the exact RC, with RECOVERY_MANIFEST + SHA256SUMS and package validation evidence;
 - release identity / LATEST metadata;
 - engine module manifest including exact module versions/integrity identities;
 - migration graph;
@@ -35,7 +36,7 @@ The mirror may use native Google Docs/Sheets representations rather than byte-id
 After exact validated-head merge and successful `main` CI/public endpoint verification:
 1. verify the actual Production merge SHA/version;
 2. update the private primary failsafe documents to the merged Production identity;
-3. create/verify the versioned Production archive in the private Production Releases area;
+3. create/verify the versioned Production source archive and deterministic recovery package in the private Production Releases area;
 4. update private release/engine module registries and changelog records;
 5. record the post-merge mirror as synchronized only after re-reading the written artifacts.
 
