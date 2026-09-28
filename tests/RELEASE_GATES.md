@@ -33,9 +33,9 @@ Every public promotion is fail-closed.
 4. Stage-1 and all trusted release/module reads use one exact immutable commit; stale/cached alias/README/raw-main content cannot override newer live GitHub Production.
 5. Deprecated URL shorteners are unsupported; `share LWAI` returns only the LastWarAI.com installer.
 6. Public-entrypoint failure never mutates LOCAL STATE and existing compatible deployments can retain last-known-good ENGINE.
-7. During .46 compatibility testing, `/modular` is opt-in/noindex, resolves C server-side, returns Stage-1 plus `FIRST_PARTY_SNAPSHOT_BASE`, and does not alter root/install/config.
+7. During .47 ChatGPT compatibility testing, `/modular` is opt-in/noindex-but-followable, resolves C server-side, returns Stage-1 plus `FIRST_PARTY_SNAPSHOT_BASE` and `FIRST_PARTY_RESOURCE_INDEX`, and links every exact-C runtime artifact without altering root/install/config.
 8. `/snapshot/C/<runtime-path>` accepts only exact 40-hex C plus allowlisted runtime paths, is immutable, rejects traversal/disallowed paths before raw retrieval, and never resolves mutable main.
-9. Default modular cutover remains blocked until live deployment plus fresh-host evidence passes, including durable account load -> multi-fact screenshot commit -> fresh runtime recovery.
+9. Default modular cutover remains blocked until live deployment plus fresh ChatGPT evidence passes: page-linked exact-C resource traversal, durable account load -> multi-fact screenshot/direct-update commit -> fresh runtime recovery, and failure/rollback preservation.
 
 ## Required private pre-promotion checks
 - private-identifier/account/provider-reference denylist scan across exact candidate patch/tree;
@@ -111,6 +111,8 @@ Before any release containing Phase-2 Worker changes:
 - root/install/config one-response behavior is proven unchanged;
 - /modular resolves exactly one live Production SHA and returns only Stage-1 plus same-origin exact-SHA snapshot base;
 - /snapshot rejects arbitrary repository browsing, traversal, invalid SHA shapes and disallowed paths before upstream retrieval;
+- every manifest module, required and optional, is exposed as a clickable exact-C link on `/modular`;
+- `/modular` remains absent from About/sitemap/default install discovery while using `noindex, follow` for user-initiated ChatGPT navigation;
 - exact-SHA snapshot responses are immutable and carry auditable commit/path headers;
 - invalid live-ref or Stage-1 sanity fails closed;
 - /modular remains absent from About/sitemap/default install discovery;
