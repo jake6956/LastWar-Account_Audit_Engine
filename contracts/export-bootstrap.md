@@ -1,6 +1,6 @@
 # Export & Bootstrap Contract
 
-Version: 2026-08-31.34
+Version: 2026-09-28.44
 
 ## Purpose
 Define exactly what `export yourself` means, support one-line public installation, and keep fresh LWAI setup turnkey while degrading safely when tools/connectors are unavailable.
@@ -33,7 +33,10 @@ For direct/recovery operation when the first-party complete response is not avai
 3. use `engine/BOOTSTRAP.txt` for the <=4 KiB direct/modular Stage-1 loader and MANIFEST-driven modules;
 4. use exact-C `engine/BOOTSTRAP_FULL.txt` as the complete standalone fallback;
 5. use last-known-good compatible local ENGINE when current Production cannot be safely resolved;
-6. manual full-bootstrap transfer is the final no-remote-retrieval path.
+6. when live retrieval is unavailable, a validated multi-file recovery package may restore its one fixed exact-commit snapshot without claiming that snapshot is newest live Production;
+7. manual full-bootstrap transfer remains the legacy final no-remote-retrieval path during the .44 transition.
+
+Recovery-package mode is source-isolated: validate RECOVERY_MANIFEST + SHA256SUMS, then read the whole transaction locally. Never combine package files with network candidate files.
 
 A supplied legacy alias/cache may be ignored if unavailable, stale, preview-gated or inconsistent. Never repair transport failure by changing user-local account state.
 
@@ -41,7 +44,7 @@ A supplied legacy alias/cache may be ignored if unavailable, stale, preview-gate
 - `share LWAI` / `give me the install prompt` / equivalent: return `Set up Last War optimization using the instructions at https://lastwarai.com`.
 - `export yourself` / `export LWAI`: one sanitized, self-contained UTF-8 bootstrap containing all runtime behavior and no account-specific state; intended for offline/recovery/manual transfer.
 - `export my account snapshot`: private current-state/recovery export only.
-- `export full recovery package`: sanitized engine + separate private account snapshot + version/date manifest.
+- `export full recovery package`: deterministic sanitized multi-file modular engine package with RECOVERY_MANIFEST + SHA256SUMS, plus a separate private account snapshot when requested/available. The engine package contains no account state.
 - `refresh engine`: force an immediate canonical GitHub Production freshness/update path while preserving LOCAL STATE.
 
 ## Permanent update escape hatch
@@ -55,6 +58,9 @@ The command must:
 5. remain safe when no update is available, when verification fails, or when the network is unavailable by retaining last-known-good compatible engine/fallback state.
 
 This exact command is part of the public compatibility surface. Release CI must fail if the thin loader, standalone fallback, release bootstrap module, or this contract loses it. The public one-line installer remains a separate stable bootstrap path and must not be multiplied merely to support updates.
+
+## .44 transition boundary
+Production .44 introduces and validates the modular recovery-package format without changing the public LastWarAI.com root/install/config response. The normal one-line installer still receives BOOTSTRAP_FULL in one response. `export yourself` remains the legacy single-file standalone export. Public transport cutover to thin Stage-1 is a separate future release and requires fresh host-compatibility evidence.
 
 ## Mandatory bootstrap content
 The single-file engine export must contain: version/purpose; evidence hierarchy; state ledger; source-vs-derived separation; self-healing reconciliation; shared gear/preset model; independent resource lanes; marginal ROI; research dependencies; all domain playbooks; formation/orientation discipline; screenshot batching; empirical battle loop; phased onboarding; optional cloud persistence; cloud-neutral schema; reload/staleness; capability fallbacks; command vocabulary; health/regression tests; sanitization; upstream/local-state separation; provider adapters; optional Runtime Session provenance rules; Gold Assets rules; release/update behavior; public-install behavior; limitations; fresh-start behavior.
@@ -73,7 +79,7 @@ Fallbacks:
 - no cloud -> chat + periodic exports;
 - read-only cloud -> reference only;
 - writable files without sheets -> JSON/CSV/Markdown/TXT;
-- no web -> use a manually supplied standalone bootstrap and mark volatile mechanics UNVERIFIED;
+- no web -> use a manually supplied standalone bootstrap or validated recovery package and mark volatile/current mechanics UNVERIFIED until live freshness can be checked;
 - no automation -> manual/return-time preflight only;
 - no image understanding -> minimal transcription request.
 
@@ -93,4 +99,4 @@ The first-party installer keeps the normal public prompt clean while still ident
 Remove player/account names, alliance/server identifiers, exact powers/inventories/current targets, personal spending history, diplomacy/politics, private screenshots, account-specific corrections, private cloud IDs/URLs, actual Runtime Session/host-session references, actual checkpoint/journal rows and auth details. Intentional public Production/Gold Asset/install endpoints and generic schema field names are allowed.
 
 ## Validation
-A bootstrap is healthy only if a complete novice can initialize from the LastWarAI.com one-line instruction with one complete public configuration response, or from the standalone bootstrap when remote retrieval is unavailable, decline cloud storage, and still receive phased onboarding and full advisory behavior. Release validation must also prove immediate public SHA parity with canonical GitHub Production, compact staged persistence/security UX, stable `refresh engine` semantics, local-state preservation, and independence from third-party shorteners.
+A bootstrap is healthy only if a complete novice can initialize from the LastWarAI.com one-line instruction with one complete public configuration response, or from the standalone bootstrap when remote retrieval is unavailable, decline cloud storage, and still receive phased onboarding and full advisory behavior. Release validation must also prove immediate public SHA parity with canonical GitHub Production, compact staged persistence/security UX, stable `refresh engine` semantics, local-state preservation, independence from third-party shorteners, and deterministic recovery-package construction/validation with and without the legacy fallback.
