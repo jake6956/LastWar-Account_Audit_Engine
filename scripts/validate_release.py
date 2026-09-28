@@ -453,7 +453,7 @@ def main() -> None:
         "python scripts/validate_release.py", "python scripts/validate_instruction_budget.py",
         "test_runtime_behavior.py", "test_user_experience_contract.py", "test_infrastructure_boundary.py",
         "test_bootstrap_resolution_contract.py", "test_recovery_package_contract.py", "test_durable_ingestion_contract.py", "test_modular_transport_contract.py",
-        "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "actions/setup-node@v4", "fetch-depth: 0",
+        "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py", "actions/setup-node@v4", "fetch-depth: 0",
     ])
 
     require("full fallback", full, [
