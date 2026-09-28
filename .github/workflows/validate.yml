@@ -30,6 +30,8 @@ jobs:
           node-version: '22'
       - name: Validate opt-in modular transport source
         run: node scripts/validate_modular_transport.mjs
+      - name: Validate deployed opt-in modular transport
+        run: python scripts/validate_live_modular_entrypoint.py
       - name: Validate instruction footprint
         run: python scripts/validate_instruction_budget.py
       - name: Validate release tree
