@@ -44,23 +44,34 @@ assert.equal(root.status,200);
 assert.equal(root.headers.get("X-LWAI-Transport-Version"),"3.1");
 const rootBody = await root.text();
 assert.match(rootBody,/COMPLETE PRODUCTION FALLBACK/);
-assert.match(rootBody,/HOSTNAME TRANSPORT PROBE/);
-assert.match(rootBody,/HOSTNAME_COMPATIBILITY_ENTRY: https:\/\/probe\.lastwarai\.com/);
-assert.match(rootBody,/If and only if the user's current instruction explicitly requests the LWAI hostname transport probe/);
+assert.doesNotMatch(rootBody,/HOSTNAME_COMPATIBILITY_ENTRY/);
+assert.doesNotMatch(rootBody,/HOSTNAME HANDOFF PROBE/);
+
+const handoff = await request("https://handoff.lastwarai.com/");
+assert.equal(handoff.status,200);
+assert.equal(handoff.headers.get("X-LWAI-Commit"),SHA);
+assert.equal(handoff.headers.get("X-LWAI-Transport-Probe"),"hostname-handoff-source");
+assert.equal(handoff.headers.get("X-Robots-Tag"),"noindex, nofollow");
+const handoffBody = await handoff.text();
+assert.match(handoffBody,/LAST WAR AI — HOSTNAME HANDOFF PROBE/);
+assert.match(handoffBody,/STATUS: HANDOFF_READY/);
+assert.match(handoffBody,/HOSTNAME_COMPATIBILITY_ENTRY: https:\/\/probe\.lastwarai\.com/);
+assert.match(handoffBody,new RegExp(`RESOLVED_PRODUCTION_COMMIT: ${SHA}`));
 
 const probe = await request("https://probe.lastwarai.com/");
 assert.equal(probe.status,200);
 assert.equal(probe.headers.get("X-LWAI-Commit"),SHA);
-assert.equal(probe.headers.get("X-LWAI-Transport-Probe"),"hostname-handoff");
+assert.equal(probe.headers.get("X-LWAI-Transport-Probe"),"hostname-handoff-target");
 assert.equal(probe.headers.get("X-Robots-Tag"),"noindex, nofollow");
 const probeBody = await probe.text();
-assert.match(probeBody,/LAST WAR AI — HOSTNAME TRANSPORT PROBE/);
+assert.match(probeBody,/LAST WAR AI — HOSTNAME TRANSPORT PROBE TARGET/);
 assert.match(probeBody,/PROBE_STATUS: REACHED/);
 assert.match(probeBody,new RegExp(`RESOLVED_PRODUCTION_COMMIT: ${SHA}`));
-assert.match(probeBody,/RETURN_ROOT: https:\/\/lastwarai\.com/);
 assert.doesNotMatch(probeBody,/COMPLETE PRODUCTION FALLBACK/);
 
+const handoffPath = await request("https://handoff.lastwarai.com/not-root");
+assert.equal(handoffPath.status,404);
 const probePath = await request("https://probe.lastwarai.com/not-root");
 assert.equal(probePath.status,404);
 
-console.log("PASS: root remains complete fallback and exposes an explicit-intent bare-host handoff to a same-SHA isolated probe origin");
+console.log("PASS: production root is unchanged and one bare probe host exposes a same-SHA page-provided bare-host handoff to a second isolated probe host");
