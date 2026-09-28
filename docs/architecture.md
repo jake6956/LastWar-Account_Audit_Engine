@@ -48,6 +48,13 @@ Search/index results, redirects, README snapshots, mutable raw `main`, public al
 
 Domain logic lives in `engine/modules/domains/*`. Mandatory shared behavior lives in `engine/modules/core/*` and release modules. Phase-specific workflows that are not universally needed live in `engine/modules/flows/*` and activate through MANIFEST intents/system events; provider mechanics remain in adapters. `BOOTSTRAP_FULL.txt` is the complete sanitized standalone/recovery runtime and the source used by LastWarAI.com's single-response initial-install transport.
 
+## Opt-in modular distribution experiment
+Production .46 introduces a non-default modular transport experiment while preserving the supported one-response installer.
+
+`/modular` resolves current Production C server-side and returns Stage-1 plus a same-origin exact-SHA snapshot base. `/snapshot/C/<runtime-path>` transports only allowlisted runtime files from exact C with immutable caching. This lets hosts that can retrieve LastWarAI.com but cannot reliably access GitHub/raw content exercise the real manifest-driven runtime without making BOOTSTRAP_FULL the only installation shape.
+
+The experiment is deliberately undiscovered by default: no About/sitemap/install-prompt link, no root/install/config behavior change, and no default-cutover claim. A later release may change the default only after live opt-in deployment and fresh-host evidence prove startup, failure recovery and .45 durability continuity.
+
 ## Recovery package plane
 Production .44 adds a deterministic sanitized multi-file recovery package around the existing Stage-1 kernel; it does not add another bootstrap implementation. The package carries exact LATEST/MANIFEST/MIGRATIONS, every manifest module, runtime schemas/contracts/assets, RECOVERY_MANIFEST and SHA256SUMS. Package recovery is a fixed exact-commit snapshot with degraded freshness until canonical live GitHub can be checked. One recovery transaction is package-only: package and network candidate bytes are never mixed.
 
@@ -83,7 +90,8 @@ Runtime/release recovery adds: inspect checkpoint intent -> inspect actual durab
 ## Behavior-as-tested-code
 Production CI has four layers:
 
-- **public-entrypoint validation** checks that LastWarAI.com returns one transparent complete sanitized configuration, exposes the resolved SHA, matches live GitHub Production, and is not serving a stale mutable response;
+- **public-entrypoint validation** checks that the supported LastWarAI.com root/config path returns one transparent complete sanitized configuration, exposes the resolved SHA, matches live GitHub Production, and is not serving a stale mutable response;
+- **opt-in modular transport validation** executes the Worker with mocked upstreams and proves exact-SHA Stage-1/snapshot routing, strict runtime-path allowlisting, fail-closed behavior, root compatibility and no default discovery;
 - **release-tree validation** checks identity/version/API/schema parity, module DAG, module byte integrity, migration graph, privacy markers, 4 KiB loader boundary and fallback completeness;
 - **instruction-budget validation** reports Stage-1, mandatory-core, optional-module and complete-fallback growth against explicit budgets;
 - **recovery-package validation** builds the same exact candidate twice for determinism, validates checksums/module integrity/privacy/no-mix structure, proves a modular package works without BOOTSTRAP_FULL, and rejects tampering;
