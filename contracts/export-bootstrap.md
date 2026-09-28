@@ -1,6 +1,6 @@
 # Export & Bootstrap Contract
 
-Version: 2026-09-28.44
+Version: 2026-09-28.46
 
 ## Purpose
 Define exactly what `export yourself` means, support one-line public installation, and keep fresh LWAI setup turnkey while degrading safely when tools/connectors are unavailable.
@@ -61,6 +61,13 @@ This exact command is part of the public compatibility surface. Release CI must 
 
 ## .44 transition boundary
 Production .44 introduces and validates the modular recovery-package format without changing the public LastWarAI.com root/install/config response. The normal one-line installer still receives BOOTSTRAP_FULL in one response. `export yourself` remains the legacy single-file standalone export. Public transport cutover to thin Stage-1 is a separate future release and requires fresh host-compatibility evidence.
+
+## .46 opt-in modular transport boundary
+The default public install remains the one-response LastWarAI.com BOOTSTRAP_FULL path.
+
+For compatibility testing only, `/modular` may return exact-C Stage-1 plus an exact-SHA same-origin `/snapshot/C/` base for MANIFEST/release/module reads. This route is non-default, noindex/nofollow and absent from normal install discovery. A modular transaction pins one C and never mixes snapshot SHAs or snapshot bytes with a different candidate source.
+
+The opt-in path is not considered ready for default use until it has been deployed and the fresh-host compatibility matrix passes, including durable account load -> multi-fact evidence ingestion -> verified commit -> fresh runtime recovery. A later release, not .46, decides whether root/install/config can cut over.
 
 ## Mandatory bootstrap content
 The single-file engine export must contain: version/purpose; evidence hierarchy; state ledger; source-vs-derived separation; self-healing reconciliation; shared gear/preset model; independent resource lanes; marginal ROI; research dependencies; all domain playbooks; formation/orientation discipline; screenshot batching; empirical battle loop; phased onboarding; optional cloud persistence; cloud-neutral schema; reload/staleness; capability fallbacks; command vocabulary; health/regression tests; sanitization; upstream/local-state separation; provider adapters; optional Runtime Session provenance rules; Gold Assets rules; release/update behavior; public-install behavior; limitations; fresh-start behavior.

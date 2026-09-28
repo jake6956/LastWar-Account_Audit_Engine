@@ -22,7 +22,7 @@ REQUIRED_FILES = [
     "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md",
     "contracts/guided-lifecycle-ingestion.md", "contracts/runtime-checkpoint-recovery.md",
     "contracts/user-experience.md", "contracts/bootstrap-resolution.md", "contracts/instruction-budget.json",
-    "contracts/recovery-package.md", "contracts/evidence-ingestion.md",
+    "contracts/recovery-package.md", "contracts/evidence-ingestion.md", "contracts/modular-transport.md",
     "schemas/workspace-schema.md", "schemas/account-registry.schema.json", "schemas/engine-manifest.schema.json",
     "schemas/recovery-package.schema.json",
     "docs/architecture.md", "docs/deployment.md", "docs/quick-install.md", "docs/runtime-recovery.md", "docs/BETA_TESTING.md",
@@ -31,8 +31,8 @@ REQUIRED_FILES = [
     "releases/LATEST.json", "releases/MIGRATIONS.json", "releases/CHANGELOG.md", "tests/RELEASE_GATES.md",
     "tests/reference_runtime.py", "tests/test_runtime_behavior.py", "tests/test_user_experience_contract.py",
     "tests/test_infrastructure_boundary.py", "tests/test_bootstrap_resolution_contract.py",
-    "tests/test_recovery_package_contract.py", "tests/test_durable_ingestion_contract.py",
-    "scripts/validate_instruction_budget.py", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py",
+    "tests/test_recovery_package_contract.py", "tests/test_durable_ingestion_contract.py", "tests/test_modular_transport_contract.py",
+    "scripts/validate_instruction_budget.py", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py",
     ".github/workflows/validate.yml", ".github/CODEOWNERS",
 ]
 
@@ -237,6 +237,7 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
     require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine", "RECOVERY-SNAPSHOT HANDOFF"])
     require("recovery package", read("contracts/recovery-package.md"), ["deterministic", "RECOVERY_MANIFEST.json", "SHA256SUMS", "One recovery transaction uses one source only", "LOCAL STATE"])
     require("evidence ingestion", read("contracts/evidence-ingestion.md"), ["Task relevance must never determine persistence relevance", "RECOVERY_REQUIRED", "verification-read", "active_account_id", "shared GitHub Production"])
+    require("modular transport", read("contracts/modular-transport.md"), ["Default installer remains unchanged", "same-origin-only host", "Default cutover remains blocked", "FIRST_PARTY_SNAPSHOT_BASE", "LOCAL STATE"])
     require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "Deprecated URL shorteners are unsupported"])
     require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, "Deprecated URL shorteners are unsupported", "current-version authority"])
 
@@ -378,6 +379,23 @@ def main() -> None:
     if recovery_schema.get("title") != "LWAI Recovery Package Manifest":
         fail("recovery-package schema identity invalid")
 
+    modular_transport = latest.get("modular_transport") or {}
+    expected_modular_transport = {
+        "phase": "opt_in_compatibility",
+        "opt_in_url": "https://lastwarai.com/modular",
+        "opt_in_alias": "https://lastwarai.com/modular/config.txt",
+        "snapshot_url_template": "https://lastwarai.com/snapshot/{commit}/{runtime_path}",
+        "transport_version": "3.2-modular-optin",
+        "default_cutover": False,
+        "discoverable_by_default": False,
+        "live_deployment_required": True,
+        "fresh_host_evidence_required": True,
+        "last_known_good_version": "2026-09-28.45",
+    }
+    for key, expected in expected_modular_transport.items():
+        if modular_transport.get(key) != expected:
+            fail(f"LATEST modular_transport {key} invalid")
+
     validate_loader_boundary(loader)
     validate_resolution_contract(latest, loader, full, readme)
     validate_storage_security(full)
@@ -434,8 +452,8 @@ def main() -> None:
     require("workflow", workflow, [
         "python scripts/validate_release.py", "python scripts/validate_instruction_budget.py",
         "test_runtime_behavior.py", "test_user_experience_contract.py", "test_infrastructure_boundary.py",
-        "test_bootstrap_resolution_contract.py", "test_recovery_package_contract.py", "test_durable_ingestion_contract.py",
-        "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "fetch-depth: 0",
+        "test_bootstrap_resolution_contract.py", "test_recovery_package_contract.py", "test_durable_ingestion_contract.py", "test_modular_transport_contract.py",
+        "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py", "actions/setup-node@v4", "fetch-depth: 0",
     ])
 
     require("full fallback", full, [

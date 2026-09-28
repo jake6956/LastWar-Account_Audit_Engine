@@ -1,5 +1,17 @@
 # Production Changelog
 
+## 2026-09-28.46
+
+- Added a non-default LastWarAI.com modular transport experiment at `/modular` and `/modular/config.txt`.
+- The opt-in endpoint resolves current GitHub Production server-side, returns exact-C Stage-1, and supplies `FIRST_PARTY_SNAPSHOT_BASE` for same-origin exact-SHA runtime reads.
+- Added immutable `/snapshot/<SHA>/<runtime-path>` transport with a strict runtime-file allowlist, traversal/disallowed-path rejection, exact commit/path response headers, and no mutable-main resolution.
+- Added executable mocked Worker validation covering root compatibility, opt-in Stage-1 delivery, exact-SHA snapshot routing, fail-closed behavior, traversal/path rejection and default-discovery isolation.
+- Added the fresh-host compatibility contract and regression chain requiring durable-account load -> multi-fact screenshot commit -> fresh runtime -> fact recovery before any default transport cutover.
+- `/`, `/install` and `/config.txt` remain the supported one-response BOOTSTRAP_FULL installer. `/modular` is noindex/nofollow and absent from About/sitemap/default install discovery.
+- Engine API `1.0`, workspace schema `2.3`, all LOCAL STATE, module behavior, gameplay/provider behavior and .45 durability-first ingestion semantics are unchanged.
+- This release is not eligible for default cutover based on CI alone; actual opt-in deployment and fresh-host evidence remain required.
+
+
 ## 2026-09-28.45
 
 - Made screenshots, direct account updates and completed evidence batches durability-first account-state transactions when verified writable persistence is active.

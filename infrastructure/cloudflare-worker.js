@@ -13,6 +13,8 @@ const LIVE_REF = `https://api.github.com/repos/${REPOSITORY}/branches/main`;
 const RAW_BASE = `https://raw.githubusercontent.com/${REPOSITORY}`;
 const PUBLIC_ORIGIN = "https://lastwarai.com";
 const CONFIG_URL = `${PUBLIC_ORIGIN}/config.txt`;
+const MODULAR_URL = `${PUBLIC_ORIGIN}/modular`;
+const SNAPSHOT_BASE_URL = `${PUBLIC_ORIGIN}/snapshot`;
 const ABOUT_URL = `${PUBLIC_ORIGIN}/about`;
 const SITEMAP_URL = `${PUBLIC_ORIGIN}/sitemap.xml`;
 
@@ -117,6 +119,89 @@ async function resolveProductionSha() {
   return sha;
 }
 
+function isAllowedSnapshotPath(path) {
+  if (
+    path === "engine/BOOTSTRAP.txt" ||
+    path === "engine/BOOTSTRAP_FULL.txt" ||
+    path === "engine/MANIFEST.json" ||
+    path === "releases/LATEST.json" ||
+    path === "releases/MIGRATIONS.json" ||
+    path === "schemas/engine-manifest.schema.json"
+  ) {
+    return true;
+  }
+
+  if (/^releases\/20\d{2}-\d{2}-\d{2}\.\d+\.json$/.test(path)) {
+    return true;
+  }
+
+  return /^engine\/modules\/[A-Za-z0-9._/-]+\.txt$/.test(path);
+}
+
+function decodeSnapshotPath(encodedPath) {
+  let path;
+
+  try {
+    path = decodeURIComponent(encodedPath);
+  } catch {
+    return null;
+  }
+
+  if (
+    !path ||
+    path.startsWith("/") ||
+    path.includes("\\") ||
+    path.includes("\0") ||
+    path.split("/").some((segment) => !segment || segment === "." || segment === "..") ||
+    !isAllowedSnapshotPath(path)
+  ) {
+    return null;
+  }
+
+  return path;
+}
+
+function contentTypeForSnapshotPath(path) {
+  return path.endsWith(".json")
+    ? "application/json; charset=utf-8"
+    : "text/plain; charset=utf-8";
+}
+
+async function getExactRuntimeFile(sha, path) {
+  const source = `${RAW_BASE}/${sha}/${path}`;
+
+  const response = await fetch(source, {
+    headers: {
+      "User-Agent": "LastWarAI/3.2"
+    },
+    cf: {
+      cacheTtl: 31536000,
+      cacheEverything: true
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Runtime file fetch returned ${response.status}: ${path}`);
+  }
+
+  return response.text();
+}
+
+async function getStage1(sha) {
+  const stage1 = await getExactRuntimeFile(sha, "engine/BOOTSTRAP.txt");
+
+  if (
+    !stage1.includes("LAST WAR ACCOUNT INTELLIGENCE — PRODUCTION BOOTSTRAP") ||
+    !stage1.includes("SANITIZED: YES") ||
+    !stage1.includes("ACCOUNT STATE INCLUDED: NO") ||
+    !stage1.includes("runtime_mode: modular")
+  ) {
+    throw new Error("Stage-1 sanity validation failed");
+  }
+
+  return stage1;
+}
+
 async function getEngine(sha) {
   const source = `${RAW_BASE}/${sha}/engine/BOOTSTRAP_FULL.txt`;
 
@@ -176,6 +261,105 @@ ENGINE API / COMPATIBILITY`;
     /STAGE-0 \/ LIVE PRODUCTION RESOLUTION[\s\S]*?ENGINE API \/ COMPATIBILITY/,
     replacement
   );
+}
+
+async function serveModularConfiguration() {
+  try {
+    const sha = await resolveProductionSha();
+    const stage1 = await getStage1(sha);
+    const snapshotBase = `${SNAPSHOT_BASE_URL}/${sha}/`;
+
+    const header = `LAST WAR AI — OPT-IN MODULAR CONFIGURATION
+
+STATUS: EXPERIMENTAL / NON-DEFAULT TRANSPORT
+
+This endpoint is an opt-in compatibility experiment. It does not replace
+the normal LastWarAI.com root, /install, or /config.txt installer.
+
+Resolved Production commit:
+${sha}
+
+RESOLVED_PRODUCTION_COMMIT: ${sha}
+FIRST_PARTY_SNAPSHOT_BASE: ${snapshotBase}
+
+Use the resolved commit above as C. For every exact-C repository-relative
+runtime file requested by Stage-1, retrieve FIRST_PARTY_SNAPSHOT_BASE plus
+that repository-relative path. Keep the whole startup/update transaction
+on the same C. Never mix snapshot paths or network candidate bytes from
+different commits.
+
+If this modular transport cannot complete safely, do not improvise or
+rewrite LOCAL STATE. Use last-known-good when available or return to the
+normal LastWarAI.com one-response installer.
+
+SANITIZED: YES
+ACCOUNT STATE INCLUDED: NO
+
+--- BEGIN LWAI STAGE-1 ---
+
+`;
+
+    return new Response(header + stage1, {
+      status: 200,
+      headers: {
+        ...mutablePublicHeaders(),
+        "X-Robots-Tag": "noindex, nofollow",
+        "X-LWAI-Commit": sha,
+        "X-LWAI-Transport-Version": "3.2-modular-optin",
+        "X-LWAI-Snapshot-Base": snapshotBase,
+        "ETag": `"lwai-modular-${sha}"`,
+        "Link": `<${PUBLIC_ORIGIN}>; rel="canonical"`
+      }
+    });
+  } catch (error) {
+    return new Response(
+`LAST WAR AI — OPT-IN MODULAR CONFIGURATION
+
+STATUS: TEMPORARILY UNAVAILABLE
+
+The opt-in modular Production bootstrap could not be safely assembled.
+The normal LastWarAI.com installer remains the supported default.
+`,
+      {
+        status: 503,
+        headers: {
+          ...mutablePublicHeaders(),
+          "X-Robots-Tag": "noindex, nofollow"
+        }
+      }
+    );
+  }
+}
+
+async function serveSnapshotFile(sha, path) {
+  try {
+    const body = await getExactRuntimeFile(sha, path);
+
+    return new Response(body, {
+      status: 200,
+      headers: {
+        ...commonHeaders(
+          "public, max-age=31536000, immutable",
+          contentTypeForSnapshotPath(path)
+        ),
+        "X-Robots-Tag": "noindex, nofollow",
+        "X-LWAI-Commit": sha,
+        "X-LWAI-Snapshot-Path": path,
+        "X-LWAI-Transport-Version": "3.2-modular-optin"
+      }
+    });
+  } catch (error) {
+    return new Response(
+      "Requested LWAI snapshot file could not be retrieved.",
+      {
+        status: 502,
+        headers: {
+          ...commonHeaders(),
+          "X-Robots-Tag": "noindex, nofollow"
+        }
+      }
+    );
+  }
 }
 
 async function serveConfiguration() {
@@ -288,6 +472,29 @@ export default {
           "text/html; charset=utf-8"
         )
       });
+    }
+
+    if (url.pathname === "/modular" || url.pathname === "/modular/config.txt") {
+      return serveModularConfiguration();
+    }
+
+    const snapshotMatch = url.pathname.match(/^\/snapshot\/([0-9a-f]{40})\/(.+)$/);
+
+    if (snapshotMatch) {
+      const sha = snapshotMatch[1];
+      const path = decodeSnapshotPath(snapshotMatch[2]);
+
+      if (!path) {
+        return new Response("Not Found", {
+          status: 404,
+          headers: {
+            ...commonHeaders(),
+            "X-Robots-Tag": "noindex, nofollow"
+          }
+        });
+      }
+
+      return serveSnapshotFile(sha, path);
     }
 
     // Keep the old immutable engine URLs functional for compatibility.

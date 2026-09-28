@@ -24,6 +24,14 @@ jobs:
           python-version: '3.12'
       - name: Validate public installer endpoint
         run: python scripts/validate_public_entrypoint.py
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate opt-in modular transport source
+        run: node scripts/validate_modular_transport.mjs
+      - name: Validate deployed opt-in modular transport
+        run: python scripts/validate_live_modular_entrypoint.py
       - name: Validate instruction footprint
         run: python scripts/validate_instruction_budget.py
       - name: Validate release tree
@@ -36,7 +44,7 @@ jobs:
           python scripts/validate_recovery_package.py "/tmp/lwai-recovery-$CANDIDATE_SHA.zip" --expected-commit "$CANDIDATE_SHA"
       - name: Run runtime behavioral regressions
         working-directory: tests
-        run: python -m unittest -v test_runtime_behavior.py test_onboarding_no_dead_air.py test_private_failsafe_contract.py test_product_invariants.py test_update_command_contract.py test_auto_update_controller.py test_user_experience_contract.py test_infrastructure_boundary.py test_bootstrap_resolution_contract.py test_season_intelligence_contract.py test_epistemic_integrity_contract.py test_vs_timing_contract.py test_preferences_contract.py test_code_boss_optimizer_contract.py test_recommendation_preflight_contract.py test_governance_consistency_contract.py test_recovery_package_contract.py test_durable_ingestion_contract.py
+        run: python -m unittest -v test_runtime_behavior.py test_onboarding_no_dead_air.py test_private_failsafe_contract.py test_product_invariants.py test_update_command_contract.py test_auto_update_controller.py test_user_experience_contract.py test_infrastructure_boundary.py test_bootstrap_resolution_contract.py test_season_intelligence_contract.py test_epistemic_integrity_contract.py test_vs_timing_contract.py test_preferences_contract.py test_code_boss_optimizer_contract.py test_recommendation_preflight_contract.py test_governance_consistency_contract.py test_recovery_package_contract.py test_durable_ingestion_contract.py test_modular_transport_contract.py
       - name: Preserve exact validated recovery package
         uses: actions/upload-artifact@v4
         with:

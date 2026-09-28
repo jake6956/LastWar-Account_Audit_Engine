@@ -86,6 +86,26 @@ class InfrastructureBoundaryTests(unittest.TestCase):
             self.assertNotIn("retrieves the public locator", body, path)
             self.assertNotIn("Production `2026-08-29.15`", body, path)
 
+    def test_optin_modular_transport_is_not_default_discovery(self):
+        worker = text("infrastructure/cloudflare-worker.js")
+        self.assertIn('url.pathname === "/modular"', worker)
+        self.assertIn("SNAPSHOT_BASE_URL", worker)
+        self.assertIn("snapshotMatch", worker)
+        self.assertIn("3.2-modular-optin", worker)
+        self.assertIn("noindex, nofollow", worker)
+
+        sitemap_block = worker.split("const SITEMAP =", 1)[1].split("const ABOUT_HTML", 1)[0]
+        about_block = worker.split("const ABOUT_HTML =", 1)[1].split("function commonHeaders", 1)[0]
+        self.assertNotIn("/modular", sitemap_block)
+        self.assertNotIn("/modular", about_block)
+        self.assertNotIn("FIRST_PARTY_SNAPSHOT_BASE", about_block)
+
+        # Default routes remain the one-response BOOTSTRAP_FULL transport.
+        self.assertIn('url.pathname === "/"', worker)
+        self.assertIn('url.pathname === "/install"', worker)
+        self.assertIn('url.pathname === "/config.txt"', worker)
+        self.assertIn("getEngine(sha)", worker)
+
     def test_beta_doc_never_advertises_legacy_shortener(self):
         beta = text("docs/BETA_TESTING.md")
         self.assertNotIn("tinyurl.com/2yxf7f5x", beta)

@@ -1,6 +1,6 @@
 # Bootstrap Resolution Contract
 
-Transport revision: 2026-08-30.29-hotfix
+Transport revision: 2026-09-28.46-optin-modular
 Engine compatibility: unchanged
 
 ## Goal
@@ -57,6 +57,20 @@ The public wrapper must not require a second engine URL fetch and must not conta
 `engine/BOOTSTRAP_FULL.txt` intentionally retains the generic direct-source Stage-0 resolver because it is also the standalone/manual recovery artifact. When LastWarAI.com has already resolved C, the Worker replaces only the Stage-0 discovery section with a transparent statement that this copy was delivered after server-side Production resolution and that the resolved commit may be independently verified.
 
 No account, persistence, gameplay, evidence, continuity, update, or optimization policy is rewritten by the Worker.
+
+## Phase-2 opt-in modular transport
+
+Production .46 may expose a non-default `/modular` endpoint for compatibility testing while leaving `/`, `/install` and `/config.txt` unchanged.
+
+The opt-in Worker resolves live Production C server-side, retrieves exact-C `engine/BOOTSTRAP.txt`, and returns Stage-1 plus:
+- `RESOLVED_PRODUCTION_COMMIT: C`;
+- `FIRST_PARTY_SNAPSHOT_BASE: https://lastwarai.com/snapshot/C/`.
+
+Stage-1 candidate reads may then use the exact-C same-origin snapshot base instead of direct GitHub/raw retrieval. The snapshot path accepts only a strict runtime allowlist and carries the requested commit/path in response headers. It never resolves mutable main and is immutable/cacheable because C is explicit.
+
+The opt-in endpoint is `noindex, nofollow`, is absent from About/sitemap/default install instructions, and is not authorization for default cutover. Failure preserves LOCAL STATE and falls back through normal last-known-good/default installer behavior; never splice snapshot files from different SHAs or mix snapshot bytes with a different network candidate.
+
+Default cutover remains a later separately gated release after live deployment and fresh-host compatibility evidence, including durable account load -> multi-fact evidence commit -> fresh runtime recovery.
 
 ## Compatibility endpoint
 
