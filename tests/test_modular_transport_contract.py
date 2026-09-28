@@ -13,9 +13,11 @@ class ModularTransportCompatibilityTests(unittest.TestCase):
             'url.pathname === "/modular"',
             "SNAPSHOT_BASE_URL",
             "snapshotMatch",
-            "3.2-modular-optin",
+            "3.3-chatgpt-linked-optin",
             "FIRST_PARTY_SNAPSHOT_BASE",
-            "noindex, nofollow",
+            "FIRST_PARTY_RESOURCE_INDEX",
+            "renderModularHtml",
+            "noindex, follow",
         ):
             self.assertIn(token, worker)
         for route in ('url.pathname === "/"', 'url.pathname === "/install"', 'url.pathname === "/config.txt"'):
@@ -25,13 +27,23 @@ class ModularTransportCompatibilityTests(unittest.TestCase):
         contract = (ROOT / "contracts/modular-transport.md").read_text(encoding="utf-8")
         for token in (
             "Default installer remains unchanged",
-            "same-origin-only host",
+            "ChatGPT user-initiated navigation",
+            "page-provided links",
             "partial retrieval",
             "fresh runtime/session",
             "LOCAL STATE",
             "Default cutover remains blocked",
         ):
             self.assertIn(token, contract)
+
+    def test_modular_page_links_every_manifest_module(self):
+        worker = (ROOT / "infrastructure/cloudflare-worker.js").read_text(encoding="utf-8")
+        self.assertIn("manifest.modules.map", worker)
+        self.assertIn("exactSnapshotUrl(sha, path)", worker)
+        self.assertIn("Required module:", worker)
+        self.assertIn("Optional module:", worker)
+        self.assertIn('meta name="robots" content="noindex,follow"', worker)
+        self.assertIn("Do <strong>not</strong> synthesize", worker)
 
     def test_required_durable_account_fresh_runtime_matrix(self):
         # Existing durable account loaded after a modular-style fresh startup.
