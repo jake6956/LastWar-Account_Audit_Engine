@@ -18,6 +18,8 @@ class ModularTransportCompatibilityTests(unittest.TestCase):
             "FIRST_PARTY_RESOURCE_INDEX",
             "renderModularHtml",
             "noindex, follow",
+            "MODULAR_COMPATIBILITY_ENTRY",
+            "If and only if the user's current instruction explicitly requests modular transport/testing",
         ):
             self.assertIn(token, worker)
         for route in ('url.pathname === "/"', 'url.pathname === "/install"', 'url.pathname === "/config.txt"'):
@@ -27,6 +29,7 @@ class ModularTransportCompatibilityTests(unittest.TestCase):
         contract = (ROOT / "contracts/modular-transport.md").read_text(encoding="utf-8")
         for token in (
             "Default installer remains unchanged",
+            "root-provided modular handoff",
             "ChatGPT user-initiated navigation",
             "page-provided links",
             "partial retrieval",
