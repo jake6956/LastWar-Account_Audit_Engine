@@ -190,6 +190,7 @@ calls.length = 0;
 const manifestResponse = await request(`/snapshot/${SHA}/engine/MANIFEST.json`);
 assert.equal(manifestResponse.status, 200);
 assert.equal(manifestResponse.headers.get("X-LWAI-Commit"), SHA);
+assert.equal(manifestResponse.headers.get("X-LWAI-Transport-Version"), "3.3-chatgpt-linked-optin");
 assert.equal(manifestResponse.headers.get("X-LWAI-Snapshot-Path"), "engine/MANIFEST.json");
 assert.match(manifestResponse.headers.get("Cache-Control") || "", /immutable/);
 assert.match(manifestResponse.headers.get("Content-Type") || "", /application\/json/);
@@ -239,7 +240,7 @@ assert.equal((await request("/modular")).status, 503);
 mode = "ok";
 
 console.log(
-  "PASS: opt-in modular Worker preserves default transport, pins one live SHA, " +
-  "serves allowlisted immutable same-origin snapshot files, rejects traversal/disallowed paths, " +
+  "PASS: ChatGPT-linked modular Worker preserves default transport, pins one live SHA, " +
+  "publishes exact-C resource links, serves allowlisted immutable snapshots, rejects traversal/disallowed paths, " +
   "and fails closed without mixing mutable candidate sources"
 );
