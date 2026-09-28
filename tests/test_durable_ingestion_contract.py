@@ -137,7 +137,7 @@ class DurableEvidenceIngestionTests(unittest.TestCase):
             "verification-read",
             "RECOVERY_REQUIRED",
             "active_account_id",
-            "ACCOUNT STATE",
+            "shared GitHub Production",
         ):
             self.assertIn(token, body)
         self.assertNotIn("Jake", body)
