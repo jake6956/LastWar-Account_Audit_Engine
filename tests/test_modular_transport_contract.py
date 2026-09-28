@@ -40,8 +40,8 @@ class ModularTransportCompatibilityTests(unittest.TestCase):
         worker = (ROOT / "infrastructure/cloudflare-worker.js").read_text(encoding="utf-8")
         self.assertIn("manifest.modules.map", worker)
         self.assertIn("exactSnapshotUrl(sha, path)", worker)
-        self.assertIn("Required module:", worker)
-        self.assertIn("Optional module:", worker)
+        self.assertIn('module.required ? "Required" : "Optional"', worker)
+        self.assertIn('module.required ? "required-module" : "optional-module"', worker)
         self.assertIn('meta name="robots" content="noindex,follow"', worker)
         self.assertIn("Do <strong>not</strong> synthesize", worker)
 
