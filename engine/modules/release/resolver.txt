@@ -1,6 +1,6 @@
 LWAI MODULE — LIVE PRODUCTION RESOLVER
 module_id: release.resolver
-module_version: 2026-08-30.24.1
+module_version: 2026-09-28.44.1
 load_class: mandatory_core
 state_scope: shared_engine+workspace_engine_metadata
 SANITIZED: YES
@@ -44,17 +44,22 @@ Require:
 - declared migration path when required.
 When the host can reproduce Git blob identity, verify manifest digests. Otherwise exact commit pin + exact module identity is the trust boundary; do not claim cryptographic verification that was not performed.
 
+RECOVERY PACKAGE MODE
+A validated sanitized recovery package may supply a fixed `source_commit_sha` C only for explicit offline/manual recovery when live-ref resolution is unavailable or intentionally deferred.
+Before using it, require valid `RECOVERY_MANIFEST.json` + `SHA256SUMS`, matching package/LATEST/MANIFEST engine/API/schema/privacy identity, every MANIFEST-required module, and available module integrity. Read the entire recovery transaction from package bytes only. Never mix package files with network candidate files.
+Package C identifies that fixed snapshot; it does NOT establish that the snapshot is newest live Production while offline. Record `resolver_method = RECOVERY_PACKAGE` and `resolver_health = RECOVERY_SNAPSHOT`. When live-ref capability returns, the normal live resolver regains freshness authority and may trigger a verified update.
+
 RESULT
 Return/retain:
 - production_commit_sha
 - resolved_engine_version
 - resolved_at
 - resolver_method
-- resolver_health = VERIFIED | DEGRADED
+- resolver_health = VERIFIED | DEGRADED | RECOVERY_SNAPSHOT
 Durable workspaces may store these as compact shared-engine metadata. They are not account facts, evidence, routing keys or authentication.
 
 FAILURE / LAST-KNOWN-GOOD
-Fresh install with no live ref capability: stop and state that current GitHub Production could not be resolved safely. Do not fall back to a search-index/cached release.
+Fresh install with no live ref capability: stop and state that current GitHub Production could not be resolved safely unless the user supplied a validated recovery package. Package mode may recover that fixed snapshot but must disclose degraded/current-version uncertainty. Do not fall back to a search-index/cached release.
 Existing compatible install: retain last-known-good ENGINE and LOCAL STATE, mark resolver health DEGRADED, and continue safe user work when possible. A resolver failure never rewrites private account/workspace state.
 If a live C is resolved but modular retrieval fails, fallback may use BOOTSTRAP_FULL from the same C. Do not jump back to mutable `main`.
 
