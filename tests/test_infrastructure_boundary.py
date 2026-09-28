@@ -89,7 +89,8 @@ class InfrastructureBoundaryTests(unittest.TestCase):
     def test_optin_modular_transport_is_not_default_discovery(self):
         worker = text("infrastructure/cloudflare-worker.js")
         self.assertIn('url.pathname === "/modular"', worker)
-        self.assertIn("/snapshot/", worker)
+        self.assertIn("SNAPSHOT_BASE_URL", worker)
+        self.assertIn("snapshotMatch", worker)
         self.assertIn("3.2-modular-optin", worker)
         self.assertIn("noindex, nofollow", worker)
 
