@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.48",
+  "engine_version": "2026-09-28.49",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -307,7 +307,7 @@
     },
     {
       "module_id": "domain.gear-heroes-skills-ew",
-      "module_version": "2026-09-25.40.1",
+      "module_version": "2026-09-28.49.1",
       "path": "engine/modules/domains/gear-heroes-skills-ew.txt",
       "load_class": "domain_on_demand",
       "dependencies": [
@@ -338,7 +338,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "99637a2b165556fc5a98e23033d6b2f4e63a1e57"
+        "digest": "e315e49d65154d61322675def45f5bc5978bd61c"
       }
     },
     {
