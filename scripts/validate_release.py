@@ -31,8 +31,13 @@ REQUIRED_FILES = [
     "releases/LATEST.json", "releases/MIGRATIONS.json", "releases/CHANGELOG.md", "tests/RELEASE_GATES.md",
     "tests/reference_runtime.py", "tests/test_runtime_behavior.py", "tests/test_user_experience_contract.py",
     "tests/test_infrastructure_boundary.py", "tests/test_bootstrap_resolution_contract.py",
-    "tests/test_recovery_package_contract.py", "tests/test_durable_ingestion_contract.py", "tests/test_modular_transport_contract.py",
-    "scripts/validate_instruction_budget.py", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py",
+    "tests/test_recovery_package_contract.py", "tests/test_durable_ingestion_contract.py", "tests/test_modular_transport_contract.py", "tests/test_compiled_bootstrap.py",
+    "scripts/validate_instruction_budget.py", "scripts/build_bootstrap_full.py", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py",
+    "engine/standalone/plan.json",
+    "engine/standalone/01-release-bootstrap.txt", "engine/standalone/02-governance-preferences.txt",
+    "engine/standalone/03-state-storage-onboarding.txt", "engine/standalone/04-season-events.txt",
+    "engine/standalone/05-progression-economy.txt", "engine/standalone/06-combat.txt",
+    "engine/standalone/07-routing-startup.txt",
     ".github/workflows/validate.yml", ".github/CODEOWNERS",
 ]
 
@@ -237,7 +242,7 @@ def validate_resolution_contract(latest: dict, loader: str, full: str, readme: s
     require("updater", updater, ["`release.resolver` is the only Production freshness authority", "SAME C", "Never mix commits", "refresh engine", "RECOVERY-SNAPSHOT HANDOFF"])
     require("recovery package", read("contracts/recovery-package.md"), ["deterministic", "RECOVERY_MANIFEST.json", "SHA256SUMS", "One recovery transaction uses one source only", "LOCAL STATE"])
     require("evidence ingestion", read("contracts/evidence-ingestion.md"), ["Task relevance must never determine persistence relevance", "RECOVERY_REQUIRED", "verification-read", "active_account_id", "shared GitHub Production"])
-    require("modular transport", read("contracts/modular-transport.md"), ["Default installer remains unchanged", "same-origin-only host", "Default cutover remains blocked", "FIRST_PARTY_SNAPSHOT_BASE", "LOCAL STATE"])
+    require("modular transport", read("contracts/modular-transport.md"), ["supported ChatGPT installer is one fetch", "one-fetch host", "Default modular cutover is closed", "FIRST_PARTY_SNAPSHOT_BASE", "LOCAL STATE", "compiler output"])
     require("resolution contract", contract, ["Stage 0", "Stage 1", "Pin once", "4 KiB", "first-party", "Deprecated URL shorteners are unsupported"])
     require("release.bootstrap", bootstrap, [PUBLIC_INSTALL_INSTRUCTION, "Deprecated URL shorteners are unsupported", "current-version authority"])
 
@@ -381,20 +386,37 @@ def main() -> None:
 
     modular_transport = latest.get("modular_transport") or {}
     expected_modular_transport = {
-        "phase": "opt_in_compatibility",
+        "phase": "compatibility_only_not_default_candidate",
         "opt_in_url": "https://lastwarai.com/modular",
         "opt_in_alias": "https://lastwarai.com/modular/config.txt",
         "snapshot_url_template": "https://lastwarai.com/snapshot/{commit}/{runtime_path}",
         "transport_version": "3.2-modular-optin",
         "default_cutover": False,
         "discoverable_by_default": False,
-        "live_deployment_required": True,
-        "fresh_host_evidence_required": True,
-        "last_known_good_version": "2026-09-28.45",
+        "live_deployment_required": False,
+        "fresh_host_evidence_required": False,
+        "supported_default_transport": "single_response_root",
+        "chatgpt_host_constraint": "one_initial_user_supplied_bare_origin_fetch",
+        "last_known_good_version": "2026-09-28.46",
     }
     for key, expected in expected_modular_transport.items():
         if modular_transport.get(key) != expected:
             fail(f"LATEST modular_transport {key} invalid")
+
+    compiled = latest.get("compiled_single_response") or {}
+    expected_compiled = {
+        "plan": "engine/standalone/plan.json",
+        "builder": "scripts/build_bootstrap_full.py",
+        "output": "engine/BOOTSTRAP_FULL.txt",
+        "deterministic": True,
+        "generated_artifact": True,
+        "direct_edits_forbidden": True,
+        "supported_chatgpt_transport": "https://lastwarai.com",
+        "host_model": "single_initial_user_supplied_bare_origin_fetch",
+    }
+    for key, expected in expected_compiled.items():
+        if compiled.get(key) != expected:
+            fail(f"LATEST compiled_single_response {key} invalid")
 
     validate_loader_boundary(loader)
     validate_resolution_contract(latest, loader, full, readme)
@@ -452,8 +474,8 @@ def main() -> None:
     require("workflow", workflow, [
         "python scripts/validate_release.py", "python scripts/validate_instruction_budget.py",
         "test_runtime_behavior.py", "test_user_experience_contract.py", "test_infrastructure_boundary.py",
-        "test_bootstrap_resolution_contract.py", "test_recovery_package_contract.py", "test_durable_ingestion_contract.py", "test_modular_transport_contract.py",
-        "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py", "actions/setup-node@v4", "fetch-depth: 0",
+        "test_bootstrap_resolution_contract.py", "test_recovery_package_contract.py", "test_durable_ingestion_contract.py", "test_modular_transport_contract.py", "test_compiled_bootstrap.py",
+        "scripts/build_bootstrap_full.py --check", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py", "actions/setup-node@v4", "fetch-depth: 0",
     ])
 
     require("full fallback", full, [

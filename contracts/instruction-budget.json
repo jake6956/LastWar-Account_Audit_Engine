@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-28.46",
+  "version": "2026-09-28.48",
   "token_estimator": "ceil(utf8_bytes / 4); heuristic only, not a model tokenizer",
   "budgets": {
     "stage1_loader": {

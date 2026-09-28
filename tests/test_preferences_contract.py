@@ -12,6 +12,8 @@ def read(path: str) -> str:
 class PreferenceContractTests(unittest.TestCase):
     def setUp(self):
         self.module = read("engine/modules/core/preferences.txt")
+        self.learning = read("engine/modules/core/preference-learning.txt")
+        self.combined_modules = "\n".join((self.module, self.learning))
         self.contract = read("contracts/preferences.md")
         self.fallback = read("engine/BOOTSTRAP_FULL.txt")
         self.manifest = json.loads(read("engine/MANIFEST.json"))
@@ -19,18 +21,25 @@ class PreferenceContractTests(unittest.TestCase):
         self.latest = json.loads(read("releases/LATEST.json"))
         self.migrations = json.loads(read("releases/MIGRATIONS.json"))
 
-    def test_preferences_module_is_mandatory(self):
+    def test_preference_resolution_shell_is_mandatory_and_learning_is_on_demand(self):
         modules = {m["module_id"]: m for m in self.manifest["modules"]}
         pref = modules["core.preferences"]
+        learning = modules["core.preference-learning"]
         self.assertTrue(pref["required"])
         self.assertEqual(pref["load_class"], "mandatory_core")
         self.assertIn("core.preferences", modules["release.bootstrap"]["dependencies"])
+        self.assertFalse(learning["required"])
+        self.assertEqual(learning["load_class"], "capability_on_demand")
+        self.assertIn("core.preferences", learning["dependencies"])
+        self.assertIn("preference_capture_candidate", learning["activation"]["system_events"])
+        self.assertIn("preference_management_requested", learning["activation"]["system_events"])
+        self.assertIn("preferences", learning["activation"]["intents"])
         self.assertIn("WORKSPACE", self.module)
         self.assertIn("ACCOUNT", self.module)
         self.assertIn("SESSION", self.module)
 
     def test_explicit_preferences_beat_tentative_and_defaults(self):
-        for body in (self.module, self.contract, self.fallback):
+        for body in (self.combined_modules, self.contract, self.fallback):
             self.assertRegex(body, r"(?i)current explicit")
             self.assertRegex(body, r"(?i)tentative")
             self.assertRegex(body, r"(?i)(LWAI default|defaults)")
@@ -58,7 +67,7 @@ class PreferenceContractTests(unittest.TestCase):
             self.assertRegex(lower, r"may not|never override|never:")
 
     def test_preference_user_controls_exist(self):
-        combined = "\n".join((self.module, self.contract, self.fallback)).lower()
+        combined = "\n".join((self.combined_modules, self.contract, self.fallback)).lower()
         for token in (
             "what preferences do you have saved",
             "remember that",

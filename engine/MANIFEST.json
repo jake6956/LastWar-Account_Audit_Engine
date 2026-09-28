@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.46",
+  "engine_version": "2026-09-28.48",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -134,14 +134,14 @@
     },
     {
       "module_id": "core.preferences",
-      "module_version": "2026-09-09.36.1",
+      "module_version": "2026-09-28.48.1",
       "path": "engine/modules/core/preferences.txt",
       "load_class": "mandatory_core",
       "dependencies": [
         "core.persistence",
         "core.accounts"
       ],
-      "state_scope": "shared_engine+workspace_preferences+account_preferences+session_preferences+local_tool_feedback",
+      "state_scope": "shared_engine+preference_resolution+workspace_preferences+account_preferences+session_preferences",
       "required": true,
       "release_min": "2026-08-31.32",
       "engine_api": {
@@ -154,7 +154,51 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "171077409c6128f1481b39800a317b3a6ffdbf7d"
+        "digest": "10fc41284a302328cbc3031d5fbffb8d8030ea65"
+      }
+    },
+    {
+      "module_id": "core.preference-learning",
+      "module_version": "2026-09-28.48.1",
+      "path": "engine/modules/core/preference-learning.txt",
+      "load_class": "capability_on_demand",
+      "dependencies": [
+        "core.preferences",
+        "core.persistence",
+        "core.accounts"
+      ],
+      "state_scope": "preference_learning+workspace_preference_notebook+account_preference_notebook+local_tool_feedback",
+      "required": false,
+      "activation": {
+        "intents": [
+          "preferences",
+          "preference",
+          "remember that",
+          "forget preference",
+          "change preference",
+          "reset preferences",
+          "export preferences",
+          "stop learning preferences",
+          "resume saving preferences"
+        ],
+        "system_events": [
+          "preference_capture_candidate",
+          "preference_persistence_required",
+          "preference_management_requested"
+        ]
+      },
+      "release_min": "2026-09-28.48",
+      "engine_api": {
+        "min": "1.0",
+        "max": "1.0"
+      },
+      "workspace_schema": {
+        "min": "2.3",
+        "max": "2.3"
+      },
+      "integrity": {
+        "algorithm": "git_blob_sha1",
+        "digest": "4e7124ed58a80229321e62c30a5413151f141e48"
       }
     },
     {

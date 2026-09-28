@@ -21,15 +21,16 @@ class ModularTransportCompatibilityTests(unittest.TestCase):
         for route in ('url.pathname === "/"', 'url.pathname === "/install"', 'url.pathname === "/config.txt"'):
             self.assertIn(route, worker)
 
-    def test_contract_blocks_default_cutover_without_fresh_host_evidence(self):
+    def test_contract_closes_default_modular_cutover_for_supported_chatgpt(self):
         contract = (ROOT / "contracts/modular-transport.md").read_text(encoding="utf-8")
         for token in (
-            "Default installer remains unchanged",
-            "same-origin-only host",
-            "partial retrieval",
+            "supported ChatGPT installer is one fetch",
+            "one-fetch host",
+            "Default modular cutover is closed",
+            "FIRST_PARTY_SNAPSHOT_BASE",
             "fresh runtime/session",
             "LOCAL STATE",
-            "Default cutover remains blocked",
+            "compiler output",
         ):
             self.assertIn(token, contract)
 

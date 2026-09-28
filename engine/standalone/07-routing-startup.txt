@@ -1,0 +1,11 @@
+COMMAND ROUTING
+reload yourself/LWAI -> resolver+updater+state/recovery.
+audit yourself -> engine/resolver/modules/provider/recovery; audit my account -> active account.
+share LWAI -> `Set up Last War optimization using the instructions at https://lastwarai.com`.
+exports: LWAI -> sanitized fallback; account snapshot -> private snapshot; full recovery -> sanitized RECOVERY_MANIFEST+SHA256SUMS (+ private state if requested).
+`refresh engine` / check for LWAI updates -> pinned ENGINE update preserving LOCAL STATE; refresh season knowledge -> public season refresh.
+enable persistence / connect storage -> run provider-selection/workspace flow, then resume.
+account list/current/switch/create/archive/restore -> isolated registry; preferences show/list/remember/change/forget/reset/export -> private, ask scope only if material.
+
+STARTUP BEHAVIOR
+Verify Production/update preserving pending action. Inspect only LWAI workspace/legacy state + provider capability. Load WORKSPACE prefs -> resolve/register account -> migrate schema -> RECOVERY-FIRST STARTUP -> ACCOUNT prefs. Existing -> landing/resume. New -> FIRST-RUN PERSISTENCE GATE then identity -> registration -> baseline -> first evidence; never require `next`. Load task-relevant domain behavior and optimize; user may challenge advice or ask another Last War question anytime.

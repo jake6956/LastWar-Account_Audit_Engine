@@ -129,7 +129,7 @@ def validate(path: str, expected_commit: str | None = None) -> dict:
 
     fallback_present = "engine/BOOTSTRAP_FULL.txt" in raw
     if fallback_present != bool(manifest["legacy_fallback_included"]):
-        fail("legacy fallback flag does not match package contents")
+        fail("standalone fallback inclusion flag does not match package contents")
 
     forbidden_prefixes = ("tests/", "infrastructure/", ".git/")
     for name, data in raw.items():

@@ -20,6 +20,17 @@ def git_head() -> str:
 
 
 class RecoveryPackageContractTests(unittest.TestCase):
+    COMPILER_PROVENANCE = {
+        "engine/standalone/plan.json",
+        "engine/standalone/01-release-bootstrap.txt",
+        "engine/standalone/02-governance-preferences.txt",
+        "engine/standalone/03-state-storage-onboarding.txt",
+        "engine/standalone/04-season-events.txt",
+        "engine/standalone/05-progression-economy.txt",
+        "engine/standalone/06-combat.txt",
+        "engine/standalone/07-routing-startup.txt",
+        "scripts/build_bootstrap_full.py",
+    }
     def build(self, output: Path, without_legacy: bool = False) -> None:
         cmd = [
             sys.executable,
@@ -41,6 +52,16 @@ class RecoveryPackageContractTests(unittest.TestCase):
             manifest = validate(str(a), git_head())
             self.assertTrue(manifest["legacy_fallback_included"])
             self.assertEqual(manifest["primary_bootstrap"], "engine/BOOTSTRAP.txt")
+            with zipfile.ZipFile(a) as zf:
+                names = set(zf.namelist())
+                records = {row["path"]: row for row in manifest["files"]}
+            self.assertTrue(self.COMPILER_PROVENANCE.issubset(names))
+            self.assertEqual(records["engine/standalone/plan.json"]["role"], "compiled_fallback_plan")
+            self.assertEqual(records["scripts/build_bootstrap_full.py"]["role"], "compiled_fallback_builder")
+            for path in self.COMPILER_PROVENANCE:
+                if path.startswith("engine/standalone/") and path != "engine/standalone/plan.json":
+                    self.assertEqual(records[path]["role"], "compiled_fallback_capsule")
+            self.assertEqual(records["engine/BOOTSTRAP_FULL.txt"]["role"], "compiled_fallback")
 
     def test_package_can_be_complete_without_legacy_fallback(self):
         with tempfile.TemporaryDirectory() as td:
@@ -51,6 +72,7 @@ class RecoveryPackageContractTests(unittest.TestCase):
             with zipfile.ZipFile(package) as zf:
                 names = set(zf.namelist())
             self.assertNotIn("engine/BOOTSTRAP_FULL.txt", names)
+            self.assertTrue(self.COMPILER_PROVENANCE.issubset(names))
             engine_manifest = json.loads((ROOT / "engine/MANIFEST.json").read_text(encoding="utf-8"))
             for module in engine_manifest["modules"]:
                 self.assertIn(module["path"], names)

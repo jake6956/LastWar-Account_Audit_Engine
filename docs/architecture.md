@@ -13,7 +13,7 @@ GitHub contains everything needed to know how LWAI operates and nothing needed t
 ## Hub and spoke
 
 ### Hub: GitHub Production
-GitHub `main` is the authoritative sanitized engine source. It contains the Stage-1 loader, release metadata, migration graph, module graph, independently versioned modules, schemas, adapters, tests, documentation, release manifests and complete fallback.
+GitHub `main` is the authoritative sanitized engine source. It contains the Stage-1 loader, release metadata, migration graph, module graph, independently versioned modules, schemas, adapters, tests, documentation, release manifests, standalone compiler inputs and the generated complete fallback.
 
 ### Spokes: private deployments
 Each deployment owns its Workspace Registry, immutable account IDs, mutable player identity, account facts, screenshots, balances, battle history, local Corrections, preferences, Audit Sessions, Runtime Checkpoints/Journal and provider-local references. Conversation is cache/interface, not durable authority when a canonical writable store exists.
@@ -46,14 +46,16 @@ Search/index results, redirects, README snapshots, mutable raw `main`, public al
 ## Thin loader boundary
 `engine/BOOTSTRAP.txt` remains intentionally orchestration-only and bounded by CI at 4 KiB for direct GitHub/modular operation and recovery paths. It contains live-ref resolution, pinned-snapshot validation, mandatory-module loading, local-state preservation, update/recovery handoff and fallback. It does not carry provider onboarding or Last War domain playbooks.
 
-Domain logic lives in `engine/modules/domains/*`. Mandatory shared behavior lives in `engine/modules/core/*` and release modules. Phase-specific workflows that are not universally needed live in `engine/modules/flows/*` and activate through MANIFEST intents/system events; provider mechanics remain in adapters. `BOOTSTRAP_FULL.txt` is the complete sanitized standalone/recovery runtime and the source used by LastWarAI.com's single-response initial-install transport.
+Domain logic lives in `engine/modules/domains/*`. Mandatory shared behavior lives in `engine/modules/core/*` and release modules. Phase-specific workflows that are not universally needed live in `engine/modules/flows/*` and activate through MANIFEST intents/system events; provider mechanics remain in adapters. `BOOTSTRAP_FULL.txt` is the complete sanitized standalone/recovery runtime used by LastWarAI.com's single-response initial-install transport. It is generated deterministically from `engine/standalone/plan.json` plus owned compact capsules and MANIFEST identity; it is not hand-maintained as a second runtime source.
 
-## Opt-in modular distribution experiment
-Production .46 introduces a non-default modular transport experiment while preserving the supported one-response installer.
+## ChatGPT transport boundary and compiled one-response runtime
+Fresh ChatGPT compatibility work established a practical one-fetch bootstrap boundary: the initial user-supplied bare LastWarAI origin is reliable, while path/query variants and a page-provided second network hop are not reliable enough to make normal installation depend on them.
 
-`/modular` resolves current Production C server-side and returns Stage-1 plus a same-origin exact-SHA snapshot base. `/snapshot/C/<runtime-path>` transports only allowlisted runtime files from exact C with immutable caching. This lets hosts that can retrieve LastWarAI.com but cannot reliably access GitHub/raw content exercise the real manifest-driven runtime without making BOOTSTRAP_FULL the only installation shape.
+Accordingly, the supported ChatGPT path is the one-response LastWarAI.com root. The existing `/modular` and exact-SHA `/snapshot/C/<runtime-path>` surfaces remain useful compatibility/recovery/diagnostic mechanisms for hosts that can use them, but they are not a pending default-cutover architecture.
 
-The experiment is deliberately undiscovered by default: no About/sitemap/install-prompt link, no root/install/config behavior change, and no default-cutover claim. A later release may change the default only after live opt-in deployment and fresh-host evidence prove startup, failure recovery and .45 durability continuity.
+Canonical authoring remains modular. Production .48 compiles the complete one-response runtime deterministically from seven owned standalone capsules plus MANIFEST identity. `scripts/build_bootstrap_full.py --check` must reproduce checked-in `engine/BOOTSTRAP_FULL.txt` byte-for-byte. Module changes are fingerprinted in `engine/standalone/plan.json`, forcing explicit review of the compact projection instead of allowing fallback prose to drift independently.
+
+This architecture separates authoring modularity from host transport constraints: features grow in modules; the supported fresh-install artifact remains one bounded generated response.
 
 ## Recovery package plane
 Production .44 adds a deterministic sanitized multi-file recovery package around the existing Stage-1 kernel; it does not add another bootstrap implementation. The package carries exact LATEST/MANIFEST/MIGRATIONS, every manifest module, runtime schemas/contracts/assets, RECOVERY_MANIFEST and SHA256SUMS. Package recovery is a fixed exact-commit snapshot with degraded freshness until canonical live GitHub can be checked. One recovery transaction is package-only: package and network candidate bytes are never mixed.
@@ -91,7 +93,8 @@ Runtime/release recovery adds: inspect checkpoint intent -> inspect actual durab
 Production CI has four layers:
 
 - **public-entrypoint validation** checks that the supported LastWarAI.com root/config path returns one transparent complete sanitized configuration, exposes the resolved SHA, matches live GitHub Production, and is not serving a stale mutable response;
-- **opt-in modular transport validation** executes the Worker with mocked upstreams and proves exact-SHA Stage-1/snapshot routing, strict runtime-path allowlisting, fail-closed behavior, root compatibility and no default discovery;
+- **opt-in modular compatibility validation** executes the Worker with mocked upstreams and proves exact-SHA Stage-1/snapshot routing, strict runtime-path allowlisting, fail-closed behavior and root compatibility; these routes are not the supported ChatGPT default;
+- **compiled single-response validation** regenerates `BOOTSTRAP_FULL.txt` from the standalone plan/capsules and fails on any byte mismatch or stale source-module fingerprint;
 - **release-tree validation** checks identity/version/API/schema parity, module DAG, module byte integrity, migration graph, privacy markers, 4 KiB loader boundary and fallback completeness;
 - **instruction-budget validation** reports Stage-1, mandatory-core, optional-module and complete-fallback growth against explicit budgets;
 - **recovery-package validation** builds the same exact candidate twice for determinism, validates checksums/module integrity/privacy/no-mix structure, proves a modular package works without BOOTSTRAP_FULL, and rejects tampering;
