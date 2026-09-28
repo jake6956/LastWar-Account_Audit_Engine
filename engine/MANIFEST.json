@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.44",
+  "engine_version": "2026-09-28.45",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -13,7 +13,7 @@
   "modules": [
     {
       "module_id": "core.operating",
-      "module_version": "2026-09-25.42.1",
+      "module_version": "2026-09-28.45.1",
       "path": "engine/modules/core/operating.txt",
       "load_class": "mandatory_core",
       "dependencies": [],
@@ -30,7 +30,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "685b34797825b7baf1fe56c71369819e54d5baf9"
+        "digest": "e5cb05701601301b3b4b1f2fa31fbc80a9f1773d"
       }
     },
     {
@@ -59,7 +59,7 @@
     },
     {
       "module_id": "core.persistence",
-      "module_version": "2026-09-28.43.1",
+      "module_version": "2026-09-28.45.1",
       "path": "engine/modules/core/persistence.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -78,7 +78,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "e79e3c13d1940c5f8dcc487b275c3077a05b2317"
+        "digest": "b798fba865f19cbec5bf60fb2b4d6412f1b2c585"
       }
     },
     {
@@ -108,7 +108,7 @@
     },
     {
       "module_id": "core.state-freshness",
-      "module_version": "2026-09-09.36.2",
+      "module_version": "2026-09-28.45.1",
       "path": "engine/modules/core/state-freshness.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -129,7 +129,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "42f58af7cff54274ab79b1d4c31ae3311c3ff081"
+        "digest": "4efb82ba44751b35d6cb4167b8ba9fb7dc40cfba"
       }
     },
     {
@@ -159,7 +159,7 @@
     },
     {
       "module_id": "core.guidance",
-      "module_version": "2026-09-28.43.1",
+      "module_version": "2026-09-28.45.1",
       "path": "engine/modules/core/guidance.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -180,7 +180,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "1377c9ff84f2853bb14a05a8599e378fac282d50"
+        "digest": "29bde99dedd188e765aeb07ef52dad9ff83d3d6d"
       }
     },
     {
