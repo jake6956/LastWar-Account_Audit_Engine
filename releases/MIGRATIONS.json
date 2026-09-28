@@ -667,6 +667,20 @@
         "test_shared_gear_cardinality_prevents_double_allocation"
       ],
       "notes": "Adds physical gear inventory cardinality checks across presets."
+    },
+    {
+      "from": "2026-09-28.49",
+      "to": "2026-09-28.50",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_gear_screenshot_rarity",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_gear_screenshot_rarity_uses_background_not_promotion_pips"
+      ],
+      "notes": "Separates gear-card rarity classification from promotion progress; no workspace/account schema change."
     }
   ]
 }
