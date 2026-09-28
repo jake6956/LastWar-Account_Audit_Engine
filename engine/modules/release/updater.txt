@@ -1,6 +1,6 @@
 LWAI MODULE — AUTOMATIC ENGINE UPDATER
 module_id: release.updater
-module_version: 2026-08-30.24.1
+module_version: 2026-09-28.44.1
 load_class: mandatory_core
 state_scope: shared_engine+workspace_engine_metadata
 SANITIZED: YES
@@ -33,7 +33,7 @@ Durable writable workspaces may store compact shared-engine metadata:
 - resolver_method / resolver_health
 - update_policy / update_health
 - optional compact last_update_error_summary
-These values are operational metadata, not account evidence or routing state. Session-only equivalents are ephemeral.
+These values are operational metadata, not account evidence or routing state. `resolver_health` may be `RECOVERY_SNAPSHOT` when the engine was restored from a validated offline package whose live-current status is not yet verified. Session-only equivalents are ephemeral.
 
 AUTOMATIC UPDATE TRANSACTION
 At a trigger:
@@ -46,13 +46,16 @@ At a trigger:
 7. Health-check the pinned candidate graph before activation.
 8. Atomically adopt the verified engine at C, update compact metadata, then resume the user's original requested action.
 
+RECOVERY-SNAPSHOT HANDOFF
+A validated recovery package can restore a fixed engine snapshot without live GitHub access, but it never becomes freshness authority. Preserve its installed engine/source identity and LOCAL STATE. When live-ref capability becomes available, perform the ordinary resolver/update transaction before claiming current Production; a newer verified Production may then replace the recovered ENGINE atomically. A failed live check leaves the recovered compatible engine intact.
+
 FRIENDLY UPDATE UX
 No-op is silent. When useful say `Checking for updates…`; after a real successful update use at most `LWAI updated successfully.` and immediately continue the original task. Keep URLs, commit SHAs, manifests, hashes, migration traces and module lists inside `audit yourself`, debug, or actionable recovery detail.
 
 FAILURE / ROLLBACK
 Live-ref failure, identity/privacy/API/schema/migration/integrity/retrieval failure, or failed health check never partially activates a candidate and never alters LOCAL STATE.
 Existing compatible deployments retain last-known-good ENGINE and may continue safe requested work; report degraded freshness only when materially relevant. If compatibility is insufficient for the requested operation, fail closed.
-Fresh installation is governed by Stage-0/BOOTSTRAP: unresolved live Production stops rather than loading a cached older engine.
+Fresh installation is governed by Stage-0/BOOTSTRAP: unresolved live Production stops rather than loading a cached older engine unless explicit validated recovery-package mode is being used. Recovery-package mode restores its fixed snapshot with degraded freshness until live verification succeeds.
 
 MANUAL BREAK-GLASS
 `refresh engine` is a permanent backwards-compatible public command. It forces `release.resolver` + the same pinned update transaction while preserving LOCAL STATE. `check for LWAI updates` is an alias.
