@@ -567,6 +567,23 @@
         "test_confirmed_defect_does_not_require_followup_fix_request"
       ],
       "notes": "Preserves all LOCAL STATE while making confirmed LWAI errors self-documenting/self-healing and treating visible tech-tree terminal topology as direct structural evidence."
+    },
+    {
+      "from": "2026-09-25.42",
+      "to": "2026-09-28.43",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_onboarding_flow_modularization",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_stage1_loader_is_small_orchestration_only",
+        "test_first_run_cloud_question_is_compact_and_staged",
+        "test_production_continuity_and_onboarding_modules_split_without_losing_guards",
+        "test_manifest_loads_expert_continuity_module_mandatorily"
+      ],
+      "notes": "Preserves all LOCAL STATE while moving phase-specific onboarding/persistence orchestration into manifest-activated flow.onboarding. Mandatory core retains account isolation, persistence/recovery, evidence and no-dead-air invariants; adapters.storage retains provider mechanics. No workspace/account schema, gameplay, Stage-1 or Cloudflare transport change."
     }
   ]
 }
