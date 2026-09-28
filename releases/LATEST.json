@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.45",
+  "engine_version": "2026-09-28.46",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -21,18 +21,18 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "mutable_source_urls_are_authority": false,
-  "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA; explicit offline recovery packages are fixed exact-commit local snapshots and never current-version authority",
+  "candidate_read_policy": "normal LastWarAI.com install still resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; opt-in /modular resolves one live SHA and uses same-origin exact-SHA /snapshot reads; direct modular reads pin to one SHA; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
-    "from": "2026-09-28.44",
-    "type": "engine_only_durability_first_evidence_ingestion",
+    "from": "2026-09-28.45",
+    "type": "transport_only_optin_same_origin_modular_path",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Makes screenshot/direct account evidence durability-first and transactionally coherent. Every clear supported fact is harvested independent of task focus and verified across canonical state/history/cache/health/update metadata before durable commit. Partial writes remain recoverable. Public transport, provider selection, gameplay logic, Engine API and workspace schema are unchanged."
+    "notes": "Adds a non-default same-origin modular transport experiment at /modular plus immutable allowlisted /snapshot/<SHA>/<runtime-path> proxying. Root/install/config remain the supported one-response BOOTSTRAP_FULL installer. No module behavior, account state, schema or gameplay changes."
   },
-  "notes": "Correctness release for Issue #71 / OO-019. Direct evidence ingestion now follows an observe -> persist -> reconcile -> verify transaction with task-independent fact harvesting, coherent durable surfaces, verification-before-commit and RECOVERY_REQUIRED partial-failure handling. LastWarAI.com transport and .44 recovery architecture remain unchanged.",
+  "notes": "OO-018 phase 2 compatibility candidate: additive opt-in modular LastWarAI.com transport with exact-SHA same-origin runtime snapshots and CI/mock host validation. Default root/install/config transport remains unchanged; live deployment and fresh-host evidence are required before any future cutover.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",
@@ -42,5 +42,17 @@
     "public_transport_cutover": false,
     "sanitized": true,
     "account_state_included": false
+  },
+  "modular_transport": {
+    "phase": "opt_in_compatibility",
+    "opt_in_url": "https://lastwarai.com/modular",
+    "opt_in_alias": "https://lastwarai.com/modular/config.txt",
+    "snapshot_url_template": "https://lastwarai.com/snapshot/{commit}/{runtime_path}",
+    "transport_version": "3.2-modular-optin",
+    "default_cutover": false,
+    "discoverable_by_default": false,
+    "live_deployment_required": true,
+    "fresh_host_evidence_required": true,
+    "last_known_good_version": "2026-09-28.45"
   }
 }
