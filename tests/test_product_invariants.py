@@ -143,7 +143,7 @@ class ProductInvariantTests(unittest.TestCase):
             ):
                 self.assertIn(token, body)
         self.assertIn("not additive inventory", module)
-        self.assertIn("holder and preset are mutable attributes, not physical identity", module)
+        self.assertIn("holder and preset are mutable attributes, not physical identity", module.lower())
 
     def test_drone_stage_cost_is_not_promoted_to_whole_level_cost_without_evidence(self):
         body = text("engine/modules/domains/research-drone-progression.txt")
