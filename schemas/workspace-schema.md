@@ -118,6 +118,13 @@ Every managed account has an isolated canonical database/logical namespace. Muta
 - Archive is reversible and preserves immutable account_id/history.
 - Runtime or host session provenance never changes account routing.
 
+## Direct-evidence commit rules
+- A screenshot/direct account update is first harvested for every clear supported account fact before task/answer filtering.
+- With verified writable storage, one account-scoped ingestion transaction reconciles canonical facts, Change Log/history, affected Hot Cache, State Health/freshness and applicable account/workspace last_updated metadata.
+- State class controls retention/reuse semantics; it does not decide whether a clear supported direct fact is persisted.
+- Verification precedes COMMITTED. Partial multi-surface failure remains RECOVERY_REQUIRED/incomplete and recovery resumes from actual durable state without replaying verified writes.
+- Ambiguous/unreadable observations are not assigned invented labels; screenshot bytes need not be retained when structured facts have been captured.
+
 ## Data rules
 - Canonical/observed state and derived recommendations are separate.
 - Consequential canonical facts carry source/confidence.
