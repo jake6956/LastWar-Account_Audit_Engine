@@ -358,6 +358,25 @@ def main() -> None:
         if latest.get(key) != expected:
             fail(f"LATEST {key} invalid")
 
+    recovery = latest.get("recovery_package") or {}
+    expected_recovery = {
+        "format_version": "1.0",
+        "builder": "scripts/build_recovery_package.py",
+        "validator": "scripts/validate_recovery_package.py",
+        "primary_bootstrap": "engine/BOOTSTRAP.txt",
+        "legacy_fallback_included_by_default": True,
+        "public_transport_cutover": False,
+        "sanitized": True,
+        "account_state_included": False,
+    }
+    for key, expected in expected_recovery.items():
+        if recovery.get(key) != expected:
+            fail(f"LATEST recovery_package {key} invalid")
+
+    recovery_schema = read_json("schemas/recovery-package.schema.json")
+    if recovery_schema.get("title") != "LWAI Recovery Package Manifest":
+        fail("recovery-package schema identity invalid")
+
     validate_loader_boundary(loader)
     validate_resolution_contract(latest, loader, full, readme)
     validate_storage_security(full)
