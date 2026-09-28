@@ -173,7 +173,7 @@ async function getExactRuntimeFile(sha, path) {
 
   const response = await fetch(source, {
     headers: {
-      "User-Agent": "LastWarAI/3.2"
+      "User-Agent": "LastWarAI/3.3"
     },
     cf: {
       cacheTtl: 31536000,
@@ -484,7 +484,7 @@ async function serveSnapshotFile(sha, path) {
         "X-Robots-Tag": "noindex, nofollow",
         "X-LWAI-Commit": sha,
         "X-LWAI-Snapshot-Path": path,
-        "X-LWAI-Transport-Version": "3.2-modular-optin"
+        "X-LWAI-Transport-Version": MODULAR_TRANSPORT_VERSION
       }
     });
   } catch (error) {
