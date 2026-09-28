@@ -30,7 +30,7 @@ class ModularTransportCompatibilityTests(unittest.TestCase):
         for token in (
             "Default installer remains unchanged",
             "root-provided modular handoff",
-            "ChatGPT user-initiated navigation",
+            "ChatGPT root-to-modular navigation",
             "page-provided links",
             "partial retrieval",
             "fresh runtime/session",
