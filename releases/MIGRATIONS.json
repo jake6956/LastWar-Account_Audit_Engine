@@ -584,6 +584,23 @@
         "test_manifest_loads_expert_continuity_module_mandatorily"
       ],
       "notes": "Preserves all LOCAL STATE while moving phase-specific onboarding/persistence orchestration into manifest-activated flow.onboarding. Mandatory core retains account isolation, persistence/recovery, evidence and no-dead-air invariants; adapters.storage retains provider mechanics. No workspace/account schema, gameplay, Stage-1 or Cloudflare transport change."
+    },
+    {
+      "from": "2026-09-28.43",
+      "to": "2026-09-28.44",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_deterministic_recovery_package",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_recovery_package_is_deterministic_and_valid",
+        "test_package_can_be_complete_without_legacy_fallback",
+        "test_tampered_payload_fails_validation",
+        "test_recovery_package_is_fixed_snapshot_and_never_mixed_with_network_candidate"
+      ],
+      "notes": "Adds a deterministic sanitized modular recovery package and explicit RECOVERY_SNAPSHOT/no-mix behavior. The public one-response installer remains BOOTSTRAP_FULL in this release. Engine API 1.0, workspace schema 2.3 and all LOCAL STATE are preserved."
     }
   ]
 }
