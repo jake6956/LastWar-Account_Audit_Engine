@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.43",
+  "engine_version": "2026-09-28.44",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -21,16 +21,26 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "mutable_source_urls_are_authority": false,
-  "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA",
+  "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA; explicit offline recovery packages are fixed exact-commit local snapshots and never current-version authority",
   "migration": {
-    "from": "2026-09-25.42",
-    "type": "engine_only_onboarding_flow_modularization",
+    "from": "2026-09-28.43",
+    "type": "engine_only_deterministic_recovery_package",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Preserves all LOCAL STATE while moving phase-specific new-user/persistence workflow out of always-loaded mandatory core into manifest-activated flow.onboarding. Mandatory account/persistence/guidance/continuity invariants remain loaded; adapters.storage remains the provider-mechanics owner. No gameplay, workspace/account schema, Stage-1 or Cloudflare transport behavior changes."
+    "notes": "Adds deterministic sanitized multi-file recovery packaging and fixed-snapshot offline recovery semantics. LastWarAI.com continues serving exact-commit BOOTSTRAP_FULL in one response; Stage-1, account schema, gameplay behavior, provider behavior and LOCAL STATE remain compatible."
   },
-  "notes": "Conservative mandatory-core modularization for onboarding/persistence workflow. Engine API 1.0 and workspace schema 2.3 unchanged; all LOCAL STATE preserved; current single-response LastWarAI.com fallback semantics preserved."
+  "notes": "Additive recovery architecture release: deterministic modular recovery package, checksum/integrity validation, no-mix offline snapshot semantics, and CI-preserved package artifacts. Public LastWarAI.com single-response BOOTSTRAP_FULL transport is intentionally unchanged.",
+  "recovery_package": {
+    "format_version": "1.0",
+    "builder": "scripts/build_recovery_package.py",
+    "validator": "scripts/validate_recovery_package.py",
+    "primary_bootstrap": "engine/BOOTSTRAP.txt",
+    "legacy_fallback_included_by_default": true,
+    "public_transport_cutover": false,
+    "sanitized": true,
+    "account_state_included": false
+  }
 }
