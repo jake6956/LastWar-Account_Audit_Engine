@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.44",
+  "engine_version": "2026-09-28.45",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -23,16 +23,16 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal LastWarAI.com install resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; direct/modular candidate reads pin to one resolved live main SHA; explicit offline recovery packages are fixed exact-commit local snapshots and never current-version authority",
   "migration": {
-    "from": "2026-09-28.43",
-    "type": "engine_only_deterministic_recovery_package",
+    "from": "2026-09-28.44",
+    "type": "engine_only_durability_first_evidence_ingestion",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Adds deterministic sanitized multi-file recovery packaging and fixed-snapshot offline recovery semantics. LastWarAI.com continues serving exact-commit BOOTSTRAP_FULL in one response; Stage-1, account schema, gameplay behavior, provider behavior and LOCAL STATE remain compatible."
+    "notes": "Makes screenshot/direct account evidence durability-first and transactionally coherent. Every clear supported fact is harvested independent of task focus and verified across canonical state/history/cache/health/update metadata before durable commit. Partial writes remain recoverable. Public transport, provider selection, gameplay logic, Engine API and workspace schema are unchanged."
   },
-  "notes": "Additive recovery architecture release: deterministic modular recovery package, checksum/integrity validation, no-mix offline snapshot semantics, and CI-preserved package artifacts. Public LastWarAI.com single-response BOOTSTRAP_FULL transport is intentionally unchanged.",
+  "notes": "Correctness release for Issue #71 / OO-019. Direct evidence ingestion now follows an observe -> persist -> reconcile -> verify transaction with task-independent fact harvesting, coherent durable surfaces, verification-before-commit and RECOVERY_REQUIRED partial-failure handling. LastWarAI.com transport and .44 recovery architecture remain unchanged.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",
