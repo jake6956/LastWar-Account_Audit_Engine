@@ -41,7 +41,10 @@
     "legacy_fallback_included_by_default": true,
     "public_transport_cutover": false,
     "sanitized": true,
-    "account_state_included": false
+    "account_state_included": false,
+    "standalone_compiler_provenance_included": true,
+    "compiled_plan": "engine/standalone/plan.json",
+    "compiled_builder": "scripts/build_bootstrap_full.py"
   },
   "modular_transport": {
     "phase": "compatibility_only_not_default_candidate",
