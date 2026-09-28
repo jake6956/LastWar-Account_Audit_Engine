@@ -91,14 +91,15 @@ class InfrastructureBoundaryTests(unittest.TestCase):
         self.assertIn('url.pathname === "/modular"', worker)
         self.assertIn("SNAPSHOT_BASE_URL", worker)
         self.assertIn("snapshotMatch", worker)
-        self.assertIn("3.2-modular-optin", worker)
-        self.assertIn("noindex, nofollow", worker)
+        self.assertIn("3.3-chatgpt-linked-optin", worker)
+        self.assertIn("noindex, follow", worker)
 
         sitemap_block = worker.split("const SITEMAP =", 1)[1].split("const ABOUT_HTML", 1)[0]
         about_block = worker.split("const ABOUT_HTML =", 1)[1].split("function commonHeaders", 1)[0]
         self.assertNotIn("/modular", sitemap_block)
         self.assertNotIn("/modular", about_block)
         self.assertNotIn("FIRST_PARTY_SNAPSHOT_BASE", about_block)
+        self.assertNotIn("FIRST_PARTY_RESOURCE_INDEX", about_block)
 
         # Default routes remain the one-response BOOTSTRAP_FULL transport.
         self.assertIn('url.pathname === "/"', worker)
