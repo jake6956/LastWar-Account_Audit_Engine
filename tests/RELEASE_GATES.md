@@ -8,8 +8,8 @@ Every public promotion is fail-closed.
 - manifests assert `sanitized=true` and `account_state_included=false`;
 - preferred public installer is the first-party `https://lastwarai.com` endpoint and the exact one-line instruction is synchronized across current docs/runtime metadata;
 - deprecated URL shorteners are unsupported and absent from active runtime/current release metadata; historical release records may retain them only as history;
-- live first-party Stage-0 endpoint returns HTTP 200 plaintext, sanitized/version-neutral locator content, the canonical GitHub live-ref URL, `commit.sha`, and exact-commit `engine/BOOTSTRAP.txt` handoff;
-- public Stage-0 transport is explicitly non-authoritative for current version; current Production comes only from live GitHub `main` commit.sha;
+- supported LastWarAI.com root/config endpoints return HTTP 200 plaintext, the complete sanitized exact-commit BOOTSTRAP_FULL configuration, current `X-LWAI-Commit`, strong no-store headers and live GitHub Production parity;
+- first-party transport remains delivery infrastructure rather than version authority; current Production comes from live GitHub `main` commit.sha;
 - module graph dependencies resolve, contain no cycles and required modules are marked required;
 - every module self-identifies with exact `module_id` / `module_version` and sanitization headers;
 - every module declares engine API/workspace schema compatibility that includes current Production;
@@ -28,13 +28,14 @@ Every public promotion is fail-closed.
 
 ## Installer acceptance tests
 1. Fresh user prompt is exactly `Set up Last War optimization using the instructions at https://lastwarai.com`.
-2. `https://lastwarai.com` returns the small plaintext Stage-0 locator, not a redirect/interstitial or full account engine.
-3. Locator includes no engine version and no private/account state.
-4. Locator instructs the host to resolve `https://api.github.com/repos/jake6956/LastWar-Account_Audit_Engine/branches/main` and use current `commit.sha`.
-5. Stage-1 and all trusted release/module reads use one exact immutable commit.
-6. Stale/cached alias/README/raw-main content cannot override a newer live GitHub Production identity.
-7. Deprecated URL shorteners are unsupported; `share LWAI` returns only the LastWarAI.com installer.
-8. Public-entrypoint failure never mutates LOCAL STATE and existing compatible deployments can retain last-known-good ENGINE.
+2. `https://lastwarai.com`, `/install` and `/config.txt` remain the supported default one-response BOOTSTRAP_FULL transport until an explicitly promoted cutover release.
+3. Root/config expose current `X-LWAI-Commit`, sanitized/no-account-state identity, strong mutable no-cache headers and exact live-GitHub Production parity.
+4. Stage-1 and all trusted release/module reads use one exact immutable commit; stale/cached alias/README/raw-main content cannot override newer live GitHub Production.
+5. Deprecated URL shorteners are unsupported; `share LWAI` returns only the LastWarAI.com installer.
+6. Public-entrypoint failure never mutates LOCAL STATE and existing compatible deployments can retain last-known-good ENGINE.
+7. During .46 compatibility testing, `/modular` is opt-in/noindex, resolves C server-side, returns Stage-1 plus `FIRST_PARTY_SNAPSHOT_BASE`, and does not alter root/install/config.
+8. `/snapshot/C/<runtime-path>` accepts only exact 40-hex C plus allowlisted runtime paths, is immutable, rejects traversal/disallowed paths before raw retrieval, and never resolves mutable main.
+9. Default modular cutover remains blocked until live deployment plus fresh-host evidence passes, including durable account load -> multi-fact screenshot commit -> fresh runtime recovery.
 
 ## Required private pre-promotion checks
 - private-identifier/account/provider-reference denylist scan across exact candidate patch/tree;
@@ -102,3 +103,16 @@ Every candidate that changes account ingestion/persistence must prove:
 - ambiguous observations are not assigned invented labels;
 - active-account isolation and sanitized distribution boundaries remain intact;
 - standalone fallback preserves equivalent behavior.
+
+
+## Opt-in modular transport gate
+Before any release containing Phase-2 Worker changes:
+- actual Worker source is executed under mocked upstreams in CI;
+- root/install/config one-response behavior is proven unchanged;
+- /modular resolves exactly one live Production SHA and returns only Stage-1 plus same-origin exact-SHA snapshot base;
+- /snapshot rejects arbitrary repository browsing, traversal, invalid SHA shapes and disallowed paths before upstream retrieval;
+- exact-SHA snapshot responses are immutable and carry auditable commit/path headers;
+- invalid live-ref or Stage-1 sanity fails closed;
+- /modular remains absent from About/sitemap/default install discovery;
+- .45 durability continuity is tested across a fresh runtime;
+- a green CI candidate is not sufficient for default cutover: live opt-in deployment and supported-host compatibility evidence are separate gates.
