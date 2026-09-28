@@ -1,6 +1,6 @@
 # Bootstrap Resolution Contract
 
-Transport revision: 2026-09-28.46-optin-modular
+Transport revision: 2026-09-28.48-compiled-one-fetch
 Engine compatibility: unchanged
 
 ## Goal
@@ -58,19 +58,13 @@ The public wrapper must not require a second engine URL fetch and must not conta
 
 No account, persistence, gameplay, evidence, continuity, update, or optimization policy is rewritten by the Worker.
 
-## Phase-2 opt-in modular transport
+## ChatGPT one-fetch transport conclusion
 
-Production .46 may expose a non-default `/modular` endpoint for compatibility testing while leaving `/`, `/install` and `/config.txt` unchanged.
+Production .48 treats the LastWarAI.com one-response root as the supported ChatGPT bootstrap. Fresh-host testing showed that the initial user-supplied bare origin is reliable while path/query variants and a page-provided second network hop are not reliable enough to make normal installation depend on them.
 
-The opt-in Worker resolves live Production C server-side, retrieves exact-C `engine/BOOTSTRAP.txt`, and returns Stage-1 plus:
-- `RESOLVED_PRODUCTION_COMMIT: C`;
-- `FIRST_PARTY_SNAPSHOT_BASE: https://lastwarai.com/snapshot/C/`.
+Existing `/modular` and exact-SHA `/snapshot/C/` routes remain non-default compatibility/recovery/diagnostic surfaces. They preserve one-C pinning, allowlisting, no-mix and LOCAL STATE safety, but they are not a pending default-cutover architecture for ChatGPT.
 
-Stage-1 candidate reads may then use the exact-C same-origin snapshot base instead of direct GitHub/raw retrieval. The snapshot path accepts only a strict runtime allowlist and carries the requested commit/path in response headers. It never resolves mutable main and is immutable/cacheable because C is explicit.
-
-The opt-in endpoint is `noindex, nofollow`, is absent from About/sitemap/default install instructions, and is not authorization for default cutover. Failure preserves LOCAL STATE and falls back through normal last-known-good/default installer behavior; never splice snapshot files from different SHAs or mix snapshot bytes with a different network candidate.
-
-Default cutover remains a later separately gated release after live deployment and fresh-host compatibility evidence, including durable account load -> multi-fact evidence commit -> fresh runtime recovery.
+The complete public artifact returned by root/install/config is generated deterministically from modular/standalone compiler inputs. GitHub `main` remains authority; the Worker still resolves exact C server-side and returns that exact-C compiled `engine/BOOTSTRAP_FULL.txt` in one response.
 
 ## Compatibility endpoint
 
