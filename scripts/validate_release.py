@@ -22,7 +22,7 @@ REQUIRED_FILES = [
     "contracts/account-registry.md", "contracts/release.md", "contracts/migration.md",
     "contracts/guided-lifecycle-ingestion.md", "contracts/runtime-checkpoint-recovery.md",
     "contracts/user-experience.md", "contracts/bootstrap-resolution.md", "contracts/instruction-budget.json",
-    "contracts/recovery-package.md", "contracts/evidence-ingestion.md",
+    "contracts/recovery-package.md", "contracts/evidence-ingestion.md", "contracts/modular-transport.md",
     "schemas/workspace-schema.md", "schemas/account-registry.schema.json", "schemas/engine-manifest.schema.json",
     "schemas/recovery-package.schema.json",
     "docs/architecture.md", "docs/deployment.md", "docs/quick-install.md", "docs/runtime-recovery.md", "docs/BETA_TESTING.md",
@@ -32,7 +32,7 @@ REQUIRED_FILES = [
     "tests/reference_runtime.py", "tests/test_runtime_behavior.py", "tests/test_user_experience_contract.py",
     "tests/test_infrastructure_boundary.py", "tests/test_bootstrap_resolution_contract.py",
     "tests/test_recovery_package_contract.py", "tests/test_durable_ingestion_contract.py", "tests/test_modular_transport_contract.py",
-    "scripts/validate_instruction_budget.py", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs",
+    "scripts/validate_instruction_budget.py", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py",
     ".github/workflows/validate.yml", ".github/CODEOWNERS",
 ]
 
@@ -378,6 +378,23 @@ def main() -> None:
     recovery_schema = read_json("schemas/recovery-package.schema.json")
     if recovery_schema.get("title") != "LWAI Recovery Package Manifest":
         fail("recovery-package schema identity invalid")
+
+    modular_transport = latest.get("modular_transport") or {}
+    expected_modular_transport = {
+        "phase": "opt_in_compatibility",
+        "opt_in_url": "https://lastwarai.com/modular",
+        "opt_in_alias": "https://lastwarai.com/modular/config.txt",
+        "snapshot_url_template": "https://lastwarai.com/snapshot/{commit}/{runtime_path}",
+        "transport_version": "3.2-modular-optin",
+        "default_cutover": False,
+        "discoverable_by_default": False,
+        "live_deployment_required": True,
+        "fresh_host_evidence_required": True,
+        "last_known_good_version": "2026-09-28.45",
+    }
+    for key, expected in expected_modular_transport.items():
+        if modular_transport.get(key) != expected:
+            fail(f"LATEST modular_transport {key} invalid")
 
     validate_loader_boundary(loader)
     validate_resolution_contract(latest, loader, full, readme)
