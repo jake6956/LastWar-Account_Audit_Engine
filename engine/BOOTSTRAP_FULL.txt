@@ -28,6 +28,9 @@ Validate pinned releases/LATEST.json and engine/MANIFEST.json: Production channe
 MODULE INTEGRITY
 MANIFEST entries use integrity.git_blob_sha1. When the host can reproduce Git blob identity, compare exact bytes. Otherwise exact commit pin + module_id/module_version is the available trust boundary; do not falsely claim cryptographic verification.
 
+RECOVERY PACKAGE MODE
+A validated sanitized multi-file recovery package may establish one fixed offline snapshot C from RECOVERY_MANIFEST + SHA256SUMS when live resolution is unavailable. Require matching package/LATEST/MANIFEST identity, all required modules and available integrity. Read the entire recovery transaction from package bytes only; never mix package and network candidate files. Package C is recovery identity, not proof of newest live Production. Preserve LOCAL STATE and mark freshness RECOVERY_SNAPSHOT until the normal live resolver succeeds.
+
 AUTOMATIC UPDATE CONTROLLER
 Default web-capable policy is AUTOMATIC. Resolve live Production through the same resolver at runtime/session startup, reload, schema-sensitive migration/recovery, and before consequential work after >=6h since last successful live check. Do not check every trivial message.
 At a trigger: preserve current ENGINE/last-known-good; resolve live C; read LATEST at C; if current/no newer version, record success and continue silently; if newer, read/validate MANIFEST/MIGRATIONS/loader and changed required modules at the SAME C; apply only validated migrations; health-check; atomically adopt; update compact shared-engine metadata; resume the user's original action.
