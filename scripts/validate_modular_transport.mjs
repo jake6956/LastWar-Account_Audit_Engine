@@ -138,7 +138,11 @@ assert.equal(root.headers.get("X-LWAI-Commit"), SHA);
 const rootBody = await body(root);
 assert.match(rootBody, /LAST WAR AI — PUBLIC CONFIGURATION/);
 assert.match(rootBody, /COMPLETE PRODUCTION FALLBACK/);
+assert.match(rootBody, /MODULAR COMPATIBILITY HANDOFF/);
+assert.match(rootBody, /MODULAR_COMPATIBILITY_ENTRY: https:\/\/lastwarai\.com\/modular/);
+assert.match(rootBody, /If and only if the user's current instruction explicitly requests modular transport\/testing/);
 assert.doesNotMatch(rootBody, /OPT-IN MODULAR CONFIGURATION/);
+assert.match(root.headers.get("Link") || "", /<https:\/\/lastwarai\.com\/modular>; rel="alternate"; type="text\/html"/);
 assert.equal(count(LIVE_REF), 1);
 assert.equal(count(rawUrl(SHA, "engine/BOOTSTRAP_FULL.txt")), 1);
 
