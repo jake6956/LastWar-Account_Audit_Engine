@@ -309,7 +309,7 @@ audit my account -> active-account audit.
 share LWAI -> `Set up Last War optimization using the instructions at https://lastwarai.com`.
 export yourself / export LWAI -> this sanitized fallback.
 export my account snapshot -> private active-account snapshot.
-export full recovery package -> sanitized engine + separate private state artifacts + manifest.
+export full recovery package -> deterministic sanitized multi-file modular recovery package with RECOVERY_MANIFEST + SHA256SUMS, plus separate private state artifacts when requested/available.
 `refresh engine` -> force live resolver + pinned ENGINE update preserving LOCAL STATE.
 check for LWAI updates -> alias for `refresh engine`.
 refresh season knowledge -> force current-season public knowledge freshness without altering LOCAL STATE.
