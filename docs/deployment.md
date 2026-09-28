@@ -87,23 +87,23 @@ Exact-SHA engine retrieval may remain cached because commit-addressed source is 
 
 Release validation must compare the public `X-LWAI-Commit` with live GitHub `main` immediately after promotion. A stale public edge fails the release gate rather than being accepted as eventual consistency.
 
-## Phase-2 opt-in modular Worker deployment
-This is a maintainer-only compatibility test. It does not change the player install prompt.
+## Compiled single-response deployment
+The supported ChatGPT install is the existing one-response LastWarAI.com root. Production .48 does not require a Worker routing change.
 
-Before deploying an RC Worker:
-1. freeze one exact RC head H and require PR CI to pass on H;
-2. record the current last-known-good Worker source/Production commit for rollback;
-3. deploy `infrastructure/cloudflare-worker.js` from exact H to the existing `lwai-bootstrap` Worker service;
-4. preserve the recorded Custom Domain, `workers_dev=false`, `preview_urls=false`, and `cache.enabled=false`; do not create a new public hostname or route;
-5. while GitHub `main` is still the prior Production, run `python scripts/validate_live_modular_entrypoint.py`;
-6. run fresh-host tests against `https://lastwarai.com/modular`, including durable-account load -> multi-fact evidence commit -> fresh runtime recovery;
-7. if any default root/config behavior changes or modular validation fails, redeploy the recorded last-known-good Worker source before proceeding;
-8. only after live opt-in evidence passes may the exact RC head be merged;
-9. after merge/main CI, rerun the live modular validator against the new Production SHA.
+`engine/BOOTSTRAP_FULL.txt` is generated from `engine/standalone/plan.json` and owned capsules with `scripts/build_bootstrap_full.py`. Before promotion:
+1. freeze exact RC head H;
+2. run `python scripts/build_bootstrap_full.py --check`; checked-in fallback bytes must exactly equal compiler output;
+3. require instruction-budget, release-tree, recovery-package and runtime regression gates to pass on H;
+4. privately mirror/verify the exact candidate source and recovery package;
+5. merge only H with expected-head locking;
+6. require post-merge main CI and immediate LastWarAI.com `X-LWAI-Commit` parity.
 
-The opt-in Worker resolves whichever commit GitHub `main` currently identifies. Deploying the RC Worker before merge therefore exercises the new transport code against last-known-good Production without changing engine authority. Default root/install/config continue using BOOTSTRAP_FULL.
+Do not hand-edit BOOTSTRAP_FULL as an independent source. Change modular/standalone compiler inputs, regenerate, and let CI prove exactness.
 
-Do not call the opt-in path Production-ready merely because source CI is green. Live edge validation and host evidence are separate release gates.
+## Compatibility modular routes
+`/modular`, `/modular/config.txt` and exact-SHA `/snapshot/` routes may remain available for compatibility, recovery and diagnostics. Fresh ChatGPT testing showed that normal installation must not depend on paths, query strings or a second network hop. These routes are therefore not a pending default-cutover path.
+
+If a future release changes Worker compatibility routing, use the dedicated mocked/live Worker gates and prove root/install/config behavior is unchanged. Otherwise a normal engine-only release such as .48 requires no manual Worker deployment or cache purge.
 
 ## Sharing LWAI
 `share LWAI`, `give me the install prompt`, and equivalents return:
