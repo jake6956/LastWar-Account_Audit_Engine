@@ -17,7 +17,7 @@
     "core.persistence": "b798fba865f19cbec5bf60fb2b4d6412f1b2c585",
     "core.accounts": "1718d7a9009a68a82ab7f156c503e5ef879aeab8",
     "core.state-freshness": "4efb82ba44751b35d6cb4167b8ba9fb7dc40cfba",
-    "core.preferences": "171077409c6128f1481b39800a317b3a6ffdbf7d",
+    "core.preferences": "8fa70c2bf8ea763473a95fe0626b9c49fb04d4d1",
     "core.guidance": "29bde99dedd188e765aeb07ef52dad9ff83d3d6d",
     "core.flow-continuity": "9b3b1a7a8b73244f1d535e9a30dea6e19c9e294d",
     "domain.events-vs-arms-race": "a83a7029c1eae7935e9e059a0642fbc3ffec1862",
@@ -33,7 +33,8 @@
     "release.resolver": "87f688df965caef037d6dc4b4812cd9aa01ea40c",
     "release.dispatcher": "f6575093ad3840ac036c5a8c6ccba9f40beaf924",
     "release.updater": "3b994aa334b58791316fc6f5945530097ca20f36",
-    "release.bootstrap": "2c6d1ab5cac99acfa89a4328ded6bdfddd1f74c6"
+    "release.bootstrap": "2c6d1ab5cac99acfa89a4328ded6bdfddd1f74c6",
+    "core.preference-learning": "c6bc32a604a5da4586176bf583aba302995752d7"
   },
   "capsules": [
     {
@@ -53,7 +54,8 @@
         "core.operating",
         "core.recommendation-governance",
         "core.preferences",
-        "core.guidance"
+        "core.guidance",
+        "core.preference-learning"
       ]
     },
     {
