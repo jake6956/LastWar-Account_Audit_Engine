@@ -21,7 +21,7 @@
   "migration_graph_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/releases/MIGRATIONS.json",
   "full_fallback_source": "https://raw.githubusercontent.com/jake6956/LastWar-Account_Audit_Engine/main/engine/BOOTSTRAP_FULL.txt",
   "mutable_source_urls_are_authority": false,
-  "candidate_read_policy": "normal LastWarAI.com install still resolves live main server-side and returns exact-commit BOOTSTRAP_FULL in one response; opt-in /modular resolves one live SHA and uses same-origin exact-SHA /snapshot reads; direct modular reads pin to one SHA; recovery packages are fixed offline snapshots; never mix candidate sources",
+  "candidate_read_policy": "normal LastWarAI.com install still resolves one live main SHA server-side and returns exact-commit BOOTSTRAP_FULL in one response; opt-in /modular resolves that live main SHA and uses same-origin exact-SHA /snapshot reads; direct modular reads pin to one SHA; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
     "from": "2026-09-28.45",
     "type": "transport_only_optin_same_origin_modular_path",
