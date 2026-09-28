@@ -73,3 +73,20 @@ Every public promotion is fail-closed.
 - archive/restore preserves immutable `account_id` and history;
 - actual consumer identities/runtime rows/provider-local IDs/paths never appear in public Production;
 - failed/interrupted pre-merge releases preserve last-known-good main.
+
+
+## Deterministic recovery-package gate
+Every candidate must build a sanitized multi-file recovery package from the exact candidate SHA and validate it before promotion.
+
+Required checks:
+- identical source + options produce byte-identical ZIP bytes;
+- RECOVERY_MANIFEST / LATEST / MANIFEST identity agrees;
+- SHA256SUMS covers exact package payload bytes;
+- every MANIFEST module exists and reproduces its declared Git blob identity;
+- no package/network mixing is permitted during recovery;
+- a package built without BOOTSTRAP_FULL is still structurally complete for modular recovery;
+- tampering with a payload file fails validation;
+- no account/private maintainer state appears in the package;
+- the exact validated RC package is mirrored privately before merge and the actual Production package is archived after merge.
+
+Production .44 does not change the LastWarAI.com root/install/config payload. Public transport cutover is a later separately gated release.
