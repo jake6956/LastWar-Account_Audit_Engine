@@ -30,7 +30,7 @@ REQUIRED_FILES = [
     "infrastructure/cloudflare-cache-policy.md", "infrastructure/cloudflare-worker.js",
     "releases/LATEST.json", "releases/MIGRATIONS.json", "releases/CHANGELOG.md", "tests/RELEASE_GATES.md",
     "tests/reference_runtime.py", "tests/test_runtime_behavior.py", "tests/test_user_experience_contract.py",
-    "tests/test_infrastructure_boundary.py", "tests/test_bootstrap_resolution_contract.py",
+    "tests/test_infrastructure_boundary.py", "tests/test_canonical_state_read_contract.py", "tests/test_bootstrap_resolution_contract.py",
     "tests/test_recovery_package_contract.py", "tests/test_durable_ingestion_contract.py", "tests/test_modular_transport_contract.py", "tests/test_compiled_bootstrap.py",
     "scripts/validate_instruction_budget.py", "scripts/build_bootstrap_full.py", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py",
     "engine/standalone/plan.json",
@@ -474,7 +474,7 @@ def main() -> None:
     require("workflow", workflow, [
         "python scripts/validate_release.py", "python scripts/validate_instruction_budget.py",
         "test_runtime_behavior.py", "test_user_experience_contract.py", "test_infrastructure_boundary.py",
-        "test_bootstrap_resolution_contract.py", "test_recovery_package_contract.py", "test_durable_ingestion_contract.py", "test_modular_transport_contract.py", "test_compiled_bootstrap.py",
+        "test_bootstrap_resolution_contract.py", "test_recovery_package_contract.py", "test_durable_ingestion_contract.py", "test_canonical_state_read_contract.py", "test_modular_transport_contract.py", "test_compiled_bootstrap.py",
         "scripts/build_bootstrap_full.py --check", "scripts/build_recovery_package.py", "scripts/validate_recovery_package.py", "scripts/validate_modular_transport.mjs", "scripts/validate_live_modular_entrypoint.py", "actions/setup-node@v4", "fetch-depth: 0",
     ])
 

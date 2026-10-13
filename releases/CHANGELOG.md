@@ -1,3 +1,10 @@
+## 2026-10-13.51 — Canonical account retrieval preflight (candidate)
+
+- Require active-account-scoped verified canonical field retrieval before any current-stat claim, Season analysis or account-specific advice; stale chat summaries/cache are not authoritative.
+- Fall back explicitly to NOT VERIFIED on unavailable or wrong-account storage, preserve field-level observed dates and isolate conflicting facts.
+- Add synthetic fresh-session read-preflight regression coverage, standalone projection and release metadata. Engine API 1.0, workspace schema 2.3, private LOCAL STATE and first-party transport remain unchanged.
+- Issue #90; release requires CI and genuine fresh-host/account-store retrieval verification before promotion.
+
 # Production Changelog
 
 ## 2026-09-28.50
