@@ -1,6 +1,6 @@
 LWAI MODULE — CORE STATE FRESHNESS
 module_id: core.state-freshness
-module_version: 2026-10-13.90.1
+module_version: 2026-10-13.51.1
 load_class: mandatory_core
 state_scope: shared_engine+active_account_freshness_rules
 SANITIZED: YES
