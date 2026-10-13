@@ -41,6 +41,20 @@ class CanonicalReadPreflightTests(unittest.TestCase):
         self.assertEqual(view["fields"]["drone.level"]["value"], 177)
         self.assertEqual(view["fields"]["drone.level"]["observed_at"], NEW)
 
+    def test_dedicated_domain_record_beats_same_day_preset_description(self):
+        snapshot = self.seeded_snapshot()
+        # Same-day preset text is a non-authoritative projection, not a field source.
+        snapshot["preset_notes"] = {"drone.level": 176, "updated_at": NEW}
+        rt = self.runtime()
+        view = rt.resolve_account_view(
+            fetch_canonical=lambda _: snapshot, required_keys=["drone.level"])
+        self.assertEqual(view["fields"]["drone.level"]["value"], 177)
+        source_contract = (ROOT / "engine/modules/core/state-freshness.txt").read_text(encoding="utf-8")
+        self.assertIn("DOMAIN OWNERSHIP PRECEDENCE", source_contract)
+        self.assertIn("preset descriptions", source_contract)
+        standalone = (ROOT / "engine/BOOTSTRAP_FULL.txt").read_text(encoding="utf-8")
+        self.assertIn("Authoritative domain owner records outrank", standalone)
+
     def test_provider_error_does_not_silently_use_old_cache(self):
         rt = self.runtime()
         rt.accounts["synthetic-A"].facts["drone.level"] = 100
