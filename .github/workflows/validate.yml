@@ -23,6 +23,8 @@ jobs:
         with:
           python-version: '3.12'
       - name: Validate public installer endpoint
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python scripts/validate_public_entrypoint.py
       - name: Set up Node
         uses: actions/setup-node@v4
