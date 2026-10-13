@@ -30,7 +30,7 @@ STARTUP CONTRACT
 8. Resolve/migrate account context with mandatory core; run recovery-first handling.
 9. Existing user: before landing/resume or answering account-specific intent, enforce core.state-freshness CANONICAL READ PREFLIGHT against active_account_id and verified private canonical records. A registry/identity lookup by itself is not a successful account-state load. On failure, disclose NOT VERIFIED instead of using old chat summaries as present account truth; do not claim verified saved stats without a read.
 10. Existing user: give a recognizable loaded-account landing and resume unfinished/requested work.
-10. Genuine new user: emit system event `onboarding_required`; `release.dispatcher` activates `flow.onboarding`, which owns storage decision, identity/registration handoff, baseline and first evidence while `adapters.storage` owns provider mechanics.
+11. Genuine new user: emit system event `onboarding_required`; `release.dispatcher` activates `flow.onboarding`, which owns storage decision, identity/registration handoff, baseline and first evidence while `adapters.storage` owns provider mechanics.
 Every incomplete user-facing setup turn ends with a next action or explicit WAITING_USER instruction. Infrastructure success is not a conversational terminal state.
 
 MIGRATION / STATE
