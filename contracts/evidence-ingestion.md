@@ -108,3 +108,9 @@ Promotion requires deterministic regressions proving:
 - account isolation holds;
 - public artifacts remain sanitized;
 - standalone fallback preserves the same invariant.
+
+## Canonical-read preflight (Issue #90)
+
+Durable ingestion alone is not sufficient. For every active-account status, resumed session, Season analysis or recommendation, the engine must resolve `active_account_id` and read the verified account-scoped canonical facts and observation metadata from the chosen LWAI workspace *before* claiming a current account value. Verify per-field provenance, account identity, relevant revision and freshness; historical chat summaries and Hot Cache are not alternate authorities. Field-level newer direct evidence wins while still-relevant unchanged canonical fields remain available. Cached indexes/pointers must not override newer canonical revisions. Treat ingestion read-back verification and startup read verification as separate operations.
+
+Storage disconnected, unavailable, wrong-account, inconsistent or unverified means `NOT VERIFIED`, with any older values explicitly dated historical observations—not current stats or permission for spending. A screenshot correction must reconcile affected fields and invalidate dependent advice. Session-only users may use identified current-chat direct evidence but must not be told it was recovered from cloud. No private account values, IDs, or screenshot content may be emitted to the shared public repository. A full closure test must use a *real fresh host session and real selected-provider read*, in addition to synthetic model tests.
