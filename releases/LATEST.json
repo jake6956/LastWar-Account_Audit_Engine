@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.50",
+  "engine_version": "2026-10-13.51",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -23,16 +23,16 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal ChatGPT installation performs one user-supplied bare-origin fetch to LastWarAI.com; the Worker resolves one live main SHA server-side and returns exact-commit compiled BOOTSTRAP_FULL in one response; direct/recovery modular reads pin to one SHA and remain compatibility/recovery paths only; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
-    "from": "2026-09-28.49",
-    "type": "engine_only_gear_screenshot_rarity",
+    "from": "2026-09-28.50",
+    "type": "engine_only_canonical_read_preflight",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Separates visual gear rarity/tier classification from promotion progress. Red gear-card background is Mythic/M6 evidence; orange is Legendary; gold pips/stars/segments never establish rarity by themselves. No schema, provider, transport, or Worker change."
+    "notes": "Before account-specific output, resolve the active account and verify the newest canonical per-field state. A failed cloud read never falls back to historical chat memory as current. No provider, schema or existing local account data changes. Returning-account selection uses existing storage read-only without account re-creation or provider changes."
   },
-  "notes": "OO-020 correctness release: screenshot gear rarity is classified from the readable gear-card background independently from promotion marks; unclear backgrounds remain uncertain rather than being guessed from pips.",
+  "notes": "Issue #90: account-scoped canonical read preflight, field-level observed-date precedence and fail-closed historical fallback for all account-specific responses. Installer re-runs with verified private durable storage now offer account-aware Resume/Continue; genuine new-user storage question stays unchanged.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",

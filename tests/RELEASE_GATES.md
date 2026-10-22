@@ -69,6 +69,7 @@ Every public promotion is fail-closed.
 - unsupported provider capabilities are never invented;
 - UID remains optional/private;
 - existing state is discovered before redundant onboarding;
+- verified existing storage on installer re-run shows recognizable screenname, server and internal LWAI account UUID with Resume/Continue, never a new-cloud setup prompt; game UID masked; broken pointers/legacy/archived accounts fail safely; original new-user wording unchanged;
 - supported older workspace schemas migrate before normal domain work;
 - unsupported/no-path schemas fail closed rather than re-onboard;
 - cross-account compare is read-only;

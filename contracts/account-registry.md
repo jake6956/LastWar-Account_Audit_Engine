@@ -10,6 +10,10 @@ At identity collection, briefly explain that identifying values are for the user
 
 Optional Runtime Session provenance such as `runtime_session_id`, `host_platform` or opaque `host_session_ref` is not account identity. Host conversation/session references may assist private support/audit correlation only. They must never create, merge, select, authenticate or route an account, and must never override `account_id`, `active_account_id`, UID/recognition evidence, or explicit user confirmation. Missing/duplicate/changing host references are expected and non-authoritative.
 
+## Installer re-run: recognizing existing durable accounts
+On every installer re-run or engine refresh, read only the connected dedicated LWAI workspace registry and verify account database pointers before first-run storage onboarding. Verified accounts are shown in a private Resume/Continue chooser containing immutable LWAI account UUID, screenname and server (optional nickname/alliance, game UID always masked). A single match requires concise resume confirmation; multiple matches require selection. "Continue using existing connected storage" and "Resume existing account" are the same nondestructive intent. Never make a second tracker, migrate providers, replace an account database or repeat first-run persistence prompts simply because the installer was rerun.
+If a provider read, registry or pointer is broken, fail closed into reconnect/recovery and do not mistake failure for absence. Archived-only -> offer restore; supported legacy state without registry -> nondestructive recovery. Only genuinely new users get the original cloud-storage question unchanged. No actual account IDs/usernames/servers or private game UIDs enter public engine artifacts or synthetic fixtures.
+
 ## Workspace registry
 A persistent deployment maintains a workspace-level registry separate from account-local state. Minimum account fields: `account_id`, `nickname`, `game_uid`, `uid_suffix`, `screenname`, `alliance`, `server`, `active`, `status`, `last_identity_confirmed`, `last_updated`, `database_provider`, `database_artifact_id_or_path`, `database_artifact_title`, `notes`.
 

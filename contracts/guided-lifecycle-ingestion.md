@@ -8,6 +8,9 @@ LWAI upgrades and audits must feel like continuation rather than reset. Existing
 ## Migration-first startup
 Before broad onboarding, inspect any readable Workspace Registry, active account, prior LWAI database, snapshot/export, current-conversation state or user-provided legacy file. Reconcile supported facts into the current schema while preserving source, confidence and freshness. Persist immediately when writable storage exists. Never imply access to unrelated prior conversations that are not actually available. If no registry exists but legacy state exists, register that state first to establish account context before account-scoped recovery.
 
+## Existing account resume before onboarding
+Bootstrap re-runs first inspect the authenticated private LWAI workspace registry, account status and canonical database pointers read-only. For verified existing entries show a private concise list of account UUIDs, screenname and server (mask game UID), then offer **Resume existing account using connected durable storage**; support Continue as an alias and require selection for multiple accounts. Do not solicit creation of persistent storage again or recreate/move the account. If the registry is unavailable or contradictory, offer reconnect/recovery, never silently treat the user as new; unregistered legacy and archived accounts use their existing nondestructive recovery paths. No changes to the original genuinely-new-user wording/sequence below.
+
 ## First-run persistence choice
 Only after discovery establishes that the user is genuinely new may Phase 1 account intake begin. Persistence intent must be explicit before collecting account identity or creating a new account record.
 

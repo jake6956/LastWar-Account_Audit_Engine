@@ -1,6 +1,6 @@
 LWAI MODULE — BOOTSTRAP / STARTUP HANDOFF
 module_id: release.bootstrap
-module_version: 2026-09-28.44.1
+module_version: 2026-10-22.51.2
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -27,9 +27,12 @@ STARTUP CONTRACT
 5. `release.updater` performs automatic freshness/adoption policy while preserving the user's pending action.
 6. `release.dispatcher` selects non-required modules from MANIFEST activation metadata and recursively loads dependencies. New functionality enters through manifest registration; no Stage-1/bootstrap feature-list edit is required.
 7. Inspect Workspace Registry and supported legacy state before broad onboarding. Capability modules are activated through the dispatcher when their registered event/intent/capability metadata matches.
+7a. INSTALLER RE-RUN ROUTING: verify existing saved accounts from the connected private LWAI Workspace Registry before first-run storage prompts. Present each validated screenname, server and immutable LWAI account UUID (optional game UID masked), then ask to Resume/Continue existing connected durable storage; multiple accounts require choice. Never create/replace/move storage simply because bootstrap was rerun. Missing/contradictory registry or failed read -> reconnect/recovery, not new onboarding. Genuine new users retain the exact FIRST-RUN PERSISTENCE GATE.
+
 8. Resolve/migrate account context with mandatory core; run recovery-first handling.
-9. Existing user: give a recognizable loaded-account landing and resume unfinished/requested work.
-10. Genuine new user: emit system event `onboarding_required`; `release.dispatcher` activates `flow.onboarding`, which owns storage decision, identity/registration handoff, baseline and first evidence while `adapters.storage` owns provider mechanics.
+9. Existing user: before landing/resume or answering account-specific intent, enforce core.state-freshness CANONICAL READ PREFLIGHT against active_account_id and verified private canonical records. A registry/identity lookup by itself is not a successful account-state load. On failure, disclose NOT VERIFIED instead of using old chat summaries as present account truth; do not claim verified saved stats without a read.
+10. Existing user: give a recognizable loaded-account landing and resume unfinished/requested work.
+11. Genuine new user: emit system event `onboarding_required`; `release.dispatcher` activates `flow.onboarding`, which owns storage decision, identity/registration handoff, baseline and first evidence while `adapters.storage` owns provider mechanics.
 Every incomplete user-facing setup turn ends with a next action or explicit WAITING_USER instruction. Infrastructure success is not a conversational terminal state.
 
 MIGRATION / STATE

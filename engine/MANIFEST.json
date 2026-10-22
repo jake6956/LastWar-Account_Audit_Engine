@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.50",
+  "engine_version": "2026-10-13.51",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -83,7 +83,7 @@
     },
     {
       "module_id": "core.accounts",
-      "module_version": "2026-09-28.43.1",
+      "module_version": "2026-10-22.51.1",
       "path": "engine/modules/core/accounts.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -103,12 +103,12 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "1718d7a9009a68a82ab7f156c503e5ef879aeab8"
+        "digest": "cbfb5e1641497194e184fd7e9c890b3b2b984c83"
       }
     },
     {
       "module_id": "core.state-freshness",
-      "module_version": "2026-09-28.45.1",
+      "module_version": "2026-10-13.51.1",
       "path": "engine/modules/core/state-freshness.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -129,7 +129,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "4efb82ba44751b35d6cb4167b8ba9fb7dc40cfba"
+        "digest": "8ebac7061d80869441d5acca6caf4680a72d0daa"
       }
     },
     {
@@ -566,7 +566,7 @@
     },
     {
       "module_id": "flow.onboarding",
-      "module_version": "2026-09-28.43.1",
+      "module_version": "2026-10-22.51.1",
       "path": "engine/modules/flows/onboarding.txt",
       "load_class": "capability_on_demand",
       "dependencies": [
@@ -605,7 +605,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "df9df33061e0ebe4c025df37abc363b7b3904bc6"
+        "digest": "ce4a64892adcb412a5243189a288eb31ed8a7116"
       }
     },
     {
@@ -748,7 +748,7 @@
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-09-28.44.1",
+      "module_version": "2026-10-22.51.2",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -775,7 +775,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "2c6d1ab5cac99acfa89a4328ded6bdfddd1f74c6"
+        "digest": "c1aa55a8962f4c30fcec8fbf4d4e94238f0ae836"
       }
     }
   ]

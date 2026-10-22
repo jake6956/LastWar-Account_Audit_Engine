@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from urllib.request import Request, urlopen
 from urllib.error import URLError, HTTPError
@@ -23,7 +24,11 @@ def fail(message: str) -> None:
 
 
 def fetch_text(url: str, accept: str = "text/plain,*/*;q=0.1") -> tuple[int, object, str]:
-    request = Request(url, headers={"User-Agent": "LWAI-Release-Validation/3.2", "Accept": accept})
+    headers = {"User-Agent": "LWAI-Release-Validation/3.2", "Accept": accept}
+    if url == LIVE_REF and os.environ.get("GITHUB_TOKEN"):
+        headers["Authorization"] = "Bearer " + os.environ["GITHUB_TOKEN"]
+        headers["X-GitHub-Api-Version"] = "2022-11-28"
+    request = Request(url, headers=headers)
     try:
         with urlopen(request, timeout=20) as response:
             return getattr(response, "status", 200), response.headers, response.read(262144).decode("utf-8")

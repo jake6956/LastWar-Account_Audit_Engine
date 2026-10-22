@@ -681,6 +681,23 @@
         "test_gear_screenshot_rarity_uses_background_not_promotion_pips"
       ],
       "notes": "Separates gear-card rarity classification from promotion progress; no workspace/account schema change."
+    },
+    {
+      "from": "2026-09-28.50",
+      "to": "2026-10-13.51",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_canonical_read_preflight",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_new_session_reads_newer_canonical_not_old_memory_or_hot_cache",
+        "test_provider_error_does_not_silently_use_old_cache",
+        "test_wrong_account_cannot_satisfy_preflight",
+        "test_standalone_and_modular_contain_same_guardrail"
+      ],
+      "notes": "Adds an account-scoped verified canonical read before reporting current stats; stays schema 2.3, keeps all private LOCAL STATE and requires no re-onboarding."
     }
   ]
 }

@@ -99,6 +99,58 @@ class OnboardingNoDeadAirTests(unittest.TestCase):
         ):
             self.assertIn(token, onboarding)
 
+    def test_verified_single_account_resumes_without_storage_creation(self):
+        from onboarding_flow import installer_resume_route
+        account = {"account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "screenname": "ExampleCommander", "server": "1234", "uid_suffix": "4321", "game_uid": "0000000012344321", "database_pointer_verified": True, "status": "ACTIVE"}
+        route, labels = installer_resume_route("verified", [account])
+        self.assertEqual(route, "RESUME_SINGLE")
+        self.assertIn("Server 1234", labels[0])
+        self.assertIn("Account ID aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", labels[0])
+        self.assertNotIn(account["game_uid"], labels[0])
+        self.assertIn("••••4321", labels[0])
+
+    def test_multiple_saved_accounts_require_selection(self):
+        from onboarding_flow import installer_resume_route
+        one = {"account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "screenname": "ExampleOne", "server": "1001", "database_pointer_verified": True, "status": "ACTIVE"}
+        two = {"account_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb", "screenname": "ExampleTwo", "server": "1002", "database_pointer_verified": True, "status": "ACTIVE"}
+        route, labels = installer_resume_route("verified", [one, two])
+        self.assertEqual(route, "SELECT_EXISTING")
+        self.assertEqual(len(labels), 2)
+
+    def test_invalid_registry_pointer_fails_closed(self):
+        from onboarding_flow import installer_resume_route
+        bad = {"account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "screenname": "ExampleOne", "server": "1001", "database_pointer_verified": False, "status": "ACTIVE"}
+        self.assertEqual(installer_resume_route("verified", [bad])[0], "RECOVERY_REQUIRED")
+
+    def test_disconnected_known_storage_and_failed_reads_require_recovery(self):
+        from onboarding_flow import installer_resume_route
+        self.assertEqual(installer_resume_route("error")[0], "RECOVERY_REQUIRED")
+        self.assertEqual(installer_resume_route("not_connected", prior_storage_indicated=True)[0], "RECONNECT_EXISTING_STORAGE")
+
+    def test_original_fresh_user_entry_is_unchanged(self):
+        from onboarding_flow import installer_resume_route
+        self.assertEqual(installer_resume_route("not_connected")[0], "FIRST_RUN_PERSISTENCE")
+        self.assertEqual(installer_resume_route("verified", [])[0], "FIRST_RUN_PERSISTENCE")
+
+    def test_legacy_and_archived_accounts_do_not_reonboard(self):
+        from onboarding_flow import installer_resume_route
+        self.assertEqual(installer_resume_route("verified", [], legacy_state=True)[0], "RECOVER_LEGACY")
+        archived = {"account_id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa", "status": "ARCHIVED"}
+        self.assertEqual(installer_resume_route("verified", [archived])[0], "RESTORE_ARCHIVED")
+
+    def test_compiled_and_modular_resume_contracts_present(self):
+        full = (ROOT / "engine/BOOTSTRAP_FULL.txt").read_text(encoding="utf-8")
+        accounts = (ROOT / "engine/modules/core/accounts.txt").read_text(encoding="utf-8")
+        onboarding = (ROOT / "engine/modules/flows/onboarding.txt").read_text(encoding="utf-8")
+        bootstrap = (ROOT / "engine/modules/release/bootstrap.txt").read_text(encoding="utf-8")
+        self.assertIn("EXISTING-STORAGE REINSTALL / RESUME GATE", full)
+        self.assertIn("INSTALLER RE-RUN / VERIFIED ACCOUNT RESUME", accounts)
+        self.assertIn("EXISTING-STORAGE RESUME GATE", onboarding)
+        self.assertIn("INSTALLER RE-RUN ROUTING", bootstrap)
+        for body in (full, accounts, onboarding, bootstrap):
+            self.assertIn("server", body.lower())
+            self.assertIn("Resume", body)
+
 
 if __name__ == "__main__":
     unittest.main()

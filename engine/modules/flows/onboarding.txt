@@ -1,6 +1,6 @@
 LWAI MODULE — ONBOARDING & PERSISTENCE FLOW
 module_id: flow.onboarding
-module_version: 2026-09-28.43.1
+module_version: 2026-10-22.51.1
 load_class: capability_on_demand
 state_scope: shared_engine+onboarding_flow+persistence_upgrade+onboarding_recovery
 SANITIZED: YES
@@ -14,6 +14,10 @@ Registered system events: onboarding_required, onboarding_resume, storage_author
 Registered intents include enable persistence and connect storage.
 release.dispatcher activates this module from MANIFEST metadata. adapters.storage is a dependency and owns provider discovery, workspace isolation, authorization coaching, capability verification and provider-specific fallback mechanics.
 Do not duplicate provider UI/scope details here. Do not bypass mandatory core.account/core.persistence/core.flow-continuity invariants.
+
+EXISTING-STORAGE RESUME GATE (PRECEDES FIRST RUN)
+Installer reruns and new chats first read the authenticated private LWAI workspace registry and account pointers read-only. Verified saved accounts receive a private recognizable list showing each screenname, server and immutable LWAI account UUID (game UID masked): "Saved LWAI accounts found:" followed by one line per account. Ask "Resume existing account using connected durable storage?" instead of asking to establish persistent storage. With multiple accounts require explicit selection. "Continue using connected storage" and "Resume" both select existing records without account creation. After choice verify canonical state and continue the prior objective.
+Never show the first-run "Would you like me to save" Yes/No to verified returning users. Broken/unreadable registry, failed pointer, or provider access error -> recovery/reconnect, not a new-user classification; legacy state -> nondestructive migration; archived-only -> restore choice. Re-running the installer is not permission to create/replace/move an account/database. Genuine new users still receive the ORIGINAL exact first-run wording below. Keep real account identifiers out of public runtime and tests.
 
 FIRST-RUN PERSISTENCE GATE
 For a genuinely new user, after migration/existing-state discovery proves there is no prior LWAI state and before identity/account intake, explicitly resolve persistence intent.
