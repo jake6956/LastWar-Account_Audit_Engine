@@ -30,9 +30,9 @@
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Before account-specific output, resolve the active account and verify the newest canonical per-field state. A failed cloud read never falls back to historical chat memory as current. No provider, schema or existing local account data changes."
+    "notes": "Before account-specific output, resolve the active account and verify the newest canonical per-field state. A failed cloud read never falls back to historical chat memory as current. No provider, schema or existing local account data changes. Returning-account selection uses existing storage read-only without account re-creation or provider changes."
   },
-  "notes": "Issue #90: account-scoped canonical read preflight, field-level observed-date precedence and fail-closed historical fallback for all account-specific responses.",
+  "notes": "Issue #90: account-scoped canonical read preflight, field-level observed-date precedence and fail-closed historical fallback for all account-specific responses. Installer re-runs with verified private durable storage now offer account-aware Resume/Continue; genuine new-user storage question stays unchanged.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",
