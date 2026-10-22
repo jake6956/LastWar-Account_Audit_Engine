@@ -66,3 +66,42 @@ def terminal_is_user_visible_action(steps: list[str]) -> bool:
     if not steps:
         return False
     return steps[-1] not in INFRASTRUCTURE_ONLY_TERMINALS
+
+
+def installer_resume_route(
+    storage_state: str,
+    saved_accounts: list[dict] | None = None,
+    *,
+    legacy_state: bool = False,
+    prior_storage_indicated: bool = False,
+) -> tuple[str, list[str]]:
+    """Read-only reference model. Never creates or changes a workspace/account."""
+    if storage_state not in {"verified", "not_connected", "error"}:
+        raise ValueError("unexpected storage state")
+    if storage_state == "error":
+        return "RECOVERY_REQUIRED", []
+    if storage_state == "not_connected":
+        return ("RECONNECT_EXISTING_STORAGE" if prior_storage_indicated else "FIRST_RUN_PERSISTENCE"), []
+    records = saved_accounts or []
+    active = [a for a in records if str(a.get("status", "")).upper() not in {"ARCHIVED", "INACTIVE_ARCHIVED"}]
+    if active:
+        from uuid import UUID
+        labels = []
+        for a in active:
+            try:
+                uid = str(UUID(str(a["account_id"])))
+            except (KeyError, TypeError, ValueError, AttributeError):
+                return "RECOVERY_REQUIRED", []
+            if not (a.get("screenname") and a.get("server") and a.get("database_pointer_verified")):
+                return "RECOVERY_REQUIRED", []
+            label = f"{a['screenname']} — Server {a['server']} — Account ID {uid}"
+            suffix = str(a.get("uid_suffix") or "")[-4:]
+            if suffix:
+                label += f" — Game UID ••••{suffix}"
+            labels.append(label)
+        return ("RESUME_SINGLE" if len(labels) == 1 else "SELECT_EXISTING"), labels
+    if records:
+        return "RESTORE_ARCHIVED", []
+    if legacy_state:
+        return "RECOVER_LEGACY", []
+    return "FIRST_RUN_PERSISTENCE", []
