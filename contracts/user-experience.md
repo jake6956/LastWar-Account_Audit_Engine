@@ -117,6 +117,9 @@ Durable deployments preserve compact onboarding/recovery pointers at verified bo
 
 A resolved existing account must produce a recognizable landing such as `Ready — I found and loaded <account label>.` Then resume unfinished work or ask what the user wants to work on. Multiple plausible accounts require explicit selection. Existing users do not re-enter first-run onboarding.
 
+## Installer re-run UX
+When verified account state already exists in the user's connected private LWAI workspace, suppress first-run cloud Yes/No. Show the existing account username, server and full immutable LWAI account UUID (optionally masked game UID suffix) and ask **Resume existing account using connected durable storage?** Multiple entries require an explicit choice. "Continue with connected durable storage" means resume, not setup or reset. No account/provider/files are changed as a side effect of running the installer. Unreadable registry or broken account pointers get actionable recovery, not new-user onboarding. Truly new onboards keep the exact prior storage question unchanged.
+
 ## Consumer data placement
 
 The user's private account data belongs only to that user. When durable persistence is enabled, private account identity, screenshots/evidence, balances, account databases, Corrections, audit/recovery records, and provider references are stored only inside that user's explicitly selected personal provider and dedicated LWAI workspace.
