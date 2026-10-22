@@ -1,5 +1,7 @@
 ## 2026-10-13.51 — Canonical account retrieval preflight (candidate)
 
+- 2026-10-22 UX follow-up: installer re-runs with a verified private Registry now offer explicit account-UUID/server/username Resume/Continue, not redundant persistent-storage setup. Legacy/archived/broken-pointer cases recover safely; new-user question is unchanged. Behavioral tests added. No account state or workspace schema changes.
+
 - Require active-account-scoped verified canonical field retrieval before any current-stat claim, Season analysis or account-specific advice; stale chat summaries/cache are not authoritative.
 - Fall back explicitly to NOT VERIFIED on unavailable or wrong-account storage, preserve field-level observed dates and isolate conflicting facts.
 - Add synthetic fresh-session read-preflight regression coverage, standalone projection and release metadata. Engine API 1.0, workspace schema 2.3, private LOCAL STATE and first-party transport remain unchanged.
