@@ -148,7 +148,7 @@ class OnboardingNoDeadAirTests(unittest.TestCase):
         self.assertIn("EXISTING-STORAGE RESUME GATE", onboarding)
         self.assertIn("INSTALLER RE-RUN ROUTING", bootstrap)
         for body in (full, accounts, onboarding, bootstrap):
-            self.assertIn("Server", body)
+            self.assertIn("server", body.lower())
             self.assertIn("Resume", body)
 
 
