@@ -15,9 +15,10 @@
     "core.operating": "e5cb05701601301b3b4b1f2fa31fbc80a9f1773d",
     "core.recommendation-governance": "6ade54b03c4ed2893346f2d3de1e80e96682e248",
     "core.persistence": "b798fba865f19cbec5bf60fb2b4d6412f1b2c585",
-    "core.accounts": "1718d7a9009a68a82ab7f156c503e5ef879aeab8",
+    "core.accounts": "cbfb5e1641497194e184fd7e9c890b3b2b984c83",
     "core.state-freshness": "8ebac7061d80869441d5acca6caf4680a72d0daa",
     "core.preferences": "10fc41284a302328cbc3031d5fbffb8d8030ea65",
+    "core.preference-learning": "4e7124ed58a80229321e62c30a5413151f141e48",
     "core.guidance": "29bde99dedd188e765aeb07ef52dad9ff83d3d6d",
     "core.flow-continuity": "9b3b1a7a8b73244f1d535e9a30dea6e19c9e294d",
     "domain.events-vs-arms-race": "a83a7029c1eae7935e9e059a0642fbc3ffec1862",
@@ -27,14 +28,13 @@
     "domain.combat-meta-battlefield": "3efd7126b72443c08f7259addb1adcc92ea428bc",
     "domain.season-intelligence": "b9095b6025771f04d07829ecc93f163ecff74a56",
     "domain.season-stores-paid": "6027a52b350a42cbcc062df65b665c6eec5d3cfd",
-    "flow.onboarding": "df9df33061e0ebe4c025df37abc363b7b3904bc6",
+    "flow.onboarding": "ce4a64892adcb412a5243189a288eb31ed8a7116",
     "adapters.storage": "0dd3dcd9fb122b429eb07d9b736e43f1947407e5",
     "release.runtime": "17b66cd3dde630fcdc99cdb4d1578d8aad8d8ead",
     "release.resolver": "87f688df965caef037d6dc4b4812cd9aa01ea40c",
     "release.dispatcher": "f6575093ad3840ac036c5a8c6ccba9f40beaf924",
     "release.updater": "3b994aa334b58791316fc6f5945530097ca20f36",
-    "release.bootstrap": "f99f2866b8e3b4565552f4b5bac8e24c4a2bf451",
-    "core.preference-learning": "4e7124ed58a80229321e62c30a5413151f141e48"
+    "release.bootstrap": "c1aa55a8962f4c30fcec8fbf4d4e94238f0ae836"
   },
   "capsules": [
     {
