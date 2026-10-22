@@ -1,6 +1,6 @@
 LWAI MODULE — ACCOUNT REGISTRY & MULTI-ACCOUNT
 module_id: core.accounts
-module_version: 2026-09-28.43.1
+module_version: 2026-10-22.51.1
 load_class: mandatory_core
 state_scope: shared_engine+account_registry_rules
 SANITIZED: YES
@@ -43,6 +43,11 @@ Before Phase 1 new-account onboarding, when readable persistent LWAI storage exi
 
 EXISTING-ACCOUNT LANDING
 Discovery is not complete merely because data was loaded. If exactly one valid active account is resolved and no unresolved recovery ambiguity exists, give a compact recognizable landing such as `Ready — I found and loaded <screenname/nickname · server>.` Then immediately do one of the following: resume the account's unfinished Audit Session/checkpoint; continue a previously pending user objective; or ask what the user wants to work on while optionally naming the highest-value stale gap. Do not stop silently after account resolution. With multiple plausible accounts, ask which account to use and wait explicitly.
+
+INSTALLER RE-RUN / VERIFIED ACCOUNT RESUME
+On installer re-run, fresh chat or engine refresh, before ANY first-run persistence question, read only the selected provider's dedicated LWAI Workspace Registry and verify active_account_id, account status and canonical database pointers. A workbook title, prior conversation/memory, or connected-provider badge is not verification.
+If verified existing non-archived accounts exist, show a concise PRIVATE list: "Saved LWAI accounts found:" then "<screenname> — Server <server> — Account ID <full immutable account_id>" for each; optional nickname/alliance and MASKED game UID suffix. Account ID is the LWAI UUID, not game UID. Offer "Resume existing account using connected durable storage" (recommended), "Choose another account" for multiple entries, and "Create a separate account" ONLY when explicitly requested. Resume/Continue using existing storage mean the same nondestructive action. One account needs concise confirmation; multiple require an explicit account choice. After selection, verify canonical account facts and restore pending work.
+Do NOT offer "Yes — set up persistent LWAI storage" or the first-run cloud Yes/No choice to verified returning users. Bootstrap re-runs never authorize creating, moving, duplicating, overwriting, archiving or migrating account state. Archived-only accounts offer restore. Unregistered legacy LWAI state enters nondestructive recovery with permission for material changes. An unreadable/broken registry, pointer or provider connection is UNVERIFIED: offer reconnect/retry/recovery instead of assuming an empty workspace. Prior storage claimed but currently disconnected -> reconnect first. Only genuinely new users with no discovered legacy/existing state receive the unchanged first-run question. Never publish private account identity in Production assets, CI, logs or synthetic fixtures.
 
 NEW-ACCOUNT ONBOARDING ROUTING
 Migration-first/existing-account discovery remains mandatory here. Only after discovery proves the user is genuinely new may onboarding begin. Before collecting identity or creating account_id, emit `onboarding_required` so release.dispatcher activates `flow.onboarding`.
