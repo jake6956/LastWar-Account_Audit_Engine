@@ -1,6 +1,6 @@
 LWAI MODULE — CORE PERSISTENCE, RELOAD & PRIVACY
 module_id: core.persistence
-module_version: 2026-11-19.51.1
+module_version: 2026-11-19.52.1
 load_class: mandatory_core
 state_scope: shared_engine+local_workspace_rules+runtime_recovery+session_provenance
 SANITIZED: YES
@@ -42,6 +42,13 @@ Runtime Journal is append-only write-ahead/event history for material multi-step
 WHEN TO CHECKPOINT
 Checkpoint event-driven work rather than dumping conversation state on a timer. Use a checkpoint when starting a multi-artifact operation, before/after consequential migration, before changing active accounts while work is pending, when entering WAITING_USER including declared upload batches, after meaningful audit/import phases, when freezing/promoting a release, after a material tool blocker, or whenever blind replay could duplicate/overwrite durable state.
 Atomic one-field canonical updates do not need a separate workflow checkpoint.
+
+HOT RECOVERY LEDGER / CATCH-UP
+With verified writable storage, maintain one optional private workspace-scoped "LWAI — Active Recovery Ledger" (or provider-neutral equivalent) as a compact resume digest and material transaction-style events. Create or discover it only inside the selected account's LWAI workspace. No new onboarding or account rewrite. It is not a public GitHub file, full chat transcript, or a substitute for canonical account facts.
+Recognize "LWAI catch up", "catch up on LWAI", "resume LWAI", "where were we?", and "catch up" in an active LWAI context; retain "reload LWAI". After engine freshness preflight resolve Workspace Registry and active_account_id, then load this ledger, unresolved Runtime Checkpoints and recent Runtime Journal, verify referenced actual durable artifacts and re-read canonical account data before reporting present account values. If the ledger is missing, reconstruct only from verified durable artifacts; if inaccessible, disclose the recovery gap rather than inventing state.
+At every material LWAI boundary (objective, decision, write/verification, CI, release, blocker, WAITING_USER, completion), record a unique event_id, UTC timestamp, scope, nullable account_id, checkpoint_id, event_type, action, result, verified flag, evidence_ref and next_action. Persist INTENT before consequential non-atomic writes; only mark verified COMMIT after storage readback. Refresh compact hot digest after successful verified write. Never claim "stored" on write failure, never claim a planned action completed, and never turn ordinary chat into a transcript dump.
+Retain recent material events for rolling 72 hours, up to 32 in the hot display; on reads ignore expired ordinary entries, on next successful mutation compact them. Keep OPEN, WAITING_USER and RECOVERY_REQUIRED checkpoints and needed event pointers pinned until verified terminal disposition regardless of age. Never purge canonical Change Log, Corrections or account history via hot-ledger TTL.
+ACCOUNT events require immutable account_id and are filtered by active_account_id. Workspace/release events contain no account-private values. Host session reference cannot select an account. Ledger is operational recovery metadata, not canonical gameplay evidence or spend-verification proof. No hidden reasoning, chat transcripts, secrets or duplicated screenshots. Read-only/session-only mode cannot promise durable continuity.
 
 RECOVERY-FIRST RELOAD
 Support `reload yourself` / `reload LWAI`. Run the automatic engine freshness/update preflight first, then load current engine/module metadata -> Workspace Registry -> active_account_id -> unresolved Runtime Checkpoints + recent Runtime Journal entries relevant to the workspace/active account -> inspect their affected durable artifacts -> active account identity -> Hot Cache -> Corrections -> State Health -> relevant canonical state -> Audit Session when applicable -> recent material Change Log -> relevant domain modules. Runtime Session provenance may be attached for traceability but never changes this ordering.

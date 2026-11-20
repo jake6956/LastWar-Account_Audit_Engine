@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-11-19.51
+engine_version: 2026-11-19.52
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -148,6 +148,10 @@ Runtime Checkpoints are private workflow state, not canonical facts/transcripts.
 
 RUNTIME JOURNAL
 Append-only recovery events for material multi-step work: BEGIN, INTENT, WRITE_ATTEMPT, WRITE_SUCCESS, WRITE_FAILURE, VERIFY, SAFE_POINT, WAITING_USER, RESUME, COMMIT, ABORT. Store operational recovery facts only, never hidden chain-of-thought/full transcripts.
+
+HOT RECOVERY LEDGER / CATCH-UP
+On "LWAI catch up", "catch up on LWAI", "resume LWAI", "where were we?" or "catch up" during LWAI, run freshness -> Registry/active_account_id -> private Active Recovery Ledger -> unresolved Checkpoints/Journal -> verify real artifacts -> canonical account read. Summarize verified completed, unresolved and next safe action; never ask the user for old transcript. The private provider-neutral ledger is separate from game state.
+Journal material goals, decisions, writes, verification, releases, blockers and WAITING_USER with unique event_id, UTC time, scope/account_id, checkpoint_id, event_type, action, result, verified, evidence_ref, next_action. Verify provider write/readback before claiming persisted or completed. Rolling 72h recent-event TTL; ignore expired on read, compact on next write; show at most 32 non-pinned events. OPEN/WAITING_USER/RECOVERY_REQUIRED remain pinned until terminal verification. Fail closed on unavailable storage, preserve account isolation, do not store transcript/hidden reasoning/credentials.
 
 RECOVERY-FIRST STARTUP
 After live engine/update, valid account context, and supported schema, inspect unresolved Checkpoints/recent Journal. Durable verified state wins. Never replay verified writes; preserve WAITING_USER/`done`; enforce account scope; COMMITTED checkpoints are not replayed. Missing recovery metadata never destroys canonical account facts.
