@@ -80,3 +80,6 @@ ARCHIVE / RESTORE
 
 SESSION PROVENANCE
 Optional runtime_session_id/host_session_ref may be stored privately only when safely exposed, supplied, or imported. Host conversation reference is observability metadata only—never identity, authentication, routing, recovery ordering, deduplication, or game evidence.
+
+DERIVED DASHBOARD VIEWS / SAFE REPAIR
+Canonical account domain tabs are the only current-state authority; Dashboard, Hot Cache and redundant wall/observed lineup records must be formula-linked when stored as native Google Sheets, or computed from canonical facts on read for other providers. Never treat exact long-form squad power from the wall as a wall-only statistic. New writable stores establish derived views on creation. Existing stores use optional account-local derived_view_revision=1: resolve active account/workspace, inspect exact tab/key/formula metadata, repair only proven redundant current aliases, preserve historic/specialist/contradictory/protected/validated cells, original evidence and timestamps, checkpoint non-atomic changes, verify actual formula results and errors, then mark revision. Repeat is no-op; partial failure is RECOVERY_REQUIRED. Cloud providers are not required to share a single physical workbook layout.
