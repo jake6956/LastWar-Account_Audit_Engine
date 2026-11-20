@@ -135,3 +135,6 @@ Every managed account has an isolated canonical database/logical namespace. Muta
 - IDs/timestamps survive provider migration.
 - Engine updates preserve Account Registry, active_account_id, Account Identity records, all account-local namespaces, Audit Sessions, optional Runtime Sessions, Runtime Checkpoints, Runtime Journal and provider-local references.
 - Shared GitHub Production/public Gold Assets contain schemas/rules only, never consumer identity/evidence/runtime-session/checkpoint rows or actual host_session_ref values.
+
+## Derived account views (presentation-only; schema 2.3 unchanged)
+Dashboard and Hot Cache are computed projections of canonical account-domain records. Google Sheets implementations with verified native formula capability should link by validated unique keys/columns; other providers compute on read. An optional account-scoped `derived_view_revision` is a verification marker, never a canonical game fact or account identifier. Existing workbooks can migrate idempotently and non-destructively, preserving dated history, distinct/specialist presets, precise powers, source evidence, Corrections and protected cells. The physical workbook layout is provider-specific.

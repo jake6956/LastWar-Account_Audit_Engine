@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from urllib.error import HTTPError, URLError
 from urllib.parse import quote
@@ -20,7 +21,12 @@ def fail(message: str) -> None:
 
 
 def fetch(url: str, accept: str = "text/plain,*/*;q=0.1") -> tuple[int, object, str]:
-    req = Request(url, headers={"User-Agent": "LWAI-Modular-Live-Validation/1.0", "Accept": accept})
+    headers = {"User-Agent": "LWAI-Modular-Live-Validation/1.0", "Accept": accept}
+    # Use the runner token for GitHub API reads only; never forward it to the public site.
+    if url.startswith("https://api.github.com/") and os.environ.get("GITHUB_TOKEN"):
+        headers["Authorization"] = "Bearer " + os.environ["GITHUB_TOKEN"]
+        headers["X-GitHub-Api-Version"] = "2022-11-28"
+    req = Request(url, headers=headers)
     try:
         with urlopen(req, timeout=20) as response:
             return getattr(response, "status", 200), response.headers, response.read(262144).decode("utf-8")

@@ -1,5 +1,14 @@
 # Production Changelog
 
+## 2026-11-19.51
+
+- Provision Google Sheets summaries as source-linked projections; other writable providers derive account views on read.
+- Add optional account-local derived_view_revision=1 and safe, idempotent existing-workbook repair on resume/drift.
+- Add bounded Google Sheets migration planner and tests for no-ops, exact numeric power, conflicting snapshots, protected cells and ambiguous keys.
+- Preserve historical observations, independent specialist presets, account isolation, privacy and previous canonical records.
+- Engine API 1.0, workspace schema 2.3 and LastWarAI.com transport unchanged; no re-onboarding.
+
+
 ## 2026-09-28.50
 
 - Separated gear rarity/tier classification from promotion progress in screenshot interpretation.

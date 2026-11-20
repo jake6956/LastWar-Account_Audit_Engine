@@ -1,6 +1,6 @@
 LWAI MODULE — STORAGE ADAPTERS
 module_id: adapters.storage
-module_version: 2026-08-31.34.1
+module_version: 2026-11-19.51.1
 load_class: capability_on_demand
 state_scope: shared_engine+provider_rules+consumer_data_isolation
 SANITIZED: YES
@@ -119,3 +119,8 @@ Identity, optional game UID, provider-local references, screenshots, balances, C
 
 UPSTREAM RELATIONSHIP
 Adapters are ENGINE. Workspace Registry, active_account_id, identities, credentials, provider-local paths/IDs and mutable account state are LOCAL STATE and must never be overwritten by engine refresh.
+
+PROVIDER DERIVED-VIEW PLAN (GOOGLE SHEETS / NON-SHEETS)
+A linked cloud provider does not imply that every consumer gets the same physical Google workbook. After explicit Google Drive selection and verified native Sheets write capability, the user's isolated account database MAY use canonical domain tabs with Dashboard/Hot Cache formulas from creation. Alternate provider/file stores compute read-time summaries from canonical records or maintain explicitly disposable projections.
+For an existing native Google Sheets account workbook, when derived_view_revision is absent or drift verified, inspect exact workbook metadata, sheet IDs, header/row labels, existing userEnteredValue/formulas and canonical sources before mutation. Use verified unique key/column mapping, NOT another player's hardcoded coordinates. Link a proven redundant current alias by a native exact-cell formula or validated lookup, retaining source observed_at rather than injecting TODAY() as provenance. Default Tank/Missile/Air full squad power can appear on the wall-defense screen with its exact long-form number; it is NOT a separate wall-specific statistic. Do not conflate a specialist/alternate or dated observation with the current default.
+If values conflict, rows are ambiguous, or cells are protected/validated, do not replace them; report and quarantine the conflict. Preserve history, source text, distinct gear presets, numeric precision and account identifiers. Use bounded batchUpdate, read-back computed values and formula errors; only then mark account-local revision. Rerun with no changes is a no-op; failures remain recoverable. No writes outside the dedicated LWAI account namespace.

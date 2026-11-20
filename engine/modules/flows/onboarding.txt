@@ -1,6 +1,6 @@
 LWAI MODULE — ONBOARDING & PERSISTENCE FLOW
 module_id: flow.onboarding
-module_version: 2026-09-28.43.1
+module_version: 2026-11-19.51.1
 load_class: capability_on_demand
 state_scope: shared_engine+onboarding_flow+persistence_upgrade+onboarding_recovery
 SANITIZED: YES
@@ -117,3 +117,6 @@ FAILURE / SAFETY
 Recoverable failure must expose the next safe choice. Do not fabricate progress to avoid a pause.
 This flow cannot relax mandatory privacy, evidence, account-isolation, write-ahead/idempotency, state-freshness, recommendation-governance or recovery rules.
 A legitimate Last War question may still be answered to the best supported level while onboarding is incomplete; preserve any real WAITING_USER boundary and resume it when appropriate.
+
+DERIVED VIEW CREATION / EXISTING-ACCOUNT HANDOFF
+After the selected private provider is verified writable and canonical account records exist, provision provider-supported summary views from canonical keys, never duplicate their current values. A Sheets Dashboard is a presentation layer, not an authoritative account record. For an existing/legacy account run optional derived_view_revision=1 verification/repair after account and schema discovery; this must not trigger re-onboarding or overwrite historical snapshots. Continue the user's original task after verification.

@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-09-28.50",
+  "engine_version": "2026-11-19.51",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -23,16 +23,16 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal ChatGPT installation performs one user-supplied bare-origin fetch to LastWarAI.com; the Worker resolves one live main SHA server-side and returns exact-commit compiled BOOTSTRAP_FULL in one response; direct/recovery modular reads pin to one SHA and remain compatibility/recovery paths only; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
-    "from": "2026-09-28.49",
-    "type": "engine_only_gear_screenshot_rarity",
+    "from": "2026-09-28.50",
+    "type": "engine_only_derived_views_v1",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Separates visual gear rarity/tier classification from promotion progress. Red gear-card background is Mythic/M6 evidence; orange is Legendary; gold pips/stars/segments never establish rarity by themselves. No schema, provider, transport, or Worker change."
+    "notes": "Source-linked current summaries on formula-capable providers, read-time projections on others; idempotent presentation repair for existing accounts, no canonical data rewrite."
   },
-  "notes": "OO-020 correctness release: screenshot gear rarity is classified from the readable gear-card background independently from promotion marks; unclear backgrounds remain uncertain rather than being guessed from pips.",
+  "notes": "Derived views use canonical sources; existing redundant aliases are repaired only after verified unique keys, precision-preserving formulas, conflict quarantine and readback. No universal workbook layout or re-onboarding.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",

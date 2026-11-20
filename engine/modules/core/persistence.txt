@@ -1,6 +1,6 @@
 LWAI MODULE — CORE PERSISTENCE, RELOAD & PRIVACY
 module_id: core.persistence
-module_version: 2026-09-28.45.1
+module_version: 2026-11-19.51.1
 load_class: mandatory_core
 state_scope: shared_engine+local_workspace_rules+runtime_recovery+session_provenance
 SANITIZED: YES
@@ -85,3 +85,8 @@ No automation: reconcile checkpoints on reload/preflight only. No web: preserve 
 LOCAL/ENGINE SEPARATION
 LOCAL STATE includes Workspace Registry, active_account_id, account identities, mutable account facts, preferences, Corrections, history, screenshots, Audit Sessions, Runtime Sessions, host_session_ref values, Runtime Checkpoints, Runtime Journal and provider metadata. ENGINE includes sanitized rules, schemas, modules, adapters, commands and release logic. Engine upgrades update ENGINE only. Schema-breaking changes require a migration preserving all local state.
 Checkpoint, provenance or engine-update metadata loss may reduce recovery/support convenience but must never destroy canonical account facts.
+
+DERIVED-VIEW RECONCILIATION — ACCOUNT-SCOPED
+Canonical domain records are the single writer for current facts. Dashboard, Hot Cache and redundant current lineup aliases are derived projections, not independent ledgers. At new-account store creation build source-linked views when the chosen provider supports formulas; otherwise calculate views from canonical facts at read time. An optional account-local derived_view_revision=1 is a verified projection marker, not a workspace schema bump or new account.
+On existing-account resume, schema upgrade or drift report, first resolve active_account_id and provider workspace, then inspect current summary cells and canonical source rows. Reconcile only uniquely identified duplicate current facts, not distinct presets, dated/historical observations, evidence, strategic notes, conflicting numbers or validation/protected cells. Retain exact numeric squad-power precision, source timestamps, history and Corrections. Write only proven-safe projection links; snapshot/checkpoint when writes are non-atomic; verify computed results and errors; mark revision only after verification. Repeating a successful repair must yield no new writes. Failure remains RECOVERY_REQUIRED. No unrelated workspace or different account may be touched.
+Future ingestion updates canonical facts first. It must not hand-write a second current-state value into Dashboard/Hot Cache. Monotonic and volatile semantics and evidence metadata remain unchanged.
