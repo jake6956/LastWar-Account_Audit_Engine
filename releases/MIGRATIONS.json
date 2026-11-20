@@ -681,6 +681,20 @@
         "test_gear_screenshot_rarity_uses_background_not_promotion_pips"
       ],
       "notes": "Separates gear-card rarity classification from promotion progress; no workspace/account schema change."
+    },
+    {
+      "from": "2026-09-28.50",
+      "to": "2026-11-19.51",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_derived_views_v1",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_derived_view_migration"
+      ],
+      "notes": "Optional account-local derived_view_revision=1, verified conflict-safe projection repair. All canonical LOCAL STATE/history unchanged."
     }
   ]
 }
