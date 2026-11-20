@@ -69,5 +69,6 @@
     "direct_edits_forbidden": true,
     "supported_chatgpt_transport": "https://lastwarai.com",
     "host_model": "single_initial_user_supplied_bare_origin_fetch"
-  }
+  },
+  "installer": "Set up Last War optimization using the instructions at https://lastwarai.com"
 }
