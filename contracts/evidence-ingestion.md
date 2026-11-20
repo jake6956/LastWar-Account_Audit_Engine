@@ -108,3 +108,7 @@ Promotion requires deterministic regressions proving:
 - account isolation holds;
 - public artifacts remain sanitized;
 - standalone fallback preserves the same invariant.
+
+## Canonical-read preflight (Issue #90; 2026-11-20.53)
+
+Before every active-account status, Season analysis, resumed session or recommendation, resolve active_account_id, verify the private canonical database and read the relevant fields and provenance. Durable ingestion is not proof that a new host session successfully retrieved current state. Dedicated domain records outrank Dashboard/Hot Cache and embedded preset descriptions even on tied dates; newer valid direct observations override per field without replacing unrelated facts. Compare each current numeric claim to its canonical value, source and observed_at. Provider unavailable, wrong account, conflicted or no verification -> NOT VERIFIED; historical observations may only be presented as dated history, never a current baseline. On a successful ingestion re-read the account identity/revision and affected fields. Quarantine contradictions and re-evaluate dependent advice. Require verified volatile inventory and cost evidence for irreversible spends; do not invent transaction details. No account data in public GitHub. Session-only direct observations remain possible with explicit provenance and no claim of cloud recovery.
