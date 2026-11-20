@@ -514,6 +514,72 @@ class RuntimeModel:
             "checkpoint_id": checkpoint.checkpoint_id if checkpoint else None,
         }
 
+    def resolve_account_view(
+        self,
+        *,
+        fetch_canonical: Callable[[str], dict[str, Any] | None],
+        required_keys: list[str],
+        session_observations: list[dict[str, Any]] | None = None,
+        now: str | None = None,
+        max_volatile_age_hours: float = 24.0,
+    ) -> dict[str, Any]:
+        """Model mandatory read-preflight; stale caches/memory are never authoritative.
+
+        This is a test reference model, not a real provider adapter or an assertion
+        that ChatGPT successfully accessed cloud storage.
+        """
+        from datetime import datetime
+
+        account_id = self.active_account_id
+        if account_id is None or self.persistence_mode != "DURABLE":
+            return {"status": "NOT_VERIFIED", "reason": "no verified durable account", "fields": {}}
+        try:
+            snapshot = fetch_canonical(account_id)
+        except Exception:
+            return {"status": "NOT_VERIFIED", "reason": "canonical storage read failed", "fields": {}}
+        if snapshot is None:
+            return {"status": "NOT_VERIFIED", "reason": "canonical account unavailable", "fields": {}}
+        if snapshot.get("account_id") != account_id:
+            return {"status": "NOT_VERIFIED", "reason": "canonical account mismatch", "fields": {}}
+
+        facts = snapshot.get("facts") or {}
+        metadata = snapshot.get("fact_metadata") or {}
+        result = {}
+        for key in required_keys:
+            if key not in facts:
+                result[key] = {"status": "NOT_VERIFIED", "reason": "missing canonical fact"}
+                continue
+            value = facts[key]
+            meta = metadata.get(key) or {}
+            observed_at = meta.get("observed_at")
+            state_class = meta.get("state_class", "MONOTONIC")
+            source = meta.get("source", "unknown")
+            status = "VERIFIED_OBSERVED" if observed_at and meta.get("confidence") == "HIGH" else "HISTORICAL_UNVERIFIED"
+
+            # Explicit new session direct observations can supersede a dated fact,
+            # but older observations and conversation summaries cannot.
+            candidates = [o for o in (session_observations or [])
+                          if o.get("key") == key and o.get("source") in {"direct", "screenshot"}
+                          and o.get("confidence", "HIGH") == "HIGH" and o.get("observed_at")]
+            candidates.sort(key=lambda o: datetime.fromisoformat(o["observed_at"]))
+            for candidate in candidates:
+                incoming_at = candidate["observed_at"]
+                if observed_at is not None and datetime.fromisoformat(incoming_at) < datetime.fromisoformat(observed_at):
+                    continue
+                if observed_at is not None and datetime.fromisoformat(incoming_at) == datetime.fromisoformat(observed_at) and candidate["value"] != value:
+                    status = "CONFLICT"
+                    continue
+                if status == "CONFLICT":
+                    continue
+                value, observed_at, source, status = candidate["value"], incoming_at, candidate["source"], "VERIFIED_OBSERVED"
+
+            if status == "VERIFIED_OBSERVED" and state_class == "VOLATILE" and now is not None:
+                if observed_at is None or ((datetime.fromisoformat(now) - datetime.fromisoformat(observed_at)).total_seconds() / 3600) > max_volatile_age_hours:
+                    status = "STALE"
+            result[key] = {"status": status, "value": value, "observed_at": observed_at, "source": source}
+        complete = all(field["status"] == "VERIFIED_OBSERVED" for field in result.values())
+        return {"status": "VERIFIED" if complete else "PARTIAL", "account_id": account_id, "fields": result}
+
     def durable_account_snapshot(self, account_id: str | None = None) -> dict[str, Any]:
         account_id = account_id or self.active_account_id
         if account_id is None or account_id not in self.accounts:
