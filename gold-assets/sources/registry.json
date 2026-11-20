@@ -94,7 +94,7 @@
     }
   ],
   "default_policy": {
-    "account_canonical_priority": "Current directly observed in-game and verified private account data outrank public wiki.",
+    "account_canonical_priority": "Current directly observed in-game and verified private canonical account data outrank public wiki.",
     "no_bulk_mechanics_import": true,
     "source_registration_only": true,
     "consumer_cannot_modify_public_registry": true,
