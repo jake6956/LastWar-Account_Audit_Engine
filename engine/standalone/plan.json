@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "engine_version": "2026-11-19.51",
+  "engine_version": "2026-11-19.52",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "output": "engine/BOOTSTRAP_FULL.txt",
@@ -14,7 +14,7 @@
   "source_module_digests": {
     "core.operating": "e5cb05701601301b3b4b1f2fa31fbc80a9f1773d",
     "core.recommendation-governance": "6ade54b03c4ed2893346f2d3de1e80e96682e248",
-    "core.persistence": "0fac5595c68ca6ead1182fc82e132c80d78f0adb",
+    "core.persistence": "fe6a271bb6e81ca21572663d0f8dec8df7df7041",
     "core.accounts": "1718d7a9009a68a82ab7f156c503e5ef879aeab8",
     "core.state-freshness": "4efb82ba44751b35d6cb4167b8ba9fb7dc40cfba",
     "core.preferences": "10fc41284a302328cbc3031d5fbffb8d8030ea65",

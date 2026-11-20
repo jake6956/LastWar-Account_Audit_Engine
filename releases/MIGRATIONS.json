@@ -695,6 +695,20 @@
         "test_derived_view_migration"
       ],
       "notes": "Optional account-local derived_view_revision=1, verified conflict-safe projection repair. All canonical LOCAL STATE/history unchanged."
+    },
+    {
+      "from": "2026-11-19.51",
+      "to": "2026-11-19.52",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_hot_recovery_ledger_v1",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_hot_recovery_ledger"
+      ],
+      "notes": "Optional provider-local ledger; engine-only, no account rewrite."
     }
   ]
 }
