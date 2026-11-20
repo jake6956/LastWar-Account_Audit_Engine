@@ -127,3 +127,9 @@ Every candidate using the generated fallback must prove:
 - direct edits to BOOTSTRAP_FULL without corresponding compiler-input changes fail validation;
 - fallback and mandatory-module budgets remain within policy;
 - preference resolution remains mandatory while preference learning/management may activate on demand without losing existing preference application.
+
+## Hot cross-chat recovery regression gate
+
+- The shared mandatory module and compiled standalone both implement the same private hot-ledger recovery commands and 72-hour event TTL.
+- Test that event IDs conflict safely, ACCOUNT scopes do not cross accounts, unverified INTENT is not treated as COMMIT, ordinary expired events disappear, unresolved checkpoint pointers remain pinned, and provider failure cannot imply a verified save.
+- The ledger must not contain user data in public release artifacts and must not replace fresh canonical account retrieval.

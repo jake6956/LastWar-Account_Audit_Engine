@@ -18,6 +18,10 @@ Copy this into a fresh AI conversation:
 - Uses current evidence and clearly distinguishes verified facts from estimates or inference.
 - Supports optional private persistence in a dedicated LWAI workspace in a user-selected supported cloud provider; session-only use is also supported.
 
+## Resume in another chat
+
+With your LWAI private storage connected, say **LWAI catch up** or **resume LWAI**. The runtime reads a compact private recovery ledger, unresolved checkpoints, and current canonical account records rather than relying on the old conversation. Ordinary recent material events expire after 72 hours; unfinished work remains pinned. This requires the LWAI runtime and access to that workspace; it does not grant automatic access to unrelated ChatGPT conversations.
+
 ## Privacy
 
 This public repository contains only the sanitized shared engine and reusable non-user-specific knowledge. Private player/account state does not belong in this repository.

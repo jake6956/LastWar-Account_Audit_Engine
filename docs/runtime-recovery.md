@@ -56,3 +56,7 @@ Do not persist hidden chain-of-thought, raw internal reasoning, full transcripts
 ## Release engineering
 
 Release checkpoints are verify-before-replay transactions. Before retrying a branch, PR, merge, archive, or mirror write, inspect the actual target first. Pre-merge interruption leaves last-known-good main intact. After validated merge, a secondary mirror/archive failure is recorded and retried without silently rewriting healthy Production.
+
+## Hot cross-chat recovery ledger (Production 2026-11-19.52)
+
+Within the LWAI runtime, `LWAI catch up`, `resume LWAI` and contextually `catch up` trigger engine freshness, Registry and account resolution, private Active Recovery Ledger, unresolved checkpoints/journal, verification of actual affected artifacts, and canonical account reads. Event data is short-lived (72h) and bounded; unresolved work remains pinned until terminal verification. This private optional metadata lives inside each user's selected LWAI workspace. See `contracts/hot-recovery-ledger.md`; it is neither public GitHub account state nor an automatic full conversation recorder.

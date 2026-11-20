@@ -1,5 +1,13 @@
 # Production Changelog
 
+## 2026-11-19.52
+
+- Added private workspace-level Active Recovery Ledger and `LWAI catch up` / `resume LWAI` entry points.
+- Material verified events use a 72-hour hot window with unresolved checkpoints pinned; fail closed on unavailable or unverified storage.
+- Added deterministic projection tests for event TTL, deduplication, isolation, unresolved-work retention and intent-versus-commit state.
+- Preserved derived views from .51, canonical account facts/history, Engine API 1.0, workspace schema 2.3 and current installer transport; no re-onboarding.
+
+
 ## 2026-11-19.51
 
 - Provision Google Sheets summaries as source-linked projections; other writable providers derive account views on read.
