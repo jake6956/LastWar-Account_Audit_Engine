@@ -138,3 +138,7 @@ Every managed account has an isolated canonical database/logical namespace. Muta
 
 ## Derived account views (presentation-only; schema 2.3 unchanged)
 Dashboard and Hot Cache are computed projections of canonical account-domain records. Google Sheets implementations with verified native formula capability should link by validated unique keys/columns; other providers compute on read. An optional account-scoped `derived_view_revision` is a verification marker, never a canonical game fact or account identifier. Existing workbooks can migrate idempotently and non-destructively, preserving dated history, distinct/specialist presets, precise powers, source evidence, Corrections and protected cells. The physical workbook layout is provider-specific.
+
+## Optional Active Recovery Ledger (engine-only; schema 2.3)
+
+Provider-neutral private hot resume metadata can be stored as a materialized digest plus events with `event_id`, `occurred_at`, `scope`, optional `account_id`, optional `checkpoint_id`, `event_type`, `action`, `result`, `verified`, optional `evidence_ref` and `next_action`. Scope ACCOUNT is filtered by active immutable account_id. Most events expire after 72h; unresolved checkpoints and necessary event pointers are pinned. This never replaces the canonical account database, journal, Change Log or Corrections, and requires no workbook rewrite or schema bump.
