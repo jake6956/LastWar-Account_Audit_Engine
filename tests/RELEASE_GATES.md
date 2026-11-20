@@ -137,3 +137,7 @@ Every candidate using the generated fallback must prove:
 ## Issue #90 canonical account preflight
 
 Test a fresh reference runtime with stale conversation/cache and a newer private canonical snapshot; only canonical field values pass. Block provider outages, wrong-account storage, same-time contradiction and stale volatile values from being asserted as current. A newer direct observation supersedes only its field. Verify current transaction evidence before irreversible spends. Assert both mandatory module and compiled fallback include canonical-read barriers. Synthetic CI does not substitute for an actual new-chat host smoke test; report the host guarantee as unverified until observed.
+
+## Approved public source integrity
+
+Validate the approved source Gold Asset registration, exact allowed host, conditional publisher/community/comment tiers, URL/date/cohort citation policy, in-game priority, no automatic account fact ingestion, and parity in mandatory core and compiled fallback. Current wiki announcements can be source evidence only after page-level classification; community posts and comments never become official by domain alone.

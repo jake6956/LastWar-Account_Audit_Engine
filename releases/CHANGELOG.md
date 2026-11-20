@@ -1,5 +1,13 @@
 # Production Changelog
 
+## 2026-11-20.54
+
+- Conditionally approved the official-hosted Last War Wiki as a public research entrypoint in Gold Assets.
+- Added article-level publisher-vs-community-vs-comment source classification; documented release/season/server applicability and in-game priority.
+- Wired the approved-source registry into mandatory core operating and compiled standalone fallback; no automatic wiki-content import.
+- Added source provenance/privacy/regression gates. Engine API 1.0, workspace schema 2.3, canonical player data and .53 preflight unchanged.
+
+
 ## 2026-11-20.53
 
 - Make canonical account record and field-provenance reads mandatory before account-specific claims, resumed sessions and consequential advice.
