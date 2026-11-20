@@ -709,6 +709,20 @@
         "test_hot_recovery_ledger"
       ],
       "notes": "Optional provider-local ledger; engine-only, no account rewrite."
+    },
+    {
+      "from": "2026-11-19.52",
+      "to": "2026-11-20.53",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_canonical_read_preflight_v1",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_canonical_state_read_contract"
+      ],
+      "notes": "Mandatory canonical account-state preflight; no provider/account rewrite, no re-onboarding."
     }
   ]
 }

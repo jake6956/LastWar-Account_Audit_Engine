@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-11-19.52",
+  "engine_version": "2026-11-20.53",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -23,16 +23,16 @@
   "mutable_source_urls_are_authority": false,
   "candidate_read_policy": "normal ChatGPT installation performs one user-supplied bare-origin fetch to LastWarAI.com; the Worker resolves one live main SHA server-side and returns exact-commit compiled BOOTSTRAP_FULL in one response; direct/recovery modular reads pin to one SHA and remain compatibility/recovery paths only; recovery packages are fixed offline snapshots; never mix candidate sources",
   "migration": {
-    "from": "2026-11-19.51",
-    "type": "engine_only_hot_recovery_ledger_v1",
+    "from": "2026-11-19.52",
+    "type": "engine_only_canonical_read_preflight_v1",
     "schema_from": "2.3",
     "schema_to": "2.3",
     "local_state_action": "preserve",
     "requires_user_reonboarding": false,
     "requires_account_rewrite": false,
-    "notes": "Optional private recovery digest/event journal; preserve account identity, canonical state and history."
+    "notes": "Require canonical account read and field provenance before current-account claims, preserve all private account state."
   },
-  "notes": "Provider-neutral private 72-hour hot recovery events with unresolved checkpoint pinning, verified write/readback and new catch-up aliases; .51 canonical derived views remain supported.",
+  "notes": "Fail-closed canonical read preflight and output staleness barrier on every account-specific session/status/spend; .52 recovery ledger and .51 derived views remain.",
   "recovery_package": {
     "format_version": "1.0",
     "builder": "scripts/build_recovery_package.py",

@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-11-19.52",
+  "engine_version": "2026-11-20.53",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -108,7 +108,7 @@
     },
     {
       "module_id": "core.state-freshness",
-      "module_version": "2026-09-28.45.1",
+      "module_version": "2026-11-20.53.1",
       "path": "engine/modules/core/state-freshness.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -129,7 +129,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "4efb82ba44751b35d6cb4167b8ba9fb7dc40cfba"
+        "digest": "1a1ff885c06482ea09aa52dd399f726257ea77f4"
       }
     },
     {
@@ -748,7 +748,7 @@
     },
     {
       "module_id": "release.bootstrap",
-      "module_version": "2026-09-28.44.1",
+      "module_version": "2026-11-20.53.1",
       "path": "engine/modules/release/bootstrap.txt",
       "load_class": "mandatory_core",
       "dependencies": [
@@ -775,7 +775,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "2c6d1ab5cac99acfa89a4328ded6bdfddd1f74c6"
+        "digest": "f654ec1d2a089012fe1e46be24b887eb99ea7759"
       }
     }
   ]

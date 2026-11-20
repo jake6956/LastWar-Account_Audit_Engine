@@ -133,3 +133,7 @@ Every candidate using the generated fallback must prove:
 - The shared mandatory module and compiled standalone both implement the same private hot-ledger recovery commands and 72-hour event TTL.
 - Test that event IDs conflict safely, ACCOUNT scopes do not cross accounts, unverified INTENT is not treated as COMMIT, ordinary expired events disappear, unresolved checkpoint pointers remain pinned, and provider failure cannot imply a verified save.
 - The ledger must not contain user data in public release artifacts and must not replace fresh canonical account retrieval.
+
+## Issue #90 canonical account preflight
+
+Test a fresh reference runtime with stale conversation/cache and a newer private canonical snapshot; only canonical field values pass. Block provider outages, wrong-account storage, same-time contradiction and stale volatile values from being asserted as current. A newer direct observation supersedes only its field. Verify current transaction evidence before irreversible spends. Assert both mandatory module and compiled fallback include canonical-read barriers. Synthetic CI does not substitute for an actual new-chat host smoke test; report the host guarantee as unverified until observed.
