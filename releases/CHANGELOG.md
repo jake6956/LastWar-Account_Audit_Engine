@@ -1,5 +1,14 @@
 # Production Changelog
 
+## 2026-11-20.53
+
+- Make canonical account record and field-provenance reads mandatory before account-specific claims, resumed sessions and consequential advice.
+- Prevent chat memory, stale Hot Cache/indexes and denormalized preset/summary text from masquerading as verified current account facts.
+- Fail closed on provider errors, wrong account, conflicting or missing facts; verify read-your-writes and current transaction evidence before irreversible spending.
+- Add dedicated synthetic fresh-runtime, isolation, observation precedence, conflict, stale-volatility and modular/standalone parity regressions.
+- Preserve 72-hour recovery ledger from .52 and derived view work from .51; Engine API 1.0 and schema 2.3 unchanged, no re-onboarding.
+
+
 ## 2026-11-19.52
 
 - Added private workspace-level Active Recovery Ledger and `LWAI catch up` / `resume LWAI` entry points.
