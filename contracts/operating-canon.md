@@ -82,3 +82,7 @@ Refresh volatile stores, seasonal mechanics, newly released systems, mutable cos
 
 ## Documentation-as-code
 A material behavior/architecture/persistence/release/provider/schema/optimizer/regression/distribution change is incomplete until the relevant contract, schema, tests, release metadata and consumer bootstrap are updated in the same release transaction. Public current-state docs must not describe superseded transport as present behavior; history belongs in changelog/versioned release records.
+
+## Approved research source index
+
+When available, use `gold-assets/sources/registry.json` as the sanitized public entrypoint register. The official Last War Wiki (`https://wiki.lastwar.com/en/`) is approved conditionally: official editorial notices and feature rules are publisher evidence only when authorship/content type supports it; credited player guides are community-tier; comments and user stories are not mechanics authority. Record exact URL/date/cohort and reverify patch-sensitive details. Preserve current in-game priority, canonical account state and transaction evidence.

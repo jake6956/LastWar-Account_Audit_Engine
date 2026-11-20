@@ -60,3 +60,7 @@ Without current web access, use fresh compatible Production-qualified knowledge 
 ## Update independence
 
 Season knowledge packs are Gold Assets and may be refreshed independently from user LOCAL STATE. Engine updates and knowledge updates remain separate trust domains. A knowledge refresh never mutates account facts.
+
+## Official-hosted wiki source
+
+Research may consult the conditionally approved `gold-assets/sources/registry.json` entry for `wiki.lastwar.com`. Filter publisher season announcements from user-submitted guides and comments. Never assume Season VII rules apply to Season III or to a different server lifecycle; recheck season/week/cohort and current in-game disclaimers. Publisher previews are not guarantees of current availability; image-only maps/rules require actual readable verification. No wholesale import of wiki content into the shared season packs.

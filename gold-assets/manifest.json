@@ -1,5 +1,5 @@
 {
-  "manifest_version": "1.1",
+  "manifest_version": "1.2",
   "engine_compatibility": ">=2026-08-29.20",
   "assets": [
     {
@@ -12,6 +12,17 @@
       "account_state_included": false,
       "refresh_policy": "first season-sensitive task per runtime; 24h TTL; force with refresh season knowledge",
       "notes": "Indexes reusable season knowledge packs. Dynamic or consequential mechanics still require current due diligence."
+    },
+    {
+      "asset_id": "approved-public-sources-registry",
+      "type": "source_registry",
+      "version": "2026-11-20.54.1",
+      "path": "gold-assets/sources/registry.json",
+      "status": "production-qualified",
+      "sanitized": true,
+      "account_state_included": false,
+      "refresh_policy": "Use index at first material externally researched question; verify specific page live when consequential or patch-sensitive.",
+      "notes": "Official-hosted Last War Wiki is conditional by article provenance; community content not automatically official."
     }
   ],
   "notes": "Gold Assets are sanitized shared Production references and never include consumer account state."
