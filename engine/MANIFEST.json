@@ -1,5 +1,5 @@
 {
-  "engine_version": "2026-11-20.53",
+  "engine_version": "2026-11-20.54",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "channel": "Production",
@@ -13,7 +13,7 @@
   "modules": [
     {
       "module_id": "core.operating",
-      "module_version": "2026-09-28.45.1",
+      "module_version": "2026-11-20.54.1",
       "path": "engine/modules/core/operating.txt",
       "load_class": "mandatory_core",
       "dependencies": [],
@@ -30,7 +30,7 @@
       },
       "integrity": {
         "algorithm": "git_blob_sha1",
-        "digest": "e5cb05701601301b3b4b1f2fa31fbc80a9f1773d"
+        "digest": "e92f6b5e414b12b3624d25052ea472d4c032e215"
       }
     },
     {

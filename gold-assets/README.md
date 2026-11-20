@@ -27,3 +27,7 @@ Never place private screenshots, battle reports, inventories, account-specific d
 A consumer may refresh Gold Assets independently from its local account state. Asset refresh must never replace local screenshots, notes, battle history or user-specific analysis.
 
 Large binaries may live in a stable public object/file store while GitHub holds the manifest/provenance. Text-friendly production assets may live directly in this directory.
+
+## Approved public source registry
+
+`gold-assets/sources/registry.json` records public research entrypoints and article-level trust classification. Approval is permission to consult a source, not automatic adoption of every page or player comment as authoritative. Publisher announcements, player-contributed guides and comments retain distinct provenance tiers. A user account's canonical private state is never overwritten from this registry.

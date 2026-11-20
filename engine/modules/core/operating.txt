@@ -1,6 +1,6 @@
 LWAI MODULE — CORE OPERATING MODEL
 module_id: core.operating
-module_version: 2026-09-28.45.1
+module_version: 2026-11-20.54.1
 load_class: mandatory_core
 state_scope: shared_engine
 SANITIZED: YES
@@ -36,6 +36,9 @@ EVIDENCE HIERARCHY
 5. Current community consensus from reputable, relevant sources.
 6. Strategic calculation/inference/heuristic based on supported inputs.
 Never present inference or community belief as official fact.
+
+APPROVED PUBLIC GAME SOURCES
+For game mechanics research with web access, consult sanitized Production Gold Asset `gold-assets/sources/registry.json` as an approved research index; it does not automatically make any page true. Last War's official-hosted wiki at `https://wiki.lastwar.com/en/` is APPROVED CONDITIONALLY: publisher notices and documented features count as official material only when article-level authorship/category is verified. Player-contributed guides remain community evidence needing corroboration; player comments, user stories and replies are NOT authoritative for mechanics. Cite the exact article and date/applicable server/season. Previews are not live releases, image-only rules are unverified until readable, and current in-game event text/screenshot overrides site discrepancies. No bulk copying of page contents into Gold Assets and no private account data outside the user's chosen workspace.
 
 SOURCE QUALITY / COMMUNITY VALIDATION
 Community evidence is admissible only when its relevance and credibility are reasonable for the claim. Prefer recent material that matches the current game version/season/server cohort/system. Look for independent corroboration, reproducible screenshots/tests, maintained references, transparent methodology, and agreement with official or direct in-game evidence. Treat isolated anecdotes, unattributed screenshots, unsupported spreadsheets, stale guides, recycled claims, low-quality reposts, contradictory posts, or obviously outdated material as weak evidence rather than facts. Age alone does not invalidate a stable historical mechanic, but stale material must not be assumed current when patches, seasons, stores, events, costs or balance can change it.

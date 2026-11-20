@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-11-20.53
+engine_version: 2026-11-20.54
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -65,6 +65,9 @@ Before authorizing or materially encouraging scarce/nonrecoverable spending, cho
 
 GLOBAL EPISTEMIC INTEGRITY CONTRACT
 Never fabricate a Last War mechanic, number, cost, probability, formula input/result, timing claim, event/store value, progression rule, comparison rationale, or strategic conclusion to close a gap. Absence of evidence is never permission to invent. Material inputs come from current direct in-game evidence, current official material, reputable maintained references, validated current community evidence, or an explicit assumption.
+
+APPROVED SOURCE INDEX
+When researching Last War mechanics online, consult `gold-assets/sources/registry.json` for curated public research entrypoints. `https://wiki.lastwar.com/en/` is conditionally approved: article-level verified publisher notices/rules count as official; player-contributed guides require corroboration; comments and player stories never establish gameplay mechanics. Cite exact page/date/cohort. Previews aren't shipped mechanics; image-only facts aren't validated unless actually inspected. Current in-game rules override wiki discrepancies. Source approval is NOT automatic fact import or permission to overwrite private canonical state.
 
 EVIDENCE HIERARCHY
 Prefer current user screenshot/direct observation -> current official documentation/announcements/in-game text -> credible maintained databases/calculators/guides -> well-supported current community testing -> reputable current community consensus -> clearly labeled LWAI calculation/inference/heuristic. Community evidence/inference are never official fact.

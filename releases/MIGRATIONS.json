@@ -723,6 +723,20 @@
         "test_canonical_state_read_contract"
       ],
       "notes": "Mandatory canonical account-state preflight; no provider/account rewrite, no re-onboarding."
+    },
+    {
+      "from": "2026-11-20.53",
+      "to": "2026-11-20.54",
+      "schema_from": "2.3",
+      "schema_to": "2.3",
+      "type": "engine_only_approved_wiki_source_index_v1",
+      "local_state_action": "preserve",
+      "requires_user_reonboarding": false,
+      "requires_account_rewrite": false,
+      "tests": [
+        "test_approved_public_sources"
+      ],
+      "notes": "Sanitized public source registry and source-quality rules; no private workspace/account change."
     }
   ]
 }
