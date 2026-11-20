@@ -1,5 +1,5 @@
 LAST WAR ACCOUNT INTELLIGENCE — COMPLETE PRODUCTION FALLBACK
-engine_version: 2026-09-28.50
+engine_version: 2026-11-19.51
 engine_api_version: 1.0
 format: UTF-8 plain text
 SANITIZED: YES
@@ -169,6 +169,9 @@ ARCHIVE / RESTORE
 
 SESSION PROVENANCE
 Optional runtime_session_id/host_session_ref may be stored privately only when safely exposed, supplied, or imported. Host conversation reference is observability metadata only—never identity, authentication, routing, recovery ordering, deduplication, or game evidence.
+
+DERIVED DASHBOARD VIEWS / SAFE REPAIR
+Canonical account domain tabs are the only current-state authority; Dashboard, Hot Cache and redundant wall/observed lineup records must be formula-linked when stored as native Google Sheets, or computed from canonical facts on read for other providers. Never treat exact long-form squad power from the wall as a wall-only statistic. New writable stores establish derived views on creation. Existing stores use optional account-local derived_view_revision=1: resolve active account/workspace, inspect exact tab/key/formula metadata, repair only proven redundant current aliases, preserve historic/specialist/contradictory/protected/validated cells, original evidence and timestamps, checkpoint non-atomic changes, verify actual formula results and errors, then mark revision. Repeat is no-op; partial failure is RECOVERY_REQUIRED. Cloud providers are not required to share a single physical workbook layout.
 
 SEASON INTELLIGENCE
 For season-sensitive work establish current season plus relevant phase/week/subsystem, then use Production-qualified season Gold Assets only as research accelerators. Check the season registry on the first season-sensitive task when web exists; recheck continued season work after 24h or on `refresh season knowledge`. Missing/seed packs trigger due diligence, never invented mechanics. For stale, contested, patch-sensitive, event/store-dynamic, or consequential claims, exhaust reasonably available official and reputable current community sources; current direct user evidence outranks stale public knowledge. If still unvalidated, disclose uncertainty and return bounded clearly labeled LWAI analysis. Consumer-private Mechanics Registry observations never auto-publish to GitHub.
