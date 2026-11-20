@@ -1,6 +1,6 @@
 {
   "format_version": 1,
-  "engine_version": "2026-09-28.50",
+  "engine_version": "2026-11-19.51",
   "engine_api_version": "1.0",
   "schema_version": "2.3",
   "output": "engine/BOOTSTRAP_FULL.txt",
@@ -14,7 +14,7 @@
   "source_module_digests": {
     "core.operating": "e5cb05701601301b3b4b1f2fa31fbc80a9f1773d",
     "core.recommendation-governance": "6ade54b03c4ed2893346f2d3de1e80e96682e248",
-    "core.persistence": "b798fba865f19cbec5bf60fb2b4d6412f1b2c585",
+    "core.persistence": "0fac5595c68ca6ead1182fc82e132c80d78f0adb",
     "core.accounts": "1718d7a9009a68a82ab7f156c503e5ef879aeab8",
     "core.state-freshness": "4efb82ba44751b35d6cb4167b8ba9fb7dc40cfba",
     "core.preferences": "10fc41284a302328cbc3031d5fbffb8d8030ea65",
@@ -27,8 +27,8 @@
     "domain.combat-meta-battlefield": "3efd7126b72443c08f7259addb1adcc92ea428bc",
     "domain.season-intelligence": "b9095b6025771f04d07829ecc93f163ecff74a56",
     "domain.season-stores-paid": "6027a52b350a42cbcc062df65b665c6eec5d3cfd",
-    "flow.onboarding": "df9df33061e0ebe4c025df37abc363b7b3904bc6",
-    "adapters.storage": "0dd3dcd9fb122b429eb07d9b736e43f1947407e5",
+    "flow.onboarding": "88424e71126b7142b306cf9fe4fbc05f570e24cc",
+    "adapters.storage": "7186157ea0659b3b8488b62b319202d2a7acd77c",
     "release.runtime": "17b66cd3dde630fcdc99cdb4d1578d8aad8d8ead",
     "release.resolver": "87f688df965caef037d6dc4b4812cd9aa01ea40c",
     "release.dispatcher": "f6575093ad3840ac036c5a8c6ccba9f40beaf924",
